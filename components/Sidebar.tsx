@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import logo from "@/assets/svgs/logo.svg";
-import { Button } from "../ui/button";
+import { logo } from "@/assets/svgs";
+import { Button } from "./ui/button";
 import {
   RiHeartFill,
   RiHome3Fill,
@@ -11,7 +11,7 @@ import {
   RiShoppingCartFill,
 } from "react-icons/ri";
 import { IconType } from "react-icons";
-import Image from "next/image";
+import { useCategory } from "@/contexts/CategoryContext";
 
 type ActiveTab = "Home" | "Cart" | "Orders" | "Favourite" | "Settings";
 
@@ -30,8 +30,10 @@ const sidebarItems: SidebarItem[] = [
 
 const Sidebar = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("Home");
+  const { setActiveCategory } = useCategory();
 
   const handleTabChange = (tabId: ActiveTab) => {
+    if (tabId === "Home") setActiveCategory(null);
     setActiveTab(tabId);
   };
 
@@ -40,11 +42,11 @@ const Sidebar = () => {
       <div className="flex flex-col items-center py-4">
         {/* Logo */}
         <div className="size-6 flex items-center justify-center rounded-sm bg-black overflow-hidden mb-8">
-          <img src={logo} alt="Cargoland Food" className="object-cover" />
+          <img src={logo.src} alt="Cargoland Food" className="object-cover" />
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex flex-col gap-4 flex-1">
+        <nav className="flex flex-col gap-7 flex-1">
           {sidebarItems.map((item) => {
             const IconComponent = item.icon;
             const isActive = activeTab === item.id;
@@ -54,10 +56,9 @@ const Sidebar = () => {
                 key={item.id}
                 variant="ghost"
                 onClick={() => handleTabChange(item.id)}
-                className={`
-                  "relative size-10 rounded-sm transition-colors",
-               ${isActive && "bg-gray-100"}
-                `}
+                className={`relative size-6 rounded-sm transition-colors ${
+                  isActive && "bg-gray-100"
+                }`}
                 aria-label={item.label}
                 aria-pressed={isActive}
               >
@@ -68,7 +69,7 @@ const Sidebar = () => {
                   `}
                 />
                 {isActive && (
-                  <span className="absolute -right-8  z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
+                  <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
                     {item.label}
                   </span>
                 )}
@@ -81,10 +82,9 @@ const Sidebar = () => {
         <Button
           variant="ghost"
           onClick={() => handleTabChange("Settings")}
-          className={`
-            "relative size-10 rounded-sm transition-colors mt-auto",
-           ${activeTab === "Settings" && "bg-gray-100"}
-          `}
+          className={`relative size-10 rounded-sm transition-colors mt-auto ${
+            activeTab === "Settings" && "bg-gray-100"
+          }`}
           aria-label="Settings"
         >
           <RiSettings3Fill

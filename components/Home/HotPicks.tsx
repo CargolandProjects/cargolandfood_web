@@ -48,7 +48,7 @@ const HotPicks = () => {
   return (
     <section className="my-10">
       <h3>Hot Picks</h3>
-      <div className="flex gap-6 mt-2">
+      <div className="flex gap-6 mt-2 flex-wrap">
         {hotPicks.map((item, index) => (
           <div className="flex justify-center flex-col items-center" key={index}>
             <div className="size-31 rounded-full overflow-hidden">
