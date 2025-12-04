@@ -1,0 +1,21 @@
+import { QueryClient } from "@tanstack/react-query";
+
+export const getQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 2 * 60 * 1000,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        retry: (failureCount, error: any) => {
+          // Don't retry for 4xx errors
+          if (error?.response?.status >= 400 && error?.response?.status < 500) {
+            return false;
+          }
+          return failureCount < 3;
+        },
+        gcTime: 30 * 60 * 1000, // 30 mins
+      },
+    },
+  });
