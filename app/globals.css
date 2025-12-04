@@ -134,7 +134,7 @@
   --primary: #F25C05;
   /* Keep Cargolandfood brand in dark mode */
   --primary-foreground: #FFFFFF;
-  --secondary:  #43B02A;
+  --secondary: #43B02A;
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
@@ -169,7 +169,7 @@
 
   --font-satoshi: var(--font-satoshi);
   --text-xxs: var(--ultra-small);
-  
+
   --shadow-button: var(--shadow-sm);
   --spacing-sidebar: var(--sidebar-width);
   /* ===== CARGOLANacDFOOD BRAND COLORS FOR TAILWIND ===== */
@@ -261,7 +261,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-satoshi) ;
+    font-family: var(--font-satoshi);
   }
 
   body,
@@ -269,12 +269,21 @@
     font-synthesis: none;
   }
 
-  h3{
+  h3 {
     @apply font-medium font-satoshi text-2xl leading-8
   }
 }
 
 @layer utilities {
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 
   /* Cargolandfood Brand Color Utilities */
   /* .text-cargo-orange {
@@ -389,20 +398,20 @@
   }
 
   /* Embla Carousel Styles */
-  
+
   .embla {
     overflow: hidden;
   }
-  
+
   .embla__container {
     display: flex;
   }
-  
+
   .embla__slide {
     flex: 0 0 50%;
     min-width: 0;
   }
-  
+
   @media (min-width: 768px) {
     .embla__slide {
       flex: 0 0 33.333%;

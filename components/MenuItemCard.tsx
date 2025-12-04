@@ -1,3 +1,4 @@
+import { MenuItem } from "@/lib/services/promotions.service";
 import {
   RiEBike2Line,
   RiGiftLine,
@@ -5,7 +6,7 @@ import {
   RiStarLine,
   RiTimeLine,
 } from "react-icons/ri";
-import { MenuItem } from "./Promotions";
+
 
 const MenuItemCard = ({
   menuItem: { title, image, rating, deliveryFee, deliveryTime, discount },
