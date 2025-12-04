@@ -4,6 +4,14 @@ import { StaticImageData } from "next/image";
 import MenuItemCard from "./MenuItemCard";
 import { Button } from "./ui/button";
 import { RiArrowLeftLine, RiArrowRightLine } from "react-icons/ri";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import { useRef } from "react";
+import type { Swiper as SwiperType } from "swiper";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/navigation";
 
 export interface MenuItem {
   id: number;
@@ -16,6 +24,17 @@ export interface MenuItem {
 }
 
 const Promotions = () => {
+  // Simple Swiper refs for both sections
+  const discountsSwiperRef = useRef<SwiperType>(null);
+  const featureSwiperRef = useRef<SwiperType>(null);
+
+  // Simple navigation functions for Discounts
+  const goToPreviousDiscounts = () => discountsSwiperRef.current?.slidePrev();
+  const goToNextDiscounts = () => discountsSwiperRef.current?.slideNext();
+
+  // Simple navigation functions for Feature
+  const goToPreviousFeature = () => featureSwiperRef.current?.slidePrev();
+  const goToNextFeature = () => featureSwiperRef.current?.slideNext();
 
   const discounts: MenuItem[] = [
     {
@@ -71,25 +90,42 @@ const Promotions = () => {
         <div className="flex justify-between">
           <h3 className="mb-6.5">Discounts</h3>
           <div className="flex gap-4">
-            <Button className="size-10 rounded-full bg-white hover:bg-white shadow-button">
+            <Button
+              onClick={goToPreviousDiscounts}
+              className="size-10 rounded-full bg-white hover:bg-white shadow-button"
+            >
               <RiArrowLeftLine className="text-black" />
             </Button>
-            <Button className="size-10 rounded-full bg-white hover:bg-white shadow-button">
+            <Button
+              onClick={goToNextDiscounts}
+              className="size-10 rounded-full bg-white hover:bg-white shadow-button"
+            >
               <RiArrowRightLine className="text-black" />
             </Button>
           </div>
         </div>
-        <div className="relative">
-          <div 
-            className="flex gap-6 overflow-x-auto scroll-smooth scrollbar-hide snap-x snap-mandatory"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        <div className="w-full ">
+          <Swiper
+            onBeforeInit={(swiper) => {
+              discountsSwiperRef.current = swiper;
+            }}
+            modules={[Navigation]}
+            spaceBetween={24}
+            slidesPerView={2}
+            loop={true}
+            breakpoints={{
+              768: {
+                slidesPerView: 3,
+              },
+            }}
+            // className="!overflow-visible"
           >
             {discounts.map((discount) => (
-              <div key={discount.id} className="flex-none w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] snap-start">
+              <SwiperSlide key={discount.id}>
                 <MenuItemCard menuItem={discount} />
-              </div>
+              </SwiperSlide>
             ))}
-          </div>
+          </Swiper>
         </div>
       </section>
 
@@ -97,26 +133,43 @@ const Promotions = () => {
         <div className="flex justify-between">
           <h3 className="mb-6.5">Feature</h3>
           <div className="flex gap-4">
-            <Button className="size-10 rounded-full bg-white hover:bg-white shadow-button">
+            <Button
+              onClick={goToPreviousFeature}
+              className="size-10 rounded-full bg-white hover:bg-white shadow-button"
+            >
               <RiArrowLeftLine className="text-black" />
             </Button>
-            <Button className="size-10 rounded-full bg-white hover:bg-white shadow-button">
+            <Button
+              onClick={goToNextFeature}
+              className="size-10 rounded-full bg-white hover:bg-white shadow-button"
+            >
               <RiArrowRightLine className="text-black" />
             </Button>
           </div>
         </div>
 
-        <div className="relative">
-          <div 
-            className="flex gap-6 overflow-x-auto scroll-smooth scrollbar-hide snap-x snap-mandatory"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        <div className="w-full">
+          <Swiper
+            onBeforeInit={(swiper) => {
+              featureSwiperRef.current = swiper;
+            }}
+            modules={[Navigation]}
+            spaceBetween={24}
+            slidesPerView={2}
+            loop={true}
+            breakpoints={{
+              768: {
+                slidesPerView: 3,
+              },
+            }}
+            // className="!overflow-visible"
           >
             {discounts.map((discount) => (
-              <div key={discount.id} className="flex-none w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] snap-start">
+              <SwiperSlide key={discount.id}>
                 <MenuItemCard menuItem={discount} />
-              </div>
+              </SwiperSlide>
             ))}
-          </div>
+          </Swiper>
         </div>
       </section>
     </div>

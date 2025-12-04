@@ -6,22 +6,26 @@ import pappiesMaestro from "./pappies-maestro.jpg";
 import pizzaHut from "./pizza-hut.jpg";
 import suyaBistro from "./suya-bistro.jpg";
 import markets from "./markets.jpg";
-import restaurant from "./restaurants.jpg"
-import groceries1 from "./groceries1.jpg"
-import groceries2 from "./groceries2.jpg"
-import sharwarma from "./sharwarma.jpg"
+import restaurant from "./restaurants.jpg";
+import groceries1 from "./groceries1.jpg";
+import groceries2 from "./groceries2.jpg";
+import sharwarma from "./sharwarma.jpg";
+import logoFull from "./logo-full.png";
+import playStore from "./play-store.png";
 
 export {
-    hamburgers,
-    choppers,
-    divineSpot,
-    foodCafe,
-    pappiesMaestro,
-    pizzaHut,
-    suyaBistro,
-    markets,
-    restaurant,
-    groceries1,
-    groceries2,
-    sharwarma
+  hamburgers,
+  choppers,
+  divineSpot,
+  foodCafe,
+  pappiesMaestro,
+  pizzaHut,
+  suyaBistro,
+  markets,
+  restaurant,
+  groceries1,
+  groceries2,
+  sharwarma,
+  logoFull,
+  playStore,
 };

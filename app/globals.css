@@ -387,4 +387,25 @@
   .active\:scale-98:active {
     transform: scale(0.98);
   }
+
+  /* Embla Carousel Styles */
+  
+  .embla {
+    overflow: hidden;
+  }
+  
+  .embla__container {
+    display: flex;
+  }
+  
+  .embla__slide {
+    flex: 0 0 50%;
+    min-width: 0;
+  }
+  
+  @media (min-width: 768px) {
+    .embla__slide {
+      flex: 0 0 33.333%;
+    }
+  }
 }

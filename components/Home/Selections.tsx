@@ -6,6 +6,7 @@ import GroceriesSelection from "./GroceriesSelection";
 import MarketsSelection from "./MarketsSelection";
 import HotPicks from "./HotPicks";
 import Promotions from "../Promotions";
+import Reastaurants from "./Restaurants";
 
 const Selections = () => {
   const { activeCategory } = useCategory();
@@ -15,6 +16,7 @@ const Selections = () => {
         <div className="">
           <HotPicks />
           <Promotions />
+          <Reastaurants />
         </div>
       )}
 

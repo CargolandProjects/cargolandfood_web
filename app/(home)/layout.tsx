@@ -8,12 +8,12 @@ export default function HomeLayout({
 }: Readonly<{ children: ReactNode }>) {
   return (
     <CategoryProvider>
-      <main className="font-satoshi text-brand-black flex overflow-hidden h-screen">
+      <main className="font-satoshi text-brand-black flex h-screen overflow-hidden">
         <Sidebar />
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-w-0">
           <Header />
-          <div className="flex-1 overflow-auto py-6 px-13.5">
-            <div className="max-w-295.5 mx-auto">{children}</div>
+          <div className="flex-1 overflow-auto py-6 px-6 md:px-13.5 min-w-0">
+            <div className="w-full max-w-295.5 mx-auto min-w-0">{children}</div>
           </div>
         </div>
       </main>
