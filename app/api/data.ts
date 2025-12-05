@@ -1,6 +1,7 @@
 /* eslint-disable prefer-const */
 
 import { sharwarma } from "@/assets/images";
+import { food, groceries, restaurant } from "@/assets/svgs";
 
   export let discount = [
     {
@@ -97,3 +98,84 @@ import { sharwarma } from "@/assets/images";
       discount: 40,
     },
   ];
+
+  export let restaurants = [
+    {
+      id: 1,
+      title: "Sharwarma Plus+",
+      image: sharwarma,
+      rating: 4.7,
+      deliveryFee: 200,
+      deliveryTime: "20 min",
+      discount: 40,
+    },
+    {
+      id: 2,
+      title: "Sharwarma Plus+",
+      image: sharwarma,
+      rating: 4.7,
+      deliveryFee: 0,
+      deliveryTime: "20 min",
+      discount: 40,
+    },
+    {
+      id: 3,
+      title: "Sharwarma Plus+",
+      image: sharwarma,
+      rating: 4.7,
+      deliveryFee: 200,
+      deliveryTime: "20 min",
+      discount: 40,
+    },
+    {
+      id: 4,
+      title: "Sharwarma Plus+",
+      image: sharwarma,
+      rating: 4.7,
+      deliveryFee: 0,
+      deliveryTime: "20 min",
+      discount: 40,
+    },
+    {
+      id: 5,
+      title: "Sharwarma Plus+",
+      image: sharwarma,
+      rating: 4.7,
+      deliveryFee: 200,
+      deliveryTime: "20 min",
+      discount: 40,
+    },
+    {
+      id: 6,
+      title: "Sharwarma Plus+",
+      image: sharwarma,
+      rating: 4.7,
+      deliveryFee: 200,
+      deliveryTime: "20 min",
+      discount: 40,
+    },
+  ];
+
+  export const categories = [
+  {
+    id: "Restaurants",
+    name: "Restaurants",
+    icon: restaurant,
+    styles: "bg-[#FEF3EB] ",
+    activeStyle: "border border-primary",
+  },
+  {
+    id: "Groceries",
+    name: "Groceries & More",
+    icon: groceries,
+    styles: "bg-[#EFFAF6]",
+    activeStyle: "border border-secondary",
+  },
+  {
+    id: "Markets",
+    name: "Markets",
+    icon: food,
+    styles: "bg-[#FEF7EC]",
+    activeStyle: "border border-cargo-accent",
+  },
+];
