@@ -1,6 +1,7 @@
 import { StaticImageData } from "next/image";
 import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints"; 
+import mockClient from "../api/mock-client";
 
 export interface MenuItem {
   id: number;
@@ -19,7 +20,7 @@ export interface Promotions {
 
 export const promotions = {
   async getPromotions(): Promise<Promotions> {
-    const res = await apiClient.get<Promotions>(API_ROUTES.promotions);
+    const res = await mockClient.get<Promotions>(API_ROUTES.promotions);
     return res.data;
   },
 };

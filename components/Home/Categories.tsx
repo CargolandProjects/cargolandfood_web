@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useCategory } from "@/contexts/CategoryContext";
 import { useCategories } from "@/lib/hooks/queries";
 import { Skeleton } from "../ui/skeleton";
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 const Loading = () => (
   <div className="space-y-4">
@@ -19,6 +21,15 @@ const Loading = () => (
 const Categories = () => {
   const { activeCategory, setActiveCategory } = useCategory();
   const { data: categories, isLoading } = useCategories();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const removeQuery = () => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("search");
+    router.replace(`?${params.toString()}`);
+  };
 
   return (
     <section>
@@ -36,7 +47,10 @@ const Categories = () => {
                     active ? category.activeStyle : ""
                   } w-31 h-29 flex flex-col justify-center items-center rounded-xl cursor-pointer`}
                   key={category.id}
-                  onClick={() => setActiveCategory(category.id)}
+                  onClick={() => {
+                    setActiveCategory(category.id);
+                    removeQuery();
+                  }}
                 >
                   <div className="size-10 overflow-hidden">
                     <Image
