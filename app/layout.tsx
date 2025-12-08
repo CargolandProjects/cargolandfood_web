@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "./Providers";
+import AuthModalContainer from "@/components/auth/AuthModalContainer";
 
 const satoshi = localFont({
   src: [
@@ -38,7 +39,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${satoshi.variable} antialiased`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <AuthModalContainer />
+        </Providers>
       </body>
     </html>
   );

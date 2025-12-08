@@ -4,9 +4,17 @@ import Loading from "../Loading";
 
 const Restaurants = () => {
   const { data, isLoading } = useRestaurants();
+
+  if (isLoading) {
+    return (
+      <section className="my-10">
+        <Loading count={6} title />
+      </section>
+    );
+  }
+
   return (
     <section className="my-10">
-      {isLoading && <Loading count={6} title />}
 
       {!isLoading && data?.length && (
         <div>

@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import useAuthFlow from "@/lib/stores/authFlowStore";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import {
@@ -22,9 +23,10 @@ import {
 export function Header() {
   const [search, setSearch] = useState("");
   const router = useRouter();
+  const OpenAuth  = useAuthFlow((s) => s.openAuth);
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!search.trim()) return;
 
     router.push(` ?search=${search}`);
@@ -122,7 +124,7 @@ export function Header() {
               <DropdownMenuItem>Favorites</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem className="text-red-600">
-                Logout
+                <Button onClick={() => OpenAuth("signin")}>signin</Button>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

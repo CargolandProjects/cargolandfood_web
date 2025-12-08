@@ -15,24 +15,27 @@ const Selections = () => {
   const { activeCategory } = useCategory();
   const params = useSearchParams();
   const searchTerm = params.get("search");
-
-  console.log("Search Params:", searchTerm);
+  // console.log("Search Params:", searchTerm);
 
   const { data: results, isLoading } = useSearch(searchTerm || "");
+  const showDefaultView = !activeCategory && !searchTerm;
+  const showCategoryView = !searchTerm && !isLoading;
 
   return (
     <>
       {searchTerm && (
         <section className="">
-          <h3>Results for {searchTerm}</h3>
-          {searchTerm && isLoading && <Loading count={6} title />}
-          {searchTerm && !isLoading && results  && (
+          <h3 className="mb-6.5">Results for {searchTerm}</h3>
+          {isLoading && <Loading count={6} title />}
+          {!isLoading && results ? (
             <p className="">No Results Found for {searchTerm}</p>
+          ) : (
+            <p>Here is your data for now/</p>
           )}
         </section>
       )}
 
-      {!activeCategory && !searchTerm && !isLoading && (
+      {showDefaultView && (
         <div>
           <HotPicks />
           <Promotions />
@@ -40,17 +43,13 @@ const Selections = () => {
         </div>
       )}
 
-      <section className="mt-1">
-        {!searchTerm && !isLoading && activeCategory === "Restaurants" && (
-          <RestaurantsSelection />
-        )}
-        {!searchTerm && !isLoading && activeCategory === "Groceries" && (
-          <GroceriesSelection />
-        )}
-        {!searchTerm && !isLoading && activeCategory === "Markets" && (
-          <MarketsSelection />
-        )}
-      </section>
+      {showCategoryView && (
+        <section className="mt-1">
+          {activeCategory === "Restaurants" && <RestaurantsSelection />}
+          {activeCategory === "Groceries" && <GroceriesSelection />}
+          {activeCategory === "Markets" && <MarketsSelection />}
+        </section>
+      )}
     </>
   );
 };

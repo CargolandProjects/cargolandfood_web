@@ -29,14 +29,17 @@ const Promotions = () => {
 
   const { data, isLoading } = usePromotions();
 
+  if (isLoading) {
+    return (
+      <div className="space-y-10">
+        <Loading count={3} title />
+        <Loading count={3} title />
+      </div>
+    );
+  }
+
   return (
     <div>
-      {isLoading && (
-        <div className="space-y-10">
-          <Loading count={3} title />
-          <Loading count={3} title />
-        </div>
-      )}
       {!isLoading && data?.discount.length && (
         <>
           <section className=" my-10">
@@ -66,6 +69,7 @@ const Promotions = () => {
                 spaceBetween={24}
                 slidesPerView={2}
                 loop={true}
+                speed={600}
                 breakpoints={{
                   768: {
                     slidesPerView: 3,
@@ -110,6 +114,7 @@ const Promotions = () => {
                 spaceBetween={24}
                 slidesPerView={2}
                 loop={true}
+                speed={600}
                 breakpoints={{
                   768: {
                     slidesPerView: 3,
