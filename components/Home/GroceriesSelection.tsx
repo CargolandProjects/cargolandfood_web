@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { usePromotions } from "@/lib/hooks/queries/usePromotions";
-import MenuItemCard from "../MenuItemCard";
+import GroceryCard from "../GroceryCard";
 import MenuItemCardSkeleton from "../MenuItemCardSkeleton";
 import FilterBar from "../FilterBar";
 
@@ -43,28 +43,28 @@ const GroceriesSelection = () => {
           <h3 className="mb-6.5 mt-6">Featured</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             {data?.featured.map((item) => (
-              <MenuItemCard key={item.id} menuItem={item} />
+              <GroceryCard key={item.id} menuItem={item} />
             ))}
           </div>
 
           <h3 className="mb-6.5 mt-10">Drinks</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             {data?.featured.map((item) => (
-              <MenuItemCard key={item.id} menuItem={item} />
+              <GroceryCard key={item.id} menuItem={item} />
             ))}
           </div>
 
           <h3 className="mb-6.5 mt-10">Supermarkets</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             {data?.featured.map((item) => (
-              <MenuItemCard key={item.id} menuItem={item} />
+              <GroceryCard key={item.id} menuItem={item} />
             ))}
           </div>
 
           <h3 className="mb-6.5 mt-10">Depots</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             {data?.featured.map((item) => (
-              <MenuItemCard key={item.id} menuItem={item} />
+              <GroceryCard key={item.id} menuItem={item} />
             ))}
           </div>
         </div>
@@ -75,7 +75,7 @@ const GroceriesSelection = () => {
           <h3 className="mb-6.5 mt-6">Drinks</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             {data?.featured.map((item) => (
-              <MenuItemCard key={item.id} menuItem={item} />
+              <GroceryCard key={item.id} menuItem={item} />
             ))}
           </div>
         </div>
@@ -86,7 +86,7 @@ const GroceriesSelection = () => {
           <h3 className="mb-6.5 mt-6">Supermarkets</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             {data?.featured.map((item) => (
-              <MenuItemCard key={item.id} menuItem={item} />
+              <GroceryCard key={item.id} menuItem={item} />
             ))}
           </div>
         </div>
@@ -97,7 +97,7 @@ const GroceriesSelection = () => {
           <h3 className="mb-6.5 mt-6">Depots</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             {data?.featured.map((item) => (
-              <MenuItemCard key={item.id} menuItem={item} />
+              <GroceryCard key={item.id} menuItem={item} />
             ))}
           </div>
         </div>
