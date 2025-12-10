@@ -94,7 +94,7 @@
 
   /* Shadows */
   --shadow-xs: 0 1px 2px 0 rgba(228, 229, 231, 0.24);
-  --shadow-sm: 0 4px 4px 0 rgba(0, 0, 0, 0.04);
+  --shadow-cargo-sm: 0 4px 4px 0 rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 6px -2px rgba(0, 0, 0, 0.1), 0 10px 28px -3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 4px 26px 0 rgba(0, 0, 0, 0.1);
   --shadow-xl: 12px 12px 30px 0 rgba(150, 150, 154, 0.15);
@@ -118,7 +118,6 @@
 
   /* Custom shadows */
   --shadow-cargo-xs: 0 1px 2px 0 rgba(228, 229, 231, 0.24);
-  --shadow-cargo-sm: 0 4px 4px 0 rgba(0, 0, 0, 0.08);
   --shadow-cargo-md: 0 4px 6px -2px rgba(0, 0, 0, 0.1), 0 10px 28px -3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.08);
   --shadow-cargo-lg: 0 4px 26px 0 rgba(0, 0, 0, 0.1);
   --shadow-cargo-xl: 12px 12px 30px 0 rgba(150, 150, 154, 0.15);
@@ -170,7 +169,8 @@
   --font-satoshi: var(--font-satoshi);
   --text-xxs: var(--ultra-small);
 
-  --shadow-button: var(--shadow-sm);
+  --radius-button: var(--radius-button);
+  --shadow-cargo-sm: var(--shadow-cargo-sm);
   --spacing-sidebar: var(--sidebar-width);
   /* ===== CARGOLANacDFOOD BRAND COLORS FOR TAILWIND ===== */
 
@@ -272,6 +272,10 @@
   h3 {
     @apply font-medium font-satoshi text-2xl leading-8
   }
+
+  p{
+    @apply text-sm font-normal leading-5 
+  }
 }
 
 @layer utilities {
@@ -285,81 +289,28 @@
     scrollbar-width: none;
   }
 
-  /* Cargolandfood Brand Color Utilities */
-  /* .text-cargo-orange {
-    color: var(--color-cargo-orange);
+  .form-title {
+    @apply font-bold text-[32px] leading-10
   }
 
-  .text-cargo-green {
-    color: var(--color-cargo-green);
+  .form-label{
+    @apply font-medium text-sm leading-5
   }
 
-  .text-cargo-success {
-    color: var(--color-cargo-success);
+  .form-input{
+    @apply focus-visible:ring-primary focus-visible:ring-1 focus-visible:outline-none focus-visible:border-none rounded-button placeholder:text-gray-300 border-none outline-none shadow-none bg-gray-50
   }
 
-  .text-cargo-warning {
-    color: var(--color-cargo-warning);
+  .form-description{
+    @apply font-normal text-base text-gray-500
   }
 
-  .text-cargo-error {
-    color: var(--color-cargo-error);
+  .field{
+    @apply gap-1
   }
-
-  .text-cargo-info {
-    color: var(--color-cargo-info);
-  }
-
-  .text-cargo-accent {
-    color: var(--color-cargo-accent);
-  }
-
-  .text-cargo-purple {
-    color: var(--color-cargo-purple);
-  }
-
-  .text-cargo-cyan {
-    color: var(--color-cargo-cyan);
-  }
-
-  .bg-cargo-orange {
-    background-color: var(--color-cargo-orange);
-  }
-
-  .bg-cargo-green {
-    background-color: var(--color-cargo-green);
-  }
-
-  .bg-cargo-success {
-    background-color: var(--color-cargo-success);
-  }
-
-  .bg-cargo-warning {
-    background-color: var(--color-cargo-warning);
-  }
-
-  .bg-cargo-error {
-    background-color: var(--color-cargo-error);
-  }
-
-  .bg-cargo-info {
-    background-color: var(--color-cargo-info);
-  }
-
-  .bg-cargo-accent {
-    background-color: var(--color-cargo-accent);
-  }
-
-  .bg-cargo-purple {
-    background-color: var(--color-cargo-purple);
-  }
-
-  .bg-cargo-cyan {
-    background-color: var(--color-cargo-cyan);
-  } */
 
   /* Custom shadows */
-  .shadow-cargo-xs {
+  /* .shadow-cargo-xs {
     box-shadow: var(--shadow-cargo-xs);
   }
 
@@ -377,12 +328,8 @@
 
   .shadow-cargo-xl {
     box-shadow: var(--shadow-cargo-xl);
-  }
+  } */
 
-  /* Button radius utility */
-  .rounded-button {
-    border-radius: var(--radius-button);
-  }
 
   /* Transform utilities */
   .hover\:scale-102:hover {
@@ -395,26 +342,5 @@
 
   .active\:scale-98:active {
     transform: scale(0.98);
-  }
-
-  /* Embla Carousel Styles */
-
-  .embla {
-    overflow: hidden;
-  }
-
-  .embla__container {
-    display: flex;
-  }
-
-  .embla__slide {
-    flex: 0 0 50%;
-    min-width: 0;
-  }
-
-  @media (min-width: 768px) {
-    .embla__slide {
-      flex: 0 0 33.333%;
-    }
   }
 }
