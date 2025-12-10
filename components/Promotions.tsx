@@ -7,20 +7,12 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { useRef } from "react";
 import type { Swiper as SwiperType } from "swiper";
-
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
 import { usePromotions } from "@/lib/hooks/queries/usePromotions";
-import MenuItemCardSkeleton from "./MenuItemCardSkeleton";
 
-const Loading = () => (
-  <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-    {Array.from({ length: 9 }).map((_, i) => (
-      <MenuItemCardSkeleton key={i} />
-    ))}
-  </div>
-);
+import Loading from "./Loading";
 
 const Promotions = () => {
   // Simple Swiper refs for both sections
@@ -37,9 +29,17 @@ const Promotions = () => {
 
   const { data, isLoading } = usePromotions();
 
+  if (isLoading) {
+    return (
+      <div className="space-y-10">
+        <Loading count={3} title />
+        <Loading count={3} title />
+      </div>
+    );
+  }
+
   return (
     <div>
-      {isLoading && <Loading />}
       {!isLoading && data?.discount.length && (
         <>
           <section className=" my-10">
@@ -69,6 +69,7 @@ const Promotions = () => {
                 spaceBetween={24}
                 slidesPerView={2}
                 loop={true}
+                speed={600}
                 breakpoints={{
                   768: {
                     slidesPerView: 3,
@@ -113,6 +114,7 @@ const Promotions = () => {
                 spaceBetween={24}
                 slidesPerView={2}
                 loop={true}
+                speed={600}
                 breakpoints={{
                   768: {
                     slidesPerView: 3,

@@ -7,24 +7,49 @@ import MarketsSelection from "./MarketsSelection";
 import HotPicks from "./HotPicks";
 import Promotions from "../Promotions";
 import Reastaurants from "./Restaurants";
+import { useSearchParams } from "next/navigation";
+import { useSearch } from "@/lib/hooks/queries/useSearch";
+import Loading from "../Loading";
 
 const Selections = () => {
   const { activeCategory } = useCategory();
+  const params = useSearchParams();
+  const searchTerm = params.get("search");
+  // console.log("Search Params:", searchTerm);
+
+  const { data: results, isLoading } = useSearch(searchTerm || "");
+  const showDefaultView = !activeCategory && !searchTerm;
+  const showCategoryView = !searchTerm && !isLoading;
+
   return (
     <>
-      {!activeCategory && (
-        <div className="">
+      {searchTerm && (
+        <section className="">
+          <h3 className="mb-6.5">Results for {searchTerm}</h3>
+          {isLoading && <Loading count={6} title />}
+          {!isLoading && results ? (
+            <p className="">No Results Found for {searchTerm}</p>
+          ) : (
+            <p>Here is your data for now/</p>
+          )}
+        </section>
+      )}
+
+      {showDefaultView && (
+        <div>
           <HotPicks />
           <Promotions />
           <Reastaurants />
         </div>
       )}
 
-      <section className="mt-1">
-        {activeCategory === "Restaurants" && <RestaurantsSelection />}
-        {activeCategory === "Groceries" && <GroceriesSelection />}
-        {activeCategory === "Markets" && <MarketsSelection />}
-      </section>
+      {showCategoryView && (
+        <section className="mt-1">
+          {activeCategory === "Restaurants" && <RestaurantsSelection />}
+          {activeCategory === "Groceries" && <GroceriesSelection />}
+          {activeCategory === "Markets" && <MarketsSelection />}
+        </section>
+      )}
     </>
   );
 };

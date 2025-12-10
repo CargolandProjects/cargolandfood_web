@@ -124,7 +124,7 @@ const Footer = () => {
                     const IconComponent = link.icon!;
                     return (
                       <Link href={link.url} key={index}>
-                        <Button className="bg-black w-full gap-2.5 text-white rounded-full p-4  ">
+                        <Button className="bg-black w-full gap-2.5 text-white rounded-full p-6">
                           {link.image && (
                             <div className="size-4">
                               <img
@@ -137,7 +137,7 @@ const Footer = () => {
                           {link.icon && (
                             <IconComponent className="size-5 text-white" />
                           )}
-                          <span>{link.label}</span>
+                          <span className="text-sm font-medium">{link.label}</span>
                         </Button>
                       </Link>
                     );

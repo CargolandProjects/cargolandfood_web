@@ -12,6 +12,8 @@ import {
 } from "react-icons/ri";
 import { IconType } from "react-icons";
 import { useCategory } from "@/contexts/CategoryContext";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type ActiveTab = "Home" | "Cart" | "Orders" | "Favourite" | "Settings";
 
@@ -31,19 +33,32 @@ const sidebarItems: SidebarItem[] = [
 const Sidebar = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("Home");
   const { setActiveCategory } = useCategory();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleTabChange = (tabId: ActiveTab) => {
     if (tabId === "Home") setActiveCategory(null);
     setActiveTab(tabId);
   };
 
+  const removeQuery = () => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("search");
+    router.replace(`?${params.toString()}`);
+  };
+
   return (
     <aside className="sticky left-0 inset-y-0 w-sidebar shrink-0 bg-white border-r border-gray-100">
       <div className="flex flex-col items-center py-4">
         {/* Logo */}
-        <div className="size-6 flex items-center justify-center rounded-sm bg-black overflow-hidden mb-8">
+        <Link
+          href="/"
+          onClick={() => setActiveCategory(null)}
+          className="size-6 flex items-center justify-center rounded-sm bg-black overflow-hidden mb-8"
+        >
           <img src={logo.src} alt="Cargoland Food" className="object-cover" />
-        </div>
+        </Link>
 
         {/* Navigation Items */}
         <nav className="flex flex-col gap-7 flex-1">
@@ -55,7 +70,10 @@ const Sidebar = () => {
               <Button
                 key={item.id}
                 variant="ghost"
-                onClick={() => handleTabChange(item.id)}
+                onClick={() => {
+                  handleTabChange(item.id);
+                  removeQuery();
+                }}
                 className={`relative size-6 rounded-sm transition-colors ${
                   isActive && "bg-gray-100"
                 }`}

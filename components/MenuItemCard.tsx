@@ -7,7 +7,6 @@ import {
   RiTimeLine,
 } from "react-icons/ri";
 
-
 const MenuItemCard = ({
   menuItem: { title, image, rating, deliveryFee, deliveryTime, discount },
 }: {
@@ -16,7 +15,12 @@ const MenuItemCard = ({
   return (
     <div className="w-full">
       <div className="relative w-full h-[114px] overflow-hidden rounded-md">
-        <img src={image.src} alt={title} className="size-full object-cover" />
+        <img
+          src={image.src}
+          alt={title}
+          className="size-full object-cover"
+          loading="lazy"
+        />
         <div className="absolute top-3 left-3 rounded-full flex justify-center items-center gap-1 py-1 px-2 bg-primary-50 border-[0.5px] border-primary-900">
           <RiGiftLine className="size-3 text-primary" />
           <p className="font-medium text-xs">{discount}% Off</p>
