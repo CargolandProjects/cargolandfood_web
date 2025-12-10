@@ -14,27 +14,31 @@ const AuthModalContainer = () => {
 
   const renderModal = () => {
     switch (currentStep) {
-      case 'signin':
+      case "signin":
         return <SignInModal />;
-      case 'signup':
+      case "signup":
         return <SignUpModal />;
-      case 'otp-verification':
+      case "otp-verification":
         return <OTPModal />;
-      case 'forgot-password':
+      case "forgot-password":
         return <ForgotPasswordModal />;
-      case 'reset-password':
+      case "reset-password":
         return <ResetPasswordModal />;
       default:
         return null;
     }
   };
 
+  // const styles: Partial<Record<AuthState, string>> = {
+  //   signup: "max-w-[400px]!",
+  // };
+
   return (
     <Dialog open={isOpen} onOpenChange={closeAuth}>
-      <DialogContent className="sm:max-w-md">
-        <AnimatePresence mode="wait">
-          {renderModal()}
-        </AnimatePresence>
+      <DialogContent
+        className={"overflow-auto max-h-[95vh] max-w-100! hide-scrollbar pt-[74px] pb-4.5"}
+      >
+        <AnimatePresence mode="wait">{renderModal()}</AnimatePresence>
       </DialogContent>
     </Dialog>
   );

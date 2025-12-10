@@ -48,13 +48,13 @@ const Promotions = () => {
               <div className="flex gap-4">
                 <Button
                   onClick={goToPreviousDiscounts}
-                  className="size-10 rounded-full bg-white hover:bg-white shadow-button"
+                  className="size-10 rounded-full bg-white hover:bg-white shadow-cargo-sm"
                 >
                   <RiArrowLeftLine className="text-black" />
                 </Button>
                 <Button
                   onClick={goToNextDiscounts}
-                  className="size-10 rounded-full bg-white hover:bg-white shadow-button"
+                  className="size-10 rounded-full bg-white hover:bg-white shadow-cargo-sm"
                 >
                   <RiArrowRightLine className="text-black" />
                 </Button>
@@ -92,13 +92,13 @@ const Promotions = () => {
               <div className="flex gap-4">
                 <Button
                   onClick={goToPreviousFeature}
-                  className="size-10 rounded-full bg-white hover:bg-white shadow-button"
+                  className="size-10 rounded-full bg-white hover:bg-white shadow-cargo-sm"
                 >
                   <RiArrowLeftLine className="text-black" />
                 </Button>
                 <Button
                   onClick={goToNextFeature}
-                  className="size-10 rounded-full bg-white hover:bg-white shadow-button"
+                  className="size-10 rounded-full bg-white hover:bg-white shadow-cargo-sm"
                 >
                   <RiArrowRightLine className="text-black" />
                 </Button>
