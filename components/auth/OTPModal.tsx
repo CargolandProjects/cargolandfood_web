@@ -81,8 +81,15 @@ const OTPModal = () => {
 
   const handleOTPVerify = (data: VerifyOtp) => {
     verifyOtp(data, {
-      onSuccess: () => {
-        console.log(`Sending Otp: ${data.otp} to: ${data.phoneNumber}`);
+      onSuccess: (res) => {
+        // Persist tokens on OTP verification success
+        const access = res?.token?.accessToken;
+        const refresh = res?.token?.refreshToken;
+        if (typeof window !== "undefined") {
+          if (access) localStorage.setItem("auth_token", access);
+          if (refresh) localStorage.setItem("refresh_token", refresh);
+        }
+        console.log(`OTP verified for: ${data.phoneNumber}`);
         routeModal();
       },
     });

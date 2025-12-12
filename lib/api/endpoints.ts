@@ -9,5 +9,6 @@ export const API_ROUTES = {
     login: "/users/login",
     verifyOtp: "/users/verify-phone-otp",
     resendOtp: "/users/resend-phone-otp",
+    refresh: "/users/refresh-token",
   },
 };
