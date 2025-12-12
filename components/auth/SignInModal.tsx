@@ -21,32 +21,42 @@ import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
+import { useSignIn } from "@/lib/hooks/mutations/useAuth";
+import { RiLoader2Line } from "react-icons/ri";
 
 const formSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, "Phone number must be at least 10 digits")
     .regex(/^[\+]?[1-9][\d]{0,15}$/, "Enter a valid phone number"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  // password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-type FormData = z.infer<typeof formSchema>;
+export type Signin = z.infer<typeof formSchema>;
 
 const SignInModal = () => {
-  const { goToStep } = useAuthFlow();
-  const { handleSubmit, control } = useForm<FormData>({
+  const goToStep = useAuthFlow((s) => s.goToStep);
+  const { mutate, isPending } = useSignIn();
+
+  const { handleSubmit, control } = useForm<Signin>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       phoneNumber: "",
-      password: "",
+      // password: "",
     },
   });
 
-  const onsubmit = (data: FormData) => {
-    console.log("Submitted Successfully:", data);
-    setTimeout(() => {
-      goToStep("otp-verification", { phone: data.phoneNumber, otpType: "signup" });
-    }, 3000);
+  const onsubmit = (data: Signin) => {
+    mutate(data, {
+      onSuccess: () => {
+        console.log("Submitted Successfully:", data);
+
+        goToStep("otp-verification", {
+          phone: data.phoneNumber,
+          otpType: "signin",
+        });
+      },
+    });
   };
 
   return (
@@ -87,7 +97,7 @@ const SignInModal = () => {
                 </Field>
               )}
             />
-            <Controller
+            {/* <Controller
               name="password"
               control={control}
               render={({ field, fieldState }) => (
@@ -106,15 +116,20 @@ const SignInModal = () => {
                   )}
                 </Field>
               )}
-            />
+            /> */}
           </FieldGroup>
         </FieldSet>
 
         <Button
           type="submit"
-          className="mt-8 md:py-3.5 h-12 uppercase font-black w-full hover:cursor-pointer"
+          className="mt-8 md:py-3.5 submit-btn"
+          disabled={isPending}
         >
-          Continue
+          {isPending ? (
+            <RiLoader2Line className="size-5 animate-spin" />
+          ) : (
+            "Continue"
+          )}
         </Button>
       </form>
 

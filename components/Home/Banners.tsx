@@ -43,6 +43,7 @@ const Banners = () => {
         breakpoints={{
           768: {
             slidesPerView: 2,
+            loop: false,
           },
         }}
         // className="flex gap-6"

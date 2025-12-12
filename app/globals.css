@@ -314,7 +314,7 @@
   }
 
   .submit-btn{
-    @apply mt-8 md:py-3.5 h-12 uppercase font-black w-full hover:cursor-pointer rounded-button
+    @apply h-12 uppercase font-black w-full hover:cursor-pointer rounded-button
   }
   /* Custom shadows */
   /* .shadow-cargo-xs {

@@ -8,9 +8,19 @@ import SignUpModal from "./SignUpModal";
 import OTPModal from "./OTPModal";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 import ResetPasswordModal from "./ResetPasswordModal";
+import SuccessModal from "./SuccessModal";
+import SelectAddressModal from "./SelectAddressModal";
+import ConfirmationModal from "@/components/ConfirmationModal";
 
 const AuthModalContainer = () => {
-  const { currentStep, isOpen, closeAuth } = useAuthFlow();
+  const { 
+    currentStep, 
+    isOpen, 
+    attemptClose, 
+    showExitConfirmation, 
+    confirmClose, 
+    cancelClose 
+  } = useAuthFlow();
 
   const renderModal = () => {
     switch (currentStep) {
@@ -24,6 +34,10 @@ const AuthModalContainer = () => {
         return <ForgotPasswordModal />;
       case "reset-password":
         return <ResetPasswordModal />;
+      case "success":
+        return <SuccessModal />;
+      case "address":
+        return <SelectAddressModal />;
       default:
         return null;
     }
@@ -34,13 +48,28 @@ const AuthModalContainer = () => {
   // };
 
   return (
-    <Dialog open={isOpen} onOpenChange={closeAuth}>
-      <DialogContent
-        className={"overflow-auto max-h-[95vh] max-w-100! hide-scrollbar pt-[74px] pb-4.5"}
-      >
-        <AnimatePresence mode="wait">{renderModal()}</AnimatePresence>
-      </DialogContent>
-    </Dialog>
+    <>
+      <Dialog open={isOpen} onOpenChange={attemptClose}>
+        <DialogContent
+          className={
+            "overflow-auto max-h-[95vh] max-w-100! hide-scrollbar pt-[74px] pb-4.5"
+          }
+        >
+          <AnimatePresence mode="wait">{renderModal()}</AnimatePresence>
+        </DialogContent>
+      </Dialog>
+
+      <ConfirmationModal
+        open={showExitConfirmation}
+        onOpenChange={cancelClose}
+        onConfirm={confirmClose}
+        title="Leave authentication?"
+        description="You'll lose your progress and need to start over. Are you sure you want to continue?"
+        confirmText="Leave"
+        cancelText="Stay"
+        variant="destructive"
+      />
+    </>
   );
 };
 

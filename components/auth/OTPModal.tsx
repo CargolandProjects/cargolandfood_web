@@ -21,19 +21,28 @@ import {
 } from "../ui/field";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
 import { useEffect, useState } from "react";
+import { useResendOtp, useVerifyOtp } from "@/lib/hooks/mutations/useAuth";
+import { RiLoader2Line } from "react-icons/ri";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 
 const formSchema = z.object({
   otp: z.string().min(4, "OTP must be at least 4 digits"),
   phoneNumber: z.string(),
 });
 
-type FormData = z.infer<typeof formSchema>;
+export type VerifyOtp = z.infer<typeof formSchema>;
 
 const OTPModal = () => {
   const { goToStep, formData, closeAuth } = useAuthFlow();
-  const [timer, setTimer] = useState(60);
+  const { mutate: verifyOtp, isPending } = useVerifyOtp();
+  const { mutate: resendOtp, isPending: resendPending } = useResendOtp();
+  const [otpMessage, setOtpMessage] = useState({
+    message: "",
+    error: false,
+  });
+  const [timer, setTimer] = useState(59);
 
-  const { handleSubmit, control } = useForm<FormData>({
+  const { handleSubmit, control } = useForm<VerifyOtp>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       otp: "",
@@ -42,12 +51,15 @@ const OTPModal = () => {
   });
 
   const otpType = formData.otpType || "signup";
-  const otpData = useWatch({
-    control,
-    name: "otp",
-  });
+  const otpData = useWatch({ control, name: "otp" });
+  const isLoggenIn = false;
 
   const routeModal = () => {
+    if (!isLoggenIn) {
+      goToStep("address");
+      return;
+    }
+
     if (otpType === "signup") {
       // After successful signup OTP, go to sign in
       return goToStep("signin");
@@ -63,21 +75,39 @@ const OTPModal = () => {
   useEffect(() => {
     if (timer > 0) {
       const timeout = setTimeout(() => setTimer((prev) => prev - 1), 1000);
-
       return () => clearTimeout(timeout);
     }
   }, [timer]);
 
-  const handleOTPVerify = (data: FormData) => {
-    console.log(`Sending Otp: ${data.otp} to: ${data.phoneNumber}`);
-
-    setTimeout(routeModal, 3000);
+  const handleOTPVerify = (data: VerifyOtp) => {
+    verifyOtp(data, {
+      onSuccess: () => {
+        console.log(`Sending Otp: ${data.otp} to: ${data.phoneNumber}`);
+        routeModal();
+      },
+    });
   };
 
   const handleResend = () => {
-    if (timer !== 0) return;
+    if (timer !== 0) {
+      setOtpMessage({
+        error: true,
+        message: `can't request a new otp, wait ${timer} secs`,
+      });
+      return;
+    }
+    if (!formData.phone) return;
 
-    console.log("You can now proceed with the API Call");
+    resendOtp(formData.phone, {
+      onSuccess: () => {
+        setOtpMessage({
+          error: false,
+          message: "New otp sent!",
+        });
+        setTimer(59);
+        console.log("You can now proceed with the API Call");
+      },
+    });
   };
 
   // useEffect(() => {
@@ -129,7 +159,7 @@ const OTPModal = () => {
                 <FieldLabel className="mt-8 form-label justify-center">
                   Enter OTP
                 </FieldLabel>
-                <InputOTP maxLength={4} {...field}>
+                <InputOTP maxLength={4} pattern={REGEXP_ONLY_DIGITS} {...field}>
                   <InputOTPGroup className="justify-center w-full gap-7">
                     <InputOTPSlot index={0} className="otp-slot" />
                     <InputOTPSlot index={1} className="otp-slot" />
@@ -154,15 +184,26 @@ const OTPModal = () => {
                   </span>{" "}
                   to resend OTP ({timer})
                 </FieldDescription>
+                <span
+                  className={`${
+                    otpMessage.error ? "text-red-500" : ""
+                  } text-center text-sm -mt-2`}
+                >
+                  {otpMessage.message}
+                </span>
               </Field>
             )}
           />
         </FieldGroup>
         <Button
           disabled={otpData.length !== 4}
-          className="disabled:bg-gray-100 disabled:text-gray-300 submit-btn"
+          className="disabled:bg-gray-100 disabled:text-gray-300 mt-8 md:py-3.5 submit-btn"
         >
-          Verify
+          {isPending || resendPending ? (
+            <RiLoader2Line className="size-5 animate-spin" />
+          ) : (
+            "Verify"
+          )}
         </Button>
       </form>
     </ModalTransition>
