@@ -11,4 +11,5 @@ export const API_ROUTES = {
     resendOtp: "/users/resend-phone-otp",
     refresh: "/users/refresh-token",
   },
+  user: (id: string) => `/users/${id}`,
 };

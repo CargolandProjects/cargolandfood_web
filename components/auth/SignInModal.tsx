@@ -22,6 +22,7 @@ import * as z from "zod";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import { useSignIn } from "@/lib/hooks/mutations/useAuth";
+import { useSession } from "@/lib/hooks/useSession";
 import { RiLoader2Line } from "react-icons/ri";
 
 const formSchema = z.object({
@@ -37,6 +38,7 @@ export type Signin = z.infer<typeof formSchema>;
 const SignInModal = () => {
   const goToStep = useAuthFlow((s) => s.goToStep);
   const { mutate, isPending } = useSignIn();
+  const { setPendingUser } = useSession();
 
   const { handleSubmit, control } = useForm<Signin>({
     resolver: zodResolver(formSchema),
@@ -48,9 +50,15 @@ const SignInModal = () => {
 
   const onsubmit = (data: Signin) => {
     mutate(data, {
-      onSuccess: () => {
+      onSuccess: (res) => {
+        try {
+          // Save pending user until OTP verification completes
+         
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const pendingUser = res.data.user;
+          if (pendingUser) setPendingUser(pendingUser);
+        } catch {}
         console.log("Submitted Successfully:", data);
-
         goToStep("otp-verification", {
           phone: data.phoneNumber,
           otpType: "signin",

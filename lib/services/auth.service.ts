@@ -15,7 +15,7 @@ interface Token {
   refreshToken: string;
 }
 
-interface User {
+export interface User {
   id: string;
   country: string;
   phoneNumber: string;
@@ -72,8 +72,21 @@ export const auth = {
     return res.data;
   },
 
-  async resendOtp(phoneNo: string) {
+  async resendOtp(phoneNo: {phoneNumber: string}) {
     const res = await apiClient.post(API_ROUTES.auth.resendOtp, phoneNo);
+    return res.data;
+  },
+
+  async getUserById(id: string) {
+    const res = await apiClient.get<AuthResponse>(API_ROUTES.user(id));
+    return res.data;
+  },
+
+  async updateUserById(id: string, payload: Partial<User>) {
+    const res = await apiClient.patch<AuthResponse>(
+      API_ROUTES.user(id),
+      payload
+    );
     return res.data;
   },
 };

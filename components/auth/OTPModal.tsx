@@ -22,6 +22,7 @@ import {
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
 import { useEffect, useState } from "react";
 import { useResendOtp, useVerifyOtp } from "@/lib/hooks/mutations/useAuth";
+import { useSession } from "@/lib/hooks/useSession";
 import { RiLoader2Line } from "react-icons/ri";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 
@@ -35,6 +36,7 @@ export type VerifyOtp = z.infer<typeof formSchema>;
 const OTPModal = () => {
   const { goToStep, formData, closeAuth } = useAuthFlow();
   const { mutate: verifyOtp, isPending } = useVerifyOtp();
+  const { completeOtp, user } = useSession();
   const { mutate: resendOtp, isPending: resendPending } = useResendOtp();
   const [otpMessage, setOtpMessage] = useState({
     message: "",
@@ -52,10 +54,9 @@ const OTPModal = () => {
 
   const otpType = formData.otpType || "signup";
   const otpData = useWatch({ control, name: "otp" });
-  const isLoggenIn = false;
 
-  const routeModal = () => {
-    if (!isLoggenIn) {
+  const routeModal = (addressess: string | undefined) => {
+    if (!addressess) {
       goToStep("address");
       return;
     }
@@ -90,7 +91,9 @@ const OTPModal = () => {
           if (refresh) localStorage.setItem("refresh_token", refresh);
         }
         console.log(`OTP verified for: ${data.phoneNumber}`);
-        routeModal();
+        // Promote pending user to authenticated user
+        completeOtp();
+        routeModal(user?.addressess);
       },
     });
   };
@@ -105,16 +108,19 @@ const OTPModal = () => {
     }
     if (!formData.phone) return;
 
-    resendOtp(formData.phone, {
-      onSuccess: () => {
-        setOtpMessage({
-          error: false,
-          message: "New otp sent!",
-        });
-        setTimer(59);
-        console.log("You can now proceed with the API Call");
-      },
-    });
+    resendOtp(
+      { phoneNumber: formData.phone },
+      {
+        onSuccess: () => {
+          setOtpMessage({
+            error: false,
+            message: "New otp sent!",
+          });
+          setTimer(59);
+          console.log("You can now proceed with the API Call");
+        },
+      }
+    );
   };
 
   // useEffect(() => {
