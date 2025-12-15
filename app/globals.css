@@ -251,7 +251,7 @@
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 2px);
 }
 
 @layer base {
@@ -314,7 +314,11 @@
   }
 
   .submit-btn{
-    @apply mt-8 md:py-3.5 h-12 uppercase font-black w-full hover:cursor-pointer rounded-button
+    @apply h-12 uppercase font-black w-full hover:cursor-pointer rounded-button
+  }
+
+  .dropdown-content{
+    @apply rounded-xl  p-[15px]
   }
   /* Custom shadows */
   /* .shadow-cargo-xs {

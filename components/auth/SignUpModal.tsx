@@ -21,6 +21,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
+import { useSignUp } from "@/lib/hooks/mutations/useAuth";
+import { RiLoader2Line } from "react-icons/ri";
 
 const formSchema = z
   .object({
@@ -58,15 +60,16 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
-type FormData = z.infer<typeof formSchema>;
+export type Signup = z.infer<typeof formSchema>;
 
 const SignUpModal = () => {
-  const { goToStep, setFormData } = useAuthFlow();
+  const { goToStep } = useAuthFlow();
+  const { mutate, isPending } = useSignUp();
   const {
     handleSubmit,
     control,
-    formState: { errors },
-  } = useForm<FormData>({
+    // formState: { errors },
+  } = useForm<Signup>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       phoneNumber: "",
@@ -79,20 +82,18 @@ const SignUpModal = () => {
     },
   });
   // const {} = useForm
-  const onSubmit = (data: FormData) => {
-    console.log("Form submitted successfully!");
-    console.log("Submitted Data:", data);
+  const onSubmit = (data: Signup) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { confirmPassword, ...payload } = data;
 
-    // Store form data and navigate to OTP
-    // setFormData({
-    //   email: data.email,
-    //   phone: data.phoneNumber,
-    //   fullName: data.fullName,
-    //   referralCode: data.referralCode,
-    //   country: data.country
-    // });
+    mutate(payload, {
+      onSuccess: (error) => {
+        goToStep("success");
 
-    // goToStep("otp-verification", { otpType: "signup" });
+        console.log("Form Failed successfully!", error.message);
+        console.log("Submitted Data: ", payload);
+      },
+    });
   };
 
   return (
@@ -258,9 +259,14 @@ const SignUpModal = () => {
 
         <Button
           type="submit"
-          className="mt-8 md:py-3.5 h-12 uppercase font-black w-full hover:cursor-pointer"
+          className="mt-8 md:py-3.5 submit-btn"
+          disabled={isPending}
         >
-          Sign Up
+          {isPending ? (
+            <RiLoader2Line className="size-5 animate-spin" />
+          ) : (
+            "Sign Up"
+          )}
         </Button>
       </form>
 

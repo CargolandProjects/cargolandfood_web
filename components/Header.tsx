@@ -1,14 +1,20 @@
 "use client";
 
+import { icon, logout } from "@/assets/svgs";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSession } from "@/lib/hooks/useSession";
 import useAuthFlow from "@/lib/stores/authFlowStore";
+import { formatDateWComma } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
+
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import {
@@ -18,12 +24,35 @@ import {
   RiSearchLine,
   RiNotification2Fill,
   RiUser3Fill,
+  RiArrowRightSLine,
+  RiPencilFill,
+  RiMailFill,
+  RiPhoneFill,
+  RiDeleteBin6Fill,
 } from "react-icons/ri";
+import BackButton from "./BackButton";
+import Notifications from "./Notifications";
+import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
+
+export type MenuScreen = "root" | "personalInfo";
 
 export function Header() {
+  const [screen, setScreen] = useState<MenuScreen>("root");
   const [search, setSearch] = useState("");
   const router = useRouter();
-  const OpenAuth  = useAuthFlow((s) => s.openAuth);
+  const OpenAuth = useAuthFlow((s) => s.openAuth);
+  const { user: session, isAuthenticated, signOut } = useSession();
+
+  const [firstName, lastName] = session?.fullName.split(" ") || [];
+  const initials =
+    (firstName &&
+      lastName &&
+      `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()) ||
+    "";
+  console.log("FirstName:", firstName);
+  console.log("LastName:", lastName);
+  console.log("Initials:", initials);
+  console.log("Data is: ", session);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -33,6 +62,132 @@ export function Header() {
     setSearch("");
   };
 
+  const MenuCOntent = () => {
+    switch (screen) {
+      case "root":
+        return (
+          <>
+            <DropdownMenuLabel>Profile</DropdownMenuLabel>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                setScreen("personalInfo");
+              }}
+              className="flex space-between"
+            >
+              <div className="flex w-full justify-between items-center">
+                <div className="flex gap-2.5">
+                  <Avatar className="size-12.5 border-2 border-gray-200">
+                    <AvatarImage
+                      src={session?.avatarUrl}
+                      alt={session?.fullName}
+                    />
+                    <AvatarFallback>{initials}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col justify-center">
+                    <p className="font-medium text-base">{session?.fullName}</p>
+                    <p className="">{formatDateWComma(new Date())}</p>
+                  </div>
+                </div>
+                <RiArrowRightSLine className="size-6" />
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-red-600 text-base font-medium"
+              onClick={signOut}
+            >
+              <div className="size-5">
+                <img
+                  src={logout.src}
+                  alt="logout-button-icon"
+                  className="size-full object-contain"
+                />
+              </div>
+              <span>Log out</span>
+            </DropdownMenuItem>
+          </>
+        );
+
+      case "personalInfo":
+        return (
+          <>
+            <DropdownMenuLabel>
+              <BackButton
+                changeTarget={setScreen}
+                title="Personal Info"
+                target="root"
+              />
+            </DropdownMenuLabel>
+            <DropdownMenuItem>
+              <div className="flex w-full justify-between items-center">
+                <div className="flex gap-2.5">
+                  <Avatar className="size-12.5 border-2 border-gray-200">
+                    <AvatarImage
+                      src={session?.avatarUrl}
+                      alt={session?.fullName}
+                    />
+                    <AvatarFallback>{initials}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col justify-center gap-0.5">
+                    <p className="font-medium text-base leading-6">
+                      {session?.fullName}
+                    </p>
+                    <p className="leading-4">{formatDateWComma(new Date())}</p>
+                  </div>
+                </div>
+                <RiPencilFill className="size-5" />
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <div className="flex gap-0.5  items-center">
+                <div className="size-10 rounded-full flex justify-center items-center">
+                  <img
+                    src={icon.src}
+                    alt="logout-button-icon"
+                    className="size-4.5 md:size-6 object-contain"
+                  />
+                </div>
+                <div className="">
+                  <p className="font-medium">Full Name</p>
+                  <p className="text-gray-500">{session?.fullName}</p>
+                </div>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex gap-0.5 items-center">
+              <div className="size-10 rounded-full flex justify-center items-center">
+                <RiMailFill className="size-4.5 md:size-6 text-cargo-info" />
+              </div>
+              <div className="">
+                <p className="font-medium">Email</p>
+                <p className="text-gray-500">{session?.email}</p>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex gap-0.5  items-center ">
+              <div className="size-10 rounded-full flex justify-center items-center">
+                <RiPhoneFill className="size-4 md:size-6 text-cargo-cyan" />
+              </div>
+              <div className="">
+                <p className="font-medium">Phone Number</p>
+                <p className="text-gray-500">{session?.phoneNumber}</p>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex gap-0.5 justify-between items-center ">
+              <div className="flex items-center">
+                <div className="size-10 rounded-full flex justify-center items-center">
+                  <div className="size-6 rounded-full flex justify-center items-center bg-white">
+                    <RiDeleteBin6Fill className="size-3 text-cargo-error" />
+                  </div>
+                </div>
+                <p className="text-cargo-error">Delete Accoint</p>
+              </div>
+              <RiArrowRightSLine className="size-6" />
+            </DropdownMenuItem>
+          </>
+        );
+    }
+  };
+
+  // session.signOut();
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
       <div className="max-w-full px-6 py-2.25 flex items-center justify-between gap-8">
@@ -66,14 +221,21 @@ export function Header() {
                 className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100"
               >
                 <RiWallet3Fill className="size-6  text-blue-400 " />
-                <p className="text-sm font-semibold text-gray-900">My Wallet</p>
+                <p className="text-xs font-medium text-gray-900">My Wallet</p>
                 <RiArrowDownSLine className="size-5 text-gray-600 ml-2" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56">
-              <DropdownMenuItem>View balance</DropdownMenuItem>
-              <DropdownMenuItem>Add funds</DropdownMenuItem>
-              <DropdownMenuItem>Transaction history</DropdownMenuItem>
+            <DropdownMenuContent
+              align="start"
+              className="w-[161px] dropdown-content"
+            >
+              <DropdownMenuLabel className="p-0">
+                Available Balance
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="border-gray-200 border mt-1 mb-2" />
+              <DropdownMenuItem className="text-gray-500 font-medium p-0 justify-between">
+                #20,000.00 <RiArrowRightSLine className="size-6" />
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -96,36 +258,61 @@ export function Header() {
           </form>
 
           {/* Notification Bell */}
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <RiNotification2Fill className="size-6 text-gray-300" />
-          </Button>
-
-          {/* User Profile Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              {true ? (
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <RiNotification2Fill className="size-6 text-gray-300" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="dropdown-content w-[271px]"
+            >
+              <DropdownMenuLabel className="font-bold text-base">
+                Notification
+              </DropdownMenuLabel>
+              <Notifications />
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* User Profile Dropdown */}
+          <DropdownMenu onOpenChange={() => setScreen("root")}>
+            <DropdownMenuTrigger asChild>
+              {session && isAuthenticated ? (
                 <Avatar className="w-10 h-10 border-2 border-gray-200">
                   <AvatarImage
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="User profile"
+                    src={session?.avatarUrl}
+                    alt={session?.fullName}
                   />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
               ) : (
                 <div className="size-10 rounded-full flex justify-center items-center bg-primary">
-                  <RiUser3Fill className="size-6 text-gray-300" />
+                  <RiUser3Fill className="size-6 text-white" />
                 </div>
               )}
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem>My Profile</DropdownMenuItem>
-              <DropdownMenuItem>My Orders</DropdownMenuItem>
-              <DropdownMenuItem>Saved Addresses</DropdownMenuItem>
-              <DropdownMenuItem>Favorites</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">
-                <Button onClick={() => OpenAuth("signin")}>signin</Button>
-              </DropdownMenuItem>
+            <DropdownMenuContent
+              align="end"
+              className="w-[243px] dropdown-content"
+            >
+              {isAuthenticated ? (
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={screen}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.1 }}
+                  >
+                    {MenuCOntent()}
+                  </motion.div>
+                </AnimatePresence>
+              ) : (
+                <DropdownMenuItem className="text-red-600">
+                  <Button onClick={() => OpenAuth("signin")}>signin</Button>
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
