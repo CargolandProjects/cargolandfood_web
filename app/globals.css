@@ -98,9 +98,9 @@
   --shadow-md: 0 4px 6px -2px rgba(0, 0, 0, 0.1), 0 10px 28px -3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 4px 26px 0 rgba(0, 0, 0, 0.1);
   --shadow-xl: 12px 12px 30px 0 rgba(150, 150, 154, 0.15);
-
-  /* Layout */
-  --container-max-width: 90rem;
+  --shadow-inset: inset 0px 2px 2px rgba(22, 38, 100, 0.32);
+    /* Layout */
+    --container-max-width: 90rem;
   /* 1440px */
   --container-padding: 2.1875rem;
   /* 35px */
@@ -273,8 +273,8 @@
     @apply font-medium font-satoshi text-2xl leading-8
   }
 
-  p{
-    @apply text-sm font-normal leading-5 
+  p {
+    @apply text-sm font-normal leading-5
   }
 }
 
@@ -293,33 +293,38 @@
     @apply font-bold text-[32px] leading-10
   }
 
-  .form-label{
+  .form-label {
     @apply font-medium text-sm leading-5
   }
 
-  .form-input{
+  .form-input {
     @apply focus-visible:ring-primary focus-visible:ring-1 focus-visible:outline-none focus-visible:border-none rounded-button placeholder:text-gray-300 border-none outline-none shadow-none bg-gray-50
   }
 
-  .form-description{
+  .form-description {
     @apply font-normal text-base text-gray-500
   }
 
-  .field{
+  .field {
     @apply gap-1
   }
 
-  .otp-slot{
+  .otp-slot {
     @apply border-none w-[51px] h-12 rounded-button bg-gray-100
   }
 
-  .submit-btn{
+  .submit-btn {
     @apply h-12 uppercase font-black w-full hover:cursor-pointer rounded-button
   }
 
-  .dropdown-content{
-    @apply rounded-xl  p-[15px]
+  .dropdown-content {
+    @apply rounded-xl p-[15px]
   }
+
+  .radio {
+    @apply data-[state=checked]:shadow-(--shadow-inset) data-[state=checked]:border-none ;
+  }
+
   /* Custom shadows */
   /* .shadow-cargo-xs {
     box-shadow: var(--shadow-cargo-xs);

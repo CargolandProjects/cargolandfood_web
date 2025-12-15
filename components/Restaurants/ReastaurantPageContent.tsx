@@ -1,15 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import pizza from "@/assets/images/pizza.png";
+import { pizza } from "@/assets/images";
 import CategoryTab from "@/components/Home/CategoryTab";
 import { shawarma } from "@/assets/images";
 import RestaurantStats from "@/components/RestaurantStats";
-import {
-  RiArrowGoBackLine,
-  RiHeartFill,
-  RiInformation2Fill,
-} from "react-icons/ri";
+import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
 import RestaurantItemCard from "@/components/Restaurants/RestaurantItemCard";
 import { useRouter } from "next/navigation";
 import { info } from "@/assets/svgs";
@@ -33,15 +29,16 @@ const categories: { name: Categories }[] = [
 // --- MOCK DATA ---
 const mockMenuItems = [
   {
-    id: 1,
+    id: "1",
     name: "Pepperoni Pizza",
-    description: "Hot & fresh pizza adorned with pepperoni on tomato...",
+    description:
+      "Hot & fresh pizza adorned with pepperoni on tomato marinara sauce and mozzarella cheese",
     image: pizza.src,
     price: 9650,
     discount: 20,
   },
   {
-    id: 2,
+    id: "2",
     name: "Pepperoni Pizza",
     description: "Hot & fresh pizza adorned with pepperoni on tomato...",
     image: pizza.src,
@@ -49,21 +46,21 @@ const mockMenuItems = [
     discount: 40,
   },
   {
-    id: 3,
+    id: "3",
     name: "Chicken Shawarma",
     description: "Juicy marinated chicken wrapped in soft pita bread...",
     image: pizza.src,
     price: 5253,
   },
   {
-    id: 4,
+    id: "4",
     name: "Pepperoni Pizza",
     description: "Hot & fresh pizza adorned with pepperoni on tomato...",
     image: pizza.src,
     price: 9650,
   },
   {
-    id: 5,
+    id: "5",
     name: "Pepperoni Pizza",
     description: "Hot & fresh pizza adorned with pepperoni on tomato...",
     image: pizza.src,
@@ -71,14 +68,14 @@ const mockMenuItems = [
     discount: 30,
   },
   {
-    id: 6,
+    id: "6",
     name: "Pepperoni Pizza",
     description: "Hot & fresh pizza adorned with pepperoni on tomato...",
     image: pizza.src,
     price: 9650,
   },
   {
-    id: 7,
+    id: "7",
     name: "Pepperoni Pizza",
     description: "Hot & fresh pizza adorned with pepperoni on tomato...",
     image: pizza.src,
@@ -89,12 +86,18 @@ const mockMenuItems = [
 
 const ReastaurantPageContent = ({ params }: { params: string }) => {
   const [isActive, setIsActive] = useState<Categories>("All");
+  const [selectedId, setselectedId] = useState<string | null>(null);
   const router = useRouter();
-
   console.log("Restaurant page Id:", params);
+
   const handleBack = () => {
     router.back();
   };
+
+  const handleSelect = (id: string) => {
+    setselectedId(id === selectedId ? null : id);
+  };
+
   return (
     <div className="w-full max-w-[1006px] mx-auto">
       <button
@@ -159,7 +162,12 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
       <div className="p-4">
         <div className="grid md:grid-cols-2 gap-4 lg:gap-10">
           {mockMenuItems.map((item) => (
-            <RestaurantItemCard key={item.id} item={item} />
+            <RestaurantItemCard
+              key={item.id}
+              item={item}
+              handleSelect={handleSelect}
+              selectedId={selectedId}
+            />
           ))}
         </div>
       </div>
