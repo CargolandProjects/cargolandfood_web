@@ -7,6 +7,7 @@ import icon from "./icon.svg";
 import meter from "./meter.svg";
 import hamburger from "./hamburger.svg";
 import medal from "./medal.svg";
+import info from "./info.svg"
 
 export {
   logo,
@@ -18,4 +19,5 @@ export {
   meter,
   medal,
   hamburger,
+  info,
 };

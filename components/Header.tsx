@@ -49,10 +49,10 @@ export function Header() {
       lastName &&
       `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()) ||
     "";
-  console.log("FirstName:", firstName);
-  console.log("LastName:", lastName);
-  console.log("Initials:", initials);
-  console.log("Data is: ", session);
+  // console.log("FirstName:", firstName);
+  // console.log("LastName:", lastName);
+  // console.log("Initials:", initials);
+  // console.log("Data is: ", session);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();

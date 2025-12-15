@@ -9,7 +9,7 @@ import markets from "./markets.jpg";
 import restaurant from "./restaurants.jpg";
 import groceries1 from "./groceries1.jpg";
 import groceries2 from "./groceries2.jpg";
-import sharwarma from "./sharwarma.jpg";
+import shawarma from "./shawarma.jpg";
 import logoFull from "./logo-full.png";
 import playStore from "./play-store.png";
 
@@ -25,7 +25,7 @@ export {
   restaurant,
   groceries1,
   groceries2,
-  sharwarma,
+  shawarma,
   logoFull,
   playStore,
 };
