@@ -342,6 +342,7 @@ const mockMenuItems = [
 const ReastaurantPageContent = ({ params }: { params: string }) => {
   const [isActive, setIsActive] = useState<Categories>("All");
   const [selectedId, setselectedId] = useState<string | null>(null);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const router = useRouter();
   console.log("Restaurant page Id:", params);
 
@@ -354,7 +355,8 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
   };
 
   const handleAddOrderItem = () => {
-    setselectedId(null);
+    setIsCheckoutOpen(true); // Show the checkout
+    setselectedId(null); // Close the modal
   };
 
   return (
@@ -371,10 +373,8 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
       <div className="flex justify-center w-full mt-2">
 
         {/* 1. Left Column: Menu and Restaurant Details (Main Content) */}
-        {/* UPDATED: w-[745px] for width: 745 
-                    UPDATED: mr-[40px] for gap: 40px
-                */}
-        <div className="w-[745px] mr-[40px]">
+        {/* Dynamic width: minimum 1006px when checkout closed, 745px when checkout open */}
+        <div className={isCheckoutOpen ? "w-[745px] mr-[40px]" : "w-full min-w-[1006px]"}>
 
           {/* Header Image and Info Section */}
           <div className="relative bg-white">
@@ -454,14 +454,16 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
         </div> {/* End Left Column */}
 
         {/* 2. Right Column: Checkout Section (Width is 400px, Gap is handled by the left column's margin) */}
-        <div className="hidden lg:block w-[400px]">
-          <div className="sticky top-4">
-            <CheckoutSidebar
-              isOpen={true}
-              onClose={() => { }}
-            />
+        {isCheckoutOpen && (
+          <div className="hidden lg:block w-[400px]">
+            <div className="sticky top-4">
+              <CheckoutSidebar
+                isOpen={isCheckoutOpen}
+                onClose={() => setIsCheckoutOpen(false)}
+              />
+            </div>
           </div>
-        </div> {/* End Right Column */}
+        )} {/* End Right Column */}
 
       </div> {/* End Main Content Grid */}
     </div>
