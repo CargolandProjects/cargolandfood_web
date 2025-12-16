@@ -16,12 +16,14 @@ interface RestaurantItemCard {
   };
   handleSelect: (id: string) => void;
   selectedId: string | null;
+  onOrderItem: () => void;
 }
 
 const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
   item: { description, id, image, name, price, discount },
   handleSelect,
   selectedId,
+  onOrderItem,
 }) => {
   const isSelected = id === selectedId;
 
@@ -184,7 +186,12 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
                 <RiAddFill className="size-4 text-primary" />
               </div>
             </div>
-            <Button className="uppercase py-3.5 px-5.5 text-sm font-bold ">Order Item - ₦600</Button>
+            <Button
+              onClick={onOrderItem}
+              className="uppercase py-3.5 px-5.5 text-sm font-bold "
+            >
+              Order Item - ₦600
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
