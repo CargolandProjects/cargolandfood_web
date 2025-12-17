@@ -170,7 +170,7 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
             {mockMenuItems.map((item) => (
               <RestaurantItemCard
                 key={item.id}
-                item={item}
+                product={item}
                 handleSelect={handleSelect}
                 selectedId={selectedId}
               />
