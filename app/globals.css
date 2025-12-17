@@ -71,12 +71,12 @@
 
   /* Neutral Colors */
   --color-neutral-black: #0A0D14;
-  --color-neutral-gray-900: #20232D;
-  --color-neutral-gray-700: #525866;
-  --color-neutral-gray-500: #868C98;
-  --color-neutral-gray-400: #CDD0D5;
-  --color-neutral-gray-300: #E2E4E9;
-  --color-neutral-gray-100: #F6F8FA;
+  --color-neutral-900: #20232D;
+  --color-neutral-700: #525866;
+  --color-neutral-500: #868C98;
+  --color-neutral-400: #CDD0D5;
+  --color-neutral-300: #E2E4E9;
+  --color-neutral-100: #F6F8FA;
   --color-neutral-white: #FFFFFF;
 
   /* Cargo Brand Colors */
@@ -99,8 +99,8 @@
   --shadow-lg: 0 4px 26px 0 rgba(0, 0, 0, 0.1);
   --shadow-xl: 12px 12px 30px 0 rgba(150, 150, 154, 0.15);
   --shadow-inset: inset 0px 2px 2px rgba(22, 38, 100, 0.32);
-    /* Layout */
-    --container-max-width: 90rem;
+  /* Layout */
+  --container-max-width: 90rem;
   /* 1440px */
   --container-padding: 2.1875rem;
   /* 35px */
@@ -269,7 +269,8 @@
     font-synthesis: none;
   }
 
-  h3 {
+  h3,
+  h2 {
     @apply font-medium font-satoshi text-2xl leading-8
   }
 
@@ -290,7 +291,7 @@
   }
 
   .form-title {
-    @apply font-bold text-[32px] leading-10
+    @apply font-bold text-[32px] leading-10;
   }
 
   .form-label {
@@ -314,7 +315,7 @@
   }
 
   .submit-btn {
-    @apply h-12 uppercase font-black w-full hover:cursor-pointer rounded-button
+    @apply h-12 uppercase text-sm font-bold w-full hover:cursor-pointer rounded-button
   }
 
   .dropdown-content {
@@ -322,7 +323,11 @@
   }
 
   .radio {
-    @apply data-[state=checked]:shadow-(--shadow-inset) data-[state=checked]:border-none ;
+    @apply data-[state=checked]:shadow-(--shadow-inset) data-[state=checked]:border-none;
+  }
+
+  .icon-r-left {
+    transform: matrix(-1, 0, 0, 1, 0, 0);
   }
 
   /* Custom shadows */

@@ -32,7 +32,7 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
         className="
       flex bg-white rounded-2xl overflow-hidden 
       border border-gray-200 shadow-sm 
-      h-[138px]
+      h-[138px] relative
     "
       >
         {/* Product Image - Adjusted for Left-Side Radius Only */}
@@ -176,15 +176,15 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
 
           <div className="mt-20 flex px-7 pb-4.5 gap-6 items-center justify-center">
             <div className="flex items-center gap-3.5">
-              <div className="size-10.5 rounded-button bg-primary-300 flex justify-center items-center">
+              <Button className="size-10.5 rounded-button bg-primary-300 flex justify-center items-center">
                 <RiSubtractFill className="size-4 text-primary" />
-              </div>
+              </Button>
               <span className="text-gray-500 font-medium text-xl">1</span>
-              <div className="size-10.5 rounded-button bg-primary-300 flex justify-center items-center">
+              <Button className="size-10.5 rounded-button bg-primary-300 flex justify-center items-center">
                 <RiAddFill className="size-4 text-primary" />
-              </div>
+              </Button>
             </div>
-            <Button className="uppercase py-3.5 px-5.5 text-sm font-bold ">Order Item - ₦600</Button>
+            <Button className="uppercase py-3.5 px-5.5 h-12 text-sm font-bold ">Order Item - ₦600</Button>
           </div>
         </DialogContent>
       </Dialog>

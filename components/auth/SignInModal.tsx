@@ -83,7 +83,7 @@ const SignInModal = () => {
         </DialogDescription>
       </DialogHeader>
 
-      <form onSubmit={handleSubmit(onsubmit)}>
+      <form onSubmit={handleSubmit(onsubmit)} className="my-8">
         <FieldSet>
           <FieldGroup className="gap-5">
             <Controller
