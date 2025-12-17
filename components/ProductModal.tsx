@@ -3,27 +3,38 @@ import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Separator } from "./ui/separator";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Button } from "./ui/button";
-import { ProductItem } from "./Restaurants/RestaurantItemCard";
+import { useCartStore, type Product } from "@/lib/stores/useCartStore";
 
 interface ProductModalProps {
-  product: ProductItem;
+  product: Product;
   isSelected: boolean;
   handleSelect: (id: string) => void;
 }
 
 const ProductModal = ({
-  product: { description, id, image, name, price },
+  product,
   isSelected,
   handleSelect,
 }: ProductModalProps) => {
+  const { description, id, imageUrl, name, price } = product;
+  const {addItem, decrease, items} = useCartStore();
+
+  const current = items.find(i => i.id === id)
+  const handleIncrease = () => {
+    addItem(product)
+  };
+  const handledecrease = () => {
+    decrease(id!)
+  };
+
   return (
-    <Dialog open={isSelected} onOpenChange={() => handleSelect(id)}>
+    <Dialog open={isSelected} onOpenChange={() => handleSelect(id!)}>
       <DialogContent
         showCloseButton={false}
         className="max-w-100! max-h-[90vh] overflow-auto hide-scrollbar p-0 border-none! outline-none! gap-0"
       >
         <div className="w-full h-[177px] overflow-hidden rounded-t-lg">
-          <img src={image} alt={name} className="size-full object-cover" />
+          <img src={imageUrl} alt={name} className="size-full object-cover" />
         </div>
         <div>
           <div className="mt-4 px-7">
@@ -113,11 +124,19 @@ const ProductModal = ({
 
         <div className="mt-20 flex px-7 pb-4.5 gap-6 items-center justify-center">
           <div className="flex items-center gap-3.5">
-            <Button className="size-10.5 rounded-button bg-primary-300 flex justify-center items-center">
+            <Button
+              onClick={handledecrease}
+              className="size-10.5 rounded-button bg-primary-300 hover:bg-primary-300 cursor-pointer flex justify-center items-center"
+            >
               <RiSubtractFill className="size-4 text-primary" />
             </Button>
-            <span className="text-gray-500 font-medium text-xl">1</span>
-            <Button className="size-10.5 rounded-button bg-primary-300 flex justify-center items-center">
+            <span className="text-gray-500 font-medium text-xl">
+              {current?.quantity || 0}
+            </span>
+            <Button
+              onClick={handleIncrease}
+              className="size-10.5 rounded-button bg-primary-300 hover:bg-primary-300 cursor-pointer flex justify-center items-center"
+            >
               <RiAddFill className="size-4 text-primary" />
             </Button>
           </div>

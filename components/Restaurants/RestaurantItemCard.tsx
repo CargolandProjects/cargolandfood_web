@@ -2,17 +2,10 @@ import plusIcon from "@/assets/svgs/plusIcon.svg";
 import { RiGiftLine } from "react-icons/ri";
 import ProductModal from "../ProductModal";
 
-export interface ProductItem {
-  id: string;
-  name: string;
-  image: string;
-  description: string;
-  price: number;
-  discount?: number;
-}
+import type { Product } from "@/lib/stores/useCartStore";
 
 interface RestaurantItemCard {
-  product: ProductItem;
+  product: Product;
   handleSelect: (id: string) => void;
   selectedId: string | null;
 }
@@ -22,7 +15,7 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
   handleSelect,
   selectedId,
 }) => {
-  const { description, id, image, name, price, discount } = product;
+  const { description, id, imageUrl, name, price } = product
   const isSelected = id === selectedId;
 
   return (
@@ -39,17 +32,11 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
         <div className="w-[138px] h-full shrink-0 relative">
           {/* Width set to 138px to match height for a square/large image area */}
           <img
-            src={image}
-            alt={name}
-            // ONLY applies border radius to the left corners
+            src={imageUrl}
+            alt={name || "Product image"}
             className="w-full h-full object-cover rounded-l-2xl"
           />
-          {discount && (
-            <div className="absolute top-2 left-2 rounded-full flex justify-center items-center gap-1 py-1 px-2 bg-primary-50 border-[0.5px] border-primary-900">
-              <RiGiftLine className="size-3 text-primary" />
-              <p className="font-medium text-xs">{discount}% Off</p>
-            </div>
-          )}
+          
         </div>
 
         {/* Product Details */}
@@ -65,13 +52,13 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
 
           <div className="flex justify-between items-center mt-2">
             <span className="text-lg font-bold text-gray-900">
-              ₦{price.toLocaleString()}
+              ₦{Number(price ?? "0").toLocaleString()}
             </span>
             {/* ADDED: Plus Icon Button */}
             <button
               // Match the light orange background, right-side rounding, and padding/size
               className="bg-[#FFEFE8] w-8 h-8 flex items-center justify-center rounded-[8px]"
-              onClick={() => console.log("Add product clicked")} // Add your actual click handler here
+              onClick={() => handleSelect(id)}
               aria-label={`Add ${name} to cart`}
             >
               <img src={plusIcon.src} alt="Add to cart" className="w-6 h-6" />

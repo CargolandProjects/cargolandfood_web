@@ -10,6 +10,8 @@ import RestaurantItemCard from "@/components/Restaurants/RestaurantItemCard";
 import { useRouter } from "next/navigation";
 import { info } from "@/assets/svgs";
 import Checkout from "../CheckOut";
+import { useCartStore } from "@/lib/stores/useCartStore";
+import { AnimatePresence, motion } from "framer-motion";
 
 export interface CategoryTab {
   name: Categories;
@@ -28,67 +30,186 @@ const categories: { name: Categories }[] = [
 ];
 
 // --- MOCK DATA ---
+// Normalized to Product shape (useCartStore)
 const mockMenuItems = [
   {
     id: "1",
     name: "Pepperoni Pizza",
     description:
       "Hot & fresh pizza adorned with pepperoni on tomato marinara sauce and mozzarella cheese",
-    image: pizza.src,
-    price: 9650,
-    discount: 20,
+    imageUrl: pizza.src,
+    price: "9650",
+    categoryId: "pizza",
+    isMenuSet: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    vendor: {
+      id: "v1",
+      businessName: "Shawarma Plus",
+      createdAt: new Date().toISOString(),
+      businessCategory: "Restaurant",
+      businessAddress: "123 Food St",
+      isPreorder: false,
+      golive: true,
+      totalOrders: 2342,
+      reviews: [],
+    },
+    simpleRating: 4.5,
+    bayesianRating: 4.4,
   },
   {
     id: "2",
     name: "Pepperoni Pizza",
     description: "Hot & fresh pizza adorned with pepperoni on tomato...",
-    image: pizza.src,
-    price: 9650,
-    discount: 40,
+    imageUrl: pizza.src,
+    price: "9650",
+    categoryId: "pizza",
+    isMenuSet: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    vendor: {
+      id: "v1",
+      businessName: "Shawarma Plus",
+      createdAt: new Date().toISOString(),
+      businessCategory: "Restaurant",
+      businessAddress: "123 Food St",
+      isPreorder: false,
+      golive: true,
+      totalOrders: 2342,
+      reviews: [],
+    },
+    simpleRating: 4.5,
+    bayesianRating: 4.4,
   },
   {
     id: "3",
     name: "Chicken Shawarma",
     description: "Juicy marinated chicken wrapped in soft pita bread...",
-    image: pizza.src,
-    price: 5253,
+    imageUrl: pizza.src,
+    price: "5253",
+    categoryId: "shawarma",
+    isMenuSet: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    vendor: {
+      id: "v1",
+      businessName: "Shawarma Plus",
+      createdAt: new Date().toISOString(),
+      businessCategory: "Restaurant",
+      businessAddress: "123 Food St",
+      isPreorder: false,
+      golive: true,
+      totalOrders: 2342,
+      reviews: [],
+    },
+    simpleRating: 4.6,
+    bayesianRating: 4.5,
   },
   {
     id: "4",
     name: "Pepperoni Pizza",
     description: "Hot & fresh pizza adorned with pepperoni on tomato...",
-    image: pizza.src,
-    price: 9650,
+    imageUrl: pizza.src,
+    price: "9650",
+    categoryId: "pizza",
+    isMenuSet: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    vendor: {
+      id: "v1",
+      businessName: "Shawarma Plus",
+      createdAt: new Date().toISOString(),
+      businessCategory: "Restaurant",
+      businessAddress: "123 Food St",
+      isPreorder: false,
+      golive: true,
+      totalOrders: 2342,
+      reviews: [],
+    },
+    simpleRating: 4.5,
+    bayesianRating: 4.4,
   },
   {
     id: "5",
     name: "Pepperoni Pizza",
     description: "Hot & fresh pizza adorned with pepperoni on tomato...",
-    image: pizza.src,
-    price: 9650,
-    discount: 30,
+    imageUrl: pizza.src,
+    price: "9650",
+    categoryId: "pizza",
+    isMenuSet: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    vendor: {
+      id: "v1",
+      businessName: "Shawarma Plus",
+      createdAt: new Date().toISOString(),
+      businessCategory: "Restaurant",
+      businessAddress: "123 Food St",
+      isPreorder: false,
+      golive: true,
+      totalOrders: 2342,
+      reviews: [],
+    },
+    simpleRating: 4.5,
+    bayesianRating: 4.4,
   },
   {
     id: "6",
     name: "Pepperoni Pizza",
     description: "Hot & fresh pizza adorned with pepperoni on tomato...",
-    image: pizza.src,
-    price: 9650,
+    imageUrl: pizza.src,
+    price: "9650",
+    categoryId: "pizza",
+    isMenuSet: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    vendor: {
+      id: "v1",
+      businessName: "Shawarma Plus",
+      createdAt: new Date().toISOString(),
+      businessCategory: "Restaurant",
+      businessAddress: "123 Food St",
+      isPreorder: false,
+      golive: true,
+      totalOrders: 2342,
+      reviews: [],
+    },
+    simpleRating: 4.5,
+    bayesianRating: 4.4,
   },
   {
     id: "7",
     name: "Pepperoni Pizza",
     description: "Hot & fresh pizza adorned with pepperoni on tomato...",
-    image: pizza.src,
-    price: 9650,
-    discount: 40,
+    imageUrl: pizza.src,
+    price: "9650",
+    categoryId: "pizza",
+    isMenuSet: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    vendor: {
+      id: "v1",
+      businessName: "Shawarma Plus",
+      createdAt: new Date().toISOString(),
+      businessCategory: "Restaurant",
+      businessAddress: "123 Food St",
+      isPreorder: false,
+      golive: true,
+      totalOrders: 2342,
+      reviews: [],
+    },
+    simpleRating: 4.5,
+    bayesianRating: 4.4,
   },
 ];
 
 const ReastaurantPageContent = ({ params }: { params: string }) => {
   const [isActive, setIsActive] = useState<Categories>("All");
   const [selectedId, setselectedId] = useState<string | null>(null);
+  const items = useCartStore((s) => s.items);
   const router = useRouter();
+
+  const openCheckout = items.length > 0;
   console.log("Restaurant page Id:", params);
 
   const handleBack = () => {
@@ -101,7 +222,7 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
 
   return (
     <div className="flex gap-10 h-full">
-      <div className="w-full max-w-[1006px] mx-auto">
+      <div className={`w-full ${openCheckout ? "max-w-[814px]" : "max-w-[1006px]"} mx-auto transitoin-all duration-[3]`}>
         <button
           onClick={handleBack}
           className="flex items-center gap-4 text-sm w-full pl-2 hover:cursor-pointer"
@@ -178,7 +299,20 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
           </div>
         </div>
       </div>
-      <Checkout />
+
+      {/* Checkout component */}
+      {openCheckout && (
+        <AnimatePresence mode="wait">
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Checkout />
+          </motion.div>
+        </AnimatePresence>
+      )}
     </div>
   );
 };
