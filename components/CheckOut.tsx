@@ -32,6 +32,7 @@ type PaymentMethod = "wallet" | "newCard" | "bankTransfer";
 
 import { useCartStore } from "@/lib/stores/useCartStore";
 import ConfirmationModal from "./ConfirmationModal";
+import { ScrollArea } from "./ui/scroll-area";
 
 const Checkout = () => {
   const {
@@ -61,7 +62,7 @@ const Checkout = () => {
 
   return (
     <>
-      <div className="sticky top-1 mt-9 max-w-[400px]">
+      <ScrollArea className="max-w-[400px] h-[85vh] shadow-lg rounded-xl">
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           {/* Header */}
           <h2 className="text-xl font-medium">Checkout</h2>
@@ -315,7 +316,7 @@ const Checkout = () => {
             </Button>
           </div>
         </div>
-      </div>
+      </ScrollArea>
       <ConfirmationModal
       confirmText="Clear"
         description="Are you sure you want to clear your cart?"

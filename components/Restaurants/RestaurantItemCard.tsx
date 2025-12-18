@@ -21,7 +21,7 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
   return (
     <>
       <div
-        onClick={() => handleSelect(id)}
+        onClick={() => handleSelect(id!)}
         className="
       flex bg-white rounded-2xl overflow-hidden 
       border border-gray-200 shadow-sm 
@@ -58,7 +58,7 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
             <button
               // Match the light orange background, right-side rounding, and padding/size
               className="bg-[#FFEFE8] w-8 h-8 flex items-center justify-center rounded-[8px]"
-              onClick={() => handleSelect(id)}
+              onClick={() => handleSelect(id!)}
               aria-label={`Add ${name} to cart`}
             >
               <img src={plusIcon.src} alt="Add to cart" className="w-6 h-6" />

@@ -222,7 +222,7 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
 
   return (
     <div className="flex gap-10 h-full">
-      <div className={`w-full ${openCheckout ? "max-w-[814px]" : "max-w-[1006px]"} mx-auto transitoin-all duration-[3]`}>
+      <div className={`w-full ${openCheckout ? "max-w-[814px]" : "max-w-[1006px]"} mx-auto transitoin-all duration-300 flex-1`}>
         <button
           onClick={handleBack}
           className="flex items-center gap-4 text-sm w-full pl-2 hover:cursor-pointer"
@@ -308,6 +308,7 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.4 }}
+            className="sticky top-6 self-start"
           >
             <Checkout />
           </motion.div>
