@@ -9,9 +9,10 @@ import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
 import RestaurantItemCard from "@/components/Restaurants/RestaurantItemCard";
 import { useRouter } from "next/navigation";
 import { info } from "@/assets/svgs";
-import Checkout from "../CheckOut";
+import Checkout from "../Orders/CheckOut";
 import { useCartStore } from "@/lib/stores/useCartStore";
 import { AnimatePresence, motion } from "framer-motion";
+import FavouritesModal from "../Orders/FavouritesModal";
 
 export interface CategoryTab {
   name: Categories;
@@ -206,6 +207,8 @@ const mockMenuItems = [
 const ReastaurantPageContent = ({ params }: { params: string }) => {
   const [isActive, setIsActive] = useState<Categories>("All");
   const [selectedId, setselectedId] = useState<string | null>(null);
+  const [showFavourites, setShowFavourites] = useState(false);
+
   const items = useCartStore((s) => s.items);
   const router = useRouter();
 
@@ -222,7 +225,11 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
 
   return (
     <div className="flex gap-10 h-full">
-      <div className={`w-full ${openCheckout ? "max-w-[814px]" : "max-w-[1006px]"} mx-auto transitoin-all duration-300 flex-1`}>
+      <div
+        className={`w-full ${
+          openCheckout ? "max-w-[814px]" : "max-w-[1006px]"
+        } mx-auto transitoin-all duration-300 flex-1`}
+      >
         <button
           onClick={handleBack}
           className="flex items-center gap-4 text-sm w-full pl-2 hover:cursor-pointer"
@@ -241,18 +248,24 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
               className="w-full h-full object-cover rounded-xl md:object-[0px_-82px]"
               loading="lazy"
             />
+            {/* Favourite and Comments */}
             <div className="absolute top-6 right-6 flex gap-2.5">
-              <div className="size-10 rounded-full bg-white flex justify-center items-center">
+              <button
+                onClick={() => setShowFavourites(true)}
+                className="size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
+              >
                 <RiHeartFill className="size-6 text-gray-300" />
-              </div>
-              <div className="size-10 rounded-full bg-white flex justify-center items-center">
+              </button>
+              <button
+                className="size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
+              >
                 <img
                   src={info.src}
                   alt="Shawarma Plus banner"
                   className="size-6 rounded-full object-cover"
                   loading="lazy"
                 />
-              </div>
+              </button>
             </div>
           </div>
 
@@ -299,6 +312,8 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
           </div>
         </div>
       </div>
+
+      <FavouritesModal open={showFavourites} onOpenChange={setShowFavourites} />
 
       {/* Checkout component */}
       {openCheckout && (

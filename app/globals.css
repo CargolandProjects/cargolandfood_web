@@ -249,6 +249,7 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --radius-xs: calc(var(--radius) - 6px);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -340,7 +341,7 @@
   }
 
   .dialog-title {
-    @apply text-2xl font-medium leading-8 ; 
+    @apply text-2xl font-medium leading-8 text-center; 
   }
 
   /* Custom shadows */

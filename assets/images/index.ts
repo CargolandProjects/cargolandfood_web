@@ -13,6 +13,7 @@ import shawarma from "./shawarma.jpg";
 import logoFull from "./logo-full.png";
 import playStore from "./play-store.png";
 import pizza from "./pizza.jpg"
+import burger from "./burger.png"
 
 export {
   hamburgers,
@@ -29,5 +30,6 @@ export {
   shawarma,
   logoFull,
   playStore,
-  pizza
+  pizza,
+  burger,
 };

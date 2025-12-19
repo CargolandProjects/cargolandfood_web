@@ -52,7 +52,7 @@ export default function CouponModal({
         </DialogHeader>
 
         {/* Body */}
-        <div className="mt-8 pb-6 px-7">
+        <div className="mt-8 pb-4.5 px-7">
           <div className="w-full ">
             <label htmlFor="coupon" className="text-sm font-medium">
               Enter Coupon Code
