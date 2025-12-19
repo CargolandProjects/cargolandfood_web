@@ -1,5 +1,4 @@
 import plusIcon from "@/assets/svgs/plusIcon.svg";
-import { RiGiftLine } from "react-icons/ri";
 import ProductModal from "../ProductModal";
 
 import type { Product } from "@/lib/stores/useCartStore";

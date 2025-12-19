@@ -12,8 +12,9 @@ import groceries2 from "./groceries2.jpg";
 import shawarma from "./shawarma.jpg";
 import logoFull from "./logo-full.png";
 import playStore from "./play-store.png";
-import pizza from "./pizza.jpg"
-import burger from "./burger.png"
+import pizza from "./pizza.jpg";
+import burger from "./burger.png";
+import user1 from "./user1.png";
 
 export {
   hamburgers,
@@ -32,4 +33,5 @@ export {
   playStore,
   pizza,
   burger,
+  user1,
 };

@@ -12,7 +12,8 @@ import { info } from "@/assets/svgs";
 import Checkout from "../Orders/CheckOut";
 import { useCartStore } from "@/lib/stores/useCartStore";
 import { AnimatePresence, motion } from "framer-motion";
-import FavouritesModal from "../Orders/FavouritesModal";
+import FavouritesModal from "../FavouritesModal";
+import ReviewsModal from "../ReviewModal";
 
 export interface CategoryTab {
   name: Categories;
@@ -208,6 +209,7 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
   const [isActive, setIsActive] = useState<Categories>("All");
   const [selectedId, setselectedId] = useState<string | null>(null);
   const [showFavourites, setShowFavourites] = useState(false);
+  const [showReviews, setShowReviews] = useState(false);
 
   const items = useCartStore((s) => s.items);
   const router = useRouter();
@@ -257,6 +259,7 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
                 <RiHeartFill className="size-6 text-gray-300" />
               </button>
               <button
+                onClick={() => setShowReviews(true)}
                 className="size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
               >
                 <img
@@ -314,6 +317,7 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
       </div>
 
       <FavouritesModal open={showFavourites} onOpenChange={setShowFavourites} />
+      <ReviewsModal open={showReviews} onClose={setShowReviews} />
 
       {/* Checkout component */}
       {openCheckout && (

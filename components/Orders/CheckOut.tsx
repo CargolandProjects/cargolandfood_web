@@ -220,7 +220,7 @@ const Checkout = () => {
           <div className=" mb-6">
             <h3 className="text-base font-medium leading-6">Payment Method</h3>
             <div className="mt-4 space-y-2">
-              <button className="w-full flex items-center justify-between">
+              <div className="w-full flex items-center justify-between">
                 <span className="flex items-center gap-2 text-sm">
                   <RiWallet3Fill className="size-5 text-primary" /> Wallet
                   Balance -{" "}
@@ -233,8 +233,9 @@ const Checkout = () => {
                 >
                   <RadioGroupItem value="wallet" />
                 </RadioGroup>
-              </button>
-              <button className="w-full flex items-center justify-between">
+              </div>
+
+              <div className="w-full flex items-center justify-between">
                 <span className="flex items-center gap-2 text-sm">
                   <RiBankCardFill className="size-5 text-primary" /> Add New
                   Card
@@ -246,8 +247,9 @@ const Checkout = () => {
                 >
                   <RadioGroupItem value="newCard" />
                 </RadioGroup>
-              </button>
-              <button className="w-full flex items-center justify-between">
+              </div>
+
+              <div className="w-full flex items-center justify-between">
                 <span className="flex items-center gap-2 text-sm">
                   <RiBankFill className="size-5 text-primary" /> Bank Transfer
                 </span>
@@ -258,7 +260,7 @@ const Checkout = () => {
                 >
                   <RadioGroupItem value="bankTransfer" />
                 </RadioGroup>
-              </button>
+              </div>
             </div>
           </div>
 

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { burger, pizza } from "@/assets/images";
 import { RiAddFill } from "react-icons/ri";
-import { ScrollArea } from "../ui/scroll-area";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface FavouriteModalProps {
   open: boolean;
@@ -84,8 +84,8 @@ export default function FavouritesModal({
         </DialogHeader>
 
         {/* Food items */}
-        <ScrollArea className="max-h-[386px] mt-4 pb-4.5">
-          <div className="space-y-4 ">
+        <ScrollArea className="max-h-[386px] mt-3 pb-4.5">
+          <div className="space-y-4 py-1">
             {foodItems.map((item) => (
               <div
                 key={item.id}

@@ -277,7 +277,7 @@
   }
 
   p {
-    @apply text-sm font-normal leading-5
+    @apply text-sm font-normal
   }
 
   button {
