@@ -74,7 +74,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-primary-50 ">
+    <footer className="bg-primary-50 max-xl:px-4">
       <div className="max-w-[1100px] mx-auto">
         <div className="flex gap-10 max-sm:flex-col justify-between pt-16">
           <div className="flex flex-col gap-10">

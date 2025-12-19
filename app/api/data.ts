@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 
-import { sharwarma } from "@/assets/images";
+import {shawarma as sharwarma } from "@/assets/images";
 import { food, groceries, restaurant } from "@/assets/svgs";
 
   export let discount = [

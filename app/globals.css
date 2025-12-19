@@ -71,12 +71,12 @@
 
   /* Neutral Colors */
   --color-neutral-black: #0A0D14;
-  --color-neutral-gray-900: #20232D;
-  --color-neutral-gray-700: #525866;
-  --color-neutral-gray-500: #868C98;
-  --color-neutral-gray-400: #CDD0D5;
-  --color-neutral-gray-300: #E2E4E9;
-  --color-neutral-gray-100: #F6F8FA;
+  --color-neutral-900: #20232D;
+  --color-neutral-700: #525866;
+  --color-neutral-500: #868C98;
+  --color-neutral-400: #CDD0D5;
+  --color-neutral-300: #E2E4E9;
+  --color-neutral-100: #F6F8FA;
   --color-neutral-white: #FFFFFF;
 
   /* Cargo Brand Colors */
@@ -96,9 +96,9 @@
   --shadow-xs: 0 1px 2px 0 rgba(228, 229, 231, 0.24);
   --shadow-cargo-sm: 0 4px 4px 0 rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 6px -2px rgba(0, 0, 0, 0.1), 0 10px 28px -3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 4px 26px 0 rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0px 0px 26.4px rgba(0, 0, 0, 0.1);
   --shadow-xl: 12px 12px 30px 0 rgba(150, 150, 154, 0.15);
-
+  --shadow-inset: inset 0px 2px 2px rgba(22, 38, 100, 0.32);
   /* Layout */
   --container-max-width: 90rem;
   /* 1440px */
@@ -269,12 +269,13 @@
     font-synthesis: none;
   }
 
-  h3 {
+  h3,
+  h2 {
     @apply font-medium font-satoshi text-2xl leading-8
   }
 
-  p{
-    @apply text-sm font-normal leading-5 
+  p {
+    @apply text-sm font-normal leading-5
   }
 }
 
@@ -290,36 +291,49 @@
   }
 
   .form-title {
-    @apply font-bold text-[32px] leading-10
+    @apply font-bold text-[32px] leading-10;
   }
 
-  .form-label{
+  .form-label {
     @apply font-medium text-sm leading-5
   }
 
-  .form-input{
+  .form-input {
     @apply focus-visible:ring-primary focus-visible:ring-1 focus-visible:outline-none focus-visible:border-none rounded-button placeholder:text-gray-300 border-none outline-none shadow-none bg-gray-50
   }
 
-  .form-description{
+  .form-description {
     @apply font-normal text-base text-gray-500
   }
 
-  .field{
+  .field {
     @apply gap-1
   }
 
-  .otp-slot{
+  .otp-slot {
     @apply border-none w-[51px] h-12 rounded-button bg-gray-100
   }
 
-  .submit-btn{
-    @apply h-12 uppercase font-black w-full hover:cursor-pointer rounded-button
+  .submit-btn {
+    @apply h-12 uppercase text-sm font-bold w-full hover:cursor-pointer rounded-button
   }
 
-  .dropdown-content{
-    @apply rounded-xl  p-[15px]
+  .dropdown-content {
+    @apply rounded-xl p-[15px]
   }
+
+  .radio {
+    @apply data-[state=checked]:shadow-(--shadow-inset) data-[state=checked]:border-none;
+  }
+
+  .shadow {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .icon-r-left {
+    transform: matrix(-1, 0, 0, 1, 0, 0);
+  }
+
   /* Custom shadows */
   /* .shadow-cargo-xs {
     box-shadow: var(--shadow-cargo-xs);

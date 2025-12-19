@@ -20,11 +20,11 @@ const RestaurantStats = ({
       {/* Rating */}
       <div className="flex items-center gap-1">
         <RiStarLine className="size-5 text-primary" />
-        <span className="font-semibold text-gray-900">{rating}</span>
+        <span className="font-normal text-gray-900">{rating}</span>
       </div>
       
       {/* Separator */}
-      <div className="w-1 h-4 bg-gray-300 opacity-50"></div>
+      <div className="border h-4 border-gray-300 opacity-50"/>
       
       {/* Delivery Fee */}
       <div className="flex items-center gap-1">
@@ -37,7 +37,7 @@ const RestaurantStats = ({
       </div>
       
       {/* Separator */}
-      <div className="w-1 h-4 bg-gray-300 opacity-50"></div>
+       <div className="border h-4 border-gray-300 opacity-50"/>
       
       {/* Time */}
       <div className="flex items-center gap-1">
