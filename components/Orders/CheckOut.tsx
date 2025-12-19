@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
-import { Separator } from "./ui/separator";
+import { Separator } from "../ui/separator";
 import {
   RiArrowRightSLine,
   RiBankCardFill,
@@ -16,23 +16,17 @@ import {
   RiRestaurant2Fill,
   RiWallet3Fill,
 } from "react-icons/ri";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-
-// interface PackItem {
-//   id: number;
-//   packNumber: number;
-//   pizza: string;
-//   pizzaPrice: number;
-//   packs: number;
-//   packPrice: number;
-// }
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
 type Delivery = "delivery" | "pickup";
 type PaymentMethod = "wallet" | "newCard" | "bankTransfer";
 
 import { useCartStore } from "@/lib/stores/useCartStore";
-import ConfirmationModal from "./ConfirmationModal";
-import { ScrollArea } from "./ui/scroll-area";
+import ConfirmationModal from "../ConfirmationModal";
+import { ScrollArea } from "../ui/scroll-area";
+import RiderNote from "./RiderNoteModal";
+import CouponSuccess from "./CouponSuccessModal";
+import CouponModal from "./CouponModal";
 
 const Checkout = () => {
   const {
@@ -46,6 +40,9 @@ const Checkout = () => {
   } = useCartStore();
   const [deliveryType, setDeliveryType] = useState<Delivery | null>(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [showRiderNote, setShowRiderNote] = useState(false);
+  const [showCoupon, setShowCoupon] = useState(false);
+  const [showSuccess, setSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
     null
   );
@@ -58,7 +55,6 @@ const Checkout = () => {
   const serviceFee = 900;
   const discounts = 660;
   const total = subTotal + deliveryFee + serviceFee - discounts;
-
 
   return (
     <>
@@ -146,14 +142,21 @@ const Checkout = () => {
 
           {/* Message rows */}
           <div className="space-y-4 mb-6">
-            <button className="w-full flex items-center justify-between">
+            <button
+              onClick={() => setShowRiderNote(true)}
+              className="w-full flex items-center justify-between hover:underline cursor-pointer"
+            >
               <span className="flex items-center gap-2 text-sm">
                 <RiRestaurant2Fill className="size-5 text-neutral-700" /> Have a
                 message for the rider ?
               </span>
               <RiArrowRightSLine className="size-5 text-neutral-500" />
             </button>
-            <button className="w-full flex items-center justify-between">
+
+            <button
+              onClick={() => setSuccess(true)}
+              className="w-full flex items-center justify-between hover:underline cursor-pointer"
+            >
               <span className="flex items-center gap-2 text-sm">
                 <RiEBike2Line className="size-5 icon-r-left text-neutral-700" />{" "}
                 Have a message for the restaurant ?
@@ -263,7 +266,10 @@ const Checkout = () => {
 
           {/* Coupon code */}
           <div className="mb-6">
-            <button className="w-full flex items-center justify-between">
+            <button
+              onClick={() => setShowCoupon(true)}
+              className="w-full flex items-center justify-between hover:underline"
+            >
               <span className="flex items-center gap-2 text-sm">
                 <RiCoupon2Fill className="size-5 text-primary" /> Enter Coupon
                 Code
@@ -308,7 +314,7 @@ const Checkout = () => {
           <div className="flex flex-col sm:flex-row gap-4 ">
             <Button className="submit-btn flex-1">PLACE ORDER</Button>
             <Button
-            onClick={()=>    setShowAlert(true)}
+              onClick={() => setShowAlert(true)}
               variant="outline"
               className="submit-btn flex-1 hover:bg-gray-50 text-neutral-400 border-neutral-200"
             >
@@ -317,8 +323,14 @@ const Checkout = () => {
           </div>
         </div>
       </ScrollArea>
+
+      {/* Activity Modals */}
+      <RiderNote open={showRiderNote} onOpenChange={setShowRiderNote} />
+      <CouponSuccess open={showSuccess} onOpenChange={setSuccess} />
+      <CouponModal open={showCoupon} onOpenChange={setShowCoupon} />
+
       <ConfirmationModal
-      confirmText="Clear"
+        confirmText="Clear"
         description="Are you sure you want to clear your cart?"
         // confirmText="Clear"
         // cancelText="Clear"

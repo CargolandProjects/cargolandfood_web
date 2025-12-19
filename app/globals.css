@@ -72,7 +72,8 @@
   /* Neutral Colors */
   --color-neutral-black: #0A0D14;
   --color-neutral-900: #20232D;
-  --color-neutral-700: #525866;
+  --color-neutral-700: #F6F8FA;
+  --color-neutral-600: #525866;
   --color-neutral-500: #868C98;
   --color-neutral-400: #CDD0D5;
   --color-neutral-300: #E2E4E9;
@@ -277,6 +278,10 @@
   p {
     @apply text-sm font-normal leading-5
   }
+
+  button {
+    cursor: pointer;
+  }
 }
 
 @layer utilities {
@@ -332,6 +337,10 @@
 
   .icon-r-left {
     transform: matrix(-1, 0, 0, 1, 0, 0);
+  }
+
+  .dialog-title {
+    @apply text-2xl font-medium leading-8 ; 
   }
 
   /* Custom shadows */
