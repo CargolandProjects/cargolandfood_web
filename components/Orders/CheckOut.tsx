@@ -27,6 +27,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import RiderNote from "./RiderNoteModal";
 import CouponSuccess from "./CouponSuccessModal";
 import CouponModal from "./CouponModal";
+import OrderSuccessModal from "./OrderSuccessModal";
 
 const Checkout = () => {
   const {
@@ -42,6 +43,7 @@ const Checkout = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [showRiderNote, setShowRiderNote] = useState(false);
   const [showCoupon, setShowCoupon] = useState(false);
+  const [showOrderSuccess, setShowOrderSuccess] = useState(false);
   const [showSuccess, setSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
     null
@@ -143,7 +145,7 @@ const Checkout = () => {
           {/* Message rows */}
           <div className="space-y-4 mb-6">
             <button
-              onClick={() => setShowRiderNote(true)}
+              onClick={() => setShowOrderSuccess(true)}
               className="w-full flex items-center justify-between hover:underline cursor-pointer"
             >
               <span className="flex items-center gap-2 text-sm">
@@ -318,7 +320,7 @@ const Checkout = () => {
             <Button
               onClick={() => setShowAlert(true)}
               variant="outline"
-              className="submit-btn flex-1 hover:bg-gray-50 text-neutral-400 border-neutral-200"
+              className="submit-btn flex-1 hover:bg-gray-50 text-neutral-500 border-neutral-300"
             >
               CANCEL ORDERS
             </Button>
@@ -330,6 +332,10 @@ const Checkout = () => {
       <RiderNote open={showRiderNote} onOpenChange={setShowRiderNote} />
       <CouponSuccess open={showSuccess} onOpenChange={setSuccess} />
       <CouponModal open={showCoupon} onOpenChange={setShowCoupon} />
+      <OrderSuccessModal
+        open={showOrderSuccess}
+        onOpenChange={setShowOrderSuccess}
+      />
 
       <ConfirmationModal
         confirmText="Clear"
