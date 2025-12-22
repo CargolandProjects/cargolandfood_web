@@ -21,6 +21,7 @@ const Loading = () => (
 const Categories = () => {
   const { activeCategory, setActiveCategory } = useCategory();
   const { data: categories, isLoading } = useCategories();
+  
   const router = useRouter();
   const searchParams = useSearchParams();
 
