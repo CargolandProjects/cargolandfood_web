@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { pizza } from "@/assets/images";
 import CategoryTab from "@/components/Home/CategoryTab";
 import { shawarma } from "@/assets/images";
 import RestaurantStats from "@/components/RestaurantStats";
 import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
 import RestaurantItemCard from "@/components/Restaurants/RestaurantItemCard";
+import RestaurantItemCardSkeleton from "@/components/Restaurants/RestaurantItemCardSkeleton";
+import RestaurantPageSkeleton from "@/components/Restaurants/RestaurantPageSkeleton";
 import { useRouter } from "next/navigation";
 import { info } from "@/assets/svgs";
 import Checkout from "../Orders/CheckOut";
@@ -55,7 +56,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   };
 
   if (isPending) {
-    return <div>Loading...</div>;
+    return <RestaurantPageSkeleton />;
   }
 
   return (
