@@ -1,7 +1,7 @@
 import plusIcon from "@/assets/svgs/plusIcon.svg";
 import ProductModal from "../ProductModal";
 
-import type { Product } from "@/lib/stores/useCartStore";
+import type { Product } from "@/lib/stores/CartStore";
 
 interface RestaurantItemCard {
   product: Product;

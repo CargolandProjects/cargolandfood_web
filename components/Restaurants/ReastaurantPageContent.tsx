@@ -10,8 +10,9 @@ import RestaurantItemCard from "@/components/Restaurants/RestaurantItemCard";
 import { useRouter } from "next/navigation";
 import { info } from "@/assets/svgs";
 import Checkout from "../Orders/CheckOut";
-import { useCartStore } from "@/lib/stores/useCartStore";
+import { useCartStore } from "@/lib/stores/CartStore";
 import { AnimatePresence, motion } from "framer-motion";
+import OrderDetails from "../Orders/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
 import ReviewsModal from "../ReviewModal";
 
@@ -318,6 +319,7 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
 
       <FavouritesModal open={showFavourites} onOpenChange={setShowFavourites} />
       <ReviewsModal open={showReviews} onClose={setShowReviews} />
+      <OrderDetails />
 
       {/* Checkout component */}
       {openCheckout && (

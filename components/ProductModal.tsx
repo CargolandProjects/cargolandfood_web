@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Separator } from "./ui/separator";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Button } from "./ui/button";
-import { useCartStore, type Product } from "@/lib/stores/useCartStore";
+import { useCartStore, type Product } from "@/lib/stores/CartStore";
 
 interface ProductModalProps {
   product: Product;

@@ -23,7 +23,7 @@ const RiderNoteModal = ({ open, onOpenChange }: RiderNoteProps) => {
           <textarea
             value={msg}
             onChange={(e) => setMsg(e.target.value)}
-            className="p-3 w-full rounded-button border border-neutral-500 h-[167px] max-h-[167px]"
+            className="p-3 w-full rounded-xl border border-neutral-300 h-[167px] max-h-[167px]"
             placeholder="Please enter any special delivery instructions here."
             maxLength={maxLength}
           ></textarea>
