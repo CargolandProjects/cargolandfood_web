@@ -15,6 +15,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import OrderDetails from "../Orders/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
 import ReviewsModal from "../ReviewModal";
+import { useGetRestaurant } from "@/lib/hooks/queries";
 
 export interface CategoryTab {
   name: Categories;
@@ -32,191 +33,18 @@ const categories: { name: Categories }[] = [
   { name: "Milk Shake" },
 ];
 
-// --- MOCK DATA ---
-// Normalized to Product shape (useCartStore)
-const mockMenuItems = [
-  {
-    id: "1",
-    name: "Pepperoni Pizza",
-    description:
-      "Hot & fresh pizza adorned with pepperoni on tomato marinara sauce and mozzarella cheese",
-    imageUrl: pizza.src,
-    price: "9650",
-    categoryId: "pizza",
-    isMenuSet: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    vendor: {
-      id: "v1",
-      businessName: "Shawarma Plus",
-      createdAt: new Date().toISOString(),
-      businessCategory: "Restaurant",
-      businessAddress: "123 Food St",
-      isPreorder: false,
-      golive: true,
-      totalOrders: 2342,
-      reviews: [],
-    },
-    simpleRating: 4.5,
-    bayesianRating: 4.4,
-  },
-  {
-    id: "2",
-    name: "Pepperoni Pizza",
-    description: "Hot & fresh pizza adorned with pepperoni on tomato...",
-    imageUrl: pizza.src,
-    price: "9650",
-    categoryId: "pizza",
-    isMenuSet: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    vendor: {
-      id: "v1",
-      businessName: "Shawarma Plus",
-      createdAt: new Date().toISOString(),
-      businessCategory: "Restaurant",
-      businessAddress: "123 Food St",
-      isPreorder: false,
-      golive: true,
-      totalOrders: 2342,
-      reviews: [],
-    },
-    simpleRating: 4.5,
-    bayesianRating: 4.4,
-  },
-  {
-    id: "3",
-    name: "Chicken Shawarma",
-    description: "Juicy marinated chicken wrapped in soft pita bread...",
-    imageUrl: pizza.src,
-    price: "5253",
-    categoryId: "shawarma",
-    isMenuSet: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    vendor: {
-      id: "v1",
-      businessName: "Shawarma Plus",
-      createdAt: new Date().toISOString(),
-      businessCategory: "Restaurant",
-      businessAddress: "123 Food St",
-      isPreorder: false,
-      golive: true,
-      totalOrders: 2342,
-      reviews: [],
-    },
-    simpleRating: 4.6,
-    bayesianRating: 4.5,
-  },
-  {
-    id: "4",
-    name: "Pepperoni Pizza",
-    description: "Hot & fresh pizza adorned with pepperoni on tomato...",
-    imageUrl: pizza.src,
-    price: "9650",
-    categoryId: "pizza",
-    isMenuSet: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    vendor: {
-      id: "v1",
-      businessName: "Shawarma Plus",
-      createdAt: new Date().toISOString(),
-      businessCategory: "Restaurant",
-      businessAddress: "123 Food St",
-      isPreorder: false,
-      golive: true,
-      totalOrders: 2342,
-      reviews: [],
-    },
-    simpleRating: 4.5,
-    bayesianRating: 4.4,
-  },
-  {
-    id: "5",
-    name: "Pepperoni Pizza",
-    description: "Hot & fresh pizza adorned with pepperoni on tomato...",
-    imageUrl: pizza.src,
-    price: "9650",
-    categoryId: "pizza",
-    isMenuSet: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    vendor: {
-      id: "v1",
-      businessName: "Shawarma Plus",
-      createdAt: new Date().toISOString(),
-      businessCategory: "Restaurant",
-      businessAddress: "123 Food St",
-      isPreorder: false,
-      golive: true,
-      totalOrders: 2342,
-      reviews: [],
-    },
-    simpleRating: 4.5,
-    bayesianRating: 4.4,
-  },
-  {
-    id: "6",
-    name: "Pepperoni Pizza",
-    description: "Hot & fresh pizza adorned with pepperoni on tomato...",
-    imageUrl: pizza.src,
-    price: "9650",
-    categoryId: "pizza",
-    isMenuSet: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    vendor: {
-      id: "v1",
-      businessName: "Shawarma Plus",
-      createdAt: new Date().toISOString(),
-      businessCategory: "Restaurant",
-      businessAddress: "123 Food St",
-      isPreorder: false,
-      golive: true,
-      totalOrders: 2342,
-      reviews: [],
-    },
-    simpleRating: 4.5,
-    bayesianRating: 4.4,
-  },
-  {
-    id: "7",
-    name: "Pepperoni Pizza",
-    description: "Hot & fresh pizza adorned with pepperoni on tomato...",
-    imageUrl: pizza.src,
-    price: "9650",
-    categoryId: "pizza",
-    isMenuSet: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    vendor: {
-      id: "v1",
-      businessName: "Shawarma Plus",
-      createdAt: new Date().toISOString(),
-      businessCategory: "Restaurant",
-      businessAddress: "123 Food St",
-      isPreorder: false,
-      golive: true,
-      totalOrders: 2342,
-      reviews: [],
-    },
-    simpleRating: 4.5,
-    bayesianRating: 4.4,
-  },
-];
-
-const ReastaurantPageContent = ({ params }: { params: string }) => {
+const ReastaurantPageContent = ({ id }: { id: string }) => {
   const [isActive, setIsActive] = useState<Categories>("All");
   const [selectedId, setselectedId] = useState<string | null>(null);
   const [showFavourites, setShowFavourites] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
 
+  const { data, isPending } = useGetRestaurant(id);
   const items = useCartStore((s) => s.items);
   const router = useRouter();
 
   const openCheckout = items.length > 0;
-  console.log("Restaurant page Id:", params);
+  console.log("Restaurant page Id:", id);
 
   const handleBack = () => {
     router.back();
@@ -225,6 +53,10 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
   const handleSelect = (id: string) => {
     setselectedId(id === selectedId ? null : id);
   };
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex gap-10 h-full">
@@ -305,7 +137,7 @@ const ReastaurantPageContent = ({ params }: { params: string }) => {
         {/* 3. Product Listing Section */}
         <div className="p-4">
           <div className="grid md:grid-cols-2 gap-4 lg:gap-10">
-            {mockMenuItems.map((item) => (
+            {data.map((item) => (
               <RestaurantItemCard
                 key={item.id}
                 product={item}
