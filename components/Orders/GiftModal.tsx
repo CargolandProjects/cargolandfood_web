@@ -24,7 +24,7 @@ const formSchema = z.object({
     .string()
     .min(10, "Phone number must be at least 10 digits")
     .regex(/^[\+]?[1-9][\d]{0,15}$/, "Enter a valid phone number"),
-  email: z.string("Enter a valid email address").min(1, "Email is required"),
+  email: z.email("Enter a valid email address").min(1, "Email is required"),
   name: z
     .string()
     .min(3, "Full name must be at least 3 characters")
@@ -53,15 +53,16 @@ const GiftModal = ({ open, onOpenChange }: GiftModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-100! gap-o p-0 px-7 overflow-auto max-h-[95vh] hide-scrollbar">
+      <DialogContent className="max-w-100! gap-0 p-0 px-7 overflow-auto max-h-[95vh] hide-scrollbar">
         <DialogHeader>
           <DialogTitle className="dialog-title mt-[74px]">
             Gift Someone
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
           <FieldSet>
-            <FieldGroup>
+            <FieldGroup className="gap-6">
               <Controller
                 name="name"
                 control={control}
@@ -161,7 +162,7 @@ const GiftModal = ({ open, onOpenChange }: GiftModalProps) => {
 
           <Button
             type="submit"
-            className="mt-8 submit-btn mb-6.5"
+            className="mt-6.5 submit-btn mb-6.5"
             // disabled={isPending}
           >
             {/* {isPending ? (

@@ -30,6 +30,7 @@ import CouponModal from "./CouponModal";
 import OrderSuccessModal from "./OrderSuccessModal";
 import { useUIStore } from "@/lib/stores/uiStore";
 import GiftModal from "./GiftModal";
+import PickupConfirmModal from "./PickupConfirmModal";
 
 const Checkout = () => {
   const {
@@ -47,12 +48,13 @@ const Checkout = () => {
   const [showCoupon, setShowCoupon] = useState(false);
   const [showOrderSuccess, setShowOrderSuccess] = useState(false);
   const [showGift, setShowGift] = useState(false);
+  const [showConfirmPickup, setShowConfirmPickup] = useState(false);
   const [showSuccess, setSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
     null
   );
 
-  const openOrderDetails = useUIStore(s => s.openOrderDetails)
+  const openOrderDetails = useUIStore((s) => s.openOrderDetails);
 
   const currency = (n: number) => `₦ ${n.toLocaleString()}`;
 
@@ -62,6 +64,15 @@ const Checkout = () => {
   const serviceFee = 900;
   const discounts = 660;
   const total = subTotal + deliveryFee + serviceFee - discounts;
+
+  const handlePlaceOrder = () => {
+    if (deliveryType === "pickup") {
+      setShowConfirmPickup(true);
+      return;
+    }
+
+    openOrderDetails();
+  };
 
   return (
     <>
@@ -332,9 +343,12 @@ const Checkout = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 ">
-            <Button 
-            onClick={() => openOrderDetails({ orderId: '100014' })}
-            className="submit-btn flex-1">PLACE ORDER</Button>
+            <Button
+              onClick={handlePlaceOrder}
+              className="submit-btn flex-1"
+            >
+              PLACE ORDER
+            </Button>
             <Button
               onClick={() => setShowAlert(true)}
               variant="outline"
@@ -355,6 +369,10 @@ const Checkout = () => {
         onOpenChange={setShowOrderSuccess}
       />
       <GiftModal open={showGift} onOpenChange={setShowGift} />
+      <PickupConfirmModal
+        open={showConfirmPickup}
+        onOpenChange={setShowConfirmPickup}
+      />
 
       <ConfirmationModal
         confirmText="Clear"
