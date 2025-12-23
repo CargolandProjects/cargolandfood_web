@@ -1,4 +1,4 @@
-import MenuItemCardSkeleton from "./MenuItemCardSkeleton";
+import VendorCardSkeleton from "./VendorCardSkeleton";
 import { Skeleton } from "./ui/skeleton";
 
 const Loading = ({
@@ -12,7 +12,7 @@ const Loading = ({
     {title && <Skeleton className="w-30 h-4" />}
     <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
       {Array.from({ length: count }).map((_, i) => (
-        <MenuItemCardSkeleton key={i} />
+        <VendorCardSkeleton key={i} />
       ))}
     </div>
   </div>

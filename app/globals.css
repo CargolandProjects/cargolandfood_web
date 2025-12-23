@@ -344,6 +344,7 @@
     @apply text-2xl font-medium leading-8 text-center; 
   }
 
+  
   /* Custom shadows */
   /* .shadow-cargo-xs {
     box-shadow: var(--shadow-cargo-xs);

@@ -6,7 +6,6 @@ import { shawarma } from "@/assets/images";
 import RestaurantStats from "@/components/RestaurantStats";
 import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
 import RestaurantItemCard from "@/components/Restaurants/RestaurantItemCard";
-import RestaurantItemCardSkeleton from "@/components/Restaurants/RestaurantItemCardSkeleton";
 import RestaurantPageSkeleton from "@/components/Restaurants/RestaurantPageSkeleton";
 import { useRouter } from "next/navigation";
 import { info } from "@/assets/svgs";
@@ -19,14 +18,14 @@ import ReviewsModal from "../ReviewModal";
 import { useGetRestaurant } from "@/lib/hooks/queries";
 
 export interface CategoryTab {
-  name: Categories;
+  name: string;
   isActive?: boolean;
-  selectTab: (tab: Categories) => void;
+  selectTab: (tab: string) => void;
 }
 
-type Categories = "All" | "Sharwarma" | "Sandwich" | "Pizza" | "Milk Shake";
+// type Categories = "All" | "Sharwarma" | "Sandwich" | "Pizza" | "Milk Shake";
 
-const categories: { name: Categories }[] = [
+const categories= [
   { name: "All" },
   { name: "Sharwarma" },
   { name: "Sandwich" },
@@ -35,12 +34,12 @@ const categories: { name: Categories }[] = [
 ];
 
 const ReastaurantPageContent = ({ id }: { id: string }) => {
-  const [isActive, setIsActive] = useState<Categories>("All");
+  const [isActive, setIsActive] = useState("All");
   const [selectedId, setselectedId] = useState<string | null>(null);
   const [showFavourites, setShowFavourites] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
 
-  const { data, isPending } = useGetRestaurant(id);
+  const { data, isPending, error } = useGetRestaurant(id);
   const items = useCartStore((s) => s.items);
   const router = useRouter();
 
