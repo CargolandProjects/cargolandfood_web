@@ -341,10 +341,30 @@
   }
 
   .dialog-title {
-    @apply text-2xl font-medium leading-8 text-center; 
+    @apply text-2xl font-medium leading-8 text-center;
   }
 
-  
+  .card-shadow {
+    filter: drop-shadow(12px 12px 25px rgba(150, 150, 154, 0.15));
+  }
+
+  .card-shadow:hover {
+    filter: drop-shadow(12px 14px 35px rgba(150, 150, 154, 0.15));
+  }
+
+  .trapezium-card {
+    background: white;
+    clip-path: polygon(6% 0%,
+        /* top-left */
+        94% 0%,
+        /* top-right */
+        100% 100%,
+        /* bottom-right */
+        0% 100%
+        /* bottom-left */
+      );
+  }
+
   /* Custom shadows */
   /* .shadow-cargo-xs {
     box-shadow: var(--shadow-cargo-xs);
