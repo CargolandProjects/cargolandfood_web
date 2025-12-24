@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-const MenuItemCardSkeleton = () => {
+const VendorCardSkeleton = () => {
   return (
     <div className="w-full">
       {/* Image skeleton */}
@@ -45,4 +45,4 @@ const MenuItemCardSkeleton = () => {
   );
 };
 
-export default MenuItemCardSkeleton;
+export default VendorCardSkeleton;

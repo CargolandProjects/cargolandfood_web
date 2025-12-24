@@ -3,7 +3,7 @@ import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints"; 
 import mockClient from "../api/mock-client";
 
-export interface MenuItem {
+export interface Vendor {
   id: number;
   title: string;
   image: StaticImageData;
@@ -14,8 +14,8 @@ export interface MenuItem {
 }
 
 export interface Promotions {
-  discount: MenuItem[];
-  featured: MenuItem[];
+  discount: Vendor[];
+  featured: Vendor[];
 }
 
 export const promotions = {

@@ -1,39 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import CategoryTab from "@/components/Home/CategoryTab";
-import { shawarma } from "@/assets/images";
-import RestaurantStats from "@/components/RestaurantStats";
-import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
-import RestaurantItemCard from "@/components/Restaurants/RestaurantItemCard";
-import RestaurantPageSkeleton from "@/components/Restaurants/RestaurantPageSkeleton";
-import { useRouter } from "next/navigation";
-import { info } from "@/assets/svgs";
-import Checkout from "../Orders/CheckOut";
-import { useCartStore } from "@/lib/stores/CartStore";
-import { AnimatePresence, motion } from "framer-motion";
-import OrderDetails from "../Orders/OrderDetails";
-import FavouritesModal from "../FavouritesModal";
-import ReviewsModal from "../ReviewModal";
 import { useGetRestaurant } from "@/lib/hooks/queries";
+import { useCartStore } from "@/lib/stores/CartStore";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import RestaurantPageSkeleton from "../Restaurants/RestaurantPageSkeleton";
+import RestaurantStats from "../RestaurantStats";
+import CategoryTab from "../Home/CategoryTab";
+import { info } from "@/assets/svgs";
+import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
+import { shawarma } from "@/assets/images";
+import RestaurantItemCard from "../Restaurants/RestaurantItemCard";
+import GroceryItemCard from "./GroceryItemCard";
 
-export interface CategoryTab {
-  name: string;
-  isActive?: boolean;
-  selectTab: (tab: string) => void;
-}
-
-// type Categories = "All" | "Sharwarma" | "Sandwich" | "Pizza" | "Milk Shake";
-
-const categories= [
+const categories = [
   { name: "All" },
-  { name: "Sharwarma" },
-  { name: "Sandwich" },
-  { name: "Pizza" },
-  { name: "Milk Shake" },
+  { name: "Beers, Wines & Spirits" },
+  { name: "Confectionaries" },
+  { name: "Deodorant" },
 ];
 
-const ReastaurantPageContent = ({ id }: { id: string }) => {
+const GroceriesPageContent = ({ id }: { id: string }) => {
   const [isActive, setIsActive] = useState("All");
   const [selectedId, setselectedId] = useState<string | null>(null);
   const [showFavourites, setShowFavourites] = useState(false);
@@ -70,7 +57,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
           className="flex items-center gap-4 text-sm w-full pl-2 hover:cursor-pointer"
         >
           <RiArrowGoBackLine className="size-3.5 text-gray-500" />
-          <span className="text-xl font-medium">Restaurants</span>
+          <span className="text-xl font-medium">Groceries & More</span>
         </button>
         {/* 1. Header Image and Info Section */}
         <div className="relative bg-white mt-2">
@@ -106,9 +93,9 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
           </div>
 
           {/* Restaurant Title and Details (Below Image) */}
-          <div className="p-4 py-10 bg-white">
+          <div className="py-10 bg-white">
             {/* Changed from bg-gray-50 to bg-white */}
-            <h2 className="text-[32px] font-medium text-gray-900 mb-2">
+            <h2 className="text-[32px] font-medium text-gray-900 mb-1 leading-10">
               Shawarma Plus +
             </h2>
             {/* Stats Line (Rating, Delivery Fee, Time) */}
@@ -121,7 +108,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
         </div>
 
         {/* 2. Category Tabs Section */}
-        <div className="sticky -top-4 z-10 pb-10 px-4">
+        <div className="sticky -top-4 z-10 pb-10">
           <div className="flex gap-4.5 max-w-[606px] h-11.5 justify-start overflow-x-auto hide-scrollbar">
             {categories.map(({ name }, i) => (
               <CategoryTab
@@ -136,9 +123,9 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
 
         {/* 3. Product Listing Section */}
         <div className="p-4">
-          <div className="grid md:grid-cols-2 gap-4 lg:gap-10">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-15">
             {data.map((item) => (
-              <RestaurantItemCard
+              <GroceryItemCard
                 key={item.id}
                 product={item}
                 handleSelect={handleSelect}
@@ -148,27 +135,8 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
           </div>
         </div>
       </div>
-
-      <FavouritesModal open={showFavourites} onOpenChange={setShowFavourites} />
-      <ReviewsModal open={showReviews} onClose={setShowReviews} />
-      <OrderDetails />
-
-      {/* Checkout component */}
-      {openCheckout && (
-        <AnimatePresence mode="wait">
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.4 }}
-            className="sticky top-6 self-start"
-          >
-            <Checkout />
-          </motion.div>
-        </AnimatePresence>
-      )}
     </div>
   );
 };
 
-export default ReastaurantPageContent;
+export default GroceriesPageContent;

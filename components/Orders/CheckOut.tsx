@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
-import { Separator } from "./ui/separator";
+import { Separator } from "../ui/separator";
 import {
   RiArrowRightSLine,
   RiBankCardFill,
@@ -16,23 +16,21 @@ import {
   RiRestaurant2Fill,
   RiWallet3Fill,
 } from "react-icons/ri";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-
-// interface PackItem {
-//   id: number;
-//   packNumber: number;
-//   pizza: string;
-//   pizzaPrice: number;
-//   packs: number;
-//   packPrice: number;
-// }
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
 type Delivery = "delivery" | "pickup";
 type PaymentMethod = "wallet" | "newCard" | "bankTransfer";
 
-import { useCartStore } from "@/lib/stores/useCartStore";
-import ConfirmationModal from "./ConfirmationModal";
-import { ScrollArea } from "./ui/scroll-area";
+import { useCartStore } from "@/lib/stores/CartStore";
+import ConfirmationModal from "../ConfirmationModal";
+import { ScrollArea } from "../ui/scroll-area";
+import RiderNote from "./RiderNoteModal";
+import CouponSuccess from "./CouponSuccessModal";
+import CouponModal from "./CouponModal";
+import OrderSuccessModal from "./OrderSuccessModal";
+import { useUIStore } from "@/lib/stores/uiStore";
+import GiftModal from "./GiftModal";
+import PickupConfirmModal from "./PickupConfirmModal";
 
 const Checkout = () => {
   const {
@@ -46,9 +44,17 @@ const Checkout = () => {
   } = useCartStore();
   const [deliveryType, setDeliveryType] = useState<Delivery | null>(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [showRiderNote, setShowRiderNote] = useState(false);
+  const [showCoupon, setShowCoupon] = useState(false);
+  const [showOrderSuccess, setShowOrderSuccess] = useState(false);
+  const [showGift, setShowGift] = useState(false);
+  const [showConfirmPickup, setShowConfirmPickup] = useState(false);
+  const [showSuccess, setSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
     null
   );
+
+  const openOrderDetails = useUIStore((s) => s.openOrderDetails);
 
   const currency = (n: number) => `₦ ${n.toLocaleString()}`;
 
@@ -59,6 +65,14 @@ const Checkout = () => {
   const discounts = 660;
   const total = subTotal + deliveryFee + serviceFee - discounts;
 
+  const handlePlaceOrder = () => {
+    if (deliveryType === "pickup") {
+      setShowConfirmPickup(true);
+      return;
+    }
+
+    openOrderDetails();
+  };
 
   return (
     <>
@@ -146,17 +160,35 @@ const Checkout = () => {
 
           {/* Message rows */}
           <div className="space-y-4 mb-6">
-            <button className="w-full flex items-center justify-between">
+            <button
+              onClick={() => setShowRiderNote(true)}
+              className="w-full flex items-center justify-between hover:underline cursor-pointer"
+            >
               <span className="flex items-center gap-2 text-sm">
-                <RiRestaurant2Fill className="size-5 text-neutral-700" /> Have a
+                <RiRestaurant2Fill className="size-5 text-neutral-600" /> Have a
                 message for the rider ?
               </span>
               <RiArrowRightSLine className="size-5 text-neutral-500" />
             </button>
-            <button className="w-full flex items-center justify-between">
+
+            <button
+              onClick={() => setSuccess(true)}
+              className="w-full flex items-center justify-between hover:underline cursor-pointer"
+            >
               <span className="flex items-center gap-2 text-sm">
-                <RiEBike2Line className="size-5 icon-r-left text-neutral-700" />{" "}
+                <RiEBike2Line className="size-5 icon-r-left text-neutral-600" />{" "}
                 Have a message for the restaurant ?
+              </span>
+              <RiArrowRightSLine className="size-5 text-neutral-500" />
+            </button>
+
+            <button
+              onClick={() => setShowGift(true)}
+              className="w-full p-3 bg-neutral-100 rounded-md flex items-center justify-between hover:underline cursor-pointer"
+            >
+              <span className="flex items-center gap-2 text-sm">
+                <RiGiftFill className="size-5 icon-r-left text-primary" />
+                Ordering for someone else?
               </span>
               <RiArrowRightSLine className="size-5 text-neutral-500" />
             </button>
@@ -202,13 +234,13 @@ const Checkout = () => {
                   </span>
                   <RiArrowRightSLine className="size-5 text-neutral-500" />
                 </button>
-                <button className="w-full flex items-center justify-between">
+                {/* <button className="w-full flex items-center justify-between">
                   <span className="flex items-center gap-2 text-sm">
                     <RiGiftFill className="size-5 text-primary" /> Ordering for
                     someone else?
                   </span>
                   <RiArrowRightSLine className="size-5 text-neutral-500" />
-                </button>
+                </button> */}
               </div>
             </div>
           )}
@@ -217,7 +249,7 @@ const Checkout = () => {
           <div className=" mb-6">
             <h3 className="text-base font-medium leading-6">Payment Method</h3>
             <div className="mt-4 space-y-2">
-              <button className="w-full flex items-center justify-between">
+              <div className="w-full flex items-center justify-between">
                 <span className="flex items-center gap-2 text-sm">
                   <RiWallet3Fill className="size-5 text-primary" /> Wallet
                   Balance -{" "}
@@ -230,8 +262,9 @@ const Checkout = () => {
                 >
                   <RadioGroupItem value="wallet" />
                 </RadioGroup>
-              </button>
-              <button className="w-full flex items-center justify-between">
+              </div>
+
+              <div className="w-full flex items-center justify-between">
                 <span className="flex items-center gap-2 text-sm">
                   <RiBankCardFill className="size-5 text-primary" /> Add New
                   Card
@@ -243,8 +276,9 @@ const Checkout = () => {
                 >
                   <RadioGroupItem value="newCard" />
                 </RadioGroup>
-              </button>
-              <button className="w-full flex items-center justify-between">
+              </div>
+
+              <div className="w-full flex items-center justify-between">
                 <span className="flex items-center gap-2 text-sm">
                   <RiBankFill className="size-5 text-primary" /> Bank Transfer
                 </span>
@@ -255,7 +289,7 @@ const Checkout = () => {
                 >
                   <RadioGroupItem value="bankTransfer" />
                 </RadioGroup>
-              </button>
+              </div>
             </div>
           </div>
 
@@ -263,7 +297,10 @@ const Checkout = () => {
 
           {/* Coupon code */}
           <div className="mb-6">
-            <button className="w-full flex items-center justify-between">
+            <button
+              onClick={() => setShowCoupon(true)}
+              className="w-full flex items-center justify-between hover:underline"
+            >
               <span className="flex items-center gap-2 text-sm">
                 <RiCoupon2Fill className="size-5 text-primary" /> Enter Coupon
                 Code
@@ -306,19 +343,39 @@ const Checkout = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 ">
-            <Button className="submit-btn flex-1">PLACE ORDER</Button>
             <Button
-            onClick={()=>    setShowAlert(true)}
+              onClick={handlePlaceOrder}
+              className="submit-btn flex-1"
+            >
+              PLACE ORDER
+            </Button>
+            <Button
+              onClick={() => setShowAlert(true)}
               variant="outline"
-              className="submit-btn flex-1 hover:bg-gray-50 text-neutral-400 border-neutral-200"
+              className="submit-btn flex-1 hover:bg-gray-50 text-neutral-500 border-neutral-300"
             >
               CANCEL ORDERS
             </Button>
           </div>
         </div>
       </ScrollArea>
+
+      {/* Activity Modals */}
+      <RiderNote open={showRiderNote} onOpenChange={setShowRiderNote} />
+      <CouponSuccess open={showSuccess} onOpenChange={setSuccess} />
+      <CouponModal open={showCoupon} onOpenChange={setShowCoupon} />
+      <OrderSuccessModal
+        open={showOrderSuccess}
+        onOpenChange={setShowOrderSuccess}
+      />
+      <GiftModal open={showGift} onOpenChange={setShowGift} />
+      <PickupConfirmModal
+        open={showConfirmPickup}
+        onOpenChange={setShowConfirmPickup}
+      />
+
       <ConfirmationModal
-      confirmText="Clear"
+        confirmText="Clear"
         description="Are you sure you want to clear your cart?"
         // confirmText="Clear"
         // cancelText="Clear"

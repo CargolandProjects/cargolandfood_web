@@ -30,7 +30,7 @@ const formSchema = z
       .string()
       .min(10, "Phone number must be at least 10 digits")
       .regex(/^[\+]?[1-9][\d]{0,15}$/, "Enter a valid phone number"),
-    email: z.string("Enter a valid email address").min(1, "Email is required"),
+    email: z.email("Enter a valid email address").min(1, "Email is required"),
     fullName: z
       .string()
       .min(3, "Full name must be at least 3 characters")

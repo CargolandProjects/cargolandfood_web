@@ -1,6 +1,6 @@
 "use client";
 
-import MenuItemCard from "./MenuItemCard";
+import VendorCard from "./VendorCard";
 import { Button } from "./ui/button";
 import { RiArrowLeftLine, RiArrowRightLine } from "react-icons/ri";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -79,7 +79,7 @@ const Promotions = () => {
               >
                 {data?.discount.map((discount) => (
                   <SwiperSlide key={discount.id}>
-                    <MenuItemCard menuItem={discount} />
+                    <VendorCard menuItem={discount} />
                   </SwiperSlide>
                 ))}
               </Swiper>
@@ -124,7 +124,7 @@ const Promotions = () => {
               >
                 {data?.featured.map((feature) => (
                   <SwiperSlide key={feature.id}>
-                    <MenuItemCard menuItem={feature} />
+                    <VendorCard menuItem={feature} />
                   </SwiperSlide>
                 ))}
               </Swiper>

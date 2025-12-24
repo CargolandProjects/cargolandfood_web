@@ -13,13 +13,13 @@ import SelectAddressModal from "./SelectAddressModal";
 import ConfirmationModal from "@/components/ConfirmationModal";
 
 const AuthModalContainer = () => {
-  const { 
-    currentStep, 
-    isOpen, 
-    attemptClose, 
-    showExitConfirmation, 
-    confirmClose, 
-    cancelClose 
+  const {
+    currentStep,
+    isOpen,
+    attemptClose,
+    showExitConfirmation,
+    confirmClose,
+    cancelClose,
   } = useAuthFlow();
 
   const renderModal = () => {

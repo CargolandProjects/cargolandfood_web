@@ -1,4 +1,4 @@
-import MenuItemCard from "../MenuItemCard";
+import VendorCard from "../VendorCard";
 import { useRestaurants } from "@/lib/hooks/queries/useRestaurants";
 import Loading from "../Loading";
 
@@ -21,7 +21,7 @@ const Restaurants = () => {
           <h3 className="mb-6.5">Restaurants</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             {data.map((menuItem) => (
-              <MenuItemCard menuItem={menuItem} key={menuItem.id} />
+              <VendorCard menuItem={menuItem} key={menuItem.id} />
             ))}
           </div>
         </div>

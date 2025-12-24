@@ -1,4 +1,5 @@
-import { MenuItem } from "@/lib/services/promotions.service";
+import { Vendor } from "@/lib/services/promotions.service";
+import { useRouter } from "next/navigation";
 import {
   RiEBike2Line,
   RiGiftLine,
@@ -7,13 +8,21 @@ import {
   RiTimeLine,
 } from "react-icons/ri";
 
-const MenuItemCard = ({
-  menuItem: { title, image, rating, deliveryFee, deliveryTime, discount },
+const VendorCard = ({
+  menuItem: { title, image, rating, deliveryFee, deliveryTime, discount, id },
+  route = "restaurants",
 }: {
-  menuItem: MenuItem;
+  menuItem: Vendor;
+  route?: string;
 }) => {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push(`/${route}/${id}`);
+  };
+
   return (
-    <div className="w-full">
+    <div onClick={handleClick} className="w-full cursor-pointer">
       <div className="relative w-full h-[114px] overflow-hidden rounded-md">
         <img
           src={image.src}
@@ -52,4 +61,4 @@ const MenuItemCard = ({
   );
 };
 
-export default MenuItemCard;
+export default VendorCard;
