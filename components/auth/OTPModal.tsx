@@ -95,6 +95,9 @@ const OTPModal = () => {
         completeOtp();
         routeModal(user?.addressess);
       },
+      onError: (error) => {
+        setOtpMessage({ error: true, message: error.message });
+      },
     });
   };
 

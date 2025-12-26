@@ -10,7 +10,6 @@ import CategoryTab from "../Home/CategoryTab";
 import { info } from "@/assets/svgs";
 import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
 import { shawarma } from "@/assets/images";
-import RestaurantItemCard from "../Restaurants/RestaurantItemCard";
 import GroceryItemCard from "./GroceryItemCard";
 import { AnimatePresence, motion } from "framer-motion";
 import FavouritesModal from "../FavouritesModal";

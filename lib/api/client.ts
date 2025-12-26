@@ -33,13 +33,28 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error) => {
     const status = error?.response?.status;
-    const originalRequest: AxiosRequestConfig & { _retry?: boolean } = error.config || {};
+    const originalRequest: AxiosRequestConfig & { _retry?: boolean } =
+      error.config || {};
+
+    const data = error?.response?.data as
+      | { statusCode?: number; code?: string; message?: string }
+      | undefined;
+
+    const normalized = new Error(
+      data?.message || error.message || "Something went wrong"
+    ) as Error & { statusCode?: number; code?: string;};
+    normalized.statusCode = data?.statusCode ?? error.response?.status;
+    normalized.code = data?.code;
+    normalized.cause = error; // keep original │                                                                               │
 
     if (status === 401 && !originalRequest._retry) {
-      const refreshToken = typeof window !== "undefined" ? localStorage.getItem("refresh_token") : null;
+      const refreshToken =
+        typeof window !== "undefined"
+          ? localStorage.getItem("refresh_token")
+          : null;
       if (!refreshToken) {
         // No refresh token; treat as logged out
-        return Promise.reject(error);
+        return Promise.reject(normalized);
       }
 
       originalRequest._retry = true;
@@ -68,7 +83,9 @@ apiClient.interceptors.response.use(
           // Retry original request with new token
           originalRequest.headers = originalRequest.headers || {};
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (originalRequest.headers as any).Authorization = `Bearer ${newAccessToken}`;
+          (
+            originalRequest.headers as any
+          ).Authorization = `Bearer ${newAccessToken}`;
           return apiClient(originalRequest);
         }
       } catch (e) {
@@ -77,16 +94,11 @@ apiClient.interceptors.response.use(
           localStorage.removeItem("auth_token");
           localStorage.removeItem("refresh_token");
         }
-        return Promise.reject(e);
+        return Promise.reject(normalized);
       }
     }
 
-    const backendMessage =
-      error?.response?.data?.message ||
-      error?.message ||
-      "Something went wrong";
-
-    return Promise.reject(new Error(backendMessage));
+    return Promise.reject(normalized);
   }
 );
 
