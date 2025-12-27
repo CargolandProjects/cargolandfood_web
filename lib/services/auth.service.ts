@@ -72,7 +72,7 @@ export const auth = {
     return res.data;
   },
 
-  async resendOtp(phoneNo: {phoneNumber: string}) {
+  async resendOtp(phoneNo: { phoneNumber: string }) {
     const res = await apiClient.post(API_ROUTES.auth.resendOtp, phoneNo);
     return res.data;
   },
@@ -87,6 +87,11 @@ export const auth = {
       API_ROUTES.user(id),
       payload
     );
+    return res.data;
+  },
+
+  async deleteUser(id: string) {
+    const res = await apiClient.delete(API_ROUTES.user(id));
     return res.data;
   },
 };

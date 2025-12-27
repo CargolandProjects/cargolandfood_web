@@ -17,6 +17,7 @@ import { User } from "@/lib/services/auth.service";
 import { MenuScreen } from "./Header";
 import { useState } from "react";
 import EditProfile from "./profile/EditProfile";
+import DeleteProfile from "./profile/DeleteProfile";
 
 interface MenuContentProps {
   screen: string;
@@ -34,6 +35,7 @@ const MenuContent = ({
   signOut,
 }: MenuContentProps) => {
   const [showEdit, setShowEdit] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
 
   const content = () => {
     switch (screen) {
@@ -151,7 +153,13 @@ const MenuContent = ({
                 <p className="text-gray-500">{session?.phoneNumber}</p>
               </div>
             </DropdownMenuItem>
-            <DropdownMenuItem className="flex gap-0.5 justify-between items-center ">
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                setShowDelete(true);
+              }}
+              className="flex gap-0.5 justify-between items-center "
+            >
               <div className="flex items-center">
                 <div className="size-10 rounded-full flex justify-center items-center">
                   <div className="size-6 rounded-full flex justify-center items-center bg-white">
@@ -175,6 +183,7 @@ const MenuContent = ({
         open={showEdit}
         onOpenChange={setShowEdit}
       />
+      <DeleteProfile open={showDelete} onOpenChange={setShowDelete} session={session} />
       {content()}
     </>
   );

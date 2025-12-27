@@ -75,74 +75,72 @@ const EditProfile = ({
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
         </DialogHeader>
-    
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-7">
-            <FieldSet>
-              <FieldGroup className="gap-6">
-                <Controller
-                  name="name"
-                  control={control}
-                  render={({ field, fieldState }) => (
-                    <Field className="field">
-                      <FieldLabel className="form-label">Full Name</FieldLabel>
-                      <Input
-                        {...field}
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        className="form-input"
-                        placeholder="Home"
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
 
-                <Controller
-                  name="email"
-                  control={control}
-                  render={({ field, fieldState }) => (
-                    <Field className="field">
-                      <FieldLabel className="form-label">Email</FieldLabel>
-                      <Input
-                        {...field}
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        className="form-input"
-                        placeholder="example@gmail.com"
-                      />
-                      {fieldState.invalid && (
-                        <FieldError>{fieldState.error?.message}</FieldError>
-                      )}
-                    </Field>
-                  )}
-                />
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-7">
+          <FieldSet>
+            <FieldGroup className="gap-6">
+              <Controller
+                name="name"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field className="field">
+                    <FieldLabel className="form-label">Full Name</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      className="form-input"
+                      placeholder="Home"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
 
-                <Controller
-                  name="phoneNumber"
-                  control={control}
-                  render={({ field, fieldState }) => (
-                    <Field className="field">
-                      <FieldLabel className="form-label">
-                        Phone Number
-                      </FieldLabel>
-                      <Input
-                        {...field}
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        className="form-input"
-                        placeholder="+234 080000000000"
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
-              </FieldGroup>
-            </FieldSet>
+              <Controller
+                name="email"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field className="field">
+                    <FieldLabel className="form-label">Email</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      className="form-input"
+                      placeholder="example@gmail.com"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError>{fieldState.error?.message}</FieldError>
+                    )}
+                  </Field>
+                )}
+              />
 
+              <Controller
+                name="phoneNumber"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field className="field">
+                    <FieldLabel className="form-label">Phone Number</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      className="form-input"
+                      placeholder="+234 080000000000"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </FieldGroup>
+          </FieldSet>
+          <div className="px-[7.5px]">
             <Button
               type="submit"
               className="mt-6 submit-btn mb-4.5"
@@ -154,7 +152,8 @@ const EditProfile = ({
                 "Save"
               )}
             </Button>
-          </form>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

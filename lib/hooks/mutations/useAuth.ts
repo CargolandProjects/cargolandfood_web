@@ -31,3 +31,9 @@ export const useUpdateUser = () => {
       auth.updateUserById(id, payload),
   });
 };
+
+export const useDeleteUser = () => {
+  return useMutation({
+    mutationFn: auth.deleteUser,
+  });
+};
