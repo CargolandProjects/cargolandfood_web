@@ -340,6 +340,10 @@
     transform: matrix(-1, 0, 0, 1, 0, 0);
   }
 
+  .dialog{
+    @apply max-w-[400px]! p-0 gap-0 rounded-2xl px-[28.5px]
+  }
+
   .dialog-title {
     @apply text-2xl font-medium leading-8 text-center;
   }

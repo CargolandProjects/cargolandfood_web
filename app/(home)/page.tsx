@@ -1,6 +1,6 @@
-import Categories from "@/components/Home/Categories";
-import Selections from "@/components/Home/Selections";
-import Banners from "@/components/Home/Banners";
+import Categories from "@/components/home/Categories";
+import Selections from "@/components/home/Selections";
+import Banners from "@/components/home/Banners";
 
 export default function Homepage() {
   return (

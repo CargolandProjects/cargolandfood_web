@@ -6,14 +6,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import GroceriesPageSkeleton from "./GroceriesPageSkeleton";
 import RestaurantStats from "../RestaurantStats";
-import CategoryTab from "../Home/CategoryTab";
+import CategoryTab from "../home/CategoryTab";
 import { info } from "@/assets/svgs";
 import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
 import { shawarma } from "@/assets/images";
 import GroceryItemCard from "./GroceryItemCard";
 import { AnimatePresence, motion } from "framer-motion";
 import FavouritesModal from "../FavouritesModal";
-import Checkout from "../Orders/CheckOut";
+import Checkout from "../orders/CheckOut";
 import ReviewsModal from "../ReviewModal";
 
 const categories = [

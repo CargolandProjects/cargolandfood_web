@@ -1,4 +1,4 @@
-import ReastaurantPageContent from "@/components/Restaurants/ReastaurantPageContent";
+import ReastaurantPageContent from "@/components/restaurants/ReastaurantPageContent";
 
 export default async function RestaurantDetailsPage({
   params,

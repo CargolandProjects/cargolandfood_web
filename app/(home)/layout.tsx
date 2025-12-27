@@ -1,5 +1,5 @@
 import { Header } from "@/components/Header";
-import Footer from "@/components/Home/Footer";
+import Footer from "@/components/home/Footer";
 import Sidebar from "@/components/Sidebar";
 import { CategoryProvider } from "@/contexts/CategoryContext";
 import { ReactNode } from "react";
