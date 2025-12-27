@@ -18,6 +18,7 @@ import { MenuScreen } from "./Header";
 import { useState } from "react";
 import EditProfile from "./profile/EditProfile";
 import DeleteProfile from "./profile/DeleteProfile";
+import ConfirmationModal from "./ConfirmationModal";
 
 interface MenuContentProps {
   screen: string;
@@ -36,6 +37,7 @@ const MenuContent = ({
 }: MenuContentProps) => {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
   const content = () => {
     switch (screen) {
@@ -69,7 +71,10 @@ const MenuContent = ({
             </DropdownMenuItem>
             <DropdownMenuItem
               className="text-red-600 text-base font-medium"
-              onClick={signOut}
+              onClick={(e) => {
+                e.preventDefault();
+                setShowAlert(true);
+              }}
             >
               <div className="size-5">
                 <img
@@ -183,7 +188,20 @@ const MenuContent = ({
         open={showEdit}
         onOpenChange={setShowEdit}
       />
-      <DeleteProfile open={showDelete} onOpenChange={setShowDelete} session={session} />
+      <DeleteProfile
+        open={showDelete}
+        onOpenChange={setShowDelete}
+        session={session}
+      />
+      <ConfirmationModal
+        open={showAlert}
+        onOpenChange={setShowAlert}
+        onConfirm={signOut}
+        title="Are you sure?"
+        description="Are you sure, you want to log out from this account?"
+        cancelText="No, Cancel"
+        confirmText="Log Out"
+      />
       {content()}
     </>
   );

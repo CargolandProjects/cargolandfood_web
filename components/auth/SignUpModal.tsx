@@ -23,6 +23,7 @@ import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import { useSignUp } from "@/lib/hooks/mutations/useAuth";
 import { RiLoader2Line } from "react-icons/ri";
+import { toast } from "sonner";
 
 const formSchema = z
   .object({
@@ -87,12 +88,14 @@ const SignUpModal = () => {
     const { confirmPassword, ...payload } = data;
 
     mutate(payload, {
-      onSuccess: (error) => {
+      onSuccess: (data) => {
         goToStep("success");
 
-        console.log("Form Failed successfully!", error.message);
-        console.log("Submitted Data: ", payload);
+       toast.success(data.message)
       },
+      onError: (error) => {
+        toast.error(error.message);
+      }
     });
   };
 

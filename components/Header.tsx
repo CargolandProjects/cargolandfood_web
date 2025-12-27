@@ -163,7 +163,7 @@ export function Header() {
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
               ) : (
-                <div className="size-10 rounded-full flex justify-center items-center bg-primary">
+                <div className="size-10 rounded-full flex justify-center items-center bg-primary cursor-pointer">
                   <RiUser3Fill className="size-6 text-white" />
                 </div>
               )}

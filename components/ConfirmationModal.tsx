@@ -10,6 +10,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "./ui/button";
+import { RiCloseFill } from "react-icons/ri";
 
 interface ConfirmationModalProps {
   open: boolean;
@@ -30,7 +32,7 @@ const ConfirmationModal = ({
   description = "This action cannot be undone.",
   confirmText = "Continue",
   cancelText = "Cancel",
-  variant = "default"
+  variant = "default",
 }: ConfirmationModalProps) => {
   const handleConfirm = () => {
     onConfirm();
@@ -39,18 +41,25 @@ const ConfirmationModal = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>
+      <AlertDialogContent className="max-w-[400px]! p-0 m-0 gap-0 rounded-2xl px-10.5">
+        <AlertDialogHeader className=" gap-0">
+          <Button onClick={() => onOpenChange(false)} variant="ghost" className="size-10 absolute top-4.5 right-4.5">
+            <RiCloseFill className="size-6" />
+          </Button>
+          <AlertDialogTitle className="text-2xl mt-[74px] font-bold leading-8 text-center">
+            {title}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="max-w-[287px] text-base font-normal leading-5 text-neutral-600 text-center mt-3">
             {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{cancelText}</AlertDialogCancel>
-          <AlertDialogAction 
+        <AlertDialogFooter className="mt-6 mb-14 gap-3">
+          <AlertDialogCancel className="submit-btn flex-1 hover:bg-gray-50 text-neutral-500 border-neutral-300">
+            {cancelText}
+          </AlertDialogCancel>
+          <AlertDialogAction
             onClick={handleConfirm}
-            className={variant === "destructive" ? "bg-red-600 hover:bg-red-700" : ""}
+            className="submit-btn flex-1"
           >
             {confirmText}
           </AlertDialogAction>

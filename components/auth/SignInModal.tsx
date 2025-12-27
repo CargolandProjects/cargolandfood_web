@@ -24,6 +24,7 @@ import { Separator } from "../ui/separator";
 import { useSignIn } from "@/lib/hooks/mutations/useAuth";
 import { useSession } from "@/lib/hooks/useSession";
 import { RiLoader2Line } from "react-icons/ri";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   phoneNumber: z
@@ -53,8 +54,6 @@ const SignInModal = () => {
       onSuccess: (res) => {
         try {
           // Save pending user until OTP verification completes
-         
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const pendingUser = res.data.user;
           if (pendingUser) setPendingUser(pendingUser);
         } catch {}
@@ -64,6 +63,9 @@ const SignInModal = () => {
           otpType: "signin",
         });
       },
+      onError: (error) => {
+        toast.error(error.message);
+      }
     });
   };
 
