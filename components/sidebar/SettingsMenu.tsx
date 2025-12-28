@@ -13,9 +13,10 @@ import {
   RiWechatFill,
 } from "react-icons/ri";
 import { Button } from "../ui/button";
-import { ActiveTab } from "../Sidebar";
+import { ActiveTab } from "./Sidebar";
 import { useState } from "react";
 import { Separator } from "../ui/separator";
+import { useRouter } from "next/navigation";
 
 interface SettingsProps {
   activeTab: string;
@@ -59,6 +60,20 @@ const SETTINGS_SECTIONS = [
 
 const SettingsMenu = ({ activeTab, handleTabChange }: SettingsProps) => {
   const [openMenu, setOpenMenu] = useState(false);
+  const router = useRouter();
+
+  const menuActions: { [key: string]: () => void } = {
+    Settings: () => {},
+    Addresses: () => {},
+    Security: () => {},
+    Coupon: () => {},
+    "My Wallet": () => router.push("/wallet"),
+    "Refer & Earn": () => {},
+    "Join as a Delivery Man": () => {},
+    "Live Chat": () => {},
+    "Help & Support": () => {},
+  };
+
   return (
     <Popover open={openMenu} onOpenChange={() => setOpenMenu((prev) => !prev)}>
       <PopoverTrigger>
@@ -109,6 +124,7 @@ const SettingsMenu = ({ activeTab, handleTabChange }: SettingsProps) => {
               <div className="space-y-4">
                 {section.items.map((item) => (
                   <Button
+                    onClick={() => menuActions[item.label]()}
                     variant="ghost"
                     key={item.label}
                     className="flex items-center justify-between w-full p-0!"

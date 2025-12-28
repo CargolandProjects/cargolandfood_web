@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { logo } from "@/assets/svgs";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import {
   RiHeartFill,
   RiHome3Fill,
@@ -13,8 +13,8 @@ import { IconType } from "react-icons";
 import { useCategory } from "@/contexts/CategoryContext";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import SettingsMenu from "./sidebar/SettingsMenu";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import SettingsMenu from "./SettingsMenu";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 export type ActiveTab = "Home" | "Cart" | "Orders" | "Favourite" | "Settings";
 
@@ -69,10 +69,9 @@ const Sidebar = () => {
 
             return (
               <Popover key={idx}>
-                <PopoverTrigger>
-                  <Button
+                <PopoverTrigger
                     key={item.id}
-                    variant="ghost"
+                    // variant="ghost"
                     onClick={() => {
                       handleTabChange(item.id);
                       removeQuery();
@@ -94,7 +93,7 @@ const Sidebar = () => {
                         {item.label}
                       </span>
                     )}
-                  </Button>
+             
                 </PopoverTrigger>
                 <PopoverContent
                   side="right"

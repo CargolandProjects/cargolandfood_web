@@ -1,6 +1,6 @@
 import { Header } from "@/components/Header";
 import Footer from "@/components/home/Footer";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/components/sidebar/Sidebar";
 import { CategoryProvider } from "@/contexts/CategoryContext";
 import { ReactNode } from "react";
 
