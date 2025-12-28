@@ -32,7 +32,7 @@ const ConfirmationModal = ({
   description = "This action cannot be undone.",
   confirmText = "Continue",
   cancelText = "Cancel",
-  variant = "default",
+  // variant = "default",
 }: ConfirmationModalProps) => {
   const handleConfirm = () => {
     onConfirm();

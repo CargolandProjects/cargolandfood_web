@@ -276,7 +276,7 @@
     @apply font-medium font-satoshi text-2xl leading-8
   }
 
-  p {
+  p, span {
     @apply text-sm font-normal
   }
 
@@ -346,6 +346,10 @@
 
   .dialog-title {
     @apply text-2xl font-medium leading-8 text-center;
+  }
+
+  .dialog-t{
+    @apply mt-[74px]
   }
 
   .card-shadow {

@@ -15,6 +15,7 @@ import playStore from "./play-store.png";
 import pizza from "./pizza.jpg";
 import burger from "./burger.png";
 import user1 from "./user1.png";
+import wallet from "./wallet.png";
 
 export {
   hamburgers,
@@ -34,4 +35,5 @@ export {
   pizza,
   burger,
   user1,
+  wallet,
 };

@@ -13,9 +13,6 @@ interface Notification {
 }
 
 const Notifications = () => {
-  const timeAgo = (date: Date | string) => {
-    return formatDistanceToNow(new Date(date), { addSuffix: true });
-  };
   const notifications: Notification[] = [
     {
       id: "rate-order",
@@ -48,11 +45,18 @@ const Notifications = () => {
       isRead: false,
     },
   ];
+
+  const timeAgo = (date: Date | string) => {
+    return formatDistanceToNow(new Date(date), { addSuffix: true });
+  };
+  
   return (
     <div className="flex-col gap-6">
       {notifications.map((notification, i, a) => (
         <DropdownMenuItem
-          className={`${i === a.length - 1 ? "pb-[35px]" : ""} flex gap-2 items-start`}
+          className={`${
+            i === a.length - 1 ? "pb-[35px]" : ""
+          } flex gap-2 items-start`}
           key={notification.id}
         >
           <div className="size-10 bg-primary-50 flex justify-center items-center rounded-full">
