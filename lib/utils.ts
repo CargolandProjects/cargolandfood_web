@@ -17,4 +17,6 @@ export function formatPrettyDate(date: Date | string) {
   )}`;
 }
 
+export function formatTime(date: Date | string) {
+  return format(date, "h:mm a");
 }
