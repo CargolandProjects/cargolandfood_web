@@ -25,12 +25,7 @@ import {
   RiNotification2Fill,
   RiUser3Fill,
   RiArrowRightSLine,
-  RiPencilFill,
-  RiMailFill,
-  RiPhoneFill,
-  RiDeleteBin6Fill,
 } from "react-icons/ri";
-import BackButton from "./BackButton";
 import Notifications from "./Notifications";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import MenuContent from "./MenuContent";

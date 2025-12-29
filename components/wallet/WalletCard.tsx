@@ -3,9 +3,10 @@ import { RiAddFill } from "react-icons/ri";
 
 interface WalletCardProps {
   balance: number;
+  showTopup: () => void
 }
 
-const WalletCard = ({ balance }: WalletCardProps) => {
+const WalletCard = ({ balance, showTopup }: WalletCardProps) => {
   return (
     <div className="relative overflow-hidden rounded-2xl bg-secondary-900 p-4 text-white shadow-sm min-h-[115px] flex flex-col justify-center">
       <div className="relative z-10 flex items-start justify-between">
@@ -17,7 +18,7 @@ const WalletCard = ({ balance }: WalletCardProps) => {
             ₦{balance.toLocaleString()}
           </span>
         </div>
-        <button className="flex size-6 items-center justify-center rounded-full bg-white text-[#43B02A] transition-colors hover:bg-white/90">
+        <button onClick={showTopup} className="flex size-6 items-center justify-center rounded-full bg-white text-[#43B02A] transition-colors hover:bg-white/90">
           <RiAddFill className="h-4.5 w-4.5"/>
         </button>
       </div>

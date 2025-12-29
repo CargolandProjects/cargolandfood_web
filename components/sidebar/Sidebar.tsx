@@ -76,7 +76,7 @@ const Sidebar = () => {
                       handleTabChange(item.id);
                       removeQuery();
                     }}
-                    className={`relative size-6 rounded-sm transition-colors ${
+                    className={`relative size-6 rounded-sm transition-colors flex justify-center items-center ${
                       isActive && "bg-gray-100"
                     }`}
                     aria-label={item.label}

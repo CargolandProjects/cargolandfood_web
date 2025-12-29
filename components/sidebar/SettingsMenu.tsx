@@ -67,7 +67,10 @@ const SettingsMenu = ({ activeTab, handleTabChange }: SettingsProps) => {
     Addresses: () => {},
     Security: () => {},
     Coupon: () => {},
-    "My Wallet": () => router.push("/wallet"),
+    "My Wallet": () => {
+      router.push("/wallet");
+      setOpenMenu(false);
+    },
     "Refer & Earn": () => {},
     "Join as a Delivery Man": () => {},
     "Live Chat": () => {},
@@ -76,26 +79,23 @@ const SettingsMenu = ({ activeTab, handleTabChange }: SettingsProps) => {
 
   return (
     <Popover open={openMenu} onOpenChange={() => setOpenMenu((prev) => !prev)}>
-      <PopoverTrigger>
-        <Button
-          variant="ghost"
-          onClick={() => handleTabChange("Settings")}
-          className={`relative size-6 rounded-sm transition-colors mt-auto ${
-            activeTab === "Settings" && "bg-gray-100"
+      <PopoverTrigger
+        onClick={() => handleTabChange("Settings")}
+        className={`relative size-6 rounded-sm transition-colors mt-auto flex justify-center items-center ${
+          activeTab === "Settings" && "bg-gray-100"
+        }`}
+        aria-label="Settings"
+      >
+        <RiSettings3Fill
+          className={`"w-5 h-5 transition-colors", ${
+            activeTab === "Settings" ? "text-primary" : "text-gray-300"
           }`}
-          aria-label="Settings"
-        >
-          <RiSettings3Fill
-            className={`"w-5 h-5 transition-colors", ${
-              activeTab === "Settings" ? "text-primary" : "text-gray-300"
-            }`}
-          />
-          {activeTab === "Settings" && (
-            <span className="absolute left-12 top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
-              Settings
-            </span>
-          )}
-        </Button>
+        />
+        {activeTab === "Settings" && (
+          <span className="absolute left-12 top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
+            Settings
+          </span>
+        )}
       </PopoverTrigger>
 
       <PopoverContent

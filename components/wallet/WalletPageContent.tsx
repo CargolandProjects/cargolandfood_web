@@ -4,6 +4,8 @@ import TransactionHistory from "@/components/wallet/TransactionHistory";
 import WalletCard from "@/components/wallet/WalletCard";
 import { useRouter } from "next/navigation";
 import { RiArrowGoBackLine } from "react-icons/ri";
+import { useState } from "react";
+import TopUpModal from "./TopUpModal";
 
 export interface Transaction {
   id: string;
@@ -25,7 +27,8 @@ const TRANSACTIONS: TransactionGroup[] = [
     transactions: [
       {
         id: "1",
-        title: "1 Portion of Stir fry Spaghetti, plantain, a bottle of coke and a slice of pizza with a jug 0f milk and a container of yoghurt",
+        title:
+          "1 Portion of Stir fry Spaghetti, plantain, a bottle of coke and a slice of pizza with a jug 0f milk and a container of yoghurt",
         date: "2025-08-18T09:15:30Z",
         amount: 3635,
         type: "expense",
@@ -97,12 +100,16 @@ const TRANSACTIONS: TransactionGroup[] = [
 ];
 
 const WalletPageContent = () => {
+  const [amount, setAmount] = useState("");
+  const [showTopup, setShowTopUp] = useState(false);
+
   const router = useRouter();
 
   const handleBack = () => {
     router.back();
   };
-  
+
+  const balance = 37500;
 
   return (
     <div className=" max-w-[1006px] mx-auto">
@@ -114,8 +121,15 @@ const WalletPageContent = () => {
         <span className="text-xl font-medium">My Wallet</span>
       </button>
 
-      <WalletCard balance={37500} />
+      <WalletCard balance={balance} showTopup={() => setShowTopUp(true)} />
       <TransactionHistory transactions={TRANSACTIONS} />
+      <TopUpModal
+        amount={amount}
+        setAmount={setAmount}
+        balance={balance}
+        open={showTopup}
+        onOpenChange={setShowTopUp}
+      />
     </div>
   );
 };
