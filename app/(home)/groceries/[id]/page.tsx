@@ -1,4 +1,4 @@
-import GroceriesPageContent from "@/components/Groceries/GroceriesPageContent";
+import GroceriesPageContent from "@/components/groceries/GroceriesPageContent";
 
 export default async function GroceryDetailsPage({
   params,

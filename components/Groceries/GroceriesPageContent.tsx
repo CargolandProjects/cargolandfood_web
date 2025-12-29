@@ -4,14 +4,17 @@ import { useGetRestaurant } from "@/lib/hooks/queries";
 import { useCartStore } from "@/lib/stores/CartStore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import RestaurantPageSkeleton from "../Restaurants/RestaurantPageSkeleton";
+import GroceriesPageSkeleton from "./GroceriesPageSkeleton";
 import RestaurantStats from "../RestaurantStats";
-import CategoryTab from "../Home/CategoryTab";
+import CategoryTab from "../home/CategoryTab";
 import { info } from "@/assets/svgs";
 import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
 import { shawarma } from "@/assets/images";
-import RestaurantItemCard from "../Restaurants/RestaurantItemCard";
 import GroceryItemCard from "./GroceryItemCard";
+import { AnimatePresence, motion } from "framer-motion";
+import FavouritesModal from "../FavouritesModal";
+import Checkout from "../orders/CheckOut";
+import ReviewsModal from "../ReviewModal";
 
 const categories = [
   { name: "All" },
@@ -42,7 +45,7 @@ const GroceriesPageContent = ({ id }: { id: string }) => {
   };
 
   if (isPending) {
-    return <RestaurantPageSkeleton />;
+    return <GroceriesPageSkeleton />;
   }
 
   return (
@@ -135,6 +138,24 @@ const GroceriesPageContent = ({ id }: { id: string }) => {
           </div>
         </div>
       </div>
+
+      <FavouritesModal open={showFavourites} onOpenChange={setShowFavourites} />
+      <ReviewsModal open={showReviews} onClose={setShowReviews} />
+
+      {/* Checkout component */}
+      {openCheckout && (
+        <AnimatePresence mode="wait">
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.4 }}
+            className="sticky top-6 self-start"
+          >
+            <Checkout />
+          </motion.div>
+        </AnimatePresence>
+      )}
     </div>
   );
 };

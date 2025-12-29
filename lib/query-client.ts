@@ -4,8 +4,8 @@ export const getQueryClient = () =>
   new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 2 * 60 * 1000,
-        refetchOnWindowFocus: false,
+        staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
         refetchOnReconnect: true,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         retry: (failureCount, error: any) => {

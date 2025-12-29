@@ -47,7 +47,7 @@ export default function CouponModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[400px]! p-0 gap-0 rounded-2xl">
-        <DialogHeader className="mt-[74px]">
+        <DialogHeader className="dialog-t">
           <DialogTitle className="dialog-title text-center">Coupon</DialogTitle>
         </DialogHeader>
 

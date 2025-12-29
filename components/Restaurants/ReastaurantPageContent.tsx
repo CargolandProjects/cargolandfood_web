@@ -1,18 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import CategoryTab from "@/components/Home/CategoryTab";
+import CategoryTab from "@/components/home/CategoryTab";
 import { shawarma } from "@/assets/images";
 import RestaurantStats from "@/components/RestaurantStats";
 import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
-import RestaurantItemCard from "@/components/Restaurants/RestaurantItemCard";
-import RestaurantPageSkeleton from "@/components/Restaurants/RestaurantPageSkeleton";
+import RestaurantItemCard from "@/components/restaurants/RestaurantItemCard";
+import RestaurantPageSkeleton from "@/components/restaurants/RestaurantPageSkeleton";
 import { useRouter } from "next/navigation";
 import { info } from "@/assets/svgs";
-import Checkout from "../Orders/CheckOut";
+import Checkout from "../orders/CheckOut";
 import { useCartStore } from "@/lib/stores/CartStore";
 import { AnimatePresence, motion } from "framer-motion";
-import OrderDetails from "../Orders/OrderDetails";
+import OrderDetails from "../orders/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
 import ReviewsModal from "../ReviewModal";
 import { useGetRestaurant } from "@/lib/hooks/queries";

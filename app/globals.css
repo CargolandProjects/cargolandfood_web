@@ -276,7 +276,7 @@
     @apply font-medium font-satoshi text-2xl leading-8
   }
 
-  p {
+  p, span {
     @apply text-sm font-normal
   }
 
@@ -340,8 +340,16 @@
     transform: matrix(-1, 0, 0, 1, 0, 0);
   }
 
+  .dialog{
+    @apply max-w-[400px]! m-0 p-0 gap-0 rounded-2xl px-[28.5px]
+  }
+
   .dialog-title {
     @apply text-2xl font-medium leading-8 text-center;
+  }
+
+  .dialog-t{
+    @apply mt-[74px]
   }
 
   .card-shadow {

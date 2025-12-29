@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import RestaurantItemCardSkeleton from "@/components/Restaurants/RestaurantItemCardSkeleton";
+import RestaurantItemCardSkeleton from "@/components/restaurants/RestaurantItemCardSkeleton";
 
 const ChipSkeleton = () => (
   <Skeleton className="h-9 w-24 rounded-full" />

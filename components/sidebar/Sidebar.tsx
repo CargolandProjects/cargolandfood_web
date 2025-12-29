@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { logo } from "@/assets/svgs";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import {
   RiHeartFill,
   RiHome3Fill,
-  RiSettings3Fill,
   RiShoppingBagFill,
   RiShoppingCartFill,
 } from "react-icons/ri";
@@ -14,8 +13,10 @@ import { IconType } from "react-icons";
 import { useCategory } from "@/contexts/CategoryContext";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import SettingsMenu from "./SettingsMenu";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
-type ActiveTab = "Home" | "Cart" | "Orders" | "Favourite" | "Settings";
+export type ActiveTab = "Home" | "Cart" | "Orders" | "Favourite" | "Settings";
 
 interface SidebarItem {
   id: ActiveTab;
@@ -62,61 +63,50 @@ const Sidebar = () => {
 
         {/* Navigation Items */}
         <nav className="flex flex-col gap-7 flex-1">
-          {sidebarItems.map((item) => {
+          {sidebarItems.map((item, idx) => {
             const IconComponent = item.icon;
             const isActive = activeTab === item.id;
 
             return (
-              <Button
-                key={item.id}
-                variant="ghost"
-                onClick={() => {
-                  handleTabChange(item.id);
-                  removeQuery();
-                }}
-                className={`relative size-6 rounded-sm transition-colors ${
-                  isActive && "bg-gray-100"
-                }`}
-                aria-label={item.label}
-                aria-pressed={isActive}
-              >
-                <IconComponent
-                  className={`
+              <Popover key={idx}>
+                <PopoverTrigger
+                    key={item.id}
+                    // variant="ghost"
+                    onClick={() => {
+                      handleTabChange(item.id);
+                      removeQuery();
+                    }}
+                    className={`relative size-6 rounded-sm transition-colors flex justify-center items-center ${
+                      isActive && "bg-gray-100"
+                    }`}
+                    aria-label={item.label}
+                    aria-pressed={isActive}
+                  >
+                    <IconComponent
+                      className={`
                     "w-5 h-5 transition-colors",
                    ${isActive ? "text-primary" : "text-gray-300"}
                   `}
-                />
-                {isActive && (
-                  <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
-                    {item.label}
-                  </span>
-                )}
-              </Button>
+                    />
+                    {isActive && (
+                      <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
+                        {item.label}
+                      </span>
+                    )}
+             
+                </PopoverTrigger>
+                <PopoverContent
+                  side="right"
+                  sideOffset={8}
+                  className="w-[374px] rounded-xl max-h-[95vh] overflow-auto hide-scrollbar px-4 shadow"
+                ></PopoverContent>
+              </Popover>
             );
           })}
         </nav>
 
         {/* Settings - Bottom */}
-        <Button
-          variant="ghost"
-          onClick={() => handleTabChange("Settings")}
-          className={`relative size-10 rounded-sm transition-colors mt-auto ${
-            activeTab === "Settings" && "bg-gray-100"
-          }`}
-          aria-label="Settings"
-        >
-          <RiSettings3Fill
-            className={`
-              "w-5 h-5 transition-colors",
-         ${activeTab === "Settings" ? "text-primary" : "text-gray-300"}
-            `}
-          />
-          {activeTab === "Settings" && (
-            <span className="absolute left-12 top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
-              Settings
-            </span>
-          )}
-        </Button>
+        <SettingsMenu activeTab={activeTab} handleTabChange={handleTabChange} />
       </div>
     </aside>
   );

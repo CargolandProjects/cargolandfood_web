@@ -1,4 +1,4 @@
-import { CategoryTab as Category } from "../Restaurants/ReastaurantPageContent";
+import { CategoryTab as Category } from "../restaurants/ReastaurantPageContent";
 
 const CategoryTab = ({ name, isActive = false, selectTab }: Category) => (
   <button
