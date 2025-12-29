@@ -1,31 +1,42 @@
-import React, { ChangeEvent } from "react";
-import {
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
+import React, { ChangeEvent, useState } from "react";
+import { DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { TopUpStep } from "./TopUpModal";
 
 interface AmountModalProps {
   balance: number;
   amount: string;
   setAmount: (amount: string) => void;
+  nextStep: (step: TopUpStep) => void;
 }
 
 const AmountModal = ({
   balance,
   amount,
   setAmount,
+  nextStep,
 }: AmountModalProps) => {
+  const [message, setMessage] = useState("");
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // console.log("This is the value:", value);
     if (value === "" || /^\d+$/.test(value)) setAmount(value);
   };
 
+  const minAmount = 500;
+
+  const handleNextStep = () => {
+    const value = amount.trim();
+    if (!value || Number(value) < minAmount) {
+      setMessage(`The least amount is ₦${minAmount}`);
+      return;
+    }
+    nextStep("paymentMthod");
+  };
+
   return (
-    <div className="">
+    <>
       <DialogHeader className="dialog-t gap-2">
         <DialogTitle className="dialog-title font-bold!">
           Top Up Wallet
@@ -34,6 +45,7 @@ const AmountModal = ({
           Wallet Balance: ₦{balance.toLocaleString()}
         </DialogDescription>
       </DialogHeader>
+
       <div className="mt-5">
         <p className="leading-5">Amount to Top-Up</p>
 
@@ -63,21 +75,16 @@ const AmountModal = ({
             onChange={handleChange}
             className="form-input h-full pl-12.5"
           />
+
         </div>
-        <Button
-          //    onClick={handleDelete}
-          type="submit"
-          className=" submit-btn mt-6"
-          //  disabled={isPending}
-        >
-          {/*}     {isPending ? (
-                          <RiLoader2Line className="size-5 animate-spin" />
-                        ) : ( */}
+          <p className="text-red-500 text-center text-sm  relative">
+            {message}
+          </p>
+        <Button onClick={handleNextStep} className=" submit-btn mt-6">
           Confirm Amount
-          {/* )} */}
         </Button>
       </div>
-    </div>
+    </>
   );
 };
 

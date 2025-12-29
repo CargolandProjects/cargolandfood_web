@@ -3,6 +3,7 @@ import { TransactionGroup } from "./WalletPageContent";
 import { useState } from "react";
 import TxDetailModal from "./TxDetailModal";
 import { formatPrettyDate } from "@/lib/utils";
+import { Separator } from "../ui/separator";
 
 interface TransactionHistoryProps {
   transactions: TransactionGroup[];
@@ -67,7 +68,7 @@ const TransactionHistory = ({ transactions }: TransactionHistoryProps) => {
               ))}
             </div>
             {groupIdx < transactions.length - 1 && (
-              <div className="h-px bg-[#E2E4E9] w-full mt-10" />
+              <Separator className=" my-6" />
             )}
           </div>
         ))}

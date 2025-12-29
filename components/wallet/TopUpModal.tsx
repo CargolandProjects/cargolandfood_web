@@ -10,6 +10,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import AmountModal from "./AmountModal";
+import PaymentMethodModal from "./PaymentMethodModal";
 
 interface TopupModalProps {
   open: boolean;
@@ -19,7 +20,7 @@ interface TopupModalProps {
   setAmount: (amount: string) => void;
 }
 
-type Step = "setAmount" | "paymentMthod";
+export type TopUpStep = "setAmount" | "paymentMthod";
 
 const TopUpModal = ({
   open,
@@ -28,7 +29,7 @@ const TopUpModal = ({
   amount,
   balance,
 }: TopupModalProps) => {
-  const [currentStep, setCurrentStep] = useState<Step>("setAmount");
+  const [currentStep, setCurrentStep] = useState<TopUpStep>("setAmount");
   const Step = () => {
     switch (currentStep) {
       case "setAmount":
@@ -37,16 +38,22 @@ const TopUpModal = ({
             balance={balance}
             amount={amount}
             setAmount={setAmount}
+            nextStep={setCurrentStep}
           />
         );
 
       case "paymentMthod":
-        return <div className=""></div>;
+        return <PaymentMethodModal amount={amount} />;
     }
   };
 
+  const handleClose = (v: boolean) => {
+    setCurrentStep("setAmount");
+    onOpenChange(v);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(v) => handleClose(v)}>
       <DialogContent className="dialog pb-4.5!">
         <AnimatePresence mode="wait">
           <motion.div
