@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 import ChatSupport from "../ChatSupport";
 
 interface SettingsProps {
-  activeTab: string;
+  activeTab: ActiveTab;
   handleTabChange: (tab: ActiveTab) => void;
 }
 
@@ -81,9 +81,14 @@ const SettingsMenu = ({ activeTab, handleTabChange }: SettingsProps) => {
     };
   }, [router]);
 
+  const handleClose = (v: boolean) => {
+    setOpenMenu(v);
+    handleTabChange("Settings");
+  };
+
   return (
     <>
-      <Popover open={openMenu} onOpenChange={setOpenMenu}>
+      <Popover open={openMenu} onOpenChange={(v) => handleClose(v)}>
         <PopoverTrigger
           onClick={() => handleTabChange("Settings")}
           className={`relative size-6 rounded-sm transition-colors mt-auto flex justify-center items-center ${
@@ -97,7 +102,7 @@ const SettingsMenu = ({ activeTab, handleTabChange }: SettingsProps) => {
             }`}
           />
           {activeTab === "Settings" && (
-            <span className="absolute left-12 top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
+            <span className="absolute left-8 top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
               Settings
             </span>
           )}
