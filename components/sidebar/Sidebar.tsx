@@ -70,30 +70,29 @@ const Sidebar = () => {
             return (
               <Popover key={idx}>
                 <PopoverTrigger
-                    key={item.id}
-                    // variant="ghost"
-                    onClick={() => {
-                      handleTabChange(item.id);
-                      removeQuery();
-                    }}
-                    className={`relative size-6 rounded-sm transition-colors flex justify-center items-center ${
-                      isActive && "bg-gray-100"
-                    }`}
-                    aria-label={item.label}
-                    aria-pressed={isActive}
-                  >
-                    <IconComponent
-                      className={`
+                  key={item.id}
+                  // variant="ghost"
+                  onClick={() => {
+                    handleTabChange(item.id);
+                    if (item.label === "Home") return removeQuery();
+                  }}
+                  className={`relative size-6 rounded-sm transition-colors flex justify-center items-center ${
+                    isActive && "bg-gray-100"
+                  }`}
+                  aria-label={item.label}
+                  aria-pressed={isActive}
+                >
+                  <IconComponent
+                    className={`
                     "w-5 h-5 transition-colors",
                    ${isActive ? "text-primary" : "text-gray-300"}
                   `}
-                    />
-                    {isActive && (
-                      <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
-                        {item.label}
-                      </span>
-                    )}
-             
+                  />
+                  {isActive && (
+                    <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
+                      {item.label}
+                    </span>
+                  )}
                 </PopoverTrigger>
                 <PopoverContent
                   side="right"

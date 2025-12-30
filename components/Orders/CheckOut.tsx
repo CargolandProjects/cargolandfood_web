@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
 import { Separator } from "../ui/separator";
@@ -55,6 +55,46 @@ const Checkout = () => {
   );
 
   const openOrderDetails = useUIStore((s) => s.openOrderDetails);
+
+  // Create memoized modal props object
+  const modalProps = useMemo(() => ({
+    riderNote: {
+      open: showRiderNote,
+      onOpenChange: setShowRiderNote,
+    },
+    coupon: {
+      open: showCoupon,
+      onOpenChange: setShowCoupon,
+    },
+    orderSuccess: {
+      open: showOrderSuccess,
+      onOpenChange: setShowOrderSuccess,
+    },
+    gift: {
+      open: showGift,
+      onOpenChange: setShowGift,
+    },
+    pickupConfirm: {
+      open: showConfirmPickup,
+      onOpenChange: setShowConfirmPickup,
+    },
+    couponSuccess: {
+      open: showSuccess,
+      onOpenChange: setSuccess,
+    },
+    clearCartModal: {
+      open: showAlert,
+      onOpenChange: setShowAlert,
+    },
+  }), [
+    showRiderNote,
+    showCoupon,
+    showOrderSuccess,
+    showGift,
+    showConfirmPickup,
+    showSuccess,
+    showAlert,
+  ]);
 
   const currency = (n: number) => `₦ ${n.toLocaleString()}`;
 
@@ -234,13 +274,6 @@ const Checkout = () => {
                   </span>
                   <RiArrowRightSLine className="size-5 text-neutral-500" />
                 </button>
-                {/* <button className="w-full flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-sm">
-                    <RiGiftFill className="size-5 text-primary" /> Ordering for
-                    someone else?
-                  </span>
-                  <RiArrowRightSLine className="size-5 text-neutral-500" />
-                </button> */}
               </div>
             </div>
           )}
@@ -343,10 +376,7 @@ const Checkout = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 ">
-            <Button
-              onClick={handlePlaceOrder}
-              className="submit-btn flex-1"
-            >
+            <Button onClick={handlePlaceOrder} className="submit-btn flex-1">
               PLACE ORDER
             </Button>
             <Button
@@ -360,28 +390,20 @@ const Checkout = () => {
         </div>
       </ScrollArea>
 
-      {/* Activity Modals */}
-      <RiderNote open={showRiderNote} onOpenChange={setShowRiderNote} />
-      <CouponSuccess open={showSuccess} onOpenChange={setSuccess} />
-      <CouponModal open={showCoupon} onOpenChange={setShowCoupon} />
-      <OrderSuccessModal
-        open={showOrderSuccess}
-        onOpenChange={setShowOrderSuccess}
-      />
-      <GiftModal open={showGift} onOpenChange={setShowGift} />
-      <PickupConfirmModal
-        open={showConfirmPickup}
-        onOpenChange={setShowConfirmPickup}
-      />
+      {/* Activity Modals - Using memoized props */}
+      <RiderNote {...modalProps.riderNote} />
+      <CouponSuccess {...modalProps.couponSuccess} />
+      <CouponModal {...modalProps.coupon} />
+      <OrderSuccessModal {...modalProps.orderSuccess} />
+      <GiftModal {...modalProps.gift} />
+      <PickupConfirmModal {...modalProps.pickupConfirm} />
 
       <ConfirmationModal
         confirmText="Clear"
         description="Are you sure you want to clear your cart?"
-        // confirmText="Clear"
-        // cancelText="Clear"
         title="Clear Cart?"
-        open={showAlert}
-        onOpenChange={() => setShowAlert(false)}
+        open={modalProps.clearCartModal.open}
+        onOpenChange={modalProps.clearCartModal.onOpenChange}
         onConfirm={clearCart}
       />
     </>
