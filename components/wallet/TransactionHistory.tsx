@@ -30,7 +30,7 @@ const TransactionHistory = ({ transactions }: TransactionHistoryProps) => {
         {transactions.map((group, groupIdx) => (
           <div key={group.month} className="space-y-">
             <h3 className="text-base font-normal text-neutral-600 leading-5">
-              {group.month}
+              {group.month} 
             </h3>
             <div className="space-y-6 mt-6">
               {group.transactions.map((tx) => (

@@ -16,6 +16,7 @@ import pizza from "./pizza.jpg";
 import burger from "./burger.png";
 import user1 from "./user1.png";
 import wallet from "./wallet.png";
+import pizza2 from "./pizza2.jpg"
 
 export {
   hamburgers,
@@ -36,4 +37,5 @@ export {
   burger,
   user1,
   wallet,
+  pizza2
 };

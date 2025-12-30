@@ -29,7 +29,7 @@ const GroceriesPageContent = ({ id }: { id: string }) => {
   const [showFavourites, setShowFavourites] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
 
-  const { data, isPending, error } = useGetRestaurant(id);
+  const { data, isPending } = useGetRestaurant(id);
   const items = useCartStore((s) => s.items);
   const router = useRouter();
 
