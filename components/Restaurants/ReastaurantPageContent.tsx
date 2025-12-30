@@ -137,7 +137,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
         {/* 3. Product Listing Section */}
         <div className="p-4">
           <div className="grid md:grid-cols-2 gap-4 lg:gap-10">
-            {data.map((item) => (
+            {!error && data.map((item) => (
               <RestaurantItemCard
                 key={item.id}
                 product={item}
