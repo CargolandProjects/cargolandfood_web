@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { pizza2 } from "@/assets/images";
 import { useSession } from "@/lib/hooks/useSession";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Input } from "./ui/input";
 import { Ri24HoursFill, RiAddFill, RiSendPlane2Fill } from "react-icons/ri";
 import { ScrollArea } from "./ui/scroll-area";
@@ -88,7 +88,7 @@ const chats: Chat[] = [
   },
 ];
 
-export function ChatSupport({ open, onOpenChange }: ChatSupportModalProps) {
+const ChatSupport = ({ open, onOpenChange }: ChatSupportModalProps) => {
   const [message, setMessage] = useState("");
   const { user: session } = useSession();
   console.log("User's Id:", session?.id);
@@ -187,4 +187,7 @@ export function ChatSupport({ open, onOpenChange }: ChatSupportModalProps) {
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+
+export default memo(ChatSupport)

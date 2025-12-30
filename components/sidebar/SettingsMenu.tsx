@@ -1,4 +1,3 @@
-import { ChevronRight } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {
   RiArrowGoBackLine,
@@ -15,10 +14,10 @@ import {
 } from "react-icons/ri";
 import { Button } from "../ui/button";
 import { ActiveTab } from "./Sidebar";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Separator } from "../ui/separator";
 import { useRouter } from "next/navigation";
-import { ChatSupport } from "../ChatSupport";
+import ChatSupport from "../ChatSupport";
 
 interface SettingsProps {
   activeTab: string;
@@ -65,27 +64,26 @@ const SettingsMenu = ({ activeTab, handleTabChange }: SettingsProps) => {
   const [showChatSupport, setShowChatSupport] = useState(false);
   const router = useRouter();
 
-  const menuActions: { [key: string]: () => void } = {
-    Settings: () => {},
-    Addresses: () => {},
-    Security: () => {},
-    Coupon: () => {},
-    "My Wallet": () => {
-      router.push("/wallet");
-      setOpenMenu(false);
-    },
-    "Refer & Earn": () => {},
-    "Join as a Delivery Man": () => {},
-    "Live Chat": () => setShowChatSupport(true),
-    "Help & Support": () => {},
-  };
+  const menuActions: { [key: string]: () => void } = useMemo(() => {
+    return {
+      Settings: () => {},
+      Addresses: () => {},
+      Security: () => {},
+      Coupon: () => {},
+      "My Wallet": () => {
+        router.push("/wallet");
+        setOpenMenu(false);
+      },
+      "Refer & Earn": () => {},
+      "Join as a Delivery Man": () => {},
+      "Live Chat": () => setShowChatSupport(true),
+      "Help & Support": () => {},
+    };
+  }, [router]);
 
   return (
     <>
-      <Popover
-        open={openMenu}
-        onOpenChange={() => setOpenMenu((prev) => !prev)}
-      >
+      <Popover open={openMenu} onOpenChange={setOpenMenu}>
         <PopoverTrigger
           onClick={() => handleTabChange("Settings")}
           className={`relative size-6 rounded-sm transition-colors mt-auto flex justify-center items-center ${
@@ -152,7 +150,12 @@ const SettingsMenu = ({ activeTab, handleTabChange }: SettingsProps) => {
           </div>
         </PopoverContent>
       </Popover>
-      <ChatSupport open={showChatSupport} onOpenChange={setShowChatSupport} />
+      <ChatSupport
+        open={showChatSupport}
+        onOpenChange={useCallback((o: boolean) => {
+          setShowChatSupport(o);
+        }, [])}
+      />
     </>
   );
 };
