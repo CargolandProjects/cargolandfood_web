@@ -16,7 +16,7 @@ export default function HomeLayout({
         <Sidebar open={open} setOpen={setOpen} />
         <div className="flex-1 flex flex-col min-w-0">
           <Header setSideBar={setOpen} />
-          <div className="flex-1 overflow-auto py-6 px-6 md:px-13.5 min-w-0 hide-scrollbar">
+          <div className="flex-1 overflow-auto py-4 md:py-6 px-6 md:px-13.5 min-w-0 hide-scrollbar">
             <div className="w-full max-w-295.5 mx-auto min-w-0">{children}</div>
           </div>
         </div>

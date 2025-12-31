@@ -8,8 +8,7 @@ interface Category {
   id: CategoryType;
   name: string;
   icon: string;
-  styles: string;
-  activeStyle: string;
+
 }
 
 type Categories = Category[];
