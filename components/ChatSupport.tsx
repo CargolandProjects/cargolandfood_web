@@ -91,7 +91,7 @@ const chats: Chat[] = [
 const ChatSupport = ({ open, onOpenChange }: ChatSupportModalProps) => {
   const [message, setMessage] = useState("");
   const { user: session } = useSession();
-  console.log("User's Id:", session?.id);
+  // console.log("User's Id:", session?.id);
   const isTyping = true;
 
   return (

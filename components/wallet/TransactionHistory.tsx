@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import { TransactionGroup } from "./WalletPageContent";
 import { useState } from "react";
 import TxDetailModal from "./TxDetailModal";

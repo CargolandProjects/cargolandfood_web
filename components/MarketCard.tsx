@@ -1,6 +1,6 @@
 "use client";
 
-import { MenuItem } from "@/lib/services/promotions.service";
+import { Vendor } from "@/lib/services/promotions.service";
 import { useRouter } from "next/navigation";
 import {
   RiEBike2Line,
@@ -13,7 +13,7 @@ import {
 const MarketCard = ({
   menuItem: { id, title, image, rating, deliveryFee, deliveryTime, discount },
 }: {
-  menuItem: MenuItem;
+  menuItem: Vendor;
 }) => {
   const router = useRouter();
 
