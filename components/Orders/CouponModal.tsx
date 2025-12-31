@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,7 +26,8 @@ const PRESET_COUPONS = [
   { code: "EXTRA20", description: "20% off on orders above $30." },
 ] as const;
 
-export default function CouponModal({
+
+function CouponModal({
   open,
   onOpenChange,
   onApply,
@@ -110,3 +112,5 @@ export default function CouponModal({
     </Dialog>
   );
 }
+
+export default memo(CouponModal);

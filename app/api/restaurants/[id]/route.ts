@@ -3,11 +3,11 @@ import { Restaurants } from "../../data";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-//   console.log("Restaurant now id:", id);
-//   console.log(Object.keys(Restaurants));
+  //   console.log("Restaurant now id:", id);
+  //   console.log(Object.keys(Restaurants));
   const restaurant = Restaurants[id];
 
   if (!restaurant) {

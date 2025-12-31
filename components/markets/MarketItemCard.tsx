@@ -3,17 +3,13 @@ import React from "react";
 import ProductModal from "../ProductModal";
 import { RiAddFill } from "react-icons/ri";
 
-interface GroceryItemCard {
+interface MarketItemCardProps {
   product: Product;
   handleSelect: (id: string) => void;
   selectedId: string | null;
 }
 
-const GroceryItemCard = ({
-  product,
-  handleSelect,
-  selectedId,
-}: GroceryItemCard) => {
+const MarketItemCard = ({ product, handleSelect, selectedId }: MarketItemCardProps) => {
   const { id, imageUrl, name, price } = product;
   const isSelected = id === selectedId;
 
@@ -55,4 +51,4 @@ const GroceryItemCard = ({
   );
 };
 
-export default GroceryItemCard;
+export default MarketItemCard;

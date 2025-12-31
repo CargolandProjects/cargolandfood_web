@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
@@ -38,4 +39,4 @@ const RiderNoteModal = ({ open, onOpenChange }: RiderNoteProps) => {
   );
 };
 
-export default RiderNoteModal;
+export default memo(RiderNoteModal);

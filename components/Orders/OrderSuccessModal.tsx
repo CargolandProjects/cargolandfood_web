@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import success from "@/assets/gifs/success.gif";
 import { RiTimeLine } from "react-icons/ri";
@@ -8,6 +8,7 @@ interface OrderSuccessfulProps {
   open: boolean;
   onOpenChange: (close: boolean) => void;
 }
+
 
 const OrderSuccessModal = ({ open, onOpenChange }: OrderSuccessfulProps) => {
   return (
@@ -47,4 +48,4 @@ const OrderSuccessModal = ({ open, onOpenChange }: OrderSuccessfulProps) => {
   );
 };
 
-export default OrderSuccessModal;
+export default memo(OrderSuccessModal);

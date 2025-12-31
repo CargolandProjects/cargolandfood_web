@@ -82,13 +82,13 @@ apiClient.interceptors.response.use(
         if (newAccessToken) {
           // Retry original request with new token
           originalRequest.headers = originalRequest.headers || {};
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             originalRequest.headers as any
           ).Authorization = `Bearer ${newAccessToken}`;
           return apiClient(originalRequest);
         }
-      } catch (e) {
+      } catch{
         // Refresh failed; clear tokens
         if (typeof window !== "undefined") {
           localStorage.removeItem("auth_token");

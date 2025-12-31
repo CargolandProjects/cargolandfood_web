@@ -12,11 +12,17 @@ import {
 import { IconType } from "react-icons";
 import { useCategory } from "@/contexts/CategoryContext";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import SettingsMenu from "./SettingsMenu";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
-export type ActiveTab = "Home" | "Cart" | "Orders" | "Favourite" | "Settings";
+export type ActiveTab =
+  | "Home"
+  | "Cart"
+  | "Orders"
+  | "Favourite"
+  | "Settings"
+  | null;
 
 interface SidebarItem {
   id: ActiveTab;
@@ -35,18 +41,15 @@ const Sidebar = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("Home");
   const { setActiveCategory } = useCategory();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const handleTabChange = (tabId: ActiveTab) => {
-    if (tabId === "Home") setActiveCategory(null);
-    setActiveTab(tabId);
+    const active = tabId === activeTab ? null : tabId;
+    setActiveTab(active);
   };
 
-  const removeQuery = () => {
-    if (!searchParams) return;
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("search");
-    router.replace(`?${params.toString()}`);
+  const handleCLick = (id: ActiveTab) => {
+    handleTabChange(id);
+    router.push("/");
   };
 
   return (
@@ -68,14 +71,12 @@ const Sidebar = () => {
             const isActive = activeTab === item.id;
 
             return (
-              <Popover key={idx}>
-                <PopoverTrigger
-                    key={item.id}
-                    // variant="ghost"
-                    onClick={() => {
-                      handleTabChange(item.id);
-                      removeQuery();
-                    }}
+              <>
+                {/* Separate home button */}
+                {idx === 0 && (
+                  <Button
+                    onClick={() => handleCLick(item.id)}
+                    variant="ghost"
                     className={`relative size-6 rounded-sm transition-colors flex justify-center items-center ${
                       isActive && "bg-gray-100"
                     }`}
@@ -83,24 +84,50 @@ const Sidebar = () => {
                     aria-pressed={isActive}
                   >
                     <IconComponent
-                      className={`
+                      className={`w-5 h-5 transition-colors ${
+                        isActive ? "text-primary" : "text-gray-300"
+                      } `}
+                    />
+                  </Button>
+                )}
+
+                {/* Rest of the buttons with popups */}
+                {idx > 0 && (
+                  <Popover
+                    open={isActive}
+                    onOpenChange={() => handleTabChange(item.id)}
+                    key={idx}
+                  >
+                    <PopoverTrigger
+                      key={item.id}
+                      // variant="ghost"
+                      onClick={() => handleTabChange(item.id)}
+                      className={`relative size-6 rounded-sm transition-colors flex justify-center items-center ${
+                        isActive && "bg-gray-100"
+                      }`}
+                      aria-label={item.label}
+                      aria-pressed={isActive}
+                    >
+                      <IconComponent
+                        className={`
                     "w-5 h-5 transition-colors",
                    ${isActive ? "text-primary" : "text-gray-300"}
                   `}
-                    />
-                    {isActive && (
-                      <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
-                        {item.label}
-                      </span>
-                    )}
-             
-                </PopoverTrigger>
-                <PopoverContent
-                  side="right"
-                  sideOffset={8}
-                  className="w-[374px] rounded-xl max-h-[95vh] overflow-auto hide-scrollbar px-4 shadow"
-                ></PopoverContent>
-              </Popover>
+                      />
+                      {isActive && (
+                        <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
+                          {item.label}
+                        </span>
+                      )}
+                    </PopoverTrigger>
+                    <PopoverContent
+                      side="right"
+                      sideOffset={8}
+                      className="w-[374px] rounded-xl max-h-[95vh] overflow-auto hide-scrollbar px-4 shadow"
+                    ></PopoverContent>
+                  </Popover>
+                )}
+              </>
             );
           })}
         </nav>

@@ -10,8 +10,9 @@ import Reastaurants from "./Restaurants";
 import { useSearchParams } from "next/navigation";
 import { useSearch } from "@/lib/hooks/queries/useSearch";
 import Loading from "../Loading";
+import { Suspense } from "react";
 
-const Selections = () => {
+const SelectionsContent = () => {
   const { activeCategory } = useCategory();
   const params = useSearchParams();
   const searchTerm = params.get("search");
@@ -53,5 +54,11 @@ const Selections = () => {
     </>
   );
 };
+
+const Selections = () => (
+  <Suspense>
+    <SelectionsContent />
+  </Suspense>
+);
 
 export default Selections;

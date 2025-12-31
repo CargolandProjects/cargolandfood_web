@@ -1,7 +1,7 @@
-import { ChevronRight } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {
   RiArrowGoBackLine,
+  RiArrowRightSLine,
   RiCoupon2Fill,
   RiEBike2Fill,
   RiLockFill,
@@ -14,12 +14,13 @@ import {
 } from "react-icons/ri";
 import { Button } from "../ui/button";
 import { ActiveTab } from "./Sidebar";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Separator } from "../ui/separator";
 import { useRouter } from "next/navigation";
+import ChatSupport from "../ChatSupport";
 
 interface SettingsProps {
-  activeTab: string;
+  activeTab: ActiveTab;
   handleTabChange: (tab: ActiveTab) => void;
 }
 
@@ -60,94 +61,107 @@ const SETTINGS_SECTIONS = [
 
 const SettingsMenu = ({ activeTab, handleTabChange }: SettingsProps) => {
   const [openMenu, setOpenMenu] = useState(false);
+  const [showChatSupport, setShowChatSupport] = useState(false);
   const router = useRouter();
 
-  const menuActions: { [key: string]: () => void } = {
-    Settings: () => {},
-    Addresses: () => {},
-    Security: () => {},
-    Coupon: () => {},
-    "My Wallet": () => {
-      router.push("/wallet");
-      setOpenMenu(false);
-    },
-    "Refer & Earn": () => {},
-    "Join as a Delivery Man": () => {},
-    "Live Chat": () => {},
-    "Help & Support": () => {},
+  const menuActions: { [key: string]: () => void } = useMemo(() => {
+    return {
+      Settings: () => {},
+      Addresses: () => {},
+      Security: () => {},
+      Coupon: () => {},
+      "My Wallet": () => {
+        router.push("/wallet");
+        setOpenMenu(false);
+      },
+      "Refer & Earn": () => {},
+      "Join as a Delivery Man": () => {},
+      "Live Chat": () => setShowChatSupport(true),
+      "Help & Support": () => {},
+    };
+  }, [router]);
+
+  const handleClose = (v: boolean) => {
+    setOpenMenu(v);
+    handleTabChange("Settings");
   };
 
   return (
-    <Popover open={openMenu} onOpenChange={() => setOpenMenu((prev) => !prev)}>
-      <PopoverTrigger
-        onClick={() => handleTabChange("Settings")}
-        className={`relative size-6 rounded-sm transition-colors mt-auto flex justify-center items-center ${
-          activeTab === "Settings" && "bg-gray-100"
-        }`}
-        aria-label="Settings"
-      >
-        <RiSettings3Fill
-          className={`"w-5 h-5 transition-colors", ${
-            activeTab === "Settings" ? "text-primary" : "text-gray-300"
+    <>
+      <Popover open={openMenu} onOpenChange={(v) => handleClose(v)}>
+        <PopoverTrigger
+          onClick={() => handleTabChange("Settings")}
+          className={`relative size-6 rounded-sm transition-colors mt-auto flex justify-center items-center ${
+            activeTab === "Settings" && "bg-gray-100"
           }`}
-        />
-        {activeTab === "Settings" && (
-          <span className="absolute left-12 top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
-            Settings
-          </span>
-        )}
-      </PopoverTrigger>
+          aria-label="Settings"
+        >
+          <RiSettings3Fill
+            className={`"w-5 h-5 transition-colors", ${
+              activeTab === "Settings" ? "text-primary" : "text-gray-300"
+            }`}
+          />
+          {activeTab === "Settings" && (
+            <span className="absolute left-8 top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
+              Settings
+            </span>
+          )}
+        </PopoverTrigger>
 
-      <PopoverContent
-        side="right"
-        sideOffset={8}
-        className="w-[374px] rounded-xl max-h-[95vh] overflow-auto hide-scrollbar px-4 shadow"
-      >
-        {/* Header */}
-        <div className="relative flex items-center justify-center">
-          <button
-            onClick={() => setOpenMenu(false)}
-            className="absolute left-0"
-          >
-            <RiArrowGoBackLine className="size-5" />
-          </button>
-          <h2 className="text-lg leading-6">Settings</h2>
-        </div>
+        <PopoverContent
+          side="right"
+          sideOffset={8}
+          className="w-[374px] rounded-xl max-h-[95vh] overflow-auto hide-scrollbar px-4 shadow"
+        >
+          {/* Header */}
+          <div className="relative flex items-center justify-center">
+            <button
+              onClick={() => setOpenMenu(false)}
+              className="absolute left-0"
+            >
+              <RiArrowGoBackLine className="size-5" />
+            </button>
+            <h2 className="text-lg leading-6">Settings</h2>
+          </div>
 
-        {/* Content */}
-        <div className="space-y-4 mt-4">
-          {SETTINGS_SECTIONS.map((section) => (
-            <div key={section.title}>
-              <h2 className="text-base leading-6">{section.title}</h2>
-              <Separator className="mt-2! mb-4!" />
+          {/* Content */}
+          <div className="space-y-4 mt-4">
+            {SETTINGS_SECTIONS.map((section) => (
+              <div key={section.title}>
+                <h2 className="text-base leading-6">{section.title}</h2>
+                <Separator className="mt-2! mb-4!" />
 
-              <div className="space-y-4">
-                {section.items.map((item) => (
-                  <Button
-                    onClick={() => menuActions[item.label]()}
-                    variant="ghost"
-                    key={item.label}
-                    className="flex items-center justify-between w-full p-0!"
-                  >
-                    <div className="flex items-center gap-3">
-                      <item.icon className={`size-6.5 ${item.color}`} />
+                <div className="space-y-4">
+                  {section.items.map((item) => (
+                    <Button
+                      onClick={() => menuActions[item.label]()}
+                      variant="ghost"
+                      key={item.label}
+                      className="flex items-center justify-between w-full p-0!"
+                    >
+                      <div className="flex items-center gap-3">
+                        <item.icon className={`size-6.5 ${item.color}`} />
 
-                      <span className="text-[16px] font-normal text-[#0A0D14] leading-tight">
-                        {item.label}
-                      </span>
-                    </div>
-                    <ChevronRight
-                      className="w-5 h-5 text-[#525866]"
-                      strokeWidth={1.5}
-                    />
-                  </Button>
-                ))}
+                        <span className="text-[16px] font-normal text-[#0A0D14] leading-tight">
+                          {item.label}
+                        </span>
+                      </div>
+                      <RiArrowRightSLine className="size-6 text-neutral-600" />
+                    </Button>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </PopoverContent>
-    </Popover>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
+      <ChatSupport
+        open={showChatSupport}
+        onOpenChange={useCallback((o: boolean) => {
+          setShowChatSupport(o);
+        }, [])}
+      />
+    </>
   );
 };
 

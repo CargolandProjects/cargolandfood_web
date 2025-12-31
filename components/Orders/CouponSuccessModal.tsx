@@ -1,3 +1,4 @@
+import { memo } from "react";
 import React from "react";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle } from "../ui/dialog";
 import success from "@/assets/gifs/success.gif";
@@ -7,6 +8,7 @@ interface CouponSuccessProps {
   open: boolean;
   onOpenChange: (close: boolean) => void;
 }
+
 
 const CouponSuccessModal = ({ open, onOpenChange }: CouponSuccessProps) => {
   return (
@@ -28,4 +30,4 @@ const CouponSuccessModal = ({ open, onOpenChange }: CouponSuccessProps) => {
   );
 };
 
-export default CouponSuccessModal;
+export default memo(CouponSuccessModal);

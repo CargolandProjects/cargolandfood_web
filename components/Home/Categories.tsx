@@ -6,6 +6,7 @@ import { useCategories } from "@/lib/hooks/queries";
 import { Skeleton } from "../ui/skeleton";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const Loading = () => (
   <div className="space-y-4">
@@ -18,7 +19,7 @@ const Loading = () => (
   </div>
 );
 
-const Categories = () => {
+const CategoryContent = () => {
   const { activeCategory, setActiveCategory } = useCategory();
   const { data: categories, isLoading } = useCategories();
   
@@ -73,4 +74,10 @@ const Categories = () => {
   );
 };
 
+
+const Categories = () => (
+  <Suspense>
+    <CategoryContent />
+  </Suspense>
+)
 export default Categories;
