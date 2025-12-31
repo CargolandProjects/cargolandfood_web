@@ -15,6 +15,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SettingsMenu from "./SettingsMenu";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { logoFull } from "@/assets/images";
+import { X } from "lucide-react";
 
 export type ActiveTab =
   | "Home"
@@ -30,6 +32,11 @@ interface SidebarItem {
   label: string;
 }
 
+interface SIdeBar {
+  open: boolean;
+  setOpen: (v: boolean) => void;
+}
+
 const sidebarItems: SidebarItem[] = [
   { id: "Home", icon: RiHome3Fill, label: "Home" },
   { id: "Cart", icon: RiShoppingCartFill, label: "Cart" },
@@ -37,7 +44,7 @@ const sidebarItems: SidebarItem[] = [
   { id: "Favourite", icon: RiHeartFill, label: "Favourite" },
 ];
 
-const Sidebar = () => {
+const Sidebar = ({ open, setOpen }: SIdeBar) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("Home");
   const { setActiveCategory } = useCategory();
   const router = useRouter();
@@ -53,19 +60,40 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="sticky left-0 inset-y-0 w-sidebar shrink-0 bg-white border-r border-gray-100">
-      <div className="flex flex-col items-center py-4">
-        {/* Logo */}
+    <aside
+      className={`md:sticky fixed z-40 left-0 inset-y-0 w-full max-w-[375px] md:max-w-sidebar shrink-0 bg-white border-r border-gray-100 transform transition-all duration-300 overflow-hidden ${
+        open ? "max-md:translate-x-0" : "max-md:-translate-x-full"
+      }`}
+    >
+      <div className="flex flex-col md:items-center py-4 px-6">
+        {/* Logo Large Screens*/}
         <Link
           href="/"
           onClick={() => setActiveCategory(null)}
-          className="size-6 flex items-center justify-center rounded-sm bg-black overflow-hidden mb-8"
+          className="size-6 overflow-hidden mb-8 max-md:hidden"
         >
           <img src={logo.src} alt="Cargoland Food" className="object-cover" />
         </Link>
+        {/* Logo Small Screens*/}
+        <div className="md:hidden flex justify-between items-start">
+          <Link
+            href="/"
+            onClick={() => setActiveCategory(null)}
+            className="h-10 w-[140px] block overflow-hidden mb-8"
+          >
+            <img
+              src={logoFull.src}
+              alt="Cargoland Food"
+              className="object-cover"
+            />
+          </Link>
+          <button onClick={()=> setOpen(false)}>
+            <X className="size-4" />
+          </button>
+        </div>
 
         {/* Navigation Items */}
-        <nav className="flex flex-col gap-7 flex-1">
+        <nav className="flex flex-col gap-12 md:gap-7 flex-1">
           {sidebarItems.map((item, idx) => {
             const IconComponent = item.icon;
             const isActive = activeTab === item.id;
@@ -77,17 +105,23 @@ const Sidebar = () => {
                   <Button
                     onClick={() => handleCLick(item.id)}
                     variant="ghost"
-                    className={`relative size-6 rounded-sm transition-colors flex justify-center items-center ${
-                      isActive && "bg-gray-100"
-                    }`}
+                    className="flex gap-2 items-center self-start p-0!"
                     aria-label={item.label}
-                    aria-pressed={isActive}
                   >
-                    <IconComponent
-                      className={`w-5 h-5 transition-colors ${
-                        isActive ? "text-primary" : "text-gray-300"
-                      } `}
-                    />
+                    <div
+                      className={`relative size-10 md:size-6 rounded-sm transition-colors flex justify-center items-center max-md:rounded-full max-md:bg-primary-50  ${
+                        isActive && "md:bg-gray-100"
+                      }`}
+                    >
+                      <IconComponent
+                        className={`w-5 h-5 transition-colors text-primary ${
+                          isActive ? "md:text-primary" : "md:text-gray-300"
+                        } `}
+                      />
+                    </div>
+                    <span className=" md:hidden text-xl font-medium leading-7">
+                      {item.label}
+                    </span>
                   </Button>
                 )}
 
@@ -98,32 +132,35 @@ const Sidebar = () => {
                     onOpenChange={() => handleTabChange(item.id)}
                     key={idx}
                   >
-                    <PopoverTrigger
+                    <div
                       key={item.id}
-                      // variant="ghost"
+                      className="flex gap-2 items-center"
                       onClick={() => handleTabChange(item.id)}
-                      className={`relative size-6 rounded-sm transition-colors flex justify-center items-center ${
-                        isActive && "bg-gray-100"
-                      }`}
-                      aria-label={item.label}
-                      aria-pressed={isActive}
                     >
-                      <IconComponent
-                        className={`
-                    "w-5 h-5 transition-colors",
-                   ${isActive ? "text-primary" : "text-gray-300"}
-                  `}
-                      />
-                      {isActive && (
-                        <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
-                          {item.label}
-                        </span>
-                      )}
-                    </PopoverTrigger>
+                      <PopoverTrigger
+                        className={`relative size-10 md:size-6 rounded-sm transition-colors flex justify-center items-center max-md:rounded-full max-md:bg-primary-50  ${
+                          isActive && "md:bg-gray-100"
+                        }`}
+                      >
+                        <IconComponent
+                          className={`w-5 h-5 transition-colors max-md:text-primary ${
+                            isActive ? "md:text-primary" : "md:text-gray-300"
+                          }`}
+                        />
+                        {isActive && (
+                          <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
+                            {item.label}
+                          </span>
+                        )}
+                      </PopoverTrigger>
+                      <span className="md:hidden text-xl font-medium leading-7">
+                        {item.label}
+                      </span>
+                    </div>
                     <PopoverContent
                       side="right"
-                      sideOffset={8}
-                      className="w-[374px] rounded-xl max-h-[95vh] overflow-auto hide-scrollbar px-4 shadow"
+                      // sideOffset={8}
+                      className="md:w-[374px] rounded-xl max-h-[95vh] overflow-auto hide-scrollbar px-4 shadow"
                     ></PopoverContent>
                   </Popover>
                 )}

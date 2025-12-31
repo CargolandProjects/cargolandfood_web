@@ -91,26 +91,32 @@ const SettingsMenu = ({ activeTab, handleTabChange }: SettingsProps) => {
       <Popover open={openMenu} onOpenChange={(v) => handleClose(v)}>
         <PopoverTrigger
           onClick={() => handleTabChange("Settings")}
-          className={`relative size-6 rounded-sm transition-colors mt-auto flex justify-center items-center ${
-            activeTab === "Settings" && "bg-gray-100"
-          }`}
-          aria-label="Settings"
+          className="flex gap-2 items-center mt-12 md:mt-7"
         >
-          <RiSettings3Fill
-            className={`"w-5 h-5 transition-colors", ${
-              activeTab === "Settings" ? "text-primary" : "text-gray-300"
+          <div
+            className={`relative size-10 md:size-6 rounded-sm transition-colors flex justify-center items-center max-md:rounded-full max-md:bg-primary-50 ${
+              activeTab === "Settings" && "bg-gray-100"
             }`}
-          />
-          {activeTab === "Settings" && (
-            <span className="absolute left-8 top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
-              Settings
-            </span>
-          )}
+          >
+            <RiSettings3Fill
+              className={`size-5 transition-colors text-primary ${
+                activeTab === "Settings"
+                  ? "md:text-primary"
+                  : "md:text-gray-300"
+              }`}
+            />
+            {activeTab === "Settings" && (
+              <span className="absolute left-8 top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
+                Settings
+              </span>
+            )}
+          </div>
+          <span className="md:hidden text-xl font-medium leading-7">Settings</span>
         </PopoverTrigger>
 
         <PopoverContent
           side="right"
-          sideOffset={8}
+          // sideOffset={8}
           className="w-[374px] rounded-xl max-h-[95vh] overflow-auto hide-scrollbar px-4 shadow"
         >
           {/* Header */}
