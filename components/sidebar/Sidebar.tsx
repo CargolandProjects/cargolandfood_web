@@ -87,7 +87,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
               className="object-cover"
             />
           </Link>
-          <button onClick={()=> setOpen(false)}>
+          <button onClick={() => setOpen(false)}>
             <X className="size-4" />
           </button>
         </div>
@@ -103,9 +103,12 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                 {/* Separate home button */}
                 {idx === 0 && (
                   <Button
-                    onClick={() => handleCLick(item.id)}
+                    onClick={() => {
+                      handleCLick(item.id);
+                      setActiveCategory(null);
+                    }}
                     variant="ghost"
-                    className="flex gap-2 items-center self-start p-0!"
+                    className="flex gap-2 items-center self-start p-0! hover:bg-transparent"
                     aria-label={item.label}
                   >
                     <div

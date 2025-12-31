@@ -58,14 +58,14 @@ const Banners = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="max-w-[171px]  relative">
-                <h3 className="font-bold text-xl leading-6 text-white">
+              <div className="max-w-[171px] relative">
+                <h3 className="font-bold text-base sm:text-xl leading-5 sm:leading-6 text-white">
                   {Banner.title}
                 </h3>
                 <p className="text-xxs font-normal text-white mt-1">
                   {Banner.description}
                 </p>
-                <Button className="bg-white text-black px-5 mt-4 rounded-sm hover:text-white">
+                <Button className="bg-white max-sm:text-xxs text-brand-black max-sm:h-5 max-sm:w-20 px-5 mt-1 sm:mt-4 rounded-[3px] sm:rounded-sm  hover:text-white">
                   {Banner.cta}
                 </Button>
               </div>

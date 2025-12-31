@@ -54,29 +54,29 @@ const CategoryContent = () => {
 
       {!isLoading && categories?.length && (
         <>
-          <h3 className="max-md:text-base max-md:leading-6">Categories</h3>
-          <div className="flex gap-6 mt-2 md:mt-1">
+          <h3 className="max-sm:text-base max-sm:leading-6">Categories</h3>
+          <div className="flex gap-6 mt-2 sm:mt-1">
             {categories.map((category) => {
               const active = category.id === activeCategory;
               return (
                 <div
                   className={`${styles[category.name].styles} ${
                     active ? styles[category.name].activeStyle : ""
-                  } w-[103px] h-[72px] md:w-31 md:h-29 flex flex-col justify-center items-center rounded-xl cursor-pointer`}
+                  } w-[103px] h-[72px] sm:w-31 sm:h-29 flex flex-col justify-center items-center rounded-xl cursor-pointer`}
                   key={category.id}
                   onClick={() => {
                     setActiveCategory(category.id);
                     removeQuery();
                   }}
                 >
-                  <div className="size-8 md:size-10 overflow-hidden">
+                  <div className="size-8 sm:size-10 overflow-hidden">
                     <Image
                       src={category.icon}
                       alt={category.name}
                       className="object-cover size-full"
                     />
                   </div>
-                  <p className="font-medium text-xs md:text-sm mt-1.5 text-center">
+                  <p className="font-medium text-xs sm:text-sm mt-1.5 text-center">
                     {category.name}
                   </p>
                 </div>

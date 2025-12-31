@@ -23,7 +23,6 @@ import {
   RiSearchLine,
   RiNotification2Fill,
   RiUser3Fill,
-
   RiArrowRightSLine,
   RiMenu4Line,
 } from "react-icons/ri";
@@ -83,7 +82,7 @@ export function Header({ setSideBar }: HeaderProps) {
               <DropdownMenuTrigger asChild>
                 <button className="flex">
                   <RiMapPinFill className="size-6 text-primary mb-1" />
-                  <div className="text-left ml-0.5 flex-1 md:space-y-0.5">
+                  <div className="text-left ml-0.5 flex-1 sm:space-y-0.5">
                     <div className="text-xs font-medium leading-4">
                       Your Location
                     </div>
@@ -146,9 +145,13 @@ export function Header({ setSideBar }: HeaderProps) {
             {/* Notification Bell */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button  className="rounded-full size-7 md:size-10 max-md:bg-neutral-300 flex justify-center items-center">
-                  <RiNotification2Fill className="size-6 text-gray-300 max-md:hidden" />
-                  <img src={bell.src} alt="notification icon" className=" md:hidden text-neutral-600" />
+                <button className="rounded-full size-7 sm:size-10 max-sm:bg-neutral-300 flex justify-center items-center">
+                  <RiNotification2Fill className="size-6 text-gray-300 max-sm:hidden" />
+                  <img
+                    src={bell.src}
+                    alt="notification icon"
+                    className=" sm:hidden text-neutral-600"
+                  />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -167,17 +170,19 @@ export function Header({ setSideBar }: HeaderProps) {
               <DropdownMenuTrigger asChild>
                 {session && isAuthenticated ? (
                   <div className="flex items-center gap-2 cursor-pointer">
-                    <Avatar className="size-7 md:size-10 border-2">
+                    <Avatar className="size-7 sm:size-10 border-2">
                       <AvatarImage
                         src={session?.avatarUrl}
                         alt={session?.fullName}
                       />
-                      <AvatarFallback className="max-md:text-xs pt-0.5">{initials}</AvatarFallback>
+                      <AvatarFallback className="max-sm:text-xs pt-0.5">
+                        {initials}
+                      </AvatarFallback>
                     </Avatar>
                     <RiArrowDownSLine className="size-5 text-neutral-600 max-md:hidden" />
                   </div>
                 ) : (
-                  <div className="size-7 md:size-10 rounded-full flex justify-center items-center bg-primary cursor-pointer">
+                  <div className="size-7 sm:size-10 rounded-full flex justify-center items-center bg-primary cursor-pointer">
                     <RiUser3Fill className="size-6 text-white" />
                   </div>
                 )}
