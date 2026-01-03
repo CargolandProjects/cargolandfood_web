@@ -64,7 +64,7 @@ export function Header({ setSideBar }: HeaderProps) {
 
   // session.signOut();
   return (
-    <header className="sticky top-0 z-30 px-6 py-2.25 bg-white border-b border-gray-100">
+    <header className="sticky top-0 z-30 px-4 md:px-6 py-2.25 bg-white border-b border-gray-100">
       <div className="max-md:flex justify-between gap-2">
         {/* mobile menu button */}
         <Button

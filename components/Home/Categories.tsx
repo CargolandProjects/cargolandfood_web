@@ -55,7 +55,7 @@ const CategoryContent = () => {
       {!isLoading && categories?.length && (
         <>
           <h3>Categories</h3>
-          <div className="flex gap-6 mt-2">
+          <div className="flex gap-3 md:gap-6 mt-2">
             {categories.map((category) => {
               const active = category.id === activeCategory;
               return (
