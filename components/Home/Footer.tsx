@@ -74,12 +74,12 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-primary-50 max-xl:px-4">
+    <footer className="bg-primary-50 px-4">
       <div className="max-w-[1100px] mx-auto">
-        <div className="flex gap-10 max-sm:flex-col justify-between pt-16">
-          <div className="flex flex-col gap-10">
+        <div className="flex gap-6 md:gap-10 max-md:flex-col justify-between pt-15 md:pt-16">
+          <div className="flex flex-col gap-6 sm:gap-10">
             {/* logo image */}
-            <div className="w-[187px] h-[54px]">
+            <div className="w-50 md:w-[187px] h-[57px] md:h-[54px]">
               <img
                 src={logoFull.src}
                 alt="CargoLand Logo"
@@ -102,24 +102,24 @@ const Footer = () => {
           </div>
 
           {/* Footer links */}
-          <div className="flex-1 flex flex-wrap justify-between max-w-[720px]  pb-20">
+          <div className="flex-1 flex flex-wrap gap-6 sm:gap-10 xl:gap-0 xl:justify-between max-w-[720px]  pb-20">
             {footerLinks.map((links, index) => (
-              <div className=" max-w-[178px] min-w-[147px] shrink" key={index}>
-                <h4 className="text-xl font-medium">{links.title}</h4>
-                <ul className="space-y-5 mt-5">
+              <div className="max-w-[178px] min-w-[147px] shrink" key={index}>
+                <h3 className="text-base sm:text-xl font-medium">{links.title}</h3>
+                <ul className="space-y-4 md:space-y-5 mt-5">
                   {links.links.map((link, index) => (
-                    <li key={index} className="leading-5">
+                    <li key={index} className="leading-4 sm:leading-5 max-sm:text-xs ">
                       {link}
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
-            .
+          
             {downloadLinks.map((links, index) => (
               <div className="shrink" key={index}>
-                <h4 className="text-xl font-medium">{links.title}</h4>
-                <div className="flex flex-col gap-5 mt-5">
+                <h3 className="text-base sm:text-xl font-medium">{links.title}</h3>
+                <div className="flex flex-col gap-4 sm:gap-5 mt-5">
                   {links.links.map((link, index) => {
                     const IconComponent = link.icon!;
                     return (
@@ -147,6 +147,7 @@ const Footer = () => {
             ))}
           </div>
         </div>
+        
         <div className="pb-[66px] flex justify-between">
           <div className="flex gap-8 text-gray-400 text-xxs">
             <p className="">Terms of Service</p>
