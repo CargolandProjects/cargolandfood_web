@@ -273,7 +273,7 @@
 
   h3,
   h2 {
-    @apply font-medium font-satoshi text-2xl leading-8
+    @apply font-medium font-satoshi text-base sm:text-2xl leading-6 sm:leading-8 
   }
 
   p, span {

@@ -14,12 +14,11 @@ const Restaurants = () => {
   }
 
   return (
-    <section className="my-10">
-
+    <section className="my-6 sm:my-10">
       {!isLoading && data?.length && (
         <div>
-          <h3 className="mb-6.5">Restaurants</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+          <h3>Restaurants</h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-2 sm:mt-6.5">
             {data.map((menuItem) => (
               <VendorCard menuItem={menuItem} key={menuItem.id} />
             ))}

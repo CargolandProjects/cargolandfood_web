@@ -121,8 +121,9 @@ const WalletPageContent = () => {
         <span className="text-xl font-medium">My Wallet</span>
       </button>
 
-      <WalletCard balance={balance} showTopup={() => setShowTopUp(true)} />
       <TransactionHistory transactions={TRANSACTIONS} />
+      
+      <WalletCard balance={balance} showTopup={() => setShowTopUp(true)} />
       <TopUpModal
         amount={amount}
         setAmount={setAmount}

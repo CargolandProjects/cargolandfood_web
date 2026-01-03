@@ -54,15 +54,15 @@ const CategoryContent = () => {
 
       {!isLoading && categories?.length && (
         <>
-          <h3 className="max-sm:text-base max-sm:leading-6">Categories</h3>
-          <div className="flex gap-6 mt-2 sm:mt-1">
+          <h3>Categories</h3>
+          <div className="flex gap-6 mt-2">
             {categories.map((category) => {
               const active = category.id === activeCategory;
               return (
                 <div
                   className={`${styles[category.name].styles} ${
                     active ? styles[category.name].activeStyle : ""
-                  } w-[103px] h-[72px] sm:w-31 sm:h-29 flex flex-col justify-center items-center rounded-xl cursor-pointer`}
+                  } w-[103px] h-[72px] sm:w-31 sm:h-29 flex flex-col justify-center items-center rounded-md sm:rounded-xl cursor-pointer`}
                   key={category.id}
                   onClick={() => {
                     setActiveCategory(category.id);

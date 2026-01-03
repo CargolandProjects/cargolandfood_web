@@ -29,7 +29,7 @@ const banners: Banner[] = [
 ];
 const Banners = () => {
   return (
-    <section className="my-10 lg:my-">
+    <section className="my-4 sm:my-10">
       <Swiper
         modules={[Autoplay]}
         spaceBetween={24}
@@ -50,7 +50,7 @@ const Banners = () => {
       >
         {banners.map((Banner, index) => (
           <SwiperSlide key={index}>
-            <div className="relative flex-1 px-7 py-3 rounded-xl bg-linear-to-br from-primary to-[#FEEFE6] overflow-hidden">
+            <div className="relative flex-1 px-7 py-3 rounded-sm sm:rounded-xl bg-linear-to-br from-primary to-[#FEEFE6] overflow-hidden">
               <div className="max-w-[370.36px] -top-6 overflow-hidden absolute -right-20">
                 <img
                   src={Banner.image}

@@ -66,8 +66,9 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
     setActiveTab(active);
   };
 
-  const handleCLick = (id: ActiveTab) => {
-    handleTabChange(id);
+  const handleClick = () => {
+    setActiveTab("Home");
+    setActiveCategory(null);
     router.push("/");
   };
 
@@ -116,7 +117,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                     {/* Separate home button */}
                     {idx === 0 && (
                       <Button
-                        onClick={() => handleCLick(item.id)}
+                        onClick={handleClick}
                         variant="ghost"
                         className={`relative size-6 rounded-sm transition-colors flex justify-center items-center ${
                           isActive && "bg-gray-100"
@@ -206,7 +207,13 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                 const isActive = activeTab === item.id;
                 return (
                   <div
-                    onClick={() => handleTabChange(item.id)}
+                    onClick={() => {
+                      if (idx === 0) {
+                        handleClick();
+                      } else {
+                        handleTabChange(item.id);
+                      }
+                    }}
                     className="flex items-center gap-2 hover:cursor-pointer"
                     key={idx}
                   >
