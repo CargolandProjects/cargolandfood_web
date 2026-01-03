@@ -8,6 +8,21 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
+const styles: { [key: string]: { styles: string; activeStyle: string } } = {
+  Restaurants: {
+    styles: "bg-[#FEF3EB] ",
+    activeStyle: "border border-primary",
+  },
+  "Groceries & More": {
+    styles: "bg-[#EFFAF6]",
+    activeStyle: "border border-secondary",
+  },
+  Markets: {
+    styles: "bg-[#FEF7EC]",
+    activeStyle: "border border-cargo-accent",
+  },
+};
+
 const Loading = () => (
   <div className="space-y-4">
     <Skeleton className="w-30 h-4" />
@@ -22,7 +37,7 @@ const Loading = () => (
 const CategoryContent = () => {
   const { activeCategory, setActiveCategory } = useCategory();
   const { data: categories, isLoading } = useCategories();
-  
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -40,28 +55,28 @@ const CategoryContent = () => {
       {!isLoading && categories?.length && (
         <>
           <h3>Categories</h3>
-          <div className="flex gap-6 mt-1">
+          <div className="flex gap-6 mt-2">
             {categories.map((category) => {
               const active = category.id === activeCategory;
               return (
                 <div
-                  className={`${category.styles} ${
-                    active ? category.activeStyle : ""
-                  } w-31 h-29 flex flex-col justify-center items-center rounded-xl cursor-pointer`}
+                  className={`${styles[category.name].styles} ${
+                    active ? styles[category.name].activeStyle : ""
+                  } w-[103px] h-[72px] sm:w-31 sm:h-29 flex flex-col justify-center items-center rounded-md sm:rounded-xl cursor-pointer`}
                   key={category.id}
                   onClick={() => {
                     setActiveCategory(category.id);
                     removeQuery();
                   }}
                 >
-                  <div className="size-10 overflow-hidden">
+                  <div className="size-8 sm:size-10 overflow-hidden">
                     <Image
                       src={category.icon}
                       alt={category.name}
                       className="object-cover size-full"
                     />
                   </div>
-                  <p className="font-medium text-sm mt-1.5 text-center">
+                  <p className="font-medium text-xs sm:text-sm mt-1.5 text-center">
                     {category.name}
                   </p>
                 </div>
@@ -74,10 +89,9 @@ const CategoryContent = () => {
   );
 };
 
-
 const Categories = () => (
   <Suspense>
     <CategoryContent />
   </Suspense>
-)
+);
 export default Categories;

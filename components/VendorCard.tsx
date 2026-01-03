@@ -37,23 +37,23 @@ const VendorCard = ({
       </div>
       <div className="mt-2.5">
         <div className="flex justify-between">
-          <p className="">{title}</p>
+          <p className="text-base leading-5">{title}</p>
           <RiHeartFill className="size-6 text-gray-300" />
         </div>
         <div className="mt-1 flex gap-3 md:gap-4">
           <div className="flex justify-center items-center gap-1">
             <RiStarLine className="size-5.5 text-primary" />
-            <span className="text-sm text-gray-700">{rating}</span>
+            <span className="leading-5 text-neutral-600">{rating}</span>
           </div>
           <div className="flex justify-center items-center gap-1">
             <RiEBike2Line className="size-5.5 text-primary" />
-            <span className="text-sm text-gray-700">
+            <span className="leading-5 text-neutral-600">
               {!deliveryFee ? "Free" : deliveryFee}
             </span>
           </div>
           <div className="flex justify-center items-center gap-1">
             <RiTimeLine className="size-5.5 text-primary" />
-            <span className="text-sm text-gray-700">{deliveryTime}</span>
+            <span className="leading-5 text-neutral-600">{deliveryTime}</span>
           </div>
         </div>
       </div>

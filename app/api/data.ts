@@ -162,22 +162,17 @@ export const categories = [
     id: "Restaurants",
     name: "Restaurants",
     icon: restaurant,
-    styles: "bg-[#FEF3EB] ",
-    activeStyle: "border border-primary",
   },
   {
     id: "Groceries",
     name: "Groceries & More",
     icon: groceries,
-    styles: "bg-[#EFFAF6]",
-    activeStyle: "border border-secondary",
   },
   {
     id: "Markets",
     name: "Markets",
     icon: food,
-    styles: "bg-[#FEF7EC]",
-    activeStyle: "border border-cargo-accent",
+
   },
 ];
 

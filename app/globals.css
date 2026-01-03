@@ -273,7 +273,7 @@
 
   h3,
   h2 {
-    @apply font-medium font-satoshi text-2xl leading-8
+    @apply font-medium font-satoshi text-base sm:text-2xl leading-6 sm:leading-8 
   }
 
   p, span {
@@ -350,6 +350,10 @@
 
   .dialog-t {
     @apply mt-[74px]
+  }
+
+  .button-shadow {
+    box-shadow: 0px 0px 16.6px rgba(0, 0, 0, 0.08);
   }
 
   .card-shadow {
