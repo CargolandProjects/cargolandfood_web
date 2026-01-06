@@ -36,7 +36,7 @@ const Promotions = () => {
           <Loading count={3} title scroll />
         </div>
         <div className="my-4 sm:my-10">
-          <Loading count={3} title scroll/>
+          <Loading count={3} title scroll />
         </div>
       </div>
     );
@@ -67,7 +67,7 @@ const Promotions = () => {
                 See all
               </p>
             </div>
-            <div className="w-full mt-2 sm:mt-6.5 ">
+            <div className="w-full section-y ">
               <Swiper
                 onBeforeInit={(swiper) => {
                   discountsSwiperRef.current = swiper;
@@ -119,7 +119,7 @@ const Promotions = () => {
               </p>
             </div>
 
-            <div className="w-full mt-2 sm:mt-6.5">
+            <div className="w-full section-y">
               <Swiper
                 onBeforeInit={(swiper) => {
                   featureSwiperRef.current = swiper;
