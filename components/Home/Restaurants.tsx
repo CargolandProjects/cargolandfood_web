@@ -1,13 +1,13 @@
 import VendorCard from "../VendorCard";
 import { useRestaurants } from "@/lib/hooks/queries/useRestaurants";
-import Loading from "../Loading";
+import Loading from "../LoadingSkeleton";
 
 const Restaurants = () => {
   const { data, isLoading } = useRestaurants();
 
   if (isLoading) {
     return (
-      <section className="my-10">
+      <section className="my-6 sm:my-10 ">
         <Loading count={6} title />
       </section>
     );

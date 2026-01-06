@@ -2,12 +2,12 @@ import { Skeleton } from "../ui/skeleton";
 import { useHotPicks } from "@/lib/hooks/queries";
 
 const Loading = () => (
-  <div className="space-y-2 md:space-y-4">
-    <Skeleton className="w-25 md:w-32 h-3 md:h-4" />
-    <div className="flex gap-3 md:gap-6 overflow-x-auto hide-scrollbar">
-      {Array.from({ length: 4 }).map((_, i) => (
+  <div className="space-y-3 sm:space-y-4">
+    <Skeleton className="w-25 sm:w-32 h-3 md:h-4" />
+    <div className="flex gap-3 sm:gap-6 overflow-x-auto hide-scrollbar">
+      {Array.from({ length: 7 }).map((_, i) => (
         <Skeleton
-          className="w-[103px] h-[72px] sm:w-31 sm:h-29 shrink-0"
+          className="size-15 sm:size-31 rounded-full shrink-0"
           key={i}
         />
       ))}

@@ -9,7 +9,7 @@ import Promotions from "../Promotions";
 import Reastaurants from "./Restaurants";
 import { useSearchParams } from "next/navigation";
 import { useSearch } from "@/lib/hooks/queries/useSearch";
-import Loading from "../Loading";
+import Loading from "../LoadingSkeleton";
 import { Suspense } from "react";
 
 const SelectionsContent = () => {

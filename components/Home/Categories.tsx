@@ -24,11 +24,11 @@ const styles: { [key: string]: { styles: string; activeStyle: string } } = {
 };
 
 const Loading = () => (
-  <div className="space-y-4">
-    <Skeleton className="w-30 h-4" />
-    <div className="flex gap-6">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Skeleton className="w-31 h-29" key={i} />
+  <div className="space-y-3 sm:space-y-4">
+    <Skeleton className="w-25 sm:w-32 h-3 md:h-4" />
+    <div className="flex gap-3 sm:gap-6 overflow-x-auto hide-scrollbar">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <Skeleton className="w-[103px] h-[72px] sm:w-31 sm:h-29 shrink-0" key={i} />
       ))}
     </div>
   </div>
@@ -36,7 +36,7 @@ const Loading = () => (
 
 const CategoryContent = () => {
   const { activeCategory, setActiveCategory } = useCategory();
-  const { data: categories, isLoading } = useCategories();
+  const { data: categories = [], isPending } = useCategories();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -48,11 +48,13 @@ const CategoryContent = () => {
     router.replace(`?${params.toString()}`);
   };
 
+  if (isPending) {
+    return <Loading />;
+  }
+
   return (
     <section>
-      {isLoading && <Loading />}
-
-      {!isLoading && categories?.length && (
+      {categories?.length > 0 && (
         <>
           <h3>Categories</h3>
           <div className="flex gap-3 md:gap-6 mt-2">
