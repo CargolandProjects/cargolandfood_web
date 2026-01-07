@@ -7,7 +7,7 @@ const CategoryTab = ({ name, isActive = false, selectTab }: Category) => (
       px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap
       ${
         isActive
-          ? "bg-orange-600 text-white shadow-md" // Active (Orange background)
+          ? "bg-primary text-white shadow-md" // Active (Orange background)
           : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50" // Inactive (White background/border)
       }
     `}
