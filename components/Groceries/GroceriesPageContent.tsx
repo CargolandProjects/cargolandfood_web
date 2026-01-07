@@ -55,39 +55,41 @@ const GroceriesPageContent = ({ id }: { id: string }) => {
           openCheckout ? "max-w-[814px]" : "max-w-[1006px]"
         } mx-auto transitoin-all duration-300 flex-1`}
       >
+        {/* Back button */}
         <button
           onClick={handleBack}
-          className="flex items-center gap-4 text-sm w-full pl-2 hover:cursor-pointer"
+          className="hidden sm:flex items-center gap-4 text-sm w-full pl-2 hover:cursor-pointer"
         >
           <RiArrowGoBackLine className="size-3.5 text-gray-500" />
           <span className="text-xl font-medium">Groceries & More</span>
         </button>
+
         {/* 1. Header Image and Info Section */}
-        <div className="relative bg-white mt-2">
-          {/* Changed from bg-gray-50 to bg-white for a seamless look */}
+        <div className="relative">
+          <h3 className="sm:hidden">Groceries & More</h3>
           {/* Banner Image */}
-          <div className="relative h-48 md:h-[274px] w-full overflow-hidden rounded-xl">
+          <div className="relative h-25.5 sm:h-48 md:h-[274px] w-full overflow-hidden rounded-xl mt-2">
             <img
               src={shawarma.src}
-              alt="Shawarma Plus banner"
-              className="w-full h-full object-cover rounded-xl md:object-[0px_-82px]"
+              alt="Groceries banner"
+              className="w-full h-full object-cover rounded-xl object-[0px_-50px] sm:object-[0px_-82px]"
               loading="lazy"
             />
             {/* Favourite and Comments */}
-            <div className="absolute top-6 right-6 flex gap-2.5">
+            <div className="absolute top-3 sm:top-6 right-3 sm:right-6 flex gap-2.5">
               <button
                 onClick={() => setShowFavourites(true)}
-                className="size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
+                className="size-8 sm:size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
               >
                 <RiHeartFill className="size-6 text-gray-300" />
               </button>
               <button
                 onClick={() => setShowReviews(true)}
-                className="size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
+                className="size-8 sm:size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
               >
                 <img
                   src={info.src}
-                  alt="Shawarma Plus banner"
+                  alt="Info"
                   className="size-6 rounded-full object-cover"
                   loading="lazy"
                 />
@@ -95,12 +97,8 @@ const GroceriesPageContent = ({ id }: { id: string }) => {
             </div>
           </div>
 
-          {/* Restaurant Title and Details (Below Image) */}
-          <div className="py-10 bg-white">
-            {/* Changed from bg-gray-50 to bg-white */}
-            <h2 className="text-[32px] font-medium text-gray-900 mb-1 leading-10">
-             St. Toby - Surulere
-            </h2>
+          <div className="my-3 sm:my-10 max-sm:space-y-[3px]">
+            <h2>St. Toby - Surulere</h2>
             {/* Stats Line (Rating, Delivery Fee, Time) */}
             <RestaurantStats
               rating={4.7}
@@ -111,8 +109,8 @@ const GroceriesPageContent = ({ id }: { id: string }) => {
         </div>
 
         {/* 2. Category Tabs Section */}
-        <div className="sticky -top-4 z-10 pb-10">
-          <div className="flex gap-4.5 max-w-[606px] h-11.5 justify-start overflow-x-auto hide-scrollbar">
+        <div className="sticky -top-2 sm:-top-4 z-10 sm:pb-10 sm:px-4">
+          <div className="flex gap-2.5 sm:gap-4.5 max-w-[606px] h-11.5 justify-start overflow-x-auto hide-scrollbar">
             {categories.map(({ name }, i) => (
               <CategoryTab
                 name={name}
@@ -125,7 +123,7 @@ const GroceriesPageContent = ({ id }: { id: string }) => {
         </div>
 
         {/* 3. Product Listing Section */}
-        <div className="p-4">
+        <div className="sm:p-4 max-sm:mt-3">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-15">
             {!error && data.map((item) => (
               <GroceryItemCard
@@ -150,7 +148,7 @@ const GroceriesPageContent = ({ id }: { id: string }) => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.4 }}
-            className="sticky top-6 self-start"
+            className="sticky top-6 self-start max-sm:hidden"
           >
             <Checkout />
           </motion.div>

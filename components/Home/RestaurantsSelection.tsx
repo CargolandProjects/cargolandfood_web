@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { usePromotions } from "@/lib/hooks/queries/usePromotions";
-import VendorCardSkeleton from "../VendorCardSkeleton";
 import FilterBar from "../FilterBar";
 import VendorCard from "../VendorCard";
+import Loading from "../LoadingSkeleton";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 const RestaurantsSelection = () => {
   const [activeFilter, setActiveFilter] = useState("all");
@@ -18,19 +19,14 @@ const RestaurantsSelection = () => {
 
   if (isLoading) {
     return (
-      <section className="my-10">
-        <h3 className="mb-6.5">Featured</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <VendorCardSkeleton key={i} />
-          ))}
-        </div>
+      <section className="my-6 sm:my-10">
+        <Loading count={3} title scroll />
       </section>
     );
   }
 
   return (
-    <section className="my-10">
+    <section className="my-6 sm:my-10">
       <FilterBar
         filters={filters}
         activeFilter={activeFilter}
@@ -38,48 +34,144 @@ const RestaurantsSelection = () => {
       />
 
       {activeFilter === "all" && (
-        <div>
-          <h3 className="mb-6.5 mt-6">Featured</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-            {data?.featured.map((item) => (
-              <VendorCard key={item.id} menuItem={item} />
-            ))}
+        <div className="space-y-4 sm:space-y-10 mt-4 sm:mt-10">
+          <div>
+            <h3>Featured</h3>
+            <Swiper
+              spaceBetween={16}
+              slidesPerView={1.3}
+              loop={true}
+              speed={600}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                },
+                768: {
+                  slidesPerView: 3,
+                  spaceBetween: 24,
+                },
+              }}
+              className="section-y"
+            >
+              {data?.featured.map((item) => (
+                <SwiperSlide key={item.id}>
+                  <VendorCard menuItem={item} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
 
-          <h3 className="mb-6.5 mt-10">Fast Delivery</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-            {data?.featured.map((item) => (
-              <VendorCard key={item.id} menuItem={item} />
-            ))}
+          <div>
+            <h3>Fast Delivery</h3>
+            <Swiper
+              spaceBetween={16}
+              slidesPerView={1.3}
+              loop={true}
+              speed={600}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                },
+                768: {
+                  slidesPerView: 3,
+                  spaceBetween: 24,
+                },
+              }}
+              className="section-y"
+            >
+              {data?.featured.map((item) => (
+                <SwiperSlide key={item.id}>
+                  <VendorCard menuItem={item} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
 
-          <h3 className="mb-6.5 mt-10">Best Prices</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-            {data?.discount.map((item) => (
-              <VendorCard key={item.id} menuItem={item} />
-            ))}
+          <div>
+            <h3>Best Prices</h3>
+            <Swiper
+              spaceBetween={16}
+              slidesPerView={1.3}
+              loop={true}
+              speed={600}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                },
+                768: {
+                  slidesPerView: 3,
+                  spaceBetween: 24,
+                },
+              }}
+              className="section-y"
+            >
+              {data?.discount.map((item) => (
+                <SwiperSlide key={item.id}>
+                  <VendorCard menuItem={item} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
       )}
 
       {activeFilter === "fast" && (
-        <div>
-          <h3 className="mb-6.5 mt-6">Fast Delivery</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-            {data?.featured.map((item) => (
-              <VendorCard key={item.id} menuItem={item} />
-            ))}
+        <div className="space-y-4 sm:space-y-10 mt-4 sm:mt-10 ">
+          <div>
+            <h3>Fast Delivery</h3>
+            <Swiper
+              spaceBetween={16}
+              slidesPerView={1.3}
+              loop={true}
+              speed={600}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                },
+                768: {
+                  slidesPerView: 3,
+                  spaceBetween: 24,
+                },
+              }}
+              className="section-y"
+            >
+              {data?.featured.map((item) => (
+                <SwiperSlide key={item.id}>
+                  <VendorCard menuItem={item} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
       )}
 
       {activeFilter === "prices" && (
-        <div>
-          <h3 className="mb-6.5 mt-6">Best Prices</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-            {data?.discount.map((item) => (
-              <VendorCard key={item.id} menuItem={item} />
-            ))}
+        <div className="space-y-4 sm:space-y-10 mt-4 sm:mt-10 ">
+        {/* <div className="grid grid-cols-2 md:grid-cols-3 gap-6 section-y"></div> */}
+          <div>
+            <h3>Best Prices</h3>
+            <Swiper
+              spaceBetween={16}
+              slidesPerView={1.3}
+              loop={true}
+              speed={600}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                },
+                768: {
+                  slidesPerView: 3,
+                  spaceBetween: 24,
+                },
+              }}
+              className="section-y"
+            >
+              {data?.discount.map((item) => (
+                <SwiperSlide key={item.id}>
+                  <VendorCard menuItem={item} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
       )}

@@ -209,9 +209,8 @@
   --color-cargo-purple: var(--color-cargo-purple);
   --color-cargo-cyan: var(--color-cargo-cyan);
 
-  --color-neutral-50: var(--color-neutral-50);
   --color-neutral-100: var(--color-neutral-100);
-  --color-neutral-200: var(--color-neutral-200);
+  /* --color-neutral-200: var(--color-neutral-200); */
   --color-neutral-300: var(--color-neutral-300);
   --color-neutral-400: var(--color-neutral-400);
   --color-neutral-500: var(--color-neutral-500);
@@ -273,7 +272,7 @@
 
   h3,
   h2 {
-    @apply font-medium font-satoshi text-base sm:text-2xl leading-6 sm:leading-8 
+    @apply font-medium font-satoshi text-base sm:text-2xl leading-6 sm:leading-8
   }
 
   p, span {
@@ -376,6 +375,11 @@
         /* bottom-left */
       );
   }
+
+  .section-y {
+    @apply mt-2 sm:mt-5
+  }
+
 
   /* Custom shadows */
   /* .shadow-cargo-xs {

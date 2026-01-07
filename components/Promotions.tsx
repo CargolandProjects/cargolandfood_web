@@ -12,7 +12,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { usePromotions } from "@/lib/hooks/queries/usePromotions";
 
-import Loading from "./Loading";
+import Loading from "./LoadingSkeleton";
 
 const Promotions = () => {
   // Simple Swiper refs for both sections
@@ -31,9 +31,13 @@ const Promotions = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 sm:space-y-10">
-        <Loading count={3} title />
-        <Loading count={3} title />
+      <div>
+        <div className="mt-6 sm:my-10">
+          <Loading count={3} title scroll />
+        </div>
+        <div className="my-4 sm:my-10">
+          <Loading count={3} title scroll />
+        </div>
       </div>
     );
   }
@@ -63,7 +67,7 @@ const Promotions = () => {
                 See all
               </p>
             </div>
-            <div className="w-full mt-2 sm:mt-6.5 ">
+            <div className="w-full section-y ">
               <Swiper
                 onBeforeInit={(swiper) => {
                   discountsSwiperRef.current = swiper;
@@ -115,7 +119,7 @@ const Promotions = () => {
               </p>
             </div>
 
-            <div className="w-full mt-2 sm:mt-6.5">
+            <div className="w-full section-y">
               <Swiper
                 onBeforeInit={(swiper) => {
                   featureSwiperRef.current = swiper;

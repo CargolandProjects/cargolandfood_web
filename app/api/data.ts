@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 
-import { pizza, shawarma as sharwarma } from "@/assets/images";
+import { choppers, divineSpot, foodCafe, pappiesMaestro, pizza, pizzaHut, shawarma as sharwarma, suyaBistro } from "@/assets/images";
 import { food, groceries, restaurant } from "@/assets/svgs";
 import { Product } from "@/lib/stores/CartStore";
 
@@ -862,3 +862,36 @@ export const Restaurants:Record<string, Product[]> = {
     },
   ],
 };
+
+export const hotPicks = [
+    {
+      name: "Food Cafe",
+      image: foodCafe.src,
+      link: "",
+    },
+    {
+      name: "Suya Bistro",
+      image: suyaBistro.src,
+      link: "",
+    },
+    {
+      name: "Divine Spot",
+      image: divineSpot.src,
+      link: "",
+    },
+    {
+      name: "Choppers",
+      image: choppers.src,
+      link: "",
+    },
+    {
+      name: "Pappies Maestro",
+      image: pappiesMaestro.src,
+      link: "",
+    },
+    {
+      name: "Pizza Hut",
+      image: pizzaHut.src,
+      link: "",
+    },
+  ];

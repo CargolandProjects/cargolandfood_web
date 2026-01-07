@@ -21,10 +21,10 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
     <>
       <div
         onClick={() => handleSelect(id!)}
-        className="flex rounded-2xl overflow-hidden border border-neutral-300 gap-2 relative cursor-pointer"
+        className="flex h-[116px] sm:h-34.5 rounded-2xl overflow-hidden border border-neutral-300 gap-2 cursor-pointer"
       >
         {/* Product Image - Adjusted for Left-Side Radius Only */}
-        <div className="w-30 h-32.5 shrink-0 rounded-l-xl rounded-r-xs overflow-hidden relative">
+        <div className="w-30 ml-[3px] my-[3px] shrink-0 rounded-l-xl rounded-r-xs overflow-hidden relative">
           {/* Width set to 138px to match height for a square/large image area */}
           <img
             src={imageUrl}
@@ -37,22 +37,22 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
         {/* Product Details */}
         <div className="flex flex-col justify-center flex-1">
           <div>
-            <h3 className="text-lg font-medium leading-6 line-clamp-1">
+            <h3 className="text-sm sm:text-lg leading-5 sm:leading-6 line-clamp-1">
               {name}
             </h3>
-            <p className="text-xs leading-4 mt-1 text-neutral-600 line-clamp-2 max-w-[145px]">
+            <p className="text-xs leading-4 sm:mt-1 text-neutral-600 line-clamp-2 max-w-[145px]">
               {description}
             </p>
           </div>
 
-          <div className="flex justify-between items- mt-6 ">
-            <span className="text-xl font-medium">
-              ₦{price}
+          <div className="flex justify-between items-center sm:mt-4 sm:mr-2.5">
+            <span className="text-base sm:text-xl font-medium">
+              ₦{Number(price).toLocaleString()}
             </span>
             {/* ADDED: Plus Icon Button */}
             <button
               // Match the light orange background, right-side rounding, and padding/size
-              className="absolute right-2.5 bottom-2.5 bg-primary-100 size-9 flex items-center justify-center rounded-md"
+              className="bg-primary-100 size-9 flex items-center justify-center rounded-md"
               // onClick={() => handleSelect(id!)}
               aria-label={`Add ${name} to cart`}
             >

@@ -11,6 +11,7 @@ import {
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { StaticImageData } from "next/image";
+import { Separator } from "../ui/separator";
 
 interface SocialIcons {
   title: string;
@@ -86,7 +87,7 @@ const Footer = () => {
                 className="size-full object-contain"
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 max-md:hidden">
               {socialIcons.map((social, index) => {
                 const IconComponent = social.icon;
                 return (
@@ -102,59 +103,84 @@ const Footer = () => {
           </div>
 
           {/* Footer links */}
-          <div className="flex-1 flex flex-wrap gap-6 sm:gap-10 xl:gap-0 xl:justify-between max-w-[720px]  pb-20">
+          <div className="flex-1 flex flex-wrap gap-6 sm:gap-10 xl:gap-0 xl:justify-between max-w-[720px]">
             {footerLinks.map((links, index) => (
               <div className="max-w-[178px] min-w-[147px] shrink" key={index}>
-                <h3 className="text-base sm:text-xl font-medium">{links.title}</h3>
+                <h3 className="text-base sm:text-xl font-medium">
+                  {links.title}
+                </h3>
                 <ul className="space-y-4 md:space-y-5 mt-5">
                   {links.links.map((link, index) => (
-                    <li key={index} className="leading-4 sm:leading-5 max-sm:text-xs ">
+                    <li
+                      key={index}
+                      className="leading-4 sm:leading-5 max-sm:text-xs "
+                    >
                       {link}
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
-          
-            {downloadLinks.map((links, index) => (
-              <div className="shrink" key={index}>
-                <h3 className="text-base sm:text-xl font-medium">{links.title}</h3>
-                <div className="flex flex-col gap-4 sm:gap-5 mt-5">
-                  {links.links.map((link, index) => {
-                    const IconComponent = link.icon!;
-                    return (
-                      <Link href={link.url} key={index}>
-                        <Button className="bg-black w-full gap-2.5 text-white rounded-full p-6">
-                          {link.image && (
-                            <div className="size-4">
-                              <img
-                                src={link.image.src}
-                                alt={link.label}
-                                className="size-full object-cover"
-                              />
-                            </div>
-                          )}
-                          {link.icon && (
-                            <IconComponent className="size-5 text-white" />
-                          )}
-                          <span className="text-sm font-medium">{link.label}</span>
-                        </Button>
-                      </Link>
-                    );
-                  })}
+            <div className="">
+              {downloadLinks.map((links, index) => (
+                <div className="shrink" key={index}>
+                  <h3 className="text-base sm:text-xl font-medium">
+                    {links.title}
+                  </h3>
+                  <div className="flex flex-col gap-4 sm:gap-5 mt-5">
+                    {links.links.map((link, index) => {
+                      const IconComponent = link.icon!;
+                      return (
+                        <Link href={link.url} key={index}>
+                          <Button className="bg-black w-full gap-2.5 text-white rounded-full p-6">
+                            {link.image && (
+                              <div className="size-4">
+                                <img
+                                  src={link.image.src}
+                                  alt={link.label}
+                                  className="size-full object-cover"
+                                />
+                              </div>
+                            )}
+                            {link.icon && (
+                              <IconComponent className="size-5 text-white" />
+                            )}
+                            <span className="text-sm font-medium">
+                              {link.label}
+                            </span>
+                          </Button>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
+              ))}
+              <div className="flex gap-2 md:hidden mt-6">
+                {socialIcons.map((social, index) => {
+                  const IconComponent = social.icon;
+                  return (
+                    <div
+                      className="size-6 sm:size-10 rounded-full bg-primary flex justify-center items-center"
+                      key={index}
+                    >
+                      <IconComponent className="text-white size-3 sm:size-5" />
+                    </div>
+                  );
+                })}
               </div>
-            ))}
+            </div>
           </div>
         </div>
-        
-        <div className="pb-[66px] flex justify-between">
-          <div className="flex gap-8 text-gray-400 text-xxs">
-            <p className="">Terms of Service</p>
-            <p className="">Privacy Policy</p>
-            <p className="">Security</p>
+
+        <Separator className="my-6" />
+
+        <div className="md:mt-20 pb-10 md:pb-[66px] flex max-md:flex-col max-md:gap-4 justify-between">
+          <div className="flex gap-8 ">
+            <p className="text-neutral-500 text-xs sm:text-base">Terms of Service</p>
+            <p className="text-neutral-500 text-xs sm:text-base">Privacy Policy</p>
+            <p className="text-neutral-500 text-xs sm:text-base">Security</p>
           </div>
-          <p className=" text-gray-400 text-xxs">
+          <p className=" text-neutral-500 text-xs sm:text-base">
             &copy; {new Date().getFullYear()} Rayna. All rights reserved
           </p>
         </div>

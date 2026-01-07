@@ -2,6 +2,7 @@ export const API_ROUTES = {
   promotions: "/promotions",
   restaurants: "/restaurants",
   categories: "/categories",
+  hotPicks: "/hotPicks",
   restaurant: (id: string) => `/restaurants/${id}`,
   search: (query: string) => `/users/search-vendor-menus?query=${query}`,
 
