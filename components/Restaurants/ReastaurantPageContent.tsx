@@ -23,7 +23,7 @@ export interface CategoryTab {
   selectTab: (tab: string) => void;
 }
 
-// type Categories = "All" | "Sharwarma" | "Sandwich" | "Pizza" | "Milk Shake";
+// type Categoriess = "All" | "Sharwarma" | "Sandwich" | "Pizza" | "Milk Shake";
 
 const categories = [
   { name: "All" },
