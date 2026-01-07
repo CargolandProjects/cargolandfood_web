@@ -51,15 +51,15 @@ const Notifications = () => {
   };
   
   return (
-    <div className="flex-col gap-6">
+    <div className="flex flex-col gap-6">
       {notifications.map((notification, i, a) => (
         <DropdownMenuItem
-          className={`${
+          className={`p-0 ${
             i === a.length - 1 ? "pb-[35px]" : ""
           } flex gap-2 items-start`}
           key={notification.id}
         >
-          <div className="size-10 bg-primary-50 flex justify-center items-center rounded-full">
+          <div className="size-10 shrink-0 bg-primary-50 flex justify-center items-center rounded-full">
             <img
               src={notification.icon}
               alt={notification.id}

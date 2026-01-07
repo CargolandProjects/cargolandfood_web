@@ -26,6 +26,7 @@ import {
   RiArrowRightSLine,
   RiMenu4Line,
   RiArrowLeftLine,
+  RiArrowGoBackLine,
 } from "react-icons/ri";
 import Notifications from "./Notifications";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
@@ -80,18 +81,17 @@ export function Header({ setSideBar }: HeaderProps) {
 
   // session.signOut();
   return (
-    <header className="sticky top-0 z-30 px-4 md:px-6 md:py-2.25 max-md:pt-2.25 bg-white md:border-b border-gray-100">
-      <div className="max-md:flex justify-between gap-2">
+    <header className="sticky top-0 z-30 px-4 sm:px-6 sm:py-2.25 max-sm:pt-2.25 bg-white sm:border-b border-gray-100">
+      <div className="max-sm:flex justify-between gap-2">
         {/* mobile menu button */}
         <Button
           onClick={() => setSideBar(true)}
-          className="md:hidden size-10 rounded-full bg-white button-shadow"
+          className="sm:hidden size-10 rounded-full bg-white button-shadow"
           variant="ghost"
         >
           <RiMenu4Line className="size-6 text-brand-black" />
         </Button>
         <div className="max-w-full flex items-center justify-between gap-8">
-          {/* Location Section */}
           <div className="flex items-center gap-6">
             {/* Location Dropdown */}
             <DropdownMenu>
@@ -119,7 +119,7 @@ export function Header({ setSideBar }: HeaderProps) {
 
             {/* Wallet Dropdown */}
             <DropdownMenu>
-              <DropdownMenuTrigger asChild className="max-md:hidden">
+              <DropdownMenuTrigger asChild className="max-sm:hidden">
                 <button className="flex items-center gap-1 hover:bg-gray-100">
                   <RiWallet3Fill className="size-6  text-blue-400 " />
                   <p className="text-xs font-medium text-gray-900">My Wallet</p>
@@ -142,11 +142,11 @@ export function Header({ setSideBar }: HeaderProps) {
           </div>
 
           {/* Right Section */}
-          <div className="flex md:flex-1 bg-amber-00 shrink items-center justify-end gap-2 md:gap-6">
+          <div className="flex sm:flex-1 bg-amber-00 shrink items-center justify-end gap-2 sm:gap-6">
             {/* Search Bar */}
             <form
               onSubmit={handleSubmit}
-              className="max-md:hidden relative flex-1 max-w-[416px]"
+              className="max-sm:hidden relative flex-1 max-w-[416px]"
             >
               <RiSearchLine className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
@@ -174,7 +174,8 @@ export function Header({ setSideBar }: HeaderProps) {
                 align="end"
                 className="dropdown-content w-[271px]"
               >
-                <DropdownMenuLabel className="font-bold text-base">
+                <DropdownMenuLabel className="font-bold text-base flex gap-4.5 p-0 mb-6">
+                  {/* <RiArrowGoBackLine className="size-5" /> */}
                   Notification
                 </DropdownMenuLabel>
                 <Notifications />
@@ -195,7 +196,7 @@ export function Header({ setSideBar }: HeaderProps) {
                         {initials}
                       </AvatarFallback>
                     </Avatar>
-                    <RiArrowDownSLine className="size-5 text-neutral-600 max-md:hidden" />
+                    <RiArrowDownSLine className="size-5 text-neutral-600 max-sm:hidden" />
                   </div>
                 ) : (
                   <div className="size-7 sm:size-10 rounded-full flex justify-center items-center bg-primary cursor-pointer">
@@ -237,7 +238,7 @@ export function Header({ setSideBar }: HeaderProps) {
       </div>
 
       {showSearch && (
-        <div className="flex gap-3 mt-4 items-center md:hidden">
+        <div className="flex gap-3 mt-4 items-center sm:hidden">
           {showBack && (
             <button
               onClick={handleBack}
@@ -249,7 +250,7 @@ export function Header({ setSideBar }: HeaderProps) {
 
           <form
             onSubmit={handleSubmit}
-            className="relative flex-1 md:max-w-[416px]"
+            className="relative flex-1 sm:max-w-[416px]"
           >
             <RiSearchLine className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
