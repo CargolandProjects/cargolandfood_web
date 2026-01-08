@@ -26,7 +26,6 @@ import {
   RiArrowRightSLine,
   RiMenu4Line,
   RiArrowLeftLine,
-  RiArrowGoBackLine,
 } from "react-icons/ri";
 import Notifications from "./Notifications";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
@@ -81,7 +80,7 @@ export function Header({ setSideBar }: HeaderProps) {
 
   // session.signOut();
   return (
-    <header className="sticky top-0 z-30 px-4 sm:px-6 sm:py-2.25 max-sm:pt-2.25 bg-white sm:border-b border-gray-100">
+    <header className="sticky top-0 z-30 px-4 sm:px-6 py-2 max-sm:pb-1 bg-white sm:border-b border-gray-100">
       <div className="max-sm:flex justify-between gap-2">
         {/* mobile menu button */}
         <Button
