@@ -1,6 +1,6 @@
 import ProductModal from "../ProductModal";
 
-import type { Product } from "@/lib/stores/CartStore";
+import { useCartStore, type Product } from "@/lib/stores/CartStore";
 import { RiAddFill } from "react-icons/ri";
 
 interface RestaurantItemCard {
@@ -14,8 +14,9 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
   handleSelect,
   selectedId,
 }) => {
-  const { description, id, imageUrl, name, price } = product
+  const { description, id, imageUrl, name, price } = product;
   const isSelected = id === selectedId;
+  const add = useCartStore((s) => s.addItem);
 
   return (
     <>
@@ -31,7 +32,6 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
             alt={name || "Product image"}
             className="w-full h-full object-cover rounded-l-2xl"
           />
-          
         </div>
 
         {/* Product Details */}
@@ -53,7 +53,10 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
             <button
               // Match the light orange background, right-side rounding, and padding/size
               className="bg-primary-100 size-9 flex items-center justify-center rounded-md"
-              // onClick={() => handleSelect(id!)}
+              onClick={(e) => {
+                e.stopPropagation();
+                add(product);
+              }}
               aria-label={`Add ${name} to cart`}
             >
               <RiAddFill className="size-6 text-primary" />
@@ -62,7 +65,11 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
         </div>
       </div>
 
-      <ProductModal handleSelect={handleSelect} isSelected={isSelected} product={product} />
+      <ProductModal
+        handleSelect={handleSelect}
+        isSelected={isSelected}
+        product={product}
+      />
     </>
   );
 };

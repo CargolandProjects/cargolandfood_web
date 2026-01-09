@@ -149,7 +149,7 @@ const ProductModal = ({
               <RiAddFill className="size-4 text-primary" />
             </Button>
           </div>
-          <Button className="uppercase py-3.5 px-5.5 h-10.5 sm:h-12 text-sm font-bold max-w-[205px] whitespace-normal ">
+          <Button className="uppercase py-3.5 px-5.5 h-10.5 sm:h-12 text-sm font-bold max-w-[184px] whitespace-normal ">
             Order Item - ₦{(600).toLocaleString()}
           </Button>
         </div>
