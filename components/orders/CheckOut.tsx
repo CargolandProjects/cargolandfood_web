@@ -121,6 +121,11 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
     openOrderDetails();
   };
 
+  const handleClearCart = () => {
+    clearCart();
+    if (closeCheckout) closeCheckout(false);
+  };
+
   return (
     <>
       <div className="max-sm:fixed max-sm:inset-0 bg-white p-4 overflow-auto hide-scrollbar ">
@@ -134,7 +139,9 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
               <RiArrowLeftLine className="size-5" />
             </button>
           )}
-          <h2 className="text-xl font-medium max-sm:text-center leading-7">Your Order Summary</h2>
+          <h2 className="text-xl font-medium max-sm:text-center leading-7">
+            Your Order Summary
+          </h2>
         </div>
         <Separator className="mt-3 mb-6 max-sm:hidden" />
 
@@ -293,13 +300,16 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
         )}
 
         {/* Payment method */}
-        <div >
+        <div>
           <h3 className="text-base font-medium leading-6">Payment Method</h3>
           <div className="mt-4 space-y-2">
             <div className="w-full flex items-center justify-between">
               <span className="flex items-center gap-2 text-base">
                 <RiWallet3Fill className="size-5 text-primary" /> Wallet Balance
-                - <span className="text-base font-medium ml-1">{currency(32600)}</span>
+                -{" "}
+                <span className="text-base font-medium ml-1">
+                  {currency(32600)}
+                </span>
               </span>
               <RadioGroup
                 value={paymentMethod}
@@ -413,7 +423,7 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
         title="Clear Cart?"
         open={modalProps.clearCartModal.open}
         onOpenChange={modalProps.clearCartModal.onOpenChange}
-        onConfirm={clearCart}
+        onConfirm={handleClearCart}
       />
     </>
   );
