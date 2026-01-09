@@ -177,7 +177,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
 
       {/* Mobile Screens */}
       <AnimatePresence>
-        {open && (
+        {isMobile && open && (
           <motion.aside
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
