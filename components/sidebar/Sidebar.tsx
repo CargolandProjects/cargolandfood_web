@@ -177,12 +177,12 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
 
       {/* Mobile Screens */}
       <AnimatePresence>
-        {open && (
+        {isMobile && open && (
           <motion.aside
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
-            transition={{ type: "tween", ease: "easeOut", duration: 0.2 }}
+            transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
             className="md:hidden fixed inset-0 pt-10 px-6 bg-white z-35 "
           >
             <div className="flex items-start justify-between">

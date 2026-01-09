@@ -16,6 +16,8 @@ import OrderDetails from "../orders/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
 import ReviewsModal from "../ReviewModal";
 import { useGetRestaurant } from "@/lib/hooks/queries";
+import { Button } from "../ui/button";
+import { ScrollArea } from "../ui/scroll-area";
 
 export interface CategoryTab {
   name: string;
@@ -38,12 +40,13 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   const [selectedId, setselectedId] = useState<string | null>(null);
   const [showFavourites, setShowFavourites] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
+  const [openCheckout, setOpenCheckout] = useState(false);
 
   const { data, isPending, error } = useGetRestaurant(id);
   const items = useCartStore((s) => s.items);
   const router = useRouter();
 
-  const openCheckout = items.length > 0;
+  const confirmCheckout = items.length > 0;
   console.log("Restaurant page Id:", id);
 
   const handleBack = () => {
@@ -61,8 +64,8 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   return (
     <div className="flex gap-10 h-full">
       <div
-        className={`w-full ${
-          openCheckout ? "max-w-[814px]" : "max-w-[1006px]"
+        className={`w-full relative ${
+          confirmCheckout ? "max-w-[814px]" : "max-w-[1006px]"
         } mx-auto transitoin-all duration-300 flex-1`}
       >
         {/* Back button */}
@@ -146,15 +149,36 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
               ))}
           </div>
         </div>
+
+        {/* Mobile Screen Checkout prompt */}
+        <AnimatePresence>
+          {confirmCheckout && (
+            <motion.div
+              initial={{ y: 100 }}
+              animate={{ y: 0 }}
+              exit={{ y: 100 }}
+              transition={{ duration: 0.3 }}
+              className="sticky sm:hidden pt-5 pb-8 px-8 -bottom-4 inset-x-0 flex justify-between items-center bg-white"
+            >
+              <p className="text-xl font-medium ">11,000</p>
+              <Button
+                onClick={() => setOpenCheckout(true)}
+                className="uppercase py-3.5 px-5.5 h-10.5 sm:h-12 text-sm font-bold w-[184px]"
+              >
+                Checkout
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <FavouritesModal open={showFavourites} onOpenChange={setShowFavourites} />
       <ReviewsModal open={showReviews} onClose={setShowReviews} />
       <OrderDetails />
 
-      {/* Checkout component */}
-      {openCheckout && (
-        <AnimatePresence mode="wait">
+      {/* Large Screens Checkout component */}
+      <AnimatePresence mode="wait">
+        {confirmCheckout && (
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -162,10 +186,27 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             transition={{ duration: 0.4 }}
             className="sticky top-6 self-start max-sm:hidden"
           >
-            <Checkout />
+            <ScrollArea className="max-w-[400px] h-[85vh] shadow-lg rounded-xl">
+              <Checkout />
+            </ScrollArea>
           </motion.div>
-        </AnimatePresence>
-      )}
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Screens Checkout Component */}
+      <AnimatePresence mode="wait">
+        {confirmCheckout && openCheckout && (
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
+            className="sm:hidden fixed inset-0 pt-10 px-6 bg-white z-35 "
+          >
+            <Checkout closeCheckout={setOpenCheckout} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
