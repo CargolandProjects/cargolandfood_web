@@ -48,13 +48,13 @@ function CouponModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[400px]! p-0 gap-0 rounded-2xl">
-        <DialogHeader className="dialog-t">
-          <DialogTitle className="dialog-title text-center">Coupon</DialogTitle>
+      <DialogContent className="max-w-[400px]! max-h-[95vh] max-sm:w-[95vw] p-0 gap-0 rounded-2xl overflow-auto hide-scrollbar">
+        <DialogHeader className="sm:dialog-t mt-4">
+          <DialogTitle className="dialog-title max-sm:text-lg! max-sm:leading-6! text-center">Coupon</DialogTitle>
         </DialogHeader>
 
         {/* Body */}
-        <div className="mt-8 pb-4.5 px-7">
+        <div className="mt-6 sm:mt-8 pb-4.5 px-7">
           <div className="w-full ">
             <label htmlFor="coupon" className="text-sm font-medium">
               Enter Coupon Code
