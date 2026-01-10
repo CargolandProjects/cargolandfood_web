@@ -13,7 +13,7 @@ const RiderNoteModal = ({ open, onOpenChange }: RiderNoteProps) => {
   const maxLength = 200;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="pt-6 sm:pt-[74px] px-4 sm:px-7 max-w-[400px]! max-sm:w-[95vw] gap-0 m-0">
+      <DialogContent className="dialog pt-6! pb-5! sm:pt-[74px]! px-4! sm:px-7!">
         <DialogHeader>
           <DialogTitle className="text-base sm:text-2xl font-medium leading-6 sm:leading-8 text-left sm:text-center">
             Note for rider

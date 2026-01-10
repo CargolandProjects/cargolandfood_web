@@ -18,7 +18,7 @@ interface CouponSuccessProps {
 const CouponSuccessModal = ({ open, onOpenChange }: CouponSuccessProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[400px]! max-sm:w-[95vw] gap-0 p-0 px-6 sm:px-7 pt-12 sm:py-4.5 pb-11 m-09">
+      <DialogContent className="dialog px-6! sm:px-7! pt-12! sm:py-4.5! pb-11!">
         <div className="size-[124px] sm:size-[180px] self-center justify-self-center">
           <img src={success.src} alt="coupon added " className="size-full " />
         </div>

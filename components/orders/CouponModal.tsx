@@ -48,7 +48,7 @@ function CouponModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[400px]! max-h-[95vh] max-sm:w-[95vw] p-0 gap-0 rounded-2xl overflow-auto hide-scrollbar">
+      <DialogContent className="dialog hide-scrollbar">
         <DialogHeader className="sm:dialog-t mt-4">
           <DialogTitle className="dialog-title max-sm:text-lg! max-sm:leading-6! text-center">Coupon</DialogTitle>
         </DialogHeader>

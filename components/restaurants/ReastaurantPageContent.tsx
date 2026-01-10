@@ -98,7 +98,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
               </button>
               <button
                 onClick={() => setShowReviews(true)}
-                className="size-8 sm:size- rounded-full bg-white flex justify-center items-center cursor-pointer"
+                className="size-8 sm:size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
               >
                 <img
                   src={info.src}

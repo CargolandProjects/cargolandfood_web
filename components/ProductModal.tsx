@@ -32,7 +32,7 @@ const ProductModal = ({
     <Dialog open={isSelected} onOpenChange={() => handleSelect(id!)}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-100! max-md:w-[95vw] max-h-[90vh] overflow-auto hide-scrollbar p-0 border-none! outline-none! gap-0"
+        className="dialog hide-scrollbar max-h-[90vh]! p-0! border-none! outline-none! gap-0"
       >
         <div className="w-full h-[177px] overflow-hidden rounded-t-lg relative">
           <img src={imageUrl} alt={name} className="size-full object-cover" />
