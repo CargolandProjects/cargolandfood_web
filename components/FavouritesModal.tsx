@@ -76,23 +76,23 @@ export default function FavouritesModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[400px]! p-0 px-7 gap-0 rounded-2xl">
-        <DialogHeader className="mt-16.5">
-          <DialogTitle className="dialog-title ">
+      <DialogContent className="dialog">
+        <DialogHeader className="mt-13.5 sm:mt-16.5">
+          <DialogTitle className="dialog-title max-sm:text-lg! max-sm:leading-6!">
             Favourites from Sharwarma Plus+
           </DialogTitle>
         </DialogHeader>
 
         {/* Food items */}
-        <ScrollArea className="max-h-[386px] mt-3 pb-4.5">
-          <div className="space-y-4 py-1">
+        <ScrollArea className="max-h-[386px] mt-3 sm:mt-4 pb-4.5">
+          <div className="space-y-2 sm:space-y-4 py-1">
             {foodItems.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center justify-center gap-2 "
+                className="h-[116px] flex items-center justify-center gap-2 rounded-2xl border border-neutral-300"
               >
                 {/* Food image */}
-                <div className="w-[120px] h-[108px] overflow-hidden rounded-l-button rounded-r-xs">
+                <div className="w-[120px] h-[108px] ml-1 overflow-hidden rounded-l-button rounded-r-xs">
                   <img
                     src={item.image || "/placeholder.svg"}
                     alt={item.name}
@@ -106,13 +106,15 @@ export default function FavouritesModal({
                   <p className="text-xs font-regular text-neutral-600 leading-4 line-clamp-2">
                     {item.description}
                   </p>
-                  <p className="mt-3 font-base font-medium ">₦{item.price}</p>
+                  <div className="flex items-centehr justify-between mt-1">
+                    <p className="mt-3 text-base font-medium ">₦{item.price}</p>
+                    <button className=" size-9 rounded-md bg-primary-300 flex items-center justify-center">
+                      <RiAddFill className="size-5 text-primary" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Add button */}
-                <button className=" size-9 rounded-md bg-primary-300 flex items-center justify-center">
-                  <RiAddFill className="size-5 text-primary" />
-                </button>
               </div>
             ))}
           </div>
