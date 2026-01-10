@@ -86,13 +86,13 @@ function StarRating({ rating }: { rating: number }) {
 export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-[400px]! p-0 gap-0">
-        <DialogHeader className="mt-[74px]">
-          <DialogTitle className="dialog-title">Reviews</DialogTitle>
+      <DialogContent className="max-w-[400px]! max-sm:w-[95vw] p-0 gap-0">
+        <DialogHeader className="mt-13.5 sm:mt-[74px]">
+          <DialogTitle className="dialog-title max-sm:text-lg! max-sm:leading-6! ">Reviews</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[486px] mt-7 px-7">
-          <div className="space-y-6 py-1">
+        <ScrollArea className="max-h-[486px] mt-4 sm:mt-7 px-7">
+          <div className="space-y-4 sm:space-y-6 py-1">
             {reviews.map((review) => (
               <div key={review.id} className="flex gap-2.5">
                 <Avatar className="size-10 shrink-0">
