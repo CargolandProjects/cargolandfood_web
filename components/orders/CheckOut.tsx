@@ -50,7 +50,7 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
   const [showAlert, setShowAlert] = useState(false);
   const [showRiderNote, setShowRiderNote] = useState(false);
   const [showCoupon, setShowCoupon] = useState(false);
-  const [showOrderSuccess, setShowOrderSuccess] = useState(false);
+  const [showOrderSuccess, setShowOrderSuccess] = useState(true);
   const [showGift, setShowGift] = useState(false);
   const [showConfirmPickup, setShowConfirmPickup] = useState(false);
   const [showSuccess, setSuccess] = useState(false);
