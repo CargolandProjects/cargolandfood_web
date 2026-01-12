@@ -4,7 +4,7 @@ import { Header } from "@/components/Header";
 import Footer from "@/components/home/Footer";
 import Sidebar from "@/components/sidebar/Sidebar";
 import ContextProviders from "@/contexts/ContextProviders";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { ReactNode, useState } from "react";
 
 export default function HomeLayout({
