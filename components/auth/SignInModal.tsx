@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import useAuthFlow from "@/lib/stores/authFlowStore";
 import ModalTransition from "./ModalTransition";
-import { logo } from "@/assets/svgs";
+import { apple, facebook, google, logo } from "@/assets/svgs";
 import {
   Field,
   FieldError,
@@ -30,7 +30,19 @@ const formSchema = z.object({
   phoneNumber: z
     .string()
     .min(10, "Phone number must be at least 10 digits")
-    .regex(/^[\+]?[1-9][\d]{0,15}$/, "Enter a valid phone number"),
+    .transform((val) => {
+      //Normalize to +234 format
+      const phone = val.replace(/[^\d+]/g, "");
+      if (phone.startsWith("+234")) return phone;
+      if (phone.startsWith("0")) return `+234${phone.slice(1)}`;
+      if (phone.startsWith("234")) return `+${phone}`;
+      return phone;
+    })
+    .refine(
+      (val) => /^\+234[789]\d{9}$/.test(val),
+      "Enter a valid phone number"
+    ),
+
   // password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
@@ -50,6 +62,7 @@ const SignInModal = () => {
   });
 
   const onsubmit = (data: Signin) => {
+    // console.log("Submitted Data:", data);
     mutate(data, {
       onSuccess: (res) => {
         try {
@@ -65,13 +78,13 @@ const SignInModal = () => {
       },
       onError: (error) => {
         toast.error(error.message);
-      }
+      },
     });
   };
 
   return (
     <ModalTransition>
-      <DialogHeader className="items-center">
+      <DialogHeader className="items-center gap-0">
         <div className="size-[50px] bg-black flex justify-center items-center rounded-lg">
           <img
             src={logo.src}
@@ -79,8 +92,8 @@ const SignInModal = () => {
             className="h-[33.4px] w-7 object-cover"
           />
         </div>
-        <DialogTitle className="form-title">Welcome Back</DialogTitle>
-        <DialogDescription className="form-description text-center">
+        <DialogTitle className="form-title mt-4">Welcome Back</DialogTitle>
+        <DialogDescription className="form-description text-center mt-0.5 sm:mt-2">
           You can login into your account using your <br /> phone number
         </DialogDescription>
       </DialogHeader>
@@ -143,8 +156,8 @@ const SignInModal = () => {
         </Button>
       </form>
 
-      <div>
-        <p className="relative my-4 text-gray-500 text-center">
+      <div className="space-y-4">
+        <p className="relative text-gray-500 text-center">
           <Separator
             decorative={true}
             className="absolute  top-1/2 transform translate-y-1/2"
@@ -155,20 +168,26 @@ const SignInModal = () => {
         </p>
 
         <div className="flex w-full justify-center gap-4">
-          <div className="size-10 shadow-cargo-sm rounded-full border border-gray-200"></div>
-          <div className="size-10 shadow-cargo-sm rounded-full border border-gray-200"></div>
-          <div className="size-10 shadow-cargo-sm rounded-full border border-gray-200"></div>
+          <button className="size-10 flex justify-center items-center shadow-cargo-sm rounded-full border border-gray-200">
+            <img src={google.src} alt="google_icon" />
+          </button>
+          <button className="size-10 flex justify-center items-center shadow-cargo-sm rounded-full border border-gray-200">
+            <img src={facebook.src} alt="google_icon" />
+          </button>
+          <button className="size-10 flex justify-center items-center shadow-cargo-sm rounded-full border border-gray-200">
+            <img src={apple.src} alt="google_icon" />
+          </button>
         </div>
       </div>
       {/* Navigation buttons */}
-      <div className="flex flex-col space-y-2">
-        <Button
+      <div className="flex flex-col sm:gap-2 mt-6">
+        {/* <Button
           variant="link"
           onClick={() => goToStep("forgot-password")}
           className="text-sm text-brand-black font-normal"
         >
           Forgot Password?
-        </Button>
+        </Button> */}
 
         <div className="text-center text-sm">
           Don&apos;t have an account?{" "}

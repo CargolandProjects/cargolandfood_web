@@ -38,8 +38,7 @@ interface SidebarItem<P = any> {
   id: ActiveTab;
   icon: IconType;
   label: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  content?: React.ComponentType<any>;
+  content?: React.ComponentType<P>;
   props?: P;
 }
 

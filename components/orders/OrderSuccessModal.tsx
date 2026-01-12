@@ -13,12 +13,12 @@ interface OrderSuccessfulProps {
 const OrderSuccessModal = ({ open, onOpenChange }: OrderSuccessfulProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-100! p-0 px-9 gap-0 mt-8 rounded-2xl">
-        <div className="size-[180px] self-center justify-self-center mt-8">
+      <DialogContent className="dialog px-6! sm:px-9!">
+        <div className="size-[124px] sm:size-[180px] self-center justify-self-center mt-8">
           <img src={success.src} alt="coupon added " className="size-full " />
         </div>
         
-        <div className="mt-1 flex flex-col justify-center items-center gap-3">
+        <div className="sm:mt-1 flex flex-col justify-center items-center gap-3">
           <DialogTitle className="dialog-title font-bold! max-w-[200px]">
             Yay! Your Order has been placed.
           </DialogTitle>
@@ -34,7 +34,7 @@ const OrderSuccessModal = ({ open, onOpenChange }: OrderSuccessfulProps) => {
           </div>
         </div>
 
-        <div className="mt-13 flex gap-2 mb-8">
+        <div className="mt-13 flex gap-2 mb-6 sm:mb-8">
           <Button
             variant="outline"
             className="submit-btn flex-1 hover:bg-gray-50 text-neutral-500 border-neutral-300"

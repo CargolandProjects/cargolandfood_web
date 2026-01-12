@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import useAuthFlow from "@/lib/stores/authFlowStore";
 import ModalTransition from "./ModalTransition";
-import { logo } from "@/assets/svgs";
+import { apple, facebook, google, logo } from "@/assets/svgs";
 import {
   Field,
   FieldError,
@@ -91,17 +91,17 @@ const SignUpModal = () => {
       onSuccess: (data) => {
         goToStep("success");
 
-       toast.success(data.message)
+        toast.success(data.message);
       },
       onError: (error) => {
         toast.error(error.message);
-      }
+      },
     });
   };
 
   return (
     <ModalTransition>
-      <DialogHeader className="items-center">
+      <DialogHeader className="items-center gap-0">
         <div className="size-[50px] bg-black flex justify-center items-center rounded-lg">
           <img
             src={logo.src}
@@ -109,13 +109,13 @@ const SignUpModal = () => {
             className="h-[33.4px] w-7 object-cover"
           />
         </div>
-        <DialogTitle className="form-title">Create an account</DialogTitle>
+        <DialogTitle className="form-title mt-4">Create an account</DialogTitle>
         <DialogDescription className="form-description">
           Please sign up to get started
         </DialogDescription>
       </DialogHeader>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-8">
         <FieldSet>
           <FieldGroup className="gap-5">
             <Controller
@@ -262,7 +262,7 @@ const SignUpModal = () => {
 
         <Button
           type="submit"
-          className="mt-8 md:py-3.5 submit-btn"
+          className="mt-4 md:py-3.5 submit-btn"
           disabled={isPending}
         >
           {isPending ? (
@@ -291,9 +291,15 @@ const SignUpModal = () => {
         </p>
 
         <div className="flex w-full justify-center gap-4">
-          <div className="size-10 shadow-cargo-sm rounded-full border border-gray-200"></div>
-          <div className="size-10 shadow-cargo-sm rounded-full border border-gray-200"></div>
-          <div className="size-10 shadow-cargo-sm rounded-full border border-gray-200"></div>
+          <button className="size-10 flex justify-center items-center shadow-cargo-sm rounded-full border border-gray-200">
+            <img src={google.src} alt="google_icon" />
+          </button>
+          <button className="size-10 flex justify-center items-center shadow-cargo-sm rounded-full border border-gray-200">
+            <img src={facebook.src} alt="google_icon" />
+          </button>
+          <button className="size-10 flex justify-center items-center shadow-cargo-sm rounded-full border border-gray-200">
+            <img src={apple.src} alt="google_icon" />
+          </button>
         </div>
 
         <div className="text-center mt-6 text-gray-500">

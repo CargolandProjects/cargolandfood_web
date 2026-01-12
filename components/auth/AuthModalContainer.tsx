@@ -51,9 +51,9 @@ const AuthModalContainer = () => {
     <>
       <Dialog open={isOpen} onOpenChange={attemptClose}>
         <DialogContent
-          className={
-            "overflow-auto max-h-[95vh] max-w-100! hide-scrollbar pt-[74px] pb-4.5"
-          }
+          className={`dialog ${
+            currentStep === "success" ? "pt-6!" : " pt-[83px]! sm:pt-[74px]!"
+          }   pb-6! sm:pb-4.5! max-sm:px-4!  overflow-auto! hide-scrollbar  `}
         >
           <AnimatePresence mode="wait">{renderModal()}</AnimatePresence>
         </DialogContent>
