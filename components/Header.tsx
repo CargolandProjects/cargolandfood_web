@@ -44,7 +44,7 @@ export function Header({ setSideBar }: HeaderProps) {
   const path = usePathname();
   const OpenAuth = useAuthFlow((s) => s.openAuth);
   const { user: session, isAuthenticated, signOut } = useSession();
-  console.log("PathName:", path);
+  // console.log("PathName:", path);
 
   const [firstName, lastName] = session?.fullName.split(" ") || [];
   const initials =
@@ -182,9 +182,9 @@ export function Header({ setSideBar }: HeaderProps) {
             </DropdownMenu>
 
             {/* User Profile Dropdown */}
-            <DropdownMenu onOpenChange={() => setScreen("root")}>
-              <DropdownMenuTrigger asChild>
-                {session && isAuthenticated ? (
+            {isAuthenticated && session ? (
+              <DropdownMenu onOpenChange={() => setScreen("root")}>
+                <DropdownMenuTrigger asChild>
                   <div className="flex items-center gap-2 cursor-pointer">
                     <Avatar className="size-7 sm:size-10 border-2">
                       <AvatarImage
@@ -197,17 +197,11 @@ export function Header({ setSideBar }: HeaderProps) {
                     </Avatar>
                     <RiArrowDownSLine className="size-5 text-neutral-600 max-sm:hidden" />
                   </div>
-                ) : (
-                  <div className="size-7 sm:size-10 rounded-full flex justify-center items-center bg-primary cursor-pointer">
-                    <RiUser3Fill className="size-6 text-white" />
-                  </div>
-                )}
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-[243px] dropdown-content"
-              >
-                {isAuthenticated ? (
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-[243px] dropdown-content"
+                >
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={screen}
@@ -225,13 +219,16 @@ export function Header({ setSideBar }: HeaderProps) {
                       />
                     </motion.div>
                   </AnimatePresence>
-                ) : (
-                  <DropdownMenuItem className="text-red-600">
-                    <Button onClick={() => OpenAuth("signin")}>signin</Button>
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <button
+                onClick={() => OpenAuth("signin")}
+                className="size-7 sm:size-10 rounded-full flex justify-center items-center bg-primary cursor-pointer"
+              >
+                <RiUser3Fill className="size-4 sm:size-6 text-white" />
+              </button>
+            )}
           </div>
         </div>
       </div>

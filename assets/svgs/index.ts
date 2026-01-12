@@ -9,6 +9,10 @@ import hamburger from "./hamburger.svg";
 import medal from "./medal.svg";
 import info from "./info.svg";
 import bell from "./bell.svg";
+import google from "./google.svg";
+import facebook from "./facebook.svg";
+import apple from "./apple.svg";
+import address from "./address.svg";
 
 export {
   logo,
@@ -22,4 +26,8 @@ export {
   hamburger,
   info,
   bell,
+  google,
+  facebook,
+  apple,
+  address,
 };
