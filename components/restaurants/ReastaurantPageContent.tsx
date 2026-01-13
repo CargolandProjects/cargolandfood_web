@@ -15,7 +15,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import OrderDetails from "../orders/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
 import ReviewsModal from "../ReviewModal";
-import { useGetRestaurant } from "@/lib/hooks/queries";
+import { useGetVendorById } from "@/lib/hooks/queries/useVendors";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 
@@ -42,12 +42,20 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   const [showReviews, setShowReviews] = useState(false);
   const [openCheckout, setOpenCheckout] = useState(false);
 
-  const { data, isPending, error } = useGetRestaurant(id);
+  const { data, isPending, error } = useGetVendorById(id);
   const items = useCartStore((s) => s.items);
   const router = useRouter();
 
+  const vendor = data?.data;
+  const rating = data?.averageRating;
+  const menus = data?.data.menus || [];
+  // const reviews = data?.data.review;
+  // const promotions = data?.data.promotions ;
+  // const categories= data?.data.categories
+
   const confirmCheckout = items.length > 0;
   console.log("Restaurant page Id:", id);
+  console.log("Restaurant page Data:", vendor);
 
   const handleBack = () => {
     router.back();
@@ -111,10 +119,10 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
           </div>
 
           <div className="my-3 sm:my-10 max-sm:space-y-[3px]">
-            <h2>Shawarma Plus +</h2>
+            <h2>{vendor?.businessName}</h2>
             {/* Stats Line (Rating, Delivery Fee, Time) */}
             <RestaurantStats
-              rating={4.7}
+              rating={rating?.bayesianRating || 0}
               deliveryFee={0}
               deliveryTime="20 min"
             />
@@ -139,10 +147,11 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
         <div className="sm:p-4 max-sm:mt-3">
           <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-10">
             {!error &&
-              data.map((item) => (
+              menus.length > 0 &&
+              menus.map((item) => (
                 <RestaurantItemCard
                   key={item.id}
-                  product={item}
+                  menu={item}
                   handleSelect={handleSelect}
                   selectedId={selectedId}
                 />

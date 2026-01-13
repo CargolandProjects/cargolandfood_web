@@ -3,26 +3,27 @@ import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Separator } from "./ui/separator";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Button } from "./ui/button";
-import { useCartStore, type Product } from "@/lib/stores/CartStore";
+import { useCartStore } from "@/lib/stores/CartStore";
 import { X } from "lucide-react";
+import { Menu } from "@/lib/services/vendors.service";
 
 interface ProductModalProps {
-  product: Product;
+  menu: Menu;
   isSelected: boolean;
   handleSelect: (id: string) => void;
 }
 
 const ProductModal = ({
-  product,
+  menu,
   isSelected,
   handleSelect,
 }: ProductModalProps) => {
-  const { description, id, imageUrl, name, price } = product;
+  const { description, id, uploadImageUrl, name, price } = menu;
   const { addItem, decrease, items } = useCartStore();
 
   const current = items.find((i) => i.id === id);
   const handleIncrease = () => {
-    addItem(product);
+    addItem(menu);
   };
   const handledecrease = () => {
     decrease(id!);
@@ -35,7 +36,11 @@ const ProductModal = ({
         className="dialog hide-scrollbar max-h-[90vh]! p-0! border-none! outline-none! gap-0"
       >
         <div className="w-full h-[177px] overflow-hidden rounded-t-lg relative">
-          <img src={imageUrl} alt={name} className="size-full object-cover" />
+          <img
+            src={uploadImageUrl}
+            alt={name}
+            className="size-full object-cover"
+          />
           <Button
             onClick={() => handleSelect(id!)}
             variant="link"
@@ -61,32 +66,18 @@ const ProductModal = ({
           <Separator className="my-4" />
 
           <div className="mb-4">
-            <h3 className="text-lg leading-6">Pizza Size</h3>
+            <h3 className="text-lg leading-6">{name} Size</h3>
             <RadioGroup className="space-y-5 mt-5">
-              <div className="flex justify-between">
-                <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
-                  <p>Pepperoni Pizza</p>
-                  <p className="text-xs text-neutral-600">+ ₦7,600</p>
-                </div>
+              {menu.sizes.map((size) => (
+                <div key={size.id} className="flex justify-between">
+                  <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
+                    <p>{size.name}</p>
+                    <p className="text-xs text-neutral-600">+ ₦{size.price}</p>
+                  </div>
 
-                <RadioGroupItem value="pepperoni_pizza" id="v1" />
-              </div>
-              <div className="flex justify-between">
-                <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
-                  <p>Pepperoni Large</p>
-                  <p className="text-xs text-neutral-600">+ ₦7,600</p>
+                  <RadioGroupItem value={size.id} id={size.id} />
                 </div>
-
-                <RadioGroupItem value="pepperoni_large" id="v2" />
-              </div>
-              <div className="flex justify-between">
-                <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
-                  <p>Pepperoni XL</p>
-                  <p className="text-xs text-neutral-600">+ ₦7,600</p>
-                </div>
-
-                <RadioGroupItem value="pepperoni_xl" id="v3" />
-              </div>
+              ))}
             </RadioGroup>
           </div>
 
@@ -95,38 +86,24 @@ const ProductModal = ({
           <div className="mt-4 mb-4">
             <h3 className="text-lg leading-6">Extras</h3>
             <div className="space-y-5 mt-5">
-              <div className="flex justify-between">
-                <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
-                  <p>Pepperoni Pizza</p>
-                  <p className="text-xs text-neutral-600">+ ₦3,800</p>
-                </div>
-
-                <div className="flex gap-2.5">
-                  <div className="size-5 rounded-full bg-gray-200 flex justify-center items-center">
-                    <RiSubtractFill className="size-4" />
+              {menu.addons.map((addon) => (
+                <div key={addon.id} className="flex justify-between">
+                  <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
+                    <p>{addon.name}</p>
+                    <p className="text-xs text-neutral-600">+ ₦{addon.price}</p>
                   </div>
-                  <span>1</span>
-                  <div className="size-5 rounded-full bg-gray-200 flex justify-center items-center">
-                    <RiAddFill className="size-4" />
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-between">
-                <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
-                  <p>Pepperoni Large</p>
-                  <p className="text-xs text-neutral-600">+ ₦3,200</p>
-                </div>
 
-                <div className="flex gap-2.5">
-                  {/* <div className="size-5 rounded-full bg-gray-200 flex justify-center items-center">
+                  <div className="flex gap-2.5">
+                    <button className="size-5 rounded-full bg-gray-200 flex justify-center items-center">
                       <RiSubtractFill className="size-4" />
-                    </div>
-                    <span>1</span> */}
-                  <div className="size-5 rounded-full bg-gray-200 flex justify-center items-center">
-                    <RiAddFill className="size-4" />
+                    </button>
+                    <span>1</span>
+                    <button className="size-5 rounded-full bg-gray-200 flex justify-center items-center">
+                      <RiAddFill className="size-4" />
+                    </button>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>

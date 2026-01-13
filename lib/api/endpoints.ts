@@ -1,5 +1,6 @@
 export const API_ROUTES = {
   promotions: "/promotions",
+
   restaurants: "/restaurants",
   categories: "/categories",
   hotPicks: "/hotPicks",
@@ -13,5 +14,11 @@ export const API_ROUTES = {
     resendOtp: "/users/resend-phone-otp",
     refresh: "/users/refresh-token",
   },
+
+  vendor: {
+    allVendors: "/users/vendors",
+    vendorById: (id: string) => `/users/menus/${id}`,
+  },
+
   user: (id: string) => `/users/${id}`,
 };

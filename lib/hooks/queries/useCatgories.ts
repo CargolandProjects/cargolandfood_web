@@ -7,11 +7,3 @@ export const useCategories = () => {
     queryFn: categories.getCategories,
   });
 };
-
-export const useGetRestaurant = (id: string) => {
-  return useQuery({
-    queryKey: ["restaurant", id],
-    queryFn: () => categories.getRestaurant(id),
-    enabled: !!id,
-  });
-};

@@ -1,4 +1,4 @@
-import { Vendor } from "@/lib/services/promotions.service";
+import { Vendor } from "@/lib/services/vendors.service";
 import { useRouter } from "next/navigation";
 import {
   RiEBike2Line,
@@ -9,41 +9,49 @@ import {
 } from "react-icons/ri";
 
 const VendorCard = ({
-  menuItem: { title, image, rating, deliveryFee, deliveryTime, discount, id },
-  route = "restaurants",
+  vendor: { id, businessName, ratings, profileImg },
+  routes = "Restaurant",
 }: {
-  menuItem: Vendor;
-  route?: string;
+  vendor: Vendor;
+  routes?: string;
 }) => {
   const router = useRouter();
+  const route =
+    routes === "Restaurant"
+      ? "restaurants"
+      : routes === "Grocery"
+      ? "groceries"
+      : "markets";
 
   const handleClick = () => {
     router.push(`/${route}/${id}`);
   };
+  const deliveryFee = 20;
+  const deliveryTime = 10;
 
   return (
     <div onClick={handleClick} className="w-full cursor-pointer">
       <div className="relative w-full h-[114px] overflow-hidden rounded-md">
         <img
-          src={image.src}
-          alt={title}
+          src={profileImg}
+          alt={businessName}
           className="size-full object-cover"
           loading="lazy"
         />
         <div className="absolute top-3 left-3 rounded-full flex justify-center items-center gap-1 py-1 px-2 bg-primary-50 border-[0.5px] border-primary-900">
           <RiGiftLine className="size-3 text-primary" />
-          <p className="font-medium text-xs">{discount}% Off</p>
+          <p className="font-medium text-xs">{20}% Off</p>
         </div>
       </div>
       <div className="mt-2.5">
         <div className="flex justify-between">
-          <p className="text-base leading-5">{title}</p>
+          <p className="text-base leading-5">{businessName}</p>
           <RiHeartFill className="size-6 text-gray-300" />
         </div>
         <div className="mt-1 flex gap-3 md:gap-4">
           <div className="flex justify-center items-center gap-1">
             <RiStarLine className="size-5.5 text-primary" />
-            <span className="leading-5 text-neutral-600">{rating}</span>
+            <span className="leading-5 text-neutral-600">{ratings}</span>
           </div>
           <div className="flex justify-center items-center gap-1">
             <RiEBike2Line className="size-5.5 text-primary" />

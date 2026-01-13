@@ -1,20 +1,21 @@
+import { Menu } from "@/lib/services/vendors.service";
 import ProductModal from "../ProductModal";
 
-import { useCartStore, type Product } from "@/lib/stores/CartStore";
+import { useCartStore } from "@/lib/stores/CartStore";
 import { RiAddFill } from "react-icons/ri";
 
 interface RestaurantItemCard {
-  product: Product;
+  menu: Menu;
   handleSelect: (id: string) => void;
   selectedId: string | null;
 }
 
-const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
-  product,
+const RestaurantItemCard = ({
+  menu,
   handleSelect,
   selectedId,
-}) => {
-  const { description, id, imageUrl, name, price } = product;
+}: RestaurantItemCard) => {
+  const { description, id, uploadImageUrl, name, price } = menu;
   const isSelected = id === selectedId;
   const add = useCartStore((s) => s.addItem);
 
@@ -28,7 +29,7 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
         <div className="w-30 ml-[3px] my-[3px] shrink-0 rounded-l-xl rounded-r-xs overflow-hidden relative">
           {/* Width set to 138px to match height for a square/large image area */}
           <img
-            src={imageUrl}
+            src={uploadImageUrl}
             alt={name || "Product image"}
             className="w-full h-full object-cover rounded-l-2xl"
           />
@@ -55,7 +56,7 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
               className="bg-primary-100 size-9 flex items-center justify-center rounded-md"
               onClick={(e) => {
                 e.stopPropagation();
-                add(product);
+                add(menu);
               }}
               aria-label={`Add ${name} to cart`}
             >
@@ -68,7 +69,7 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
       <ProductModal
         handleSelect={handleSelect}
         isSelected={isSelected}
-        product={product}
+        menu={menu}
       />
     </>
   );
