@@ -14,11 +14,22 @@ export const API_ROUTES = {
     resendOtp: "/users/resend-phone-otp",
     refresh: "/users/refresh-token",
   },
+  user: (id: string) => `/users/${id}`,
 
   vendor: {
     allVendors: "/users/vendors",
     vendorById: (id: string) => `/users/menus/${id}`,
   },
 
-  user: (id: string) => `/users/${id}`,
+  cart: {
+    useCart: (vendorId: string) => `/orders/cart-item/${vendorId}`,
+    addOrUpdateItem: (vendorId: string) => `/orders/cart-item/${vendorId}`,
+    clearCart: (cartId: string) => `/orders/clear-cart/${cartId}`,
+    checkoutPreview: (vendorId: string) => `/orders/checkout-preview/${vendorId}`,
+  },
+  
+  order: {
+    checkoutPreview: (vendorId: string) => `/orders/checkout-preview/${vendorId}`,
+    placeOrder: (vendorId: string) => `/orders/placeOrder/${vendorId}`,
+  },
 };
