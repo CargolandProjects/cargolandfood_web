@@ -10,12 +10,12 @@ import RestaurantPageSkeleton from "@/components/restaurants/RestaurantPageSkele
 import { useRouter } from "next/navigation";
 import { info } from "@/assets/svgs";
 import Checkout from "../orders/CheckOut";
-import { useCartStore } from "@/lib/stores/CartStore";
 import { AnimatePresence, motion } from "framer-motion";
 import OrderDetails from "../orders/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
 import ReviewsModal from "../ReviewModal";
 import { useGetVendorById } from "@/lib/hooks/queries/useVendors";
+import { useCheckoutPreview } from "@/lib/hooks/queries/useCheckoutPreview";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 
@@ -41,21 +41,37 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   const [showFavourites, setShowFavourites] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
   const [openCheckout, setOpenCheckout] = useState(false);
+  const [deliveryType, setDeliveryType] = useState<"DELIVERY" | "PICKUP">("DELIVERY");
 
   const { data, isPending, error } = useGetVendorById(id);
-  const items = useCartStore((s) => s.items);
   const router = useRouter();
+
+  // Fetch checkout preview to check if cart has items
+  // Enable fetching on component mount to check cart status
+  const { 
+    data: checkoutData, 
+    isLoading: isCheckoutLoading 
+  } = useCheckoutPreview(id, deliveryType, true);
 
   const vendor = data?.data;
   const rating = data?.averageRating;
   const menus = data?.data.menus || [];
-  // const reviews = data?.data.review;
-  // const promotions = data?.data.promotions ;
-  // const categories= data?.data.categories
 
-  const confirmCheckout = items.length > 0;
+  // Check if cart has items from checkout preview
+  const hasItemsInCart = checkoutData && checkoutData.cartItem.items.length > 0;
+
+  // Calculate local total for mobile button (sum of all item totalPrice)
+  const calculateLocalTotal = () => {
+    if (!checkoutData) return 0;
+    const itemsTotal = checkoutData.cartItem.items.reduce((sum, item) => {
+      return sum + Number(item.totalPrice);
+    }, 0);
+    return itemsTotal;
+  };
+
   console.log("Restaurant page Id:", id);
   console.log("Restaurant page Data:", vendor);
+  console.log("Checkout Data:", checkoutData);
 
   const handleBack = () => {
     router.back();
@@ -73,7 +89,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
     <div className="flex gap-10 h-full">
       <div
         className={`w-full relative ${
-          confirmCheckout ? "max-w-[814px]" : "max-w-[1006px]"
+          hasItemsInCart ? "max-w-[814px]" : "max-w-[1006px]"
         } mx-auto transitoin-all duration-300 flex-1`}
       >
         {/* Back button */}
@@ -161,7 +177,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
 
         {/* Mobile Screen Checkout prompt */}
         <AnimatePresence>
-          {confirmCheckout && (
+          {hasItemsInCart && (
             <motion.div
               initial={{ y: 100 }}
               animate={{ y: 0 }}
@@ -169,7 +185,9 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
               transition={{ duration: 0.3 }}
               className="sticky sm:hidden pt-5 pb-8 px-8 -bottom-4 inset-x-0 flex justify-between items-center bg-white"
             >
-              <p className="text-xl font-medium ">11,000</p>
+              <p className="text-xl font-medium ">
+                ₦{calculateLocalTotal().toLocaleString()}
+              </p>
               <Button
                 onClick={() => setOpenCheckout(true)}
                 className="uppercase py-3.5 px-5.5 h-10.5 sm:h-12 text-sm font-bold w-[184px]"
@@ -187,7 +205,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
 
       {/* Large Screens Checkout component */}
       <AnimatePresence mode="wait">
-        {confirmCheckout && (
+        {hasItemsInCart && (
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -196,7 +214,13 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             className="sticky top-6 self-start max-sm:hidden"
           >
             <ScrollArea className="max-w-[400px] h-[85vh] shadow-lg rounded-xl">
-              <Checkout />
+              <Checkout 
+                vendorId={id}
+                checkoutData={checkoutData}
+                isLoading={isCheckoutLoading}
+                deliveryType={deliveryType}
+                onDeliveryTypeChange={setDeliveryType}
+              />
             </ScrollArea>
           </motion.div>
         )}
@@ -204,7 +228,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
 
       {/* Mobile Screens Checkout Component */}
       <AnimatePresence mode="wait">
-        {confirmCheckout && openCheckout && (
+        {hasItemsInCart && openCheckout && (
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
@@ -212,7 +236,14 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
             className="sm:hidden fixed inset-0 pt-10 px-6 bg-white z-35 "
           >
-            <Checkout closeCheckout={setOpenCheckout} />
+            <Checkout 
+              vendorId={id}
+              checkoutData={checkoutData}
+              isLoading={isCheckoutLoading}
+              deliveryType={deliveryType}
+              onDeliveryTypeChange={setDeliveryType}
+              closeCheckout={setOpenCheckout} 
+            />
           </motion.div>
         )}
       </AnimatePresence>

@@ -60,6 +60,7 @@ export const cartService = {
   // Keep old methods for backward compatibility during transition
   async useCart(vendorId: string, payload?: any) {
     const res = await apiClient.post(
+      API_ROUTES.cart.useCart(vendorId),
       payload
     );
     return res.data;

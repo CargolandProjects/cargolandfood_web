@@ -1,7 +1,9 @@
+"use client";
+
+import { useParams } from "next/navigation";
 import { Menu } from "@/lib/services/vendors.service";
 import ProductModal from "../ProductModal";
-
-import { useCartStore } from "@/lib/stores/CartStore";
+import { useAddToCart } from "@/lib/hooks/mutations/useCart";
 import { RiAddFill } from "react-icons/ri";
 
 interface RestaurantItemCard {
@@ -17,7 +19,26 @@ const RestaurantItemCard = ({
 }: RestaurantItemCard) => {
   const { description, id, uploadImageUrl, name, price } = menu;
   const isSelected = id === selectedId;
-  const add = useCartStore((s) => s.addItem);
+  
+  const params = useParams();
+  const vendorId = params.id as string;
+  const addToCart = useAddToCart(vendorId);
+
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Convert price string to number, ensuring it's a valid decimal
+    const itemPrice = Number(price);
+    
+    addToCart.mutate({
+      menuId: id!,
+      menuName: name!,
+      unitPrice: itemPrice,
+      quantity: 1,
+      currency: "NGN",
+      // No addons for quick add
+    });
+  };
 
   return (
     <>
@@ -53,14 +74,16 @@ const RestaurantItemCard = ({
             {/* ADDED: Plus Icon Button */}
             <button
               // Match the light orange background, right-side rounding, and padding/size
-              className="bg-primary-100 size-9 flex items-center justify-center rounded-md"
-              onClick={(e) => {
-                e.stopPropagation();
-                add(menu);
-              }}
+              className="bg-primary-100 size-9 flex items-center justify-center rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleQuickAdd}
+              disabled={addToCart.isPending}
               aria-label={`Add ${name} to cart`}
             >
-              <RiAddFill className="size-6 text-primary" />
+              {addToCart.isPending ? (
+                <span className="text-xs text-primary">...</span>
+              ) : (
+                <RiAddFill className="size-6 text-primary" />
+              )}
             </button>
           </div>
         </div>
