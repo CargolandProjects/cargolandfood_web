@@ -6,18 +6,28 @@ import { Button } from "../ui/button";
 
 interface OrderSuccessfulProps {
   open: boolean;
-  onOpenChange: (close: boolean) => void;
+  onOpenChange: (v: boolean) => void;
+  closeCheckout?: (v: boolean) => void;
 }
 
-
-const OrderSuccessModal = ({ open, onOpenChange }: OrderSuccessfulProps) => {
+const OrderSuccessModal = ({
+  open,
+  onOpenChange,
+  closeCheckout,
+}: OrderSuccessfulProps) => {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        onOpenChange(value);
+        if (closeCheckout) closeCheckout(false);
+      }}
+    >
       <DialogContent className="dialog px-6! sm:px-9!">
         <div className="size-[124px] sm:size-[180px] self-center justify-self-center mt-8">
           <img src={success.src} alt="coupon added " className="size-full " />
         </div>
-        
+
         <div className="sm:mt-1 flex flex-col justify-center items-center gap-3">
           <DialogTitle className="dialog-title font-bold! max-w-[200px]">
             Yay! Your Order has been placed.

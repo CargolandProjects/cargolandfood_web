@@ -41,17 +41,17 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   const [showFavourites, setShowFavourites] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
   const [openCheckout, setOpenCheckout] = useState(false);
-  const [deliveryType, setDeliveryType] = useState<"DELIVERY" | "PICKUP">("DELIVERY");
+  const [deliveryType, setDeliveryType] = useState<"DELIVERY" | "PICKUP">(
+    "DELIVERY"
+  );
 
   const { data, isPending, error } = useGetVendorById(id);
   const router = useRouter();
 
   // Fetch checkout preview to check if cart has items
   // Enable fetching on component mount to check cart status
-  const { 
-    data: checkoutData, 
-    isLoading: isCheckoutLoading 
-  } = useCheckoutPreview(id, deliveryType, true);
+  const { data: checkoutData, isLoading: isCheckoutLoading } =
+    useCheckoutPreview(id, deliveryType, true);
 
   const vendor = data?.data;
   const rating = data?.averageRating;
@@ -90,7 +90,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
       <div
         className={`w-full relative ${
           hasItemsInCart ? "max-w-[814px]" : "max-w-[1006px]"
-        } mx-auto transitoin-all duration-300 flex-1`}
+        } mx-auto transitoin-all duration-300 min-h-screen flex-1 flex flex-col`}
       >
         {/* Back button */}
         <button
@@ -160,7 +160,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
         </div>
 
         {/* 3. Product Listing Section */}
-        <div className="sm:p-4 max-sm:mt-3">
+        <div className="sm:p-4 max-sm:mt-3 flex-1">
           <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-10">
             {!error &&
               menus.length > 0 &&
@@ -214,12 +214,13 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             className="sticky top-6 self-start max-sm:hidden"
           >
             <ScrollArea className="max-w-[400px] h-[85vh] shadow-lg rounded-xl">
-              <Checkout 
+              <Checkout
                 vendorId={id}
                 checkoutData={checkoutData}
                 isLoading={isCheckoutLoading}
                 deliveryType={deliveryType}
                 onDeliveryTypeChange={setDeliveryType}
+                closeCheckout={setOpenCheckout}
               />
             </ScrollArea>
           </motion.div>
@@ -236,13 +237,13 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
             className="sm:hidden fixed inset-0 pt-10 px-6 bg-white z-35 "
           >
-            <Checkout 
+            <Checkout
               vendorId={id}
               checkoutData={checkoutData}
               isLoading={isCheckoutLoading}
               deliveryType={deliveryType}
               onDeliveryTypeChange={setDeliveryType}
-              closeCheckout={setOpenCheckout} 
+              closeCheckout={setOpenCheckout}
             />
           </motion.div>
         )}

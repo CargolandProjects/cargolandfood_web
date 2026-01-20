@@ -49,7 +49,7 @@ export interface CheckoutPreview {
 export interface AddToCartPayload {
   menuId: string;
   menuName: string;
-  unitPrice: number;
+  unitPrice: string;
   quantity: number;
   currency: "NGN";
   addons?: {

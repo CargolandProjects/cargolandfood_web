@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus } from "lucide-react";
+import { Loader, Loader2, Minus, Plus } from "lucide-react";
 import { Separator } from "../ui/separator";
 import {
   RiArrowLeftLine,
@@ -18,35 +18,61 @@ import {
   RiWallet3Fill,
 } from "react-icons/ri";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-
-type Delivery = "delivery" | "pickup";
-type PaymentMethod = "wallet" | "newCard" | "bankTransfer";
-
-import { useCartStore } from "@/lib/stores/CartStore";
+import type { CheckoutPreview } from "@/lib/types/cart.types";
+import { useClearCart, useAddToCart } from "@/lib/hooks/mutations/useCart";
+import { usePlaceOrder } from "@/lib/hooks/mutations/useOrder";
+import { useUIStore } from "@/lib/stores/uiStore";
 import ConfirmationModal from "../ConfirmationModal";
 import RiderNote from "./RiderNoteModal";
 import CouponSuccess from "./CouponSuccessModal";
 import CouponModal from "./CouponModal";
 import OrderSuccessModal from "./OrderSuccessModal";
-import { useUIStore } from "@/lib/stores/uiStore";
 import GiftModal from "./GiftModal";
 import PickupConfirmModal from "./PickupConfirmModal";
 
-interface ChechoutProps {
-  closeCheckout?: (v: boolean) => void;
+type Delivery = "delivery" | "pickup";
+type PaymentMethod = "wallet" | "newCard" | "bankTransfer";
+
+interface CheckoutProps {
+  vendorId: string;
+  checkoutData: CheckoutPreview | undefined;
+  isLoading: boolean;
+  deliveryType: "DELIVERY" | "PICKUP";
+  onDeliveryTypeChange: (type: "DELIVERY" | "PICKUP") => void;
+  closeCheckout: (v: boolean) => void;
 }
 
-const Checkout = ({ closeCheckout }: ChechoutProps) => {
-  const {
-    items,
-    remove,
-    increase,
-    decrease,
-    getTotalPrice,
-    getItemPosition,
-    clearCart,
-  } = useCartStore();
-  const [deliveryType, setDeliveryType] = useState<Delivery | null>(null);
+const Checkout = ({
+  vendorId,
+  checkoutData,
+  isLoading,
+  deliveryType: apiDeliveryType,
+  onDeliveryTypeChange,
+  closeCheckout,
+}: CheckoutProps) => {
+  // API mutations
+  const clearCartMutation = useClearCart(vendorId);
+  const placeOrderMutation = usePlaceOrder(vendorId);
+  const { mutate, isPending } = useAddToCart(vendorId);
+
+  // Initialize delivery type from backend data (cart's deliveryType)
+  const backendDeliveryType = checkoutData?.cartItem.deliveryType;
+  const [deliveryType, setDeliveryType] = useState<Delivery>(() => {
+    // Prefer backend data over prop
+    if (backendDeliveryType) {
+      return backendDeliveryType === "DELIVERY" ? "delivery" : "pickup";
+    }
+    return apiDeliveryType === "DELIVERY" ? "delivery" : "pickup";
+  });
+
+  // Sync UI with backend when data changes
+  React.useEffect(() => {
+    if (backendDeliveryType) {
+      const uiType = backendDeliveryType === "DELIVERY" ? "delivery" : "pickup";
+      setDeliveryType(uiType);
+    }
+  }, [backendDeliveryType]);
+
   const [showAlert, setShowAlert] = useState(false);
   const [showRiderNote, setShowRiderNote] = useState(false);
   const [showCoupon, setShowCoupon] = useState(false);
@@ -58,73 +84,97 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
     null
   );
 
-  const openOrderDetails = useUIStore((s) => s.openOrderDetails);
-
-  // Create memoized modal props object
-  const modalProps = useMemo(
-    () => ({
-      riderNote: {
-        open: showRiderNote,
-        onOpenChange: setShowRiderNote,
-      },
-      coupon: {
-        open: showCoupon,
-        onOpenChange: setShowCoupon,
-      },
-      orderSuccess: {
-        open: showOrderSuccess,
-        onOpenChange: setShowOrderSuccess,
-      },
-      gift: {
-        open: showGift,
-        onOpenChange: setShowGift,
-      },
-      pickupConfirm: {
-        open: showConfirmPickup,
-        onOpenChange: setShowConfirmPickup,
-      },
-      couponSuccess: {
-        open: showSuccess,
-        onOpenChange: setSuccess,
-      },
-      clearCartModal: {
-        open: showAlert,
-        onOpenChange: setShowAlert,
-      },
-    }),
-    [
-      showRiderNote,
-      showCoupon,
-      showOrderSuccess,
-      showGift,
-      showConfirmPickup,
-      showSuccess,
-      showAlert,
-    ]
-  );
-
+  // Format currency
   const currency = (n: number) => `₦ ${n.toLocaleString()}`;
 
-  // Payment summary (stubbed for now)
-  const subTotal = getTotalPrice();
-  const deliveryFee = 800;
-  const serviceFee = 900;
-  const discounts = 660;
-  const total = subTotal + deliveryFee + serviceFee - discounts;
+  // Safe number parsing for API string values
+  const safePrice = (value: string | undefined | null) => {
+    if (!value) return 0;
+    const num = Number(value);
+    return isNaN(num) ? 0 : num;
+  };
 
+  // Handle delivery type change - convert UI lowercase to API uppercase
+  const handleDeliveryTypeChange = (type: Delivery) => {
+    setDeliveryType(type);
+    onDeliveryTypeChange(type === "delivery" ? "DELIVERY" : "PICKUP");
+  };
+
+  const handleOrder = () => {
+    placeOrderMutation.mutate(undefined, {
+      onSuccess: () => {
+        setShowOrderSuccess(true);
+      },
+    });
+  };
+
+  // Handle place order
   const handlePlaceOrder = () => {
     if (deliveryType === "pickup") {
       setShowConfirmPickup(true);
       return;
     }
 
-    openOrderDetails();
+    handleOrder();
   };
 
+  // Handle clear cart
   const handleClearCart = () => {
-    clearCart();
-    if (closeCheckout) closeCheckout(false);
+    if (!checkoutData?.cartItem.id) return;
+
+    clearCartMutation.mutate(checkoutData.cartItem.id, {
+      onSuccess: () => {
+        setShowAlert(false);
+        closeCheckout(false);
+      },
+    });
   };
+
+  // Handle quantity change (increase or decrease)
+  const handleQuantityChange = (
+    item: (typeof cartItems)[0],
+    newQuantity: number
+  ) => {
+    if (newQuantity < 1) return; // Don't allow quantity less than 1
+
+    // Re-add item with new quantity (API replaces/updates existing item)
+    mutate({
+      menuId: item.menuId,
+      menuName: item.menuName,
+      unitPrice: item.unitPrice,
+      quantity: newQuantity,
+      currency: "NGN",
+      addons: item.addons.map((addon) => ({
+        menuAddonId: addon.menuAddonId,
+        name: addon.name,
+        price: safePrice(addon.price),
+        quantity: addon.quantity,
+      })),
+    });
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="max-sm:fixed max-sm:inset-0 bg-white p-4 flex items-center justify-center">
+        <p className="text-gray-500">Loading checkout...</p>
+      </div>
+    );
+  }
+
+  // Empty cart state
+  if (!checkoutData || !checkoutData.cartItem.items.length) {
+    return (
+      <div className="max-sm:fixed max-sm:inset-0 bg-white p-4 flex items-center justify-center">
+        <p className="text-gray-500">Your cart is empty</p>
+      </div>
+    );
+  }
+
+  // Extract data from API response
+  const { cartItem, subtotal, deliveryFee, serviceFee, discountTotal, total } =
+    checkoutData;
+  const cartItems = cartItem.items;
 
   return (
     <>
@@ -147,7 +197,7 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
 
         {/* Pack Items */}
         <div className="space-y-4 sm:space-y-6 max-sm:mt-5">
-          {items.map((item) => (
+          {cartItems.map((item, index) => (
             <div
               key={item.id}
               className="rounded-2xl border border-gray-200 bg-white p-3"
@@ -155,32 +205,36 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
               {/* Pack Header */}
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-sm font-normal text-gray-500">
-                  Pack {getItemPosition(item.id)}
+                  Pack {index + 1}
                 </h2>
                 <button
-                  onClick={() => remove(item.id)}
-                  className="text-primary transition-colors bg-primary-300 hover:bg-primary-400/20 p-1.5 rounded-md cursor-pointer"
+                  // disabled
+                  className="text-primary transition-colors bg-primary-300 p-1.5 rounded-md "
                   aria-label="Delete pack"
                 >
-                  <RiDeleteBin6Line className="size-5" />
+                  <RiDeleteBin6Line className="size-5 text-primary" />
                 </button>
               </div>
 
               {/* Pack Item */}
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-3">
-                  <span className="text-xl font-medium">1x</span>
+                  <span className="text-xl font-medium">{item.quantity}x</span>
                   <div>
                     <h3 className="text-base font-normal leading-5">
-                      {item.product.name}
+                      {item.menuName}
                     </h3>
-                    <p className="text-sm font-normal text-gray-500">
-                      + extra sausage
-                    </p>
+                    {item.addons.length > 0 && (
+                      <p className="text-sm font-normal text-gray-500">
+                        {item.addons
+                          .map((addon) => `+ ${addon.name}`)
+                          .join(", ")}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <span className="text-base font-medium">
-                  {currency(item.unitPrice)}
+                  {currency(safePrice(item.totalPrice))}
                 </span>
               </div>
 
@@ -191,18 +245,28 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
                   <span className="text-base font-normal leading-5">Packs</span>
                   <div className="flex items-center gap-2.5">
                     <button
-                      onClick={() => decrease(item.id)}
-                      className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors flex items-center justify-center"
+                      onClick={() =>
+                        handleQuantityChange(item, item.quantity - 1)
+                      }
+                      disabled={item.quantity <= 1 || isPending}
+                      className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       aria-label="Decrease packs"
                     >
                       <Minus className="size-4" />
                     </button>
                     <span className="text-sm font-normal text-center">
-                      {item.quantity}
+                      {isPending ? (
+                        <Loader2 className="size-4 animate-spin duration-300 text-neutral-400" />
+                      ) : (
+                        item.quantity
+                      )}
                     </span>
                     <button
-                      onClick={() => increase(item.id)}
-                      className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors flex items-center justify-center"
+                      onClick={() =>
+                        handleQuantityChange(item, item.quantity + 1)
+                      }
+                      disabled={isPending}
+                      className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       aria-label="Increase packs"
                     >
                       <Plus className="size-4 text-black" />
@@ -210,7 +274,7 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
                   </div>
                 </div>
                 <span className="text-base font-medium">
-                  {currency(Number(item.product.price))}
+                  {currency(safePrice(item.unitPrice))}
                 </span>
               </div>
             </div>
@@ -261,7 +325,7 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
             <span className="text-base leading-5">Delivery</span>
             <RadioGroup
               value={deliveryType}
-              onValueChange={(v: Delivery) => setDeliveryType(v)}
+              onValueChange={(v: Delivery) => handleDeliveryTypeChange(v)}
               className="contents"
             >
               <RadioGroupItem value="delivery" />
@@ -271,7 +335,7 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
             <span className="text-base leading-5">Pickup</span>
             <RadioGroup
               value={deliveryType}
-              onValueChange={(v: Delivery) => setDeliveryType(v)}
+              onValueChange={(v: Delivery) => handleDeliveryTypeChange(v)}
               className="contents"
             >
               <RadioGroupItem value="pickup" />
@@ -372,32 +436,38 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
           <div className="mt-4 space-y-1.5">
             <div className="flex items-center justify-between text-sm">
               <span className="text-sm leading-4.5">Orders</span>
-              <span>{currency(subTotal)}</span>
+              <span>{currency(safePrice(subtotal))}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-sm leading-4.5">Delivery Fee</span>
-              <span>{currency(deliveryFee)}</span>
+              <span>{currency(safePrice(deliveryFee))}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-sm leading-4.5">Service Fee</span>
-              <span>{currency(serviceFee)}</span>
+              <span>{currency(safePrice(serviceFee))}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-sm leading-4.5">Discounts</span>
-              <span>{currency(discounts)}</span>
+              <span>{currency(safePrice(discountTotal))}</span>
             </div>
 
             <div className="flex items-center justify-between text-sm font-medium mt-4">
               <span className="text-base font-medium ">Total</span>
-              <span className="text-base font-medium ">{currency(total)}</span>
+              <span className="text-base font-medium ">
+                {currency(safePrice(total) || safePrice(subtotal))}
+              </span>
             </div>
           </div>
         </div>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mt-6">
-          <Button onClick={handlePlaceOrder} className="submit-btn flex-1">
-            PLACE ORDER
+          <Button
+            onClick={handlePlaceOrder}
+            disabled={placeOrderMutation?.isPending}
+            className="submit-btn flex-1"
+          >
+            {placeOrderMutation?.isPending ? "PLACING ORDER..." : "PLACE ORDER"}
           </Button>
           <Button
             onClick={() => setShowAlert(true)}
@@ -409,20 +479,28 @@ const Checkout = ({ closeCheckout }: ChechoutProps) => {
         </div>
       </div>
 
-      {/* Activity Modals - Using memoized props */}
-      <RiderNote {...modalProps.riderNote} />
-      <CouponSuccess {...modalProps.couponSuccess} />
-      <CouponModal {...modalProps.coupon} />
-      <OrderSuccessModal {...modalProps.orderSuccess} />
-      <GiftModal {...modalProps.gift} />
-      <PickupConfirmModal {...modalProps.pickupConfirm} />
+      {/* Activity Modals */}
+      <RiderNote open={showRiderNote} onOpenChange={setShowRiderNote} />
+      <CouponSuccess open={showSuccess} onOpenChange={setSuccess} />
+      <CouponModal open={showCoupon} onOpenChange={setShowCoupon} />
+      <OrderSuccessModal
+        open={showOrderSuccess}
+        onOpenChange={setShowOrderSuccess}
+        closeCheckout = {closeCheckout}
+      />
+      <GiftModal open={showGift} onOpenChange={setShowGift} />
+      <PickupConfirmModal
+        open={showConfirmPickup}
+        onOpenChange={setShowConfirmPickup}
+        onConfirm={handleOrder}
+      />
 
       <ConfirmationModal
         confirmText="Clear"
         description="Are you sure you want to clear your cart?"
         title="Clear Cart?"
-        open={modalProps.clearCartModal.open}
-        onOpenChange={modalProps.clearCartModal.onOpenChange}
+        open={showAlert}
+        onOpenChange={setShowAlert}
         onConfirm={handleClearCart}
       />
     </>

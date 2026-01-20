@@ -18,7 +18,7 @@ export function useCheckoutPreview(
     queryKey: ["checkoutPreview", vendorId, deliveryType],
     queryFn: () => cartService.getCheckoutPreview(vendorId, deliveryType),
     enabled: enabled && !!vendorId, // Only fetch when enabled and vendorId exists
-    staleTime: 0, // Always fetch fresh data when enabled
+    staleTime: 0, // Always fetch fresh data when deliveryType changes
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     retry: 1, // Only retry once on failure
   });

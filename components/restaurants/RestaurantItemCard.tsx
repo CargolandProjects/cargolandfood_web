@@ -27,13 +27,10 @@ const RestaurantItemCard = ({
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    // Convert price string to number, ensuring it's a valid decimal
-    const itemPrice = Number(price);
-    
     addToCart.mutate({
       menuId: id!,
       menuName: name!,
-      unitPrice: itemPrice,
+      unitPrice: price!,
       quantity: 1,
       currency: "NGN",
       // No addons for quick add

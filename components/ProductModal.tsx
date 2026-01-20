@@ -23,31 +23,33 @@ const ProductModal = ({
   handleSelect,
 }: ProductModalProps) => {
   const { description, id, uploadImageUrl, name, price } = menu;
-  
+
   const params = useParams();
   const vendorId = params.id as string;
   const addToCart = useAddToCart(vendorId);
 
   // State for main item quantity
   const [quantity, setQuantity] = useState(1);
-  
+
   // State for selected size (radio button)
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  
+
   // State for addons: { addonId: quantity }
   // If quantity is 0 or undefined, addon is not selected
-  const [selectedAddons, setSelectedAddons] = useState<Record<string, number>>({});
+  const [selectedAddons, setSelectedAddons] = useState<Record<string, number>>(
+    {}
+  );
 
   // Handle addon quantity changes
   const handleAddonIncrease = (addonId: string) => {
-    setSelectedAddons(prev => ({
+    setSelectedAddons((prev) => ({
       ...prev,
-      [addonId]: (prev[addonId] || 0) + 1
+      [addonId]: (prev[addonId] || 0) + 1,
     }));
   };
 
   const handleAddonDecrease = (addonId: string) => {
-    setSelectedAddons(prev => {
+    setSelectedAddons((prev) => {
       const currentQty = prev[addonId] || 0;
       if (currentQty <= 1) {
         // Remove addon if quantity becomes 0
@@ -57,7 +59,7 @@ const ProductModal = ({
       }
       return {
         ...prev,
-        [addonId]: currentQty - 1
+        [addonId]: currentQty - 1,
       };
     });
   };
@@ -68,33 +70,33 @@ const ProductModal = ({
 
   // Handle main quantity changes
   const handleQuantityIncrease = () => {
-    setQuantity(prev => prev + 1);
+    setQuantity((prev) => prev + 1);
   };
 
   const handleQuantityDecrease = () => {
-    setQuantity(prev => Math.max(1, prev - 1));
+    setQuantity((prev) => Math.max(1, prev - 1));
   };
 
   // Calculate total price for display
   const calculateTotal = () => {
     let total = parseFloat(price) * quantity;
-    
+
     // Add size price if selected
     if (selectedSize) {
-      const size = menu.sizes.find(s => s.id === selectedSize);
+      const size = menu.sizes.find((s) => s.id === selectedSize);
       if (size) {
         total += parseFloat(size.price) * quantity;
       }
     }
-    
+
     // Add addons prices
     Object.entries(selectedAddons).forEach(([addonId, qty]) => {
-      const addon = menu.addons.find(a => a.id === addonId);
+      const addon = menu.addons.find((a) => a.id === addonId);
       if (addon && qty > 0) {
         total += parseFloat(addon.price) * qty;
       }
     });
-    
+
     return total;
   };
 
@@ -104,25 +106,20 @@ const ProductModal = ({
     const addonsPayload = Object.entries(selectedAddons)
       .filter(([_, qty]) => qty > 0)
       .map(([addonId, qty]) => {
-        const addon = menu.addons.find(a => a.id === addonId);
-        // Convert price string to number, ensuring it's a valid decimal
-        const addonPrice = Number(addon!.price);
+        const addon = menu.addons.find((a) => a.id === addonId);
         return {
           menuAddonId: addonId,
           name: addon!.name,
-          price: addonPrice,
+          price: parseFloat(addon!.price),
           quantity: qty,
         };
       });
-
-    // Convert price string to number, ensuring it's a valid decimal
-    const itemPrice = Number(price);
 
     addToCart.mutate(
       {
         menuId: id!,
         menuName: name!,
-        unitPrice: itemPrice,
+        unitPrice: price,
         quantity: quantity,
         currency: "NGN",
         addons: addonsPayload.length > 0 ? addonsPayload : undefined,
@@ -134,7 +131,7 @@ const ProductModal = ({
           setSelectedAddons({});
           setSelectedSize(null);
           handleSelect(id!); // Close modal
-        }
+        },
       }
     );
   };
@@ -178,7 +175,7 @@ const ProductModal = ({
           {menu.sizes && menu.sizes.length > 0 && (
             <div className="mb-4">
               <h3 className="text-lg leading-6">{name} Size</h3>
-              <RadioGroup 
+              <RadioGroup
                 className="space-y-5 mt-5"
                 value={selectedSize || undefined}
                 onValueChange={setSelectedSize}
@@ -187,7 +184,9 @@ const ProductModal = ({
                   <div key={size.id} className="flex justify-between">
                     <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
                       <p>{size.name}</p>
-                      <p className="text-xs text-neutral-600">+ ₦{size.price}</p>
+                      <p className="text-xs text-neutral-600">
+                        + ₦{size.price}
+                      </p>
                     </div>
 
                     <RadioGroupItem value={size.id} id={size.id} />
@@ -209,11 +208,13 @@ const ProductModal = ({
                     <div key={addon.id} className="flex justify-between">
                       <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
                         <p>{addon.name}</p>
-                        <p className="text-xs text-neutral-600">+ ₦{addon.price}</p>
+                        <p className="text-xs text-neutral-600">
+                          + ₦{addon.price}
+                        </p>
                       </div>
 
                       <div className="flex gap-2.5 items-center">
-                        <button 
+                        <button
                           type="button"
                           onClick={() => handleAddonDecrease(addon.id)}
                           disabled={addonQty === 0}
@@ -221,8 +222,10 @@ const ProductModal = ({
                         >
                           <RiSubtractFill className="size-4" />
                         </button>
-                        <span className="min-w-[20px] text-center">{addonQty}</span>
-                        <button 
+                        <span className="min-w-[20px] text-center">
+                          {addonQty}
+                        </span>
+                        <button
                           type="button"
                           onClick={() => handleAddonIncrease(addon.id)}
                           className="size-5 rounded-full bg-gray-200 flex justify-center items-center"
@@ -264,10 +267,9 @@ const ProductModal = ({
             disabled={addToCart.isPending}
             className="uppercase py-3.5 px-5.5 h-10.5 sm:h-12 text-sm font-bold max-w-[184px] whitespace-normal disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {addToCart.isPending 
-              ? "Adding..." 
-              : `Order Item - ₦${calculateTotal().toLocaleString()}`
-            }
+            {addToCart.isPending
+              ? "Adding..."
+              : `Order Item - ₦${calculateTotal().toLocaleString()}`}
           </Button>
         </div>
       </DialogContent>

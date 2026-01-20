@@ -1,4 +1,4 @@
-import { client } from "@/lib/api/client";
+import apiClient from "@/lib/api/client";
 import { API_ROUTES } from "@/lib/api/endpoints";
 import type { PlaceOrderResponse } from "@/lib/types/cart.types";
 
@@ -11,7 +11,7 @@ export const orderService = {
    * @returns Order response with order details
    */
   async placeOrder(vendorId: string) {
-    const response = await client.post<PlaceOrderResponse>(
+    const response = await apiClient.post<PlaceOrderResponse>(
       API_ROUTES.order.placeOrder(vendorId)
     );
     return response.data;
