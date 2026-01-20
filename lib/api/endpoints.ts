@@ -25,11 +25,20 @@ export const API_ROUTES = {
     useCart: (vendorId: string) => `/orders/cart-item/${vendorId}`,
     addOrUpdateItem: (vendorId: string) => `/orders/cart-item/${vendorId}`,
     clearCart: (cartId: string) => `/orders/clear-cart/${cartId}`,
-    checkoutPreview: (vendorId: string) => `/orders/checkout-preview/${vendorId}`,
+    checkoutPreview: (vendorId: string) =>
+      `/orders/checkout-preview/${vendorId}`,
   },
-  
+
   order: {
-    checkoutPreview: (vendorId: string) => `/orders/checkout-preview/${vendorId}`,
+    checkoutPreview: (vendorId: string) =>
+      `/orders/checkout-preview/${vendorId}`,
     placeOrder: (vendorId: string) => `/orders/placeOrder/${vendorId}`,
+  },
+
+  address: {
+    getAddresses: "/users/addresses",
+    createAddress: "/users/create-address",
+    deleteAddress: (addressId: string) =>
+      `/api/v1/users/delete-address/${addressId}`,
   },
 };

@@ -24,8 +24,8 @@ export function usePlaceOrder(vendorId: string) {
       return response; // Return for component to handle success modal
     },
     
-    onError: (error: any) => {
-      const message = error?.response?.data?.message || "Failed to place order";
+    onError: (error) => {
+      const message = error.message || "Failed to place order";
       toast.error(message);
     },
   });

@@ -21,7 +21,6 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import type { CheckoutPreview } from "@/lib/types/cart.types";
 import { useClearCart, useAddToCart } from "@/lib/hooks/mutations/useCart";
 import { usePlaceOrder } from "@/lib/hooks/mutations/useOrder";
-import { useUIStore } from "@/lib/stores/uiStore";
 import ConfirmationModal from "../ConfirmationModal";
 import RiderNote from "./RiderNoteModal";
 import CouponSuccess from "./CouponSuccessModal";
@@ -39,7 +38,7 @@ interface CheckoutProps {
   isLoading: boolean;
   deliveryType: "DELIVERY" | "PICKUP";
   onDeliveryTypeChange: (type: "DELIVERY" | "PICKUP") => void;
-  closeCheckout: (v: boolean) => void;
+  closeCheckout?: (v: boolean) => void;
 }
 
 const Checkout = ({
@@ -125,7 +124,7 @@ const Checkout = ({
     clearCartMutation.mutate(checkoutData.cartItem.id, {
       onSuccess: () => {
         setShowAlert(false);
-        closeCheckout(false);
+        if (closeCheckout) closeCheckout(false);
       },
     });
   };
@@ -486,7 +485,7 @@ const Checkout = ({
       <OrderSuccessModal
         open={showOrderSuccess}
         onOpenChange={setShowOrderSuccess}
-        closeCheckout = {closeCheckout}
+        closeCheckout={closeCheckout}
       />
       <GiftModal open={showGift} onOpenChange={setShowGift} />
       <PickupConfirmModal

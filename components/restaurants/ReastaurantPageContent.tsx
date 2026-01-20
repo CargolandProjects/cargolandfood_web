@@ -220,7 +220,6 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
                 isLoading={isCheckoutLoading}
                 deliveryType={deliveryType}
                 onDeliveryTypeChange={setDeliveryType}
-                closeCheckout={setOpenCheckout}
               />
             </ScrollArea>
           </motion.div>

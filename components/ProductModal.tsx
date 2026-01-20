@@ -222,7 +222,7 @@ const ProductModal = ({
                         >
                           <RiSubtractFill className="size-4" />
                         </button>
-                        <span className="min-w-[20px] text-center">
+                        <span className="text-center">
                           {addonQty}
                         </span>
                         <button

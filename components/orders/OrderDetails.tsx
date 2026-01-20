@@ -125,7 +125,7 @@ export default function OrderDetails() {
                     </h2>
 
                     <div className="flex gap-3 items-center">
-                      <div className="size-5 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-1">
+                      <div className="size-5 rounded-full bg-red-50 flex items-center justify-center shrink-0 mt-1">
                         <img
                           src={restaurant.src}
                           alt="Restaurant svg icon"
@@ -293,7 +293,7 @@ export default function OrderDetails() {
                     </h2>
 
                     <div className="flex gap-3 items-center">
-                      <div className="size-5 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-1">
+                      <div className="size-5 rounded-full bg-red-50 flex items-center justify-center shrink-0 mt-1">
                         <img
                           src={restaurant.src}
                           alt="Restaurant svg icon"
