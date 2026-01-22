@@ -50,19 +50,28 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
 
   // Fetch checkout preview to check if cart has items
   // Enable fetching on component mount to check cart status
-  const { data: checkoutData, isLoading: isCheckoutLoading } =
-    useCheckoutPreview(id, deliveryType, true);
+  const {
+    data: checkoutData,
+    isLoading: isCheckoutLoading,
+    error: checkoutError,
+  } = useCheckoutPreview(id, deliveryType, true);
 
   const vendor = data?.data;
   const rating = data?.averageRating;
   const menus = data?.data.menus || [];
 
   // Check if cart has items from checkout preview
-  const hasItemsInCart = checkoutData && checkoutData.cartItem.items.length > 0;
+  // If error (e.g., 400 "No active cart"), treat as empty cart
+  const hasItemsInCart =
+    !checkoutError &&
+    checkoutData &&
+    checkoutData.cartItem &&
+    checkoutData.cartItem.items &&
+    checkoutData.cartItem.items.length > 0;
 
   // Calculate local total for mobile button (sum of all item totalPrice)
   const calculateLocalTotal = () => {
-    if (!checkoutData) return 0;
+    if (!checkoutData || !checkoutData.cartItem) return 0;
     const itemsTotal = checkoutData.cartItem.items.reduce((sum, item) => {
       return sum + Number(item.totalPrice);
     }, 0);
