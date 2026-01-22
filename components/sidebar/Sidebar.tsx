@@ -50,7 +50,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
 
   useEffect(() => {
     const checkScreen = () => {
-      const mobile = window.innerWidth < 768;
+      const mobile = window.innerWidth < 640;
       setIsMoble(mobile);
     };
 
@@ -89,7 +89,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
     <>
       {/* Large Screens */}
       {!isMobile && (
-        <aside className="hidden md:block sticky left-0 inset-y-0 w-sidebar shrink-0 bg-white border-r border-gray-100">
+        <aside className=" sticky left-0 inset-y-0 w-sidebar shrink-0 bg-white border-r border-gray-100">
           <div className="flex flex-col items-center py-4">
             {/* Logo */}
             <Link
@@ -205,23 +205,25 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
               {sidebarItems.map((item, idx) => {
                 const isActive = activeTab === item.id;
                 return (
-                  <div
-                    onClick={() => {
-                      if (idx === 0) {
-                        handleClick();
-                      } else {
-                        handleTabChange(item.id);
-                      }
-                    }}
-                    className="flex items-center gap-2 hover:cursor-pointer"
-                    key={idx}
-                  >
-                    <div className="size-10 flex items-center justify-center bg-primary-50 rounded-full">
-                      <item.icon className="size-6 text-primary" />
+                  <>
+                    <div
+                      onClick={() => {
+                        if (idx === 0) {
+                          handleClick();
+                        } else {
+                          handleTabChange(item.id);
+                        }
+                      }}
+                      className="flex items-center gap-2 hover:cursor-pointer"
+                      key={idx}
+                    >
+                      <div className="size-10 flex items-center justify-center bg-primary-50 rounded-full">
+                        <item.icon className="size-6 text-primary" />
+                      </div>
+                      <p className="text-xl font-medium leading-7">
+                        {item.label}
+                      </p>
                     </div>
-                    <p className="text-xl font-medium leading-7">
-                      {item.label}
-                    </p>
                     <AnimatePresence>
                       {item.content && isActive && (
                         <motion.aside
@@ -231,7 +233,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                           transition={{
                             type: "tween",
                             ease: "easeOut",
-                            duration: 0.2,
+                            duration: 0.15,
                           }}
                           className="md:hidden fixed inset-0 pt-10 px-6 bg-white z-35 "
                         >
@@ -241,7 +243,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                         </motion.aside>
                       )}
                     </AnimatePresence>
-                  </div>
+                  </>
                 );
               })}
             </div>

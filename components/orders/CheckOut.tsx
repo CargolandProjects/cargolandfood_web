@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader, Loader2, Minus, Plus } from "lucide-react";
+import { Loader2, Minus, Plus } from "lucide-react";
 import { Separator } from "../ui/separator";
 import {
   RiArrowLeftLine,
@@ -99,13 +99,13 @@ const Checkout = ({
     onDeliveryTypeChange(type === "delivery" ? "DELIVERY" : "PICKUP");
   };
 
-  const handleOrder = () => {
+  const handleOrder = useCallback(() => {
     placeOrderMutation.mutate(undefined, {
       onSuccess: () => {
         setShowOrderSuccess(true);
       },
     });
-  };
+  }, [placeOrderMutation]);
 
   // Handle place order
   const handlePlaceOrder = () => {
@@ -151,6 +151,53 @@ const Checkout = ({
       })),
     });
   };
+
+  // Create memoized modal props object
+  const modalProps = useMemo(
+    () => ({
+      riderNote: {
+        open: showRiderNote,
+        onOpenChange: setShowRiderNote,
+      },
+      coupon: {
+        open: showCoupon,
+        onOpenChange: setShowCoupon,
+      },
+      orderSuccess: {
+        open: showOrderSuccess,
+        onOpenChange: setShowOrderSuccess,
+        closeCheckout: closeCheckout,
+      },
+      gift: {
+        open: showGift,
+        onOpenChange: setShowGift,
+      },
+      pickupConfirm: {
+        open: showConfirmPickup,
+        onOpenChange: setShowConfirmPickup,
+        onConfirm: handleOrder,
+      },
+      couponSuccess: {
+        open: showSuccess,
+        onOpenChange: setSuccess,
+      },
+      clearCartModal: {
+        open: showAlert,
+        onOpenChange: setShowAlert,
+      },
+    }),
+    [
+      showRiderNote,
+      showCoupon,
+      showOrderSuccess,
+      showGift,
+      showConfirmPickup,
+      showSuccess,
+      showAlert,
+      closeCheckout,
+      handleOrder,
+    ]
+  );
 
   // Loading state
   if (isLoading) {
@@ -479,20 +526,15 @@ const Checkout = ({
       </div>
 
       {/* Activity Modals */}
-      <RiderNote open={showRiderNote} onOpenChange={setShowRiderNote} />
-      <CouponSuccess open={showSuccess} onOpenChange={setSuccess} />
-      <CouponModal open={showCoupon} onOpenChange={setShowCoupon} />
+      <RiderNote {...modalProps.riderNote} />
+      <CouponSuccess {...modalProps.couponSuccess} />
+      <CouponModal {...modalProps.coupon} />
       <OrderSuccessModal
-        open={showOrderSuccess}
-        onOpenChange={setShowOrderSuccess}
+        {...modalProps.orderSuccess}
         closeCheckout={closeCheckout}
       />
-      <GiftModal open={showGift} onOpenChange={setShowGift} />
-      <PickupConfirmModal
-        open={showConfirmPickup}
-        onOpenChange={setShowConfirmPickup}
-        onConfirm={handleOrder}
-      />
+      <GiftModal {...modalProps.gift} />
+      <PickupConfirmModal {...modalProps.pickupConfirm} />
 
       <ConfirmationModal
         confirmText="Clear"

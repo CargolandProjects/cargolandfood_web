@@ -13,10 +13,10 @@ export const getQueryClient = () =>
           if (error?.response?.status >= 400 && error?.response?.status < 500) {
             return false;
           }
-          return failureCount < 3;
+          return failureCount < 2;
         },
         gcTime: 30 * 60 * 1000, // 30 mins
-      },
+      },  
       mutations: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         retry: (failureCount, error: any) => {

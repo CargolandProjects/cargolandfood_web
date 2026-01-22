@@ -2,22 +2,37 @@ import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
 
 export interface Address {
-  addressLine1: "string";
-  addressLine2: "string";
-  city: "string";
-  state: "string";
-  postalCode: "string";
-  country: "string";
-  latitude: "string";
-  longitude: "string";
-  placeId: "string";
-  provider: "string";
-  instructions: "string";
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  latitude: string;
+  longitude: string;
+  placeId: string;
+  provider: string;
+  instructions: string;
+}
+
+type Addresses = Address & {
+  id: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+interface GetAdresses {
+  status: string;
+  message: string;
+  data: Addresses[];
 }
 
 export const address = {
   async getAddresses() {
-    const res = await apiClient.get(API_ROUTES.address.getAddresses);
+    const res = await apiClient.get<GetAdresses>(
+      API_ROUTES.address.getAddresses
+    );
     return res.data;
   },
 

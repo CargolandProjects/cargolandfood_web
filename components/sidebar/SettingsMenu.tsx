@@ -14,8 +14,9 @@ import { Button } from "../ui/button";
 import { useCallback, useMemo, useState } from "react";
 import { Separator } from "../ui/separator";
 import { useRouter } from "next/navigation";
-import ChatSupport from "../ChatSupport";
+import ChatSupport from "./ChatSupport";
 import { ActiveTab } from "./Sidebar";
+import AddressModal from "./address/AddressModal";
 
 interface SettingsProps {
   setActiveTab: (tab: ActiveTab) => void;
@@ -58,12 +59,15 @@ const SETTINGS_SECTIONS = [
 
 const SettingsMenu = ({ setActiveTab }: SettingsProps) => {
   const [showChatSupport, setShowChatSupport] = useState(false);
+  const [showAddress, setShowAddress] = useState(false);
   const router = useRouter();
 
   const menuActions: { [key: string]: () => void } = useMemo(() => {
     return {
       Settings: () => {},
-      Addresses: () => {},
+      Addresses: () => {
+        setShowAddress(true);
+      },
       Security: () => {},
       Coupon: () => {},
       "My Wallet": () => {
@@ -125,6 +129,7 @@ const SettingsMenu = ({ setActiveTab }: SettingsProps) => {
           ))}
         </div>
       </div>
+      <AddressModal open={showAddress} onOpenChange={setShowAddress} />
       <ChatSupport
         open={showChatSupport}
         onOpenChange={useCallback((o: boolean) => {

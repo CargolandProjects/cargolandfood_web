@@ -39,6 +39,6 @@ export const API_ROUTES = {
     getAddresses: "/users/addresses",
     createAddress: "/users/create-address",
     deleteAddress: (addressId: string) =>
-      `/api/v1/users/delete-address/${addressId}`,
+      `/users/delete-address/${addressId}`,
   },
 };
