@@ -44,7 +44,7 @@ export function Header({ setSideBar }: HeaderProps) {
   const path = usePathname();
   const OpenAuth = useAuthFlow((s) => s.openAuth);
   const { user: session, isAuthenticated, signOut } = useSession();
-  // console.log("PathName:", path);
+  console.log("Session Data:", session);
 
   const [firstName, lastName] = session?.fullName.split(" ") || [];
   const initials =

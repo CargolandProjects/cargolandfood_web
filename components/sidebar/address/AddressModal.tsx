@@ -11,6 +11,7 @@ import type { Suggestion } from "use-places-autocomplete";
 import { Input } from "@/components/ui/input";
 import { useAddress, useDeleteAddress } from "@/lib/hooks/mutations/useAddress";
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface AddressProps {
   open: boolean;
@@ -36,12 +37,12 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
     debounce: 400,
   });
 
-  console.log("The addresses debugging log:", {
-    isLoading,
-    isError,
-    isSuccess,
-    addresses,
-  });
+  // console.log("The addresses debugging log:", {
+  //   isLoading,
+  //   isError,
+  //   isSuccess,
+  //   addresses,
+  // });
 
   function getAddressComponent(
     components: google.maps.GeocoderAddressComponent[],
@@ -82,7 +83,7 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
         instructions: "string",
       };
 
-      console.log("Payload:", payload);
+      // console.log("Payload:", payload);
 
       addAddress(payload, {
         onSuccess: () => {
@@ -105,7 +106,7 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="dialog max-sm:px-6! overflow-auto! hide-scrollbar">
+      <DialogContent className="dialog max-sm:px-6! overflow-auto! hide-scrollbar pb-7!">
         <DialogHeader>
           <DialogTitle className="dialog-title mt-[74px]">
             Addresses
@@ -122,36 +123,43 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
                 onChange={(e) => setValue(e.target.value)}
                 disabled={!ready}
                 placeholder="Add new address"
-                className=" flex-1 h-full px-3 py-2.5 text-sm font-medium rounded-button placeholder:text-[#8A8F98] border-none ring-0 focus-visible:ring-0"
+                className=" flex-1 h-full px-3 pr-9 py-2.5 text-sm font-medium rounded-button placeholder:text-[#8A8F98] border-none ring-0 focus-visible:ring-0"
               />
-              {isPending && (
-                <Loader2 className="absolute right-2 transform text-neutral-400 top-1/2 -translate-y-1/2 size-4 animate-spin duration-300" />
+              {(isPending || loading) && (
+                <Loader2 className="absolute right-2 transform text-primary top-1/2 -translate-y-1/2 size-4 animate-spin duration-300" />
               )}
             </div>
+
             {/* Google Places Suggestions */}
-            {value && (
-              <div className="border border-neutral-400 rounded-xl p-1  mt-1">
-                {loading && (
-                  <Loader2 className="size-8 transition duration-300 animate-spin text-primary mx-auto my-4" />
-                )}
-                {!loading && data.length === 0 && (
-                  <p className="text-center mt-0.5">No addresses found.</p>
-                )}
-                <div className="space-y-1">
-                  {!loading &&
-                    data.length > 0 &&
-                    data.map((address) => (
-                      <div
-                        onClick={() => handleSelect(address)}
-                        className="hover:cursor-pointer hover:bg-gray-100 p-1"
-                        key={address.place_id}
-                      >
-                        <p className="text-sm">{address.description}</p>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            )}
+            <AnimatePresence mode="wait">
+              {value && !loading && (
+                <motion.div
+                  key="addresses-loader"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="border border-neutral-400 rounded-xl p-1  mt-1"
+                >
+                  {!loading && data.length === 0 && (
+                    <p className="text-center mt-0.5">No addresses found.</p>
+                  )}
+                  <div className="space-y-1">
+                    {!loading &&
+                      data.length > 0 &&
+                      data.map((address) => (
+                        <div
+                          onClick={() => handleSelect(address)}
+                          className="hover:cursor-pointer hover:bg-gray-100 p-1"
+                          key={address.place_id}
+                        >
+                          <p className="text-sm">{address.description}</p>
+                        </div>
+                      ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Users Address List */}
@@ -173,7 +181,7 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
             )}
 
             {isSuccess && addresses.length > 0 && (
-              <div className="space-y-4">
+              <div className="space-y-4 mb-2">
                 {addresses.map((address) => (
                   <div
                     key={address.id}
