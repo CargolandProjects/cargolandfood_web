@@ -31,7 +31,7 @@ export default function HomeLayout({
               applyPadding && "max-sm:pt-3"
             } flex-1 overflow-auto py-4 md:py-6 px-4 sm:px-6 md:px-13.5 min-w-0 hide-scrollbar`}
           >
-            <div className="w-full max-w-295.5 mx-auto min-w-0">{children}</div>
+            <div className="w-full mx-auto min-w-0">{children}</div>
           </div>
         </div>
       </main>

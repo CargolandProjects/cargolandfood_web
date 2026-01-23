@@ -78,9 +78,9 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
     return itemsTotal;
   };
 
-  console.log("Restaurant page Id:", id);
-  console.log("Restaurant page Data:", vendor);
-  console.log("Checkout Data:", checkoutData);
+  // console.log("Restaurant page Id:", id);
+  // console.log("Restaurant page Data:", vendor);
+  // console.log("Checkout Data:", checkoutData);
 
   const handleBack = () => {
     router.back();
@@ -96,11 +96,15 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
 
   return (
     <div className="flex gap-10 h-full">
-      <div
-        className={`w-full relative ${
-          hasItemsInCart ? "max-w-[814px]" : "max-w-[1006px]"
-        } mx-auto transitoin-all duration-300 min-h-screen flex-1 flex flex-col`}
+      <motion.div 
+        className="w-full relative mx-auto min-h-screen flex-1 flex flex-col"
+        layout
+        transition={{
+          duration: 0.5,
+          ease: [0.4, 0, 0.2, 1],
+        }}
       >
+
         {/* Back button */}
         <button
           onClick={handleBack}
@@ -118,7 +122,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             <img
               src={shawarma.src}
               alt="Shawarma Plus banner"
-              className="w-full h-full object-cover rounded-xl object-[0px_-50px] sm:object-[0px_-82px]"
+              className="w-full h-full object-cover rounded-xl "
               loading="lazy"
             />
             {/* Favourite and Comments */}
@@ -206,23 +210,32 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       <FavouritesModal open={showFavourites} onOpenChange={setShowFavourites} />
       <ReviewsModal open={showReviews} onClose={setShowReviews} />
       <OrderDetails />
 
       {/* Large Screens Checkout component */}
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="popLayout">
         {hasItemsInCart && (
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.4 }}
-            className="sticky top-6 self-start max-sm:hidden"
+          <motion.aside
+            initial={{ x: "100%", opacity: 0 }}
+            animate={{ 
+              x: 0, 
+              opacity: 1,
+            }}
+            exit={{ 
+              x: "100%", 
+              opacity: 0,
+            }}
+            transition={{
+              duration: 0.5,
+              ease: [0.4, 0, 0.2, 1],
+            }}
+            className="sticky top-6 self-start max-sm:hidden w-[400px] shrink-0"
           >
-            <ScrollArea className="max-w-[400px] h-[85vh] shadow-lg rounded-xl">
+            <ScrollArea className="max-w-[400px] h-[85vh] shadow-2xl rounded-2xl border border-gray-100 bg-white">
               <Checkout
                 vendorId={id}
                 checkoutData={checkoutData}
@@ -231,7 +244,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
                 onDeliveryTypeChange={setDeliveryType}
               />
             </ScrollArea>
-          </motion.div>
+          </motion.aside>
         )}
       </AnimatePresence>
 
