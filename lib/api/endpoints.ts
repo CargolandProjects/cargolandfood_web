@@ -38,7 +38,11 @@ export const API_ROUTES = {
   address: {
     getAddresses: "/users/addresses",
     createAddress: "/users/create-address",
-    deleteAddress: (addressId: string) =>
-      `/users/delete-address/${addressId}`,
+    deleteAddress: (addressId: string) => `/users/delete-address/${addressId}`,
+  },
+
+  reviews: {
+    getReviews: "/users/menu-reviews-by-user",
+    submitReview: "/users/submit-menu-review",
   },
 };
