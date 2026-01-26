@@ -25,7 +25,7 @@ const Restaurants = () => {
       {!isLoading && restaurants.length > 0 && (
         <div>
           <h3>Restaurants</h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-2 section-y">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 xl:gap-12 mt-2 section-y">
             {restaurants.map((vendor) => (
               <VendorCard vendor={vendor} key={vendor.id} />
             ))}

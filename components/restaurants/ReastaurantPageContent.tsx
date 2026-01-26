@@ -45,7 +45,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
     "DELIVERY"
   );
 
-  const { data, isPending, error } = useGetVendorById(id);
+  const { data, isLoading, error } = useGetVendorById(id);
   const router = useRouter();
 
   // Fetch checkout preview to check if cart has items
@@ -90,7 +90,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
     setselectedId(id === selectedId ? null : id);
   };
 
-  if (isPending) {
+  if (isLoading) {
     return <RestaurantPageSkeleton />;
   }
 
@@ -118,7 +118,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
         <div className="relative">
           <h3 className="sm:hidden">Restaurants</h3>
           {/* Banner Image */}
-          <div className="relative h-25.5 sm:h-48 md:h-[274px] w-full overflow-hidden rounded-xl mt-2">
+          <div className="relative h-25.5 sm:h-48 xl:h-[274px] w-full overflow-hidden rounded-xl mt-2">
             <img
               src={shawarma.src}
               alt="Shawarma Plus banner"
@@ -160,7 +160,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
 
         {/* 2. Category Tabs Section */}
         <div className="sticky -top-2 sm:-top-4 z-10 sm:pb-10 sm:px-4">
-          <div className="flex gap-2.5 sm:gap-4.5 max-w-[606px] h-11.5 justify-start overflow-x-auto hide-scrollbar">
+          <div className="flex gap-2.5 sm:gap-4.5 max-w-[606px] h-11.5 shrink justify-start overflow-x-auto hide-scrollbar">
             {categories.map(({ name }, i) => (
               <CategoryTab
                 name={name}
@@ -196,7 +196,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
               animate={{ y: 0 }}
               exit={{ y: 100 }}
               transition={{ duration: 0.3 }}
-              className="sticky sm:hidden pt-5 pb-8 px-8 -bottom-4 inset-x-0 flex justify-between items-center bg-white"
+              className="sticky lg:hidden pt-5 pb-8 px-8 -bottom-4 inset-x-0 flex justify-between items-center bg-white"
             >
               <p className="text-xl font-medium ">
                 ₦{calculateLocalTotal().toLocaleString()}
@@ -233,7 +233,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
               duration: 0.5,
               ease: [0.4, 0, 0.2, 1],
             }}
-            className="sticky top-6 self-start max-sm:hidden w-[400px] shrink-0"
+            className="sticky top-6 self-start max-lg:hidden w-[400px] shrink-0"
           >
             <ScrollArea className="max-w-[400px] h-[85vh] shadow-2xl rounded-2xl border border-gray-100 bg-white">
               <Checkout

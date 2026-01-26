@@ -1,3 +1,4 @@
+import { shawarma } from "@/assets/images";
 import { Vendor } from "@/lib/services/vendors.service";
 import { useRouter } from "next/navigation";
 import {
@@ -31,9 +32,9 @@ const VendorCard = ({
 
   return (
     <div onClick={handleClick} className="w-full cursor-pointer">
-      <div className="relative w-full h-[114px] overflow-hidden rounded-md">
+      <div className="relative w-full h-[114px] xl:h-[144px] overflow-hidden rounded-md">
         <img
-          src={profileImg}
+          src={shawarma.src}
           alt={businessName}
           className="size-full object-cover"
           loading="lazy"

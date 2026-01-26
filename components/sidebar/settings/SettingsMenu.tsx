@@ -10,12 +10,12 @@ import {
   RiWallet3Fill,
   RiWechatFill,
 } from "react-icons/ri";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { useCallback, useMemo, useState } from "react";
-import { Separator } from "../ui/separator";
+import { Separator } from "../../ui/separator";
 import { useRouter } from "next/navigation";
 import ChatSupport from "./ChatSupport";
-import { ActiveTab } from "./Sidebar";
+import { ActiveTab } from "../Sidebar";
 import AddressModal from "./address/AddressModal";
 
 interface SettingsProps {

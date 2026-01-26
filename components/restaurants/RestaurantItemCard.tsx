@@ -41,7 +41,7 @@ const RestaurantItemCard = ({
     <>
       <div
         onClick={() => handleSelect(id!)}
-        className="flex h-[116px] sm:h-34.5 rounded-2xl overflow-hidden border border-neutral-300 gap-2 cursor-pointer"
+        className="flex h-[116px] min-w-[310px] sm:h-34.5 rounded-2xl overflow-hidden border border-neutral-300 gap-2 cursor-pointer"
       >
         {/* Product Image - Adjusted for Left-Side Radius Only */}
         <div className="w-30 ml-[3px] my-[3px] shrink-0 rounded-l-xl rounded-r-xs overflow-hidden relative">

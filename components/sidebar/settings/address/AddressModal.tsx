@@ -1,5 +1,5 @@
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { Dialog, DialogContent, DialogHeader } from "../../ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "../../../ui/dialog";
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
@@ -106,7 +106,7 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="dialog max-sm:px-6! overflow-auto! hide-scrollbar pb-7!">
+      <DialogContent className="dialog max-sm:px-6! flex flex-col overflow-auto! hide-scrollbar pb-7!">
         <DialogHeader>
           <DialogTitle className="dialog-title mt-[74px]">
             Addresses

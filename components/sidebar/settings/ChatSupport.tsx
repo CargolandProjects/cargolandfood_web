@@ -2,13 +2,13 @@
 
 import { Plus, Send } from "lucide-react";
 import Image from "next/image";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../ui/dialog";
 import { pizza2 } from "@/assets/images";
 import { useSession } from "@/lib/hooks/useSession";
 import { memo, useState } from "react";
-import { Input } from "../ui/input";
+import { Input } from "../../ui/input";
 import { Ri24HoursFill, RiAddFill, RiSendPlane2Fill } from "react-icons/ri";
-import { ScrollArea } from "../ui/scroll-area";
+import { ScrollArea } from "../../ui/scroll-area";
 
 interface ChatSupportModalProps {
   open: boolean;
