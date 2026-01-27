@@ -15,10 +15,11 @@ import { IconType } from "react-icons";
 import { useCategory } from "@/contexts/CategoryContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import SettingsMenu from "./SettingsMenu";
+import SettingsMenu from "./settings/SettingsMenu";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { logoFull } from "@/assets/images";
 import { X } from "lucide-react";
+import Cart from "./Cart";
 
 interface SIdeBar {
   open: boolean;
@@ -73,7 +74,13 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
 
   const sidebarItems: SidebarItem[] = [
     { id: "Home", icon: RiHome3Fill, label: "Home" },
-    { id: "Cart", icon: RiShoppingCartFill, label: "Cart" },
+    {
+      id: "Cart",
+      icon: RiShoppingCartFill,
+      label: "Cart",
+      content: Cart,
+      props: { setActiveTab },
+    },
     { id: "Orders", icon: RiShoppingBagFill, label: "Orders" },
     { id: "Favourite", icon: RiHeartFill, label: "Favourite" },
     {
@@ -146,10 +153,9 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                           }`}
                         >
                           <IconComponent
-                            className={`
-                    "w-5 h-5 transition-colors",
-                   ${isActive ? "text-primary" : "text-gray-300"}
-                  `}
+                            className={`w-5 h-5 transition-colors ${
+                              isActive ? "text-primary" : "text-gray-300"
+                            }`}
                           />
                           {isActive && (
                             <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
@@ -160,7 +166,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                         <PopoverContent
                           side="right"
                           sideOffset={8}
-                          className="w-[374px] rounded-xl max-h-[95vh] overflow-auto hide-scrollbar px-4 shadow"
+                          className="w-[374px] rounded-xl h-[713px] overflow-auto hide-scrollbar py-6 px-4 shadow"
                         >
                           {item.content && <item.content {...item.props} />}
                         </PopoverContent>
