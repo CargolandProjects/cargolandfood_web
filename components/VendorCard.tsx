@@ -12,9 +12,13 @@ import {
 const VendorCard = ({
   vendor: { id, businessName, ratings, profileImg },
   routes = "Restaurant",
+  isFavourite = false,
+  asFavouriteCard = false,
 }: {
   vendor: Vendor;
   routes?: string;
+  isFavourite?: boolean;
+  asFavouriteCard?: boolean;
 }) => {
   const router = useRouter();
   const route =
@@ -32,9 +36,9 @@ const VendorCard = ({
 
   return (
     <div onClick={handleClick} className="w-full cursor-pointer">
-      <div className="relative w-full h-[114px] xl:h-[144px] overflow-hidden rounded-md">
+      <div className={`relative w-full ${asFavouriteCard ? "h-[114px]" : "h-[114px] xl:h-[144px] "  } overflow-hidden rounded-md`}>
         <img
-          src={shawarma.src}
+          src={profileImg}
           alt={businessName}
           className="size-full object-cover"
           loading="lazy"
@@ -47,7 +51,7 @@ const VendorCard = ({
       <div className="mt-2.5">
         <div className="flex justify-between">
           <p className="text-base leading-5">{businessName}</p>
-          <RiHeartFill className="size-6 text-gray-300" />
+          <RiHeartFill className={`${isFavourite ? "text-primary" : "text-gray-300"} size-6 `} />
         </div>
         <div className="mt-1 flex gap-3 md:gap-4">
           <div className="flex justify-center items-center gap-1">

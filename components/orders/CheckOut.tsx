@@ -132,16 +132,17 @@ const Checkout = ({
   // Handle quantity change (increase or decrease)
   const handleQuantityChange = (
     item: (typeof cartItems)[0],
-    newQuantity: number
+    action: "increase" | "decrease"
   ) => {
-    if (newQuantity < 1) return; // Don't allow quantity less than 1
+    if (item.quantity < 1) return; // Don't allow quantity less than 1
+
 
     // Re-add item with new quantity (API replaces/updates existing item)
     mutate({
       menuId: item.menuId,
       menuName: item.menuName,
       unitPrice: item.unitPrice,
-      quantity: newQuantity,
+      quantity: action === "increase" ? 1 : -1,
       currency: "NGN",
       addons: item.addons.map((addon) => ({
         menuAddonId: addon.menuAddonId,
@@ -291,9 +292,7 @@ const Checkout = ({
                   <span className="text-base font-normal leading-5">Packs</span>
                   <div className="flex items-center gap-2.5">
                     <button
-                      onClick={() =>
-                        handleQuantityChange(item, item.quantity - 1)
-                      }
+                      onClick={() => handleQuantityChange(item, "decrease")}
                       disabled={item.quantity <= 1 || isPending}
                       className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       aria-label="Decrease packs"
@@ -308,9 +307,7 @@ const Checkout = ({
                       )}
                     </span>
                     <button
-                      onClick={() =>
-                        handleQuantityChange(item, item.quantity + 1)
-                      }
+                      onClick={() => handleQuantityChange(item, "increase")}
                       disabled={isPending}
                       className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       aria-label="Increase packs"

@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { logoFull } from "@/assets/images";
 import { X } from "lucide-react";
 import Cart from "./Cart";
+import Favourite from "./Favourite";
 
 interface SIdeBar {
   open: boolean;
@@ -82,7 +83,13 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
       props: { setActiveTab },
     },
     { id: "Orders", icon: RiShoppingBagFill, label: "Orders" },
-    { id: "Favourite", icon: RiHeartFill, label: "Favourite" },
+    {
+      id: "Favourite",
+      icon: RiHeartFill,
+      label: "Favourite",
+      content: Favourite,
+      props: { setActiveTab },
+    },
     {
       id: "Settings",
       icon: RiSettings3Fill,
@@ -166,7 +173,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                         <PopoverContent
                           side="right"
                           sideOffset={8}
-                          className="w-[374px] rounded-xl h-[713px] overflow-auto hide-scrollbar py-6 px-4 shadow"
+                          className="w-[374px] mt-10 rounded-xl h-[713px] overflow-auto hide-scrollbar py-6 px-4 shadow"
                         >
                           {item.content && <item.content {...item.props} />}
                         </PopoverContent>

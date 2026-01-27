@@ -1,11 +1,9 @@
 import React from "react";
-import {
-  RiArrowGoBackLine,
-  RiTakeawayFill,
-} from "react-icons/ri";
+import { RiArrowGoBackLine, RiTakeawayFill } from "react-icons/ri";
 import { ActiveTab } from "./Sidebar";
 import { burger, pizza, shawarma } from "@/assets/images";
 import { Button } from "../ui/button";
+import { emptyBox } from "@/assets/svgs";
 
 interface SettingsProps {
   setActiveTab: (tab: ActiveTab) => void;
@@ -75,47 +73,86 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
         <h2 className="text-lg leading-6">Cart</h2>
       </div>
 
-      <div className="mt-4 space-y-3">
-        {cart.map((item, idx) => (
-          <div key={idx} className="space-y-4 px-3 py-4 rounded-md border border-neutral-300">
-            <div className="flex items-center">
-              <div className="w-15 h-14 rounded-button overflow-hidden">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="size-full object-cover"
-                />
-              </div>
+      {cart.length === 0 && (
+        <div className="mt-20.5 flex flex-col justify-center items-center">
+          <div className="size-50">
+            <img
+              src={emptyBox.src}
+              alt="empty_cart_illustration"
+              className="size-full object-cover"
+            />
+          </div>
 
-              <div className="ml-4">
-                <h3 className="text-base leading-6 capitalize">{item.title}</h3>
-                <div className="flex gap-1.5 items-center mt-1">
-                  <p className="text-xs text-neutral-600 ">{item.qty} items</p>
-                  <div className="h-4 w-px bg-neutral-200" />
-                  <p className="text-neutral-600 text-xs font-medium">
-                    ₦{Number(item.price).toLocaleString()}
-                  </p>
+          <div className="text-center mt-6">
+            <h3 className="text-lg leading-6 text-neutral-500">
+              Your cart is empty
+            </h3>
+            <p className="mt-3 max-w-[300px] text-base font-normal leading-5 text-neutral-500">
+              Explore and add items to the cart to show here
+            </p>
+          </div>
+
+          <Button
+            className="mt-20 md:py-3.5 submit-btn"
+            // disabled={isPending}
+          >
+            Add To Cart
+          </Button>
+        </div>
+      )}
+
+      {cart.length > 0 && (
+        <div className="mt-4 space-y-3">
+          {cart.map((item, idx) => (
+            <div
+              key={idx}
+              className="space-y-4 px-3 py-4 rounded-md border border-neutral-300"
+            >
+              <div className="flex items-center">
+                <div className="w-15 h-14 rounded-button overflow-hidden">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="size-full object-cover"
+                  />
+                </div>
+
+                <div className="ml-4">
+                  <h3 className="text-base leading-6 capitalize">
+                    {item.title}
+                  </h3>
+                  <div className="flex gap-1.5 items-center mt-1">
+                    <p className="text-xs text-neutral-600 ">
+                      {item.qty} items
+                    </p>
+                    <div className="h-4 w-px bg-neutral-200" />
+                    <p className="text-neutral-600 text-xs font-medium">
+                      ₦{Number(item.price).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="w-full flex gap-2 items-center">
-              <RiTakeawayFill className="size-5 text-neutral-600" />
-              <p className="text-base leading-5 line-clamp-1">{item.address}</p>
-            </div>
+              <div className="w-full flex gap-2 items-center">
+                <RiTakeawayFill className="size-5 text-neutral-600" />
+                <p className="text-base leading-5 line-clamp-1">
+                  {item.address}
+                </p>
+              </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 mt-6">
-              <Button
-                variant="outline"
-                className="submit-btn flex-1 hover:bg--gray-50  border-neutral-300 capitalize"
-              >
-                Delete
-              </Button>
-              <Button className="submit-btn flex-1">Checkout</Button>
+              <div className="flex flex-col sm:flex-row gap-4 mt-6">
+                <Button
+                  variant="outline"
+                  className="submit-btn flex-1 hover:bg--gray-50  border-neutral-300 capitalize"
+                >
+                  Delete
+                </Button>
+                <Button className="submit-btn flex-1">Checkout</Button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
