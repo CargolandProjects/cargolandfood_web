@@ -41,7 +41,7 @@ interface CheckoutProps {
   closeCheckout?: (v: boolean) => void;
 }
 
-const Checkout = ({
+const PageCheckOut = ({
   vendorId,
   checkoutData,
   isLoading,
@@ -545,4 +545,4 @@ const Checkout = ({
   );
 };
 
-export default Checkout;
+export default PageCheckOut;

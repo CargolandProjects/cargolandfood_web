@@ -4,12 +4,14 @@ import { ActiveTab } from "./Sidebar";
 import { burger, pizza, shawarma } from "@/assets/images";
 import { Button } from "../ui/button";
 import { emptyBox } from "@/assets/svgs";
+import { useUIStore } from "@/lib/stores/uiStore";
 
 interface SettingsProps {
   setActiveTab: (tab: ActiveTab) => void;
 }
 
 interface Cart {
+  id: string;
   title: string;
   price: string;
   image: string;
@@ -19,6 +21,7 @@ interface Cart {
 
 const cart: Cart[] = [
   {
+    id: "08503157-05af-4d34-a5e5-fe9bf061dcf0",
     title: "Pepperoni pizza",
     price: "9650",
     image: pizza.src,
@@ -26,6 +29,7 @@ const cart: Cart[] = [
     qty: 2,
   },
   {
+    id: "2",
     title: "Hamburger",
     price: "9650",
     image: burger.src,
@@ -33,6 +37,7 @@ const cart: Cart[] = [
     qty: 1,
   },
   {
+    id: "3",
     title: "Shawarma",
     price: "9650",
     image: shawarma.src,
@@ -40,6 +45,7 @@ const cart: Cart[] = [
     qty: 3,
   },
   {
+    id: "4",
     title: "Pepperoni pizza",
     price: "9650",
     image: pizza.src,
@@ -47,6 +53,7 @@ const cart: Cart[] = [
     qty: 2,
   },
   {
+    id: "5",
     title: "Hamburger",
     price: "9650",
     image: burger.src,
@@ -54,6 +61,7 @@ const cart: Cart[] = [
     qty: 1,
   },
   {
+    id: "6",
     title: "Shawarma",
     price: "9650",
     image: shawarma.src,
@@ -63,6 +71,13 @@ const cart: Cart[] = [
 ];
 
 const Cart = ({ setActiveTab }: SettingsProps) => {
+  const openCheckout = useUIStore((s) => s.openCheckout);
+
+  const handleOpenCHeckout = (id: string) => {
+    console.log("id", "I was trigered", id);
+    if (!id.trim()) return;
+    openCheckout({ vendorId: id });
+  };
   return (
     <div>
       {/* Header */}
@@ -147,7 +162,12 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
                 >
                   Delete
                 </Button>
-                <Button className="submit-btn flex-1">Checkout</Button>
+                <Button
+                  onClick={() => handleOpenCHeckout(item.id)}
+                  className="submit-btn flex-1"
+                >
+                  Checkout
+                </Button>
               </div>
             </div>
           ))}

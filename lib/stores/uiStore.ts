@@ -15,8 +15,9 @@ export type OrderDetailsPayload = {
 
 // Checkout payload (expand as needed)
 export type CheckoutPayload = {
+  vendorId: string
   // initialStep?: "review" | "payment" | "confirm";
-  couponCode?: string;
+  // couponCode?: string;
   // You can add: addressId, paymentMethodId, etc.
 } | null
 

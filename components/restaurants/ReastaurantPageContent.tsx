@@ -9,7 +9,7 @@ import RestaurantItemCard from "@/components/restaurants/RestaurantItemCard";
 import RestaurantPageSkeleton from "@/components/restaurants/RestaurantPageSkeleton";
 import { useRouter } from "next/navigation";
 import { info } from "@/assets/svgs";
-import Checkout from "../orders/CheckOut";
+import PageCheckOut from "../orders/PageCheckOut";
 import { AnimatePresence, motion } from "framer-motion";
 import OrderDetails from "../orders/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
@@ -96,7 +96,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
 
   return (
     <div className="flex gap-10 h-full">
-      <motion.div 
+      <motion.div
         className="w-full relative mx-auto min-h-screen flex-1 flex flex-col"
         layout
         transition={{
@@ -104,7 +104,6 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
           ease: [0.4, 0, 0.2, 1],
         }}
       >
-
         {/* Back button */}
         <button
           onClick={handleBack}
@@ -196,7 +195,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
               animate={{ y: 0 }}
               exit={{ y: 100 }}
               transition={{ duration: 0.3 }}
-              className="sticky lg:hidden pt-5 pb-8 px-8 -bottom-4 inset-x-0 flex justify-between items-center bg-white"
+              className="sticky sm:hidden pt-5 pb-8 px-8 -bottom-4 inset-x-0 flex justify-between items-center bg-white"
             >
               <p className="text-xl font-medium ">
                 ₦{calculateLocalTotal().toLocaleString()}
@@ -221,12 +220,12 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
         {hasItemsInCart && (
           <motion.aside
             initial={{ x: "100%", opacity: 0 }}
-            animate={{ 
-              x: 0, 
+            animate={{
+              x: 0,
               opacity: 1,
             }}
-            exit={{ 
-              x: "100%", 
+            exit={{
+              x: "100%",
               opacity: 0,
             }}
             transition={{
@@ -236,7 +235,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             className="sticky top-6 self-start max-lg:hidden w-[400px] shrink-0"
           >
             <ScrollArea className="max-w-[400px] h-[85vh] shadow-2xl rounded-2xl border border-gray-100 bg-white">
-              <Checkout
+              <PageCheckOut
                 vendorId={id}
                 checkoutData={checkoutData}
                 isLoading={isCheckoutLoading}
@@ -258,7 +257,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
             className="sm:hidden fixed inset-0 pt-10 px-6 bg-white z-35 "
           >
-            <Checkout
+            <PageCheckOut
               vendorId={id}
               checkoutData={checkoutData}
               isLoading={isCheckoutLoading}
