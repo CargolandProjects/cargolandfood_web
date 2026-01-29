@@ -2,6 +2,7 @@
 
 import { Header } from "@/components/Header";
 import Footer from "@/components/home/Footer";
+import GlobalCheckout from "@/components/orders/GlobalCheckout";
 import Sidebar from "@/components/sidebar/Sidebar";
 import ContextProviders from "@/contexts/ContextProviders";
 import { usePathname } from "next/navigation";
@@ -31,8 +32,13 @@ export default function HomeLayout({
               applyPadding && "max-sm:pt-3"
             } flex-1 overflow-auto py-4 md:py-6 px-4 sm:px-6 md:px-13.5 min-w-0 hide-scrollbar`}
           >
-            <div className="w-full mx-auto min-w-0">{children}</div>
+            <div className="w-full mx-auto min-w-0">
+              {children}
+            </div>
           </div>
+          
+          {/* Globally Triggered UI Components - Outside scroll area */}
+          <GlobalCheckout />
         </div>
       </main>
       <Footer />

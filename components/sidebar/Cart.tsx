@@ -5,6 +5,8 @@ import { burger, pizza, shawarma } from "@/assets/images";
 import { Button } from "../ui/button";
 import { emptyBox } from "@/assets/svgs";
 import { useUIStore } from "@/lib/stores/uiStore";
+import Loader from "../Loader";
+import ErrorStateUi from "../ErrorStateUi";
 
 interface SettingsProps {
   setActiveTab: (tab: ActiveTab) => void;
@@ -74,12 +76,17 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
   const openCheckout = useUIStore((s) => s.openCheckout);
 
   const handleOpenCHeckout = (id: string) => {
-    console.log("id", "I was trigered", id);
+    // console.log("id", "I was trigered", id);
     if (!id.trim()) return;
     openCheckout({ vendorId: id });
   };
+
+  const isLoading = false;
+  const isError = false;
+  const isSuccess = true;
+
   return (
-    <div>
+    <div className="h-full">
       {/* Header */}
       <div className="relative flex items-center justify-center">
         <button onClick={() => setActiveTab(null)} className="absolute left-0">
@@ -87,6 +94,18 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
         </button>
         <h2 className="text-lg leading-6">Cart</h2>
       </div>
+
+      {isLoading && (
+        <div className="h-full flex justify-center items-center">
+          <Loader size={12} />
+        </div>
+      )}
+
+      {isError && (
+        <div className="h-full flex justify-center items-center">
+          <ErrorStateUi message="Error Fetching Cart " />
+        </div>
+      )}
 
       {cart.length === 0 && (
         <div className="mt-20.5 flex flex-col justify-center items-center">
@@ -116,7 +135,7 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
         </div>
       )}
 
-      {cart.length > 0 && (
+      {isSuccess && cart.length > 0 && (
         <div className="mt-4 space-y-3">
           {cart.map((item, idx) => (
             <div

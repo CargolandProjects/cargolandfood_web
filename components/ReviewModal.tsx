@@ -7,6 +7,8 @@ import { RiStarFill, RiStarLine } from "react-icons/ri";
 import { ScrollArea } from "./ui/scroll-area";
 import { useReviews } from "@/lib/hooks/queries/useReviews";
 import { Loader2 } from "lucide-react";
+import ErrorStateUi from "./ErrorStateUi";
+import Loader from "./Loader";
 
 // interface Review {
 //   id: number;
@@ -90,7 +92,7 @@ export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="dialog p-0! flex flex-col">
+      <DialogContent className="dialog p-0!">
         <DialogHeader className="mt-13.5 sm:mt-[74px]">
           <DialogTitle className="dialog-title max-sm:text-lg! max-sm:leading-6! ">
             Reviews
@@ -99,13 +101,15 @@ export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
 
         <ScrollArea className="max-h-[486px] mt-4 sm:mt-7 px-7">
           {isLoading && (
-            <div className="flex mt-30 justify-center items-center flex-1">
-              <Loader2 className="size-8 animate-spin duration-300 text-primary " />
+            <div className="h-full flex justify-center items-center pb-12">
+              <Loader size={12} />
             </div>
           )}
 
-          {!isLoading && isError && (
-            <p className="mt-4 text-center text-red-400"> Error fetching reviews</p>
+          {isError && (
+            <div className="h-full flex justify-center items-center pb-12">
+              <ErrorStateUi message="Error Fetching reviews " />
+            </div>
           )}
 
           {isSuccess && (

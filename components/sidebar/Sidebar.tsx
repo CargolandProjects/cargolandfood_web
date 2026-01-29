@@ -44,6 +44,35 @@ interface SidebarItem<P = any> {
   props?: P;
 }
 
+// Move sidebarItems outside component to prevent Fast Refresh issues
+const getSidebarItems = (
+  setActiveTab: (tab: ActiveTab) => void
+): SidebarItem[] => [
+  { id: "Home", icon: RiHome3Fill, label: "Home" },
+  {
+    id: "Cart",
+    icon: RiShoppingCartFill,
+    label: "Cart",
+    content: Cart,
+    props: { setActiveTab },
+  },
+  { id: "Orders", icon: RiShoppingBagFill, label: "Orders" },
+  {
+    id: "Favourite",
+    icon: RiHeartFill,
+    label: "Favourite",
+    content: Favourite,
+    props: { setActiveTab },
+  },
+  {
+    id: "Settings",
+    icon: RiSettings3Fill,
+    label: "Settings",
+    content: SettingsMenu,
+    props: { setActiveTab },
+  },
+];
+
 const Sidebar = ({ open, setOpen }: SIdeBar) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("Home");
   const [isMobile, setIsMoble] = useState(false);
@@ -73,31 +102,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
     router.push("/");
   };
 
-  const sidebarItems: SidebarItem[] = [
-    { id: "Home", icon: RiHome3Fill, label: "Home" },
-    {
-      id: "Cart",
-      icon: RiShoppingCartFill,
-      label: "Cart",
-      content: Cart,
-      props: { setActiveTab },
-    },
-    { id: "Orders", icon: RiShoppingBagFill, label: "Orders" },
-    {
-      id: "Favourite",
-      icon: RiHeartFill,
-      label: "Favourite",
-      content: Favourite,
-      props: { setActiveTab },
-    },
-    {
-      id: "Settings",
-      icon: RiSettings3Fill,
-      label: "Settings",
-      content: SettingsMenu,
-      props: { setActiveTab },
-    },
-  ];
+  const sidebarItems = getSidebarItems(setActiveTab);
 
   return (
     <>
