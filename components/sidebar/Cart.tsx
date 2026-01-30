@@ -7,6 +7,7 @@ import { emptyBox } from "@/assets/svgs";
 import { useUIStore } from "@/lib/stores/uiStore";
 import Loader from "../Loader";
 import ErrorStateUi from "../ErrorStateUi";
+import EmptyStateUi from "../EmptyStateUi";
 
 interface SettingsProps {
   setActiveTab: (tab: ActiveTab) => void;
@@ -108,30 +109,13 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
       )}
 
       {cart.length === 0 && (
-        <div className="mt-20.5 flex flex-col justify-center items-center">
-          <div className="size-50">
-            <img
-              src={emptyBox.src}
-              alt="empty_cart_illustration"
-              className="size-full object-cover"
-            />
-          </div>
-
-          <div className="text-center mt-6">
-            <h3 className="text-lg leading-6 text-neutral-500">
-              Your cart is empty
-            </h3>
-            <p className="mt-3 max-w-[300px] text-base font-normal leading-5 text-neutral-500">
-              Explore and add items to the cart to show here
-            </p>
-          </div>
-
-          <Button
-            className="mt-20 md:py-3.5 submit-btn"
-            // disabled={isPending}
-          >
-            Add To Cart
-          </Button>
+        <div className="mt-20.5">
+          <EmptyStateUi
+            message=" Your cart is empty"
+            description="   Explore and add items to the cart to show here"
+            btn
+            btnText="Add To Cart"
+          />
         </div>
       )}
 

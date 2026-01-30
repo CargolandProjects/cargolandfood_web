@@ -3,11 +3,11 @@ import { RiArrowGoBackLine } from "react-icons/ri";
 import { ActiveTab } from "./Sidebar";
 import { riceDish, shawarma } from "@/assets/images";
 import VendorCard from "../VendorCard";
-import { emptyBox } from "@/assets/svgs";
 import Loader from "../Loader";
 import ErrorStateUi from "../ErrorStateUi";
+import EmptyStateUi from "../EmptyStateUi";
 
-interface FavouriteProps {
+interface FavouritesProps {
   setActiveTab: (tab: ActiveTab) => void;
 }
 
@@ -45,7 +45,7 @@ const favouriteVendor: FavouriteVendor[] = [
   },
 ];
 
-const Favourite = ({ setActiveTab }: FavouriteProps) => {
+const Favourites = ({ setActiveTab }: FavouritesProps) => {
   const isLoading = false;
   const isError = false;
   const isSuccess = true;
@@ -68,28 +68,16 @@ const Favourite = ({ setActiveTab }: FavouriteProps) => {
 
       {isError && (
         <div className="h-full flex justify-center items-center">
-          <ErrorStateUi message="Error Fetching Orders " />
+          <ErrorStateUi message="Error Fetching favourites " />
         </div>
       )}
 
       {favouriteVendor.length === 0 && (
-        <div className="mt-20.5 flex flex-col justify-center items-center">
-          <div className="size-50">
-            <img
-              src={emptyBox.src}
-              alt="empty_cart_illustration"
-              className="size-full object-cover"
-            />
-          </div>
-
-          <div className="text-center mt-6">
-            <h3 className="text-lg leading-6 text-neutral-500">
-              No favourite yet
-            </h3>
-            <p className="mt-3 max-w-[300px] text-base font-normal leading-5 text-neutral-500">
-              You haven’t added any food to favourite
-            </p>
-          </div>
+        <div className="mt-20.5 ">
+          <EmptyStateUi
+            message="No favourite yet"
+            description="You haven’t added any food to favourite"
+          />
         </div>
       )}
 
@@ -109,4 +97,4 @@ const Favourite = ({ setActiveTab }: FavouriteProps) => {
   );
 };
 
-export default Favourite;
+export default Favourites;

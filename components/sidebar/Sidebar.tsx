@@ -20,7 +20,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { logoFull } from "@/assets/images";
 import { X } from "lucide-react";
 import Cart from "./Cart";
-import Favourite from "./Favourite";
+import Favourites from "./Favourites";
+import Orders from "./Orders";
 
 interface SIdeBar {
   open: boolean;
@@ -56,12 +57,18 @@ const getSidebarItems = (
     content: Cart,
     props: { setActiveTab },
   },
-  { id: "Orders", icon: RiShoppingBagFill, label: "Orders" },
+  {
+    id: "Orders",
+    icon: RiShoppingBagFill,
+    label: "Orders",
+    content: Orders,
+    props: { setActiveTab },
+  },
   {
     id: "Favourite",
     icon: RiHeartFill,
     label: "Favourite",
-    content: Favourite,
+    content: Favourites,
     props: { setActiveTab },
   },
   {
