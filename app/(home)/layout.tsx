@@ -2,11 +2,13 @@
 
 import { Header } from "@/components/Header";
 import Footer from "@/components/home/Footer";
-import GlobalCheckout from "@/components/orders/GlobalCheckout";
+import GlobalCheckout from "@/components/globalUi/GlobalCheckout";
 import Sidebar from "@/components/sidebar/Sidebar";
+import TrackOrder from "@/components/globalUi/TrackOrder";
 import ContextProviders from "@/contexts/ContextProviders";
 import { usePathname } from "next/navigation";
 import { ReactNode, useState } from "react";
+import OrderDetails from "@/components/globalUi/OrderDetails";
 
 export default function HomeLayout({
   children,
@@ -32,13 +34,13 @@ export default function HomeLayout({
               applyPadding && "max-sm:pt-3"
             } flex-1 overflow-auto py-4 md:py-6 px-4 sm:px-6 md:px-13.5 min-w-0 hide-scrollbar`}
           >
-            <div className="w-full mx-auto min-w-0">
-              {children}
-            </div>
+            <div className="w-full mx-auto min-w-0">{children}</div>
           </div>
-          
+
           {/* Globally Triggered UI Components - Outside scroll area */}
           <GlobalCheckout />
+          <TrackOrder />
+          <OrderDetails />
         </div>
       </main>
       <Footer />

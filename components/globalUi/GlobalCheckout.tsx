@@ -3,12 +3,12 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useUIStore } from "@/lib/stores/uiStore";
-import RiderNoteModal from "./RiderNoteModal";
-import CouponSuccessModal from "./CouponSuccessModal";
-import CouponModal from "./CouponModal";
-import OrderSuccessModal from "./OrderSuccessModal";
-import GiftModal from "./GiftModal";
-import PickupConfirmModal from "./PickupConfirmModal";
+import RiderNoteModal from "../orders/RiderNoteModal";
+import CouponSuccessModal from "../orders/CouponSuccessModal";
+import CouponModal from "../orders/CouponModal";
+import OrderSuccessModal from "../orders/OrderSuccessModal";
+import GiftModal from "../orders/GiftModal";
+import PickupConfirmModal from "../orders/PickupConfirmModal";
 import { Button } from "../ui/button";
 import { useAddToCart, useClearCart } from "@/lib/hooks/mutations/useCart";
 import { usePlaceOrder } from "@/lib/hooks/mutations/useOrder";
@@ -16,7 +16,6 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Separator } from "../ui/separator";
 import {
   RiArrowGoBackLine,
-  RiArrowLeftLine,
   RiArrowRightSLine,
   RiBankCardFill,
   RiBankFill,
@@ -125,6 +124,7 @@ const GlobalCheckout = () => {
       menuName: item.menuName,
       unitPrice: item.unitPrice,
       quantity: action === "increase" ? 1 : -1,
+      action: action === "increase" ? "INCREMENT" : "DECREMENT",
       currency: "NGN",
       addons: item.addons.map((addon) => ({
         menuAddonId: addon.menuAddonId,
@@ -194,9 +194,9 @@ const GlobalCheckout = () => {
 
   return (
     <Sheet open={open} onOpenChange={closeCheckout}>
-      <SheetContent>
+      <SheetContent className="min-w-[464px]!">
         <>
-          <div className="h-full bg-white p-4 overflow-auto hide-scrollbar ">
+          <div className="h-full bg-white p-4 sm:p-6 overflow-auto hide-scrollbar ">
             {/* Header */}
             <div className="flex items-center justify-start gap-2">
               {closeCheckout && (
@@ -222,7 +222,7 @@ const GlobalCheckout = () => {
             )}
 
             <div>
-              <Separator className="mt-3 mb-6 max-sm:hidden" />
+              <Separator className="mt-3 mb-6" />
 
               {/* Pack Items */}
               <div className="space-y-4 sm:space-y-6 max-sm:mt-5">
