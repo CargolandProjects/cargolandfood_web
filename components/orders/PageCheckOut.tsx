@@ -55,7 +55,7 @@ const PageCheckOut = ({
   const { mutate, isPending } = useAddToCart(vendorId);
 
   // Initialize delivery type from backend data (cart's deliveryType)
-  const backendDeliveryType = checkoutData?.cartItem.deliveryType;
+  const backendDeliveryType = checkoutData?.deliveryType;
   const [deliveryType, setDeliveryType] = useState<Delivery>(() => {
     // Prefer backend data over prop
     if (backendDeliveryType) {
@@ -119,9 +119,9 @@ const PageCheckOut = ({
 
   // Handle clear cart
   const handleClearCart = () => {
-    if (!checkoutData?.cartItem.id) return;
+    if (!checkoutData?.cartId) return;
 
-    clearCartMutation.mutate(checkoutData.cartItem.id, {
+    clearCartMutation.mutate(checkoutData.cartId, {
       onSuccess: () => {
         setShowAlert(false);
         if (closeCheckout) closeCheckout(false);
@@ -136,20 +136,20 @@ const PageCheckOut = ({
   ) => {
     if (item.quantity < 1) return; // Don't allow quantity less than 1
 
-
     // Re-add item with new quantity (API replaces/updates existing item)
     mutate({
       menuId: item.menuId,
       menuName: item.menuName,
       unitPrice: item.unitPrice,
       quantity: action === "increase" ? 1 : -1,
+      action: action === "increase" ? "INCREMENT" : "DECREMENT",
       currency: "NGN",
-      addons: item.addons.map((addon) => ({
-        menuAddonId: addon.menuAddonId,
-        name: addon.name,
-        price: safePrice(addon.price),
-        quantity: addon.quantity,
-      })),
+      // addons: item.addons.map((addon) => ({
+      //   menuAddonId: addon.menuAddonId,
+      //   name: addon.name,
+      //   price: safePrice(addon.price),
+      //   quantity: addon.quantity,
+      // })),
     });
   };
 
@@ -210,7 +210,7 @@ const PageCheckOut = ({
   }
 
   // Empty cart state
-  if (!checkoutData || !checkoutData.cartItem.items.length) {
+  if (!checkoutData || !checkoutData.items.length) {
     return (
       <div className="max-sm:fixed max-sm:inset-0 bg-white p-4 flex items-center justify-center">
         <p className="text-gray-500">Your cart is empty</p>
@@ -219,9 +219,9 @@ const PageCheckOut = ({
   }
 
   // Extract data from API response
-  const { cartItem, subtotal, deliveryFee, serviceFee, discountTotal, total } =
+  const { items: cartItems, subtotal, deliveryFee, serviceFee, discountTotal, total } =
     checkoutData;
-  const cartItems = cartItem.items;
+ 
 
   return (
     <>
@@ -246,7 +246,7 @@ const PageCheckOut = ({
         <div className="space-y-4 sm:space-y-6 max-sm:mt-5">
           {cartItems.map((item, index) => (
             <div
-              key={item.id}
+              key={item.menuId}
               className="rounded-2xl border border-gray-200 bg-white p-3"
             >
               {/* Pack Header */}
@@ -271,13 +271,13 @@ const PageCheckOut = ({
                     <h3 className="text-base font-normal leading-5">
                       {item.menuName}
                     </h3>
-                    {item.addons.length > 0 && (
+                    {/* {item.addons.length > 0 && (
                       <p className="text-sm font-normal text-gray-500">
                         {item.addons
                           .map((addon) => `+ ${addon.name}`)
                           .join(", ")}
                       </p>
-                    )}
+                    )} */}
                   </div>
                 </div>
                 <span className="text-base font-medium">

@@ -110,9 +110,9 @@ export const useAuthSessionStore = create<AuthSessionState>((set, get) => ({
     const current = get().user;
     if (!current?.id) return;
     const res = await auth.updateUserById(current.id, patch);
-    if (res?.data) {
-      writeJSON(USER_KEY, res.data);
-      set({ user: res.data, status: "authenticated" });
+    if (res?.user) {
+      writeJSON(USER_KEY, res.user);
+      set({ user: res.user, status: "authenticated" });
     }
   },
 

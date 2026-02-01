@@ -19,18 +19,19 @@ const RestaurantItemCard = ({
 }: RestaurantItemCard) => {
   const { description, id, uploadImageUrl, name, price } = menu;
   const isSelected = id === selectedId;
-  
+
   const params = useParams();
   const vendorId = params.id as string;
   const addToCart = useAddToCart(vendorId);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
-    
+
     addToCart.mutate({
       menuId: id!,
       menuName: name!,
       unitPrice: price!,
+      action: "SET",
       quantity: 1,
       currency: "NGN",
       // No addons for quick add

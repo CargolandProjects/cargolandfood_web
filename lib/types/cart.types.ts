@@ -35,8 +35,29 @@ export interface Cart {
   items: CartItem[];
 }
 
+export interface CheckoutPreviewCart {
+  menuId: string;
+  menuName: string;
+  unitPrice: string;
+  quantity: number;
+  discountApplied: string;
+  totalPrice: string;
+}
+
+// export interface CheckoutPreview {
+//   cartItem: Cart;
+//   totalItemPrices: string;
+//   subtotal: string;
+//   discountTotal: string;
+//   deliveryFee: string; // Can be "NaN" from backend
+//   serviceFee: string;
+//   total: string; // Can be "NaN" from backend
+// }
+
 export interface CheckoutPreview {
-  cartItem: Cart;
+  cartId: string;
+  deliveryType: "DELIVERY" | "PICKUP";
+  items: CheckoutPreviewCart[];
   totalItemPrices: string;
   subtotal: string;
   discountTotal: string;
@@ -51,6 +72,7 @@ export interface AddToCartPayload {
   menuName: string;
   unitPrice: string;
   quantity: number;
+  action: "INCREMENT" | "DECREMENT" | "SET";
   currency: "NGN";
   addons?: {
     menuAddonId: string;

@@ -115,7 +115,7 @@ const MenuContent = ({
                     <AvatarFallback>{initials}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col justify-center gap-0.5">
-                    <p className="font-medium text-base leading-6">
+                    <p className="font-medium text-base leading-6 line-clamp-2">
                       {session?.fullName}
                     </p>
                     <p className="leading-4">{formatDateWComma(new Date())}</p>

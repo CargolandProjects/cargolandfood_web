@@ -11,13 +11,14 @@ import { useRouter } from "next/navigation";
 import { info } from "@/assets/svgs";
 import PageCheckOut from "../orders/PageCheckOut";
 import { AnimatePresence, motion } from "framer-motion";
-import OrderDetails from "../orders/OrderDetails";
+import OrderDetails from "../globalUi/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
 import ReviewsModal from "../ReviewModal";
 import { useGetVendorById } from "@/lib/hooks/queries/useVendors";
 import { useCheckoutPreview } from "@/lib/hooks/queries/useCheckoutPreview";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
+import { useAuthSessionStore } from "@/lib/stores/authSessionStore";
 
 export interface CategoryTab {
   name: string;
@@ -48,6 +49,9 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   const { data, isLoading, error } = useGetVendorById(id);
   const router = useRouter();
 
+
+  // update({ fullName: "Ojo Prime" });
+
   // Fetch checkout preview to check if cart has items
   // Enable fetching on component mount to check cart status
   const {
@@ -65,14 +69,13 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   const hasItemsInCart =
     !checkoutError &&
     checkoutData &&
-    checkoutData.cartItem &&
-    checkoutData.cartItem.items &&
-    checkoutData.cartItem.items.length > 0;
+    checkoutData.items &&
+    checkoutData.items.length > 0;
 
   // Calculate local total for mobile button (sum of all item totalPrice)
   const calculateLocalTotal = () => {
-    if (!checkoutData || !checkoutData.cartItem) return 0;
-    const itemsTotal = checkoutData.cartItem.items.reduce((sum, item) => {
+    if (!checkoutData || !checkoutData.items) return 0;
+    const itemsTotal = checkoutData.items.reduce((sum, item) => {
       return sum + Number(item.totalPrice);
     }, 0);
     return itemsTotal;
@@ -80,7 +83,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
 
   // console.log("Restaurant page Id:", id);
   // console.log("Restaurant page Data:", vendor);
-  // console.log("Checkout Data:", checkoutData);
+  console.log("Checkout Data:", checkoutData);
 
   const handleBack = () => {
     router.back();
