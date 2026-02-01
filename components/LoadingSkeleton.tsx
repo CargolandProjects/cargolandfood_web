@@ -7,7 +7,7 @@ interface LoadingProps {
   scroll?: boolean;
 }
 
-const Loading = ({
+const LoadingSkeleton = ({
   count = 4,
   title = false,
   scroll = false,
@@ -28,4 +28,4 @@ const Loading = ({
   </div>
 );
 
-export default Loading;
+export default LoadingSkeleton;

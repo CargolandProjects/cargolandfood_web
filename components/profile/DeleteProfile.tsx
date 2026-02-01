@@ -76,8 +76,8 @@ const DeleteProfile = ({ open, onOpenChange, session }: DeleteProfileProps) => {
             onChange={(e) => setConfirm(e.target.value)}
             className="h-12 mt-6 mx-2 p-2.5 pl-3 w-full radius-button border border-neutral-300 focus-visible:border-none focus-visible:ring-primary focus-visible:ring "
           />
-          <div className="px-[7.5px] mt-6 space-y-1">
             <p className="text-red-500 text-center">{error}</p>
+          <div className="px-[7.5px] mt-6 space-y-1">
 
             <Button
               onClick={handleDelete}

@@ -21,7 +21,7 @@ const SuccessModal = () => {
           />
         </div>
         <div className="mt-2 space-y-2 text-center">
-          <h3 className="font-bold">Sign Up Successful</h3>
+          <h3 className="font-bold text-2xl! leading-8!">Sign Up Successful</h3>
           <p className="text-neutral-600">You’re all set, find great restaurants and enjoy <br className="hidden xs:block" />seamless food delivery anytime you want. </p>
         </div>
         <Button

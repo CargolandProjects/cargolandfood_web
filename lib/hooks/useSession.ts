@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useAuthSessionStore } from "@/lib/stores/authSessionStore";
+import { auth } from "@/lib/services/auth.service";
 
 export function useSession() {
   const user = useAuthSessionStore((s) => s.user);
@@ -31,6 +32,20 @@ export function useSession() {
     return () => window.removeEventListener("storage", onStorage);
   }, [hydrate]);
 
+  const refreshSession = useCallback(async () => {
+    const userId = user?.id || localStorage.getItem("user_id");
+    if (!userId) return;
+
+    try {
+      const response = await auth.getUserById(userId);
+      if (response?.data) {
+        setUser(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to refresh session:", error);
+    }
+  }, [user?.id, setUser]);
+
   const isAuthenticated = useMemo(() => status === "authenticated", [status]);
 
   return {
@@ -43,5 +58,6 @@ export function useSession() {
     setUser,
     updateUser,
     signOut,
+    refreshSession,
   } as const;
 }

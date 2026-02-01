@@ -13,7 +13,7 @@ import { shawarma } from "@/assets/images";
 import GroceryItemCard from "./GroceryItemCard";
 import { AnimatePresence, motion } from "framer-motion";
 import FavouritesModal from "../FavouritesModal";
-import Checkout from "../orders/CheckOut";
+import Checkout from "../orders/PageCheckOut";
 import ReviewsModal from "../ReviewModal";
 
 const categories = [

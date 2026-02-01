@@ -1,5 +1,7 @@
 import { auth, User } from "@/lib/services/auth.service";
 import { useMutation } from "@tanstack/react-query";
+import { useSession } from "@/lib/hooks/useSession";
+import { toast } from "sonner";
 
 export const useSignUp = () => {
   return useMutation({
@@ -26,9 +28,20 @@ export const useResendOtp = () => {
 };
 
 export const useUpdateUser = () => {
+  const { setUser } = useSession();
+
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: Partial<User> }) =>
       auth.updateUserById(id, payload),
+    onSuccess: async (response) => {
+      if (response?.user) {
+        await setUser(response.user);
+      }
+      toast.success(response.message || "User updated successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update user");
+    },
   });
 };
 

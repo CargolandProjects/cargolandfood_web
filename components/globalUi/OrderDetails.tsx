@@ -1,10 +1,22 @@
 // "use client";
 import { Button } from "@/components/ui/button";
 import { useUIStore } from "@/lib/stores/uiStore";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "../ui/sheet";
 import { Separator } from "../ui/separator";
 import { ScrollArea } from "../ui/scroll-area";
-import { RiArrowLeftLine, RiMapPinFill, RiTimeLine } from "react-icons/ri";
+import {
+  RiArrowGoBackLine,
+  RiArrowLeftLine,
+  RiCloseFill,
+  RiMapPinFill,
+  RiTimeLine,
+} from "react-icons/ri";
 import { restaurant } from "@/assets/svgs";
 import { useCartStore } from "@/lib/stores/CartStore";
 import { useEffect, useState } from "react";
@@ -43,14 +55,19 @@ export default function OrderDetails() {
     <>
       {!isMobile && (
         <Sheet open={open} onOpenChange={close}>
-          <SheetContent className="gap-0 p-0 max-w-[464px]!">
+          <SheetContent className="gap-0 p-0 max-w-[464px]! [&>button]:hidden">
             <ScrollArea className="h-screen ">
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {/* Header */}
-                <SheetHeader className="p-0">
+                <SheetHeader className="p-0 flex-row justify-between items-center">
                   <SheetTitle className="text-xl font-medium leading-7">
                     Order Details
                   </SheetTitle>
+                  <SheetClose asChild>
+                    <button className="size-10 flex justify-center items-center rounded-full bg-neutral-100">
+                      <RiCloseFill className="size-6" />
+                    </button>
+                  </SheetClose>
                 </SheetHeader>
                 <Separator className="mt-3 mb-4" />
 
@@ -125,7 +142,7 @@ export default function OrderDetails() {
                     </h2>
 
                     <div className="flex gap-3 items-center">
-                      <div className="size-5 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-1">
+                      <div className="size-5 rounded-full bg-red-50 flex items-center justify-center shrink-0 mt-1">
                         <img
                           src={restaurant.src}
                           alt="Restaurant svg icon"
@@ -293,7 +310,7 @@ export default function OrderDetails() {
                     </h2>
 
                     <div className="flex gap-3 items-center">
-                      <div className="size-5 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-1">
+                      <div className="size-5 rounded-full bg-red-50 flex items-center justify-center shrink-0 mt-1">
                         <img
                           src={restaurant.src}
                           alt="Restaurant svg icon"

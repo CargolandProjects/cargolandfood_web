@@ -15,26 +15,49 @@ interface Token {
   refreshToken: string;
 }
 
+interface Address {
+  id: string;
+  userId: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  latitude: string;
+  longitude: string;
+  placeId: string;
+  provider: string;
+  instructions: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface User {
   id: string;
   country: string;
   phoneNumber: string;
   email: string;
   referralCode: string;
+  refreshToken: string;
   avatarUrl: string;
   fullName: string;
   addressess: string;
+  address: Address[];
   others: string;
   labelAs: string;
   couponCode: string;
   setAddressDefault: boolean;
-  role: string;
+  role: "USER";
   verified: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-interface AuthResponse extends Message {
+interface AuthResponse extends Omit<Message, "success"> {
+  data: User;
+}
+interface UserData extends Omit<Message, "success"> {
   user: User;
 }
 
@@ -83,7 +106,7 @@ export const auth = {
   },
 
   async updateUserById(id: string, payload: Partial<User>) {
-    const res = await apiClient.patch<AuthResponse>(
+    const res = await apiClient.patch<UserData>(
       API_ROUTES.user(id),
       payload
     );

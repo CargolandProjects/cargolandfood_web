@@ -17,15 +17,15 @@ import Loading from "./LoadingSkeleton";
 const Promotions = () => {
   // Simple Swiper refs for both sections
   const discountsSwiperRef = useRef<SwiperType>(null);
-  const featureSwiperRef = useRef<SwiperType>(null);
+  // const featureSwiperRef = useRef<SwiperType>(null);
 
   // Simple navigation functions for Discounts
   const goToPreviousDiscounts = () => discountsSwiperRef.current?.slidePrev();
   const goToNextDiscounts = () => discountsSwiperRef.current?.slideNext();
 
   // Simple navigation functions for Feature
-  const goToPreviousFeature = () => featureSwiperRef.current?.slidePrev();
-  const goToNextFeature = () => featureSwiperRef.current?.slideNext();
+  // const goToPreviousFeature = () => featureSwiperRef.current?.slidePrev();
+  // const goToNextFeature = () => featureSwiperRef.current?.slideNext();
 
   const { data, isLoading } = usePromotions();
 
@@ -35,9 +35,9 @@ const Promotions = () => {
         <div className="mt-6 sm:my-10">
           <Loading count={3} title scroll />
         </div>
-        <div className="my-4 sm:my-10">
+        {/* <div className="my-4 sm:my-10">
           <Loading count={3} title scroll />
-        </div>
+        </div> */}
       </div>
     );
   }
@@ -46,6 +46,7 @@ const Promotions = () => {
     <div>
       {!isLoading && data?.discount.length && (
         <>
+          {/* Discounts Section */}
           <section className="mt-6 sm:my-10">
             <div className="flex justify-between">
               <h3>Discounts</h3>
@@ -86,18 +87,18 @@ const Promotions = () => {
                     spaceBetween: 24,
                   },
                 }}
-                // className="!overflow-visible"
               >
                 {data?.discount.map((discount) => (
                   <SwiperSlide key={discount.id}>
-                    <VendorCard menuItem={discount} />
+                    <VendorCard vendor={discount} />
                   </SwiperSlide>
                 ))}
               </Swiper>
             </div>
           </section>
 
-          <section className="my-4 sm:my-10">
+          {/* Featured Section */}
+          {/* <section className="my-4 sm:my-10">
             <div className="flex justify-between">
               <h3>Featured</h3>
               <div className="flex gap-4 max-sm:hidden">
@@ -147,7 +148,7 @@ const Promotions = () => {
                 ))}
               </Swiper>
             </div>
-          </section>
+          </section> */}
         </>
       )}
     </div>

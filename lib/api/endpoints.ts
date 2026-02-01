@@ -1,5 +1,6 @@
 export const API_ROUTES = {
   promotions: "/promotions",
+
   restaurants: "/restaurants",
   categories: "/categories",
   hotPicks: "/hotPicks",
@@ -14,4 +15,34 @@ export const API_ROUTES = {
     refresh: "/users/refresh-token",
   },
   user: (id: string) => `/users/${id}`,
+
+  vendor: {
+    allVendors: "/users/vendors",
+    vendorById: (id: string) => `/users/menus/${id}`,
+  },
+
+  cart: {
+    useCart: (vendorId: string) => `/orders/cart-item/${vendorId}`,
+    addOrUpdateItem: (vendorId: string) => `/orders/cart-item/${vendorId}`,
+    clearCart: (cartId: string) => `/orders/clear-cart/${cartId}`,
+    checkoutPreview: (vendorId: string) =>
+      `/orders/checkout-preview/${vendorId}`,
+  },
+
+  order: {
+    checkoutPreview: (vendorId: string) =>
+      `/orders/checkout-preview/${vendorId}`,
+    placeOrder: (vendorId: string) => `/orders/placeOrder/${vendorId}`,
+  },
+
+  address: {
+    getAddresses: "/users/addresses",
+    createAddress: "/users/create-address",
+    deleteAddress: (addressId: string) => `/users/delete-address/${addressId}`,
+  },
+
+  reviews: {
+    getReviews: "/users/menu-reviews-by-user",
+    submitReview: "/users/submit-menu-review",
+  },
 };

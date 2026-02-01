@@ -13,6 +13,8 @@ import google from "./google.svg";
 import facebook from "./facebook.svg";
 import apple from "./apple.svg";
 import address from "./address.svg";
+import emptyBox from "./empty_box.svg";
+import map from "./map.svg";
 
 export {
   logo,
@@ -30,4 +32,6 @@ export {
   facebook,
   apple,
   address,
+  emptyBox,
+  map,
 };

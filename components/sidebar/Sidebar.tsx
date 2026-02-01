@@ -15,10 +15,13 @@ import { IconType } from "react-icons";
 import { useCategory } from "@/contexts/CategoryContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import SettingsMenu from "./SettingsMenu";
+import SettingsMenu from "./settings/SettingsMenu";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { logoFull } from "@/assets/images";
 import { X } from "lucide-react";
+import Cart from "./Cart";
+import Favourites from "./Favourites";
+import Orders from "./Orders";
 
 interface SIdeBar {
   open: boolean;
@@ -42,6 +45,41 @@ interface SidebarItem<P = any> {
   props?: P;
 }
 
+// Move sidebarItems outside component to prevent Fast Refresh issues
+const getSidebarItems = (
+  setActiveTab: (tab: ActiveTab) => void
+): SidebarItem[] => [
+  { id: "Home", icon: RiHome3Fill, label: "Home" },
+  {
+    id: "Cart",
+    icon: RiShoppingCartFill,
+    label: "Cart",
+    content: Cart,
+    props: { setActiveTab },
+  },
+  {
+    id: "Orders",
+    icon: RiShoppingBagFill,
+    label: "Orders",
+    content: Orders,
+    props: { setActiveTab },
+  },
+  {
+    id: "Favourite",
+    icon: RiHeartFill,
+    label: "Favourite",
+    content: Favourites,
+    props: { setActiveTab },
+  },
+  {
+    id: "Settings",
+    icon: RiSettings3Fill,
+    label: "Settings",
+    content: SettingsMenu,
+    props: { setActiveTab },
+  },
+];
+
 const Sidebar = ({ open, setOpen }: SIdeBar) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("Home");
   const [isMobile, setIsMoble] = useState(false);
@@ -50,7 +88,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
 
   useEffect(() => {
     const checkScreen = () => {
-      const mobile = window.innerWidth < 768;
+      const mobile = window.innerWidth < 640;
       setIsMoble(mobile);
     };
 
@@ -71,25 +109,13 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
     router.push("/");
   };
 
-  const sidebarItems: SidebarItem[] = [
-    { id: "Home", icon: RiHome3Fill, label: "Home" },
-    { id: "Cart", icon: RiShoppingCartFill, label: "Cart" },
-    { id: "Orders", icon: RiShoppingBagFill, label: "Orders" },
-    { id: "Favourite", icon: RiHeartFill, label: "Favourite" },
-    {
-      id: "Settings",
-      icon: RiSettings3Fill,
-      label: "Settings",
-      content: SettingsMenu,
-      props: { setActiveTab },
-    },
-  ];
+  const sidebarItems = getSidebarItems(setActiveTab);
 
   return (
     <>
       {/* Large Screens */}
       {!isMobile && (
-        <aside className="hidden md:block sticky left-0 inset-y-0 w-sidebar shrink-0 bg-white border-r border-gray-100">
+        <aside className=" sticky left-0 inset-y-0 w-sidebar shrink-0 bg-white border-r border-gray-100">
           <div className="flex flex-col items-center py-4">
             {/* Logo */}
             <Link
@@ -146,10 +172,9 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                           }`}
                         >
                           <IconComponent
-                            className={`
-                    "w-5 h-5 transition-colors",
-                   ${isActive ? "text-primary" : "text-gray-300"}
-                  `}
+                            className={`w-5 h-5 transition-colors ${
+                              isActive ? "text-primary" : "text-gray-300"
+                            }`}
                           />
                           {isActive && (
                             <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
@@ -160,7 +185,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                         <PopoverContent
                           side="right"
                           sideOffset={8}
-                          className="w-[374px] rounded-xl max-h-[95vh] overflow-auto hide-scrollbar px-4 shadow"
+                          className="w-[374px] mt-10 rounded-xl h-[713px] overflow-auto hide-scrollbar py-6 px-4 shadow"
                         >
                           {item.content && <item.content {...item.props} />}
                         </PopoverContent>
@@ -205,23 +230,25 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
               {sidebarItems.map((item, idx) => {
                 const isActive = activeTab === item.id;
                 return (
-                  <div
-                    onClick={() => {
-                      if (idx === 0) {
-                        handleClick();
-                      } else {
-                        handleTabChange(item.id);
-                      }
-                    }}
-                    className="flex items-center gap-2 hover:cursor-pointer"
-                    key={idx}
-                  >
-                    <div className="size-10 flex items-center justify-center bg-primary-50 rounded-full">
-                      <item.icon className="size-6 text-primary" />
+                  <>
+                    <div
+                      onClick={() => {
+                        if (idx === 0) {
+                          handleClick();
+                        } else {
+                          handleTabChange(item.id);
+                        }
+                      }}
+                      className="flex items-center gap-2 hover:cursor-pointer"
+                      key={idx}
+                    >
+                      <div className="size-10 flex items-center justify-center bg-primary-50 rounded-full">
+                        <item.icon className="size-6 text-primary" />
+                      </div>
+                      <p className="text-xl font-medium leading-7">
+                        {item.label}
+                      </p>
                     </div>
-                    <p className="text-xl font-medium leading-7">
-                      {item.label}
-                    </p>
                     <AnimatePresence>
                       {item.content && isActive && (
                         <motion.aside
@@ -231,7 +258,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                           transition={{
                             type: "tween",
                             ease: "easeOut",
-                            duration: 0.2,
+                            duration: 0.15,
                           }}
                           className="md:hidden fixed inset-0 pt-10 px-6 bg-white z-35 "
                         >
@@ -241,7 +268,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                         </motion.aside>
                       )}
                     </AnimatePresence>
-                  </div>
+                  </>
                 );
               })}
             </div>

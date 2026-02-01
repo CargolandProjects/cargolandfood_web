@@ -1,9 +1,9 @@
 import { create } from "zustand";
 
 // Generic panel state
-type PanelState<TPayload> = {
+type PanelState<TPayload = null> = {
   open: boolean;
-  payload: TPayload | null;
+  payload?: TPayload | null;
 };
 
 // Order Details payload (expand as needed)
@@ -15,22 +15,28 @@ export type OrderDetailsPayload = {
 
 // Checkout payload (expand as needed)
 export type CheckoutPayload = {
+  vendorId: string;
   // initialStep?: "review" | "payment" | "confirm";
-  couponCode?: string;
+  // couponCode?: string;
   // You can add: addressId, paymentMethodId, etc.
-} | null
+} | null;
 
 // UI store shape
 export type UIStoreState = {
   // Panels
   orderDetails: PanelState<OrderDetailsPayload>;
   checkout: PanelState<CheckoutPayload>;
+  trackOrder: PanelState;
 
   // Actions: Order Details
   openOrderDetails: (payload?: OrderDetailsPayload) => void;
   closeOrderDetails: () => void;
   // setOrderDetailsPayload: (patch: Partial<OrderDetailsPayload>) => void;
   // replaceOrderDetailsPayload: (payload: OrderDetailsPayload | null) => void;
+
+  // Actions: Track Order
+  openTrackOrder: () => void;
+  closeTrackOrder: () => void;
 
   // Actions: Checkout
   openCheckout: (payload?: CheckoutPayload) => void;
@@ -42,12 +48,25 @@ export type UIStoreState = {
 export const useUIStore = create<UIStoreState>((set) => ({
   // Initial state
   orderDetails: { open: false, payload: null },
-  checkout: { open: false, payload: null }, 
+  checkout: { open: false, payload: null },
+  trackOrder: { open: false },
+
+  openTrackOrder: () => {
+    set({ trackOrder: { open: true } });
+  },
+
+  closeTrackOrder: () => {
+    set({
+      trackOrder: { open: false },
+    });
+  },
 
   // Order Details actions
-  openOrderDetails: (payload = null) => set({ orderDetails: { open: true, payload } }),
-  closeOrderDetails: () => set({ orderDetails: { open: false, payload: null } }),
-  
+  openOrderDetails: (payload = null) =>
+    set({ orderDetails: { open: true, payload } }),
+  closeOrderDetails: () =>
+    set({ orderDetails: { open: false, payload: null } }),
+
   // setOrderDetailsPayload: (patch) => {
   //   const current = get().orderDetails.payload ?? ({} as OrderDetailsPayload);
   //   set({ orderDetails: { open: true, payload: { ...current, ...patch } } });
@@ -67,12 +86,11 @@ export const useUIStore = create<UIStoreState>((set) => ({
   // replaceCheckoutPayload: (payload) => set({ checkout: { open: !!payload, payload } }),
 }));
 
-
-
 // Convenience non-hook API for triggering from anywhere (no provider needed)
 export const openOrderDetails = (payload: OrderDetailsPayload) =>
   useUIStore.getState().openOrderDetails(payload);
-export const closeOrderDetails = () => useUIStore.getState().closeOrderDetails();
+export const closeOrderDetails = () =>
+  useUIStore.getState().closeOrderDetails();
 // export const setOrderDetailsPayload = (patch: Partial<OrderDetailsPayload>) =>
 //   useUIStore.getState().setOrderDetailsPayload(patch);
 

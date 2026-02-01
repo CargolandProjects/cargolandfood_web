@@ -1,34 +1,53 @@
-import ProductModal from "../ProductModal";
+"use client";
 
-import { useCartStore, type Product } from "@/lib/stores/CartStore";
+import { useParams } from "next/navigation";
+import { Menu } from "@/lib/services/vendors.service";
+import ProductModal from "../ProductModal";
+import { useAddToCart } from "@/lib/hooks/mutations/useCart";
 import { RiAddFill } from "react-icons/ri";
 
 interface RestaurantItemCard {
-  product: Product;
+  menu: Menu;
   handleSelect: (id: string) => void;
   selectedId: string | null;
 }
 
-const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
-  product,
+const RestaurantItemCard = ({
+  menu,
   handleSelect,
   selectedId,
-}) => {
-  const { description, id, imageUrl, name, price } = product;
+}: RestaurantItemCard) => {
+  const { description, id, uploadImageUrl, name, price } = menu;
   const isSelected = id === selectedId;
-  const add = useCartStore((s) => s.addItem);
+  
+  const params = useParams();
+  const vendorId = params.id as string;
+  const addToCart = useAddToCart(vendorId);
+
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    addToCart.mutate({
+      menuId: id!,
+      menuName: name!,
+      unitPrice: price!,
+      quantity: 1,
+      currency: "NGN",
+      // No addons for quick add
+    });
+  };
 
   return (
     <>
       <div
         onClick={() => handleSelect(id!)}
-        className="flex h-[116px] sm:h-34.5 rounded-2xl overflow-hidden border border-neutral-300 gap-2 cursor-pointer"
+        className="flex h-[116px] min-w-[310px] sm:h-34.5 rounded-2xl overflow-hidden border border-neutral-300 gap-2 cursor-pointer"
       >
         {/* Product Image - Adjusted for Left-Side Radius Only */}
         <div className="w-30 ml-[3px] my-[3px] shrink-0 rounded-l-xl rounded-r-xs overflow-hidden relative">
           {/* Width set to 138px to match height for a square/large image area */}
           <img
-            src={imageUrl}
+            src={uploadImageUrl}
             alt={name || "Product image"}
             className="w-full h-full object-cover rounded-l-2xl"
           />
@@ -52,14 +71,16 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
             {/* ADDED: Plus Icon Button */}
             <button
               // Match the light orange background, right-side rounding, and padding/size
-              className="bg-primary-100 size-9 flex items-center justify-center rounded-md"
-              onClick={(e) => {
-                e.stopPropagation();
-                add(product);
-              }}
+              className="bg-primary-100 size-9 flex items-center justify-center rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleQuickAdd}
+              disabled={addToCart.isPending}
               aria-label={`Add ${name} to cart`}
             >
-              <RiAddFill className="size-6 text-primary" />
+              {addToCart.isPending ? (
+                <span className="text-xs text-primary">...</span>
+              ) : (
+                <RiAddFill className="size-6 text-primary" />
+              )}
             </button>
           </div>
         </div>
@@ -68,7 +89,7 @@ const RestaurantItemCard: React.FC<RestaurantItemCard> = ({
       <ProductModal
         handleSelect={handleSelect}
         isSelected={isSelected}
-        product={product}
+        menu={menu}
       />
     </>
   );

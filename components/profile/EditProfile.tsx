@@ -29,7 +29,7 @@ const formSchema = z.object({
     .min(10, "Phone number must be at least 10 digits")
     .regex(/^[\+]?[1-9][\d]{0,15}$/, "Enter a valid phone number"),
   email: z.email("Enter a valid email address").min(1, "Email is required"),
-  name: z
+  fullName: z
     .string()
     .min(3, "Full name must be at least 3 characters")
     .max(50, "Full name must be less than 50 characters")
@@ -52,7 +52,7 @@ const EditProfile = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: session?.email,
-      name: session?.fullName,
+      fullName: session?.fullName,
       phoneNumber: session?.phoneNumber,
     },
   });
@@ -60,7 +60,7 @@ const EditProfile = ({
   const onSubmit = (data: EditProfile) => {
     if (!session) return;
 
-    mutate({ id: session.id, payload: data });
+    mutate({ id: session.id, payload: {...data, id: session.id} });
   };
 
   return (
@@ -80,7 +80,7 @@ const EditProfile = ({
           <FieldSet>
             <FieldGroup className="gap-6">
               <Controller
-                name="name"
+                name="fullName"
                 control={control}
                 render={({ field, fieldState }) => (
                   <Field className="field">

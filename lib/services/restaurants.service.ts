@@ -1,9 +1,9 @@
 import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
 import mockClient from "../api/mock-client";
-import { Vendor } from "./promotions.service";
+import { Menu } from "./promotions.service";
 
-type Restarants = Vendor[];
+type Restarants = Menu[];
 
 export const restaurants = {
   async getRestaurants(): Promise<Restarants> {

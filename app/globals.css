@@ -340,7 +340,7 @@
   }
 
   .dialog {
-    @apply max-w-[400px]! max-sm:w-[95vw] m-0 p-0 gap-0 rounded-2xl px-[28.5px] max-h-[95vh] overflow-hidden
+    @apply max-w-[400px]! max-sm:w-[95vw] m-0 p-0 gap-0 rounded-2xl px-[28.5px] max-h-[95vh] min-h-[520px] overflow-hidden
   }
 
   .dialog-title {

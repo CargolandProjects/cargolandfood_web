@@ -65,9 +65,9 @@ export const useAuthSessionStore = create<AuthSessionState>((set, get) => ({
     if (userId) {
       try {
         const res = await auth.getUserById(userId);
-        if (res?.user) {
-          writeJSON(USER_KEY, res.user);
-          set({ user: res.user, pendingUser: pending, status: "authenticated" });
+        if (res?.data) {
+          writeJSON(USER_KEY, res.data);
+          set({ user: res.data, pendingUser: pending, status: "authenticated" });
           return;
         }
       } catch {
@@ -110,9 +110,9 @@ export const useAuthSessionStore = create<AuthSessionState>((set, get) => ({
     const current = get().user;
     if (!current?.id) return;
     const res = await auth.updateUserById(current.id, patch);
-    if (res?.user) {
-      writeJSON(USER_KEY, res.user);
-      set({ user: res.user, status: "authenticated" });
+    if (res?.data) {
+      writeJSON(USER_KEY, res.data);
+      set({ user: res.data, status: "authenticated" });
     }
   },
 

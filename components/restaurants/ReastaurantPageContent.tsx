@@ -9,13 +9,13 @@ import RestaurantItemCard from "@/components/restaurants/RestaurantItemCard";
 import RestaurantPageSkeleton from "@/components/restaurants/RestaurantPageSkeleton";
 import { useRouter } from "next/navigation";
 import { info } from "@/assets/svgs";
-import Checkout from "../orders/CheckOut";
-import { useCartStore } from "@/lib/stores/CartStore";
+import PageCheckOut from "../orders/PageCheckOut";
 import { AnimatePresence, motion } from "framer-motion";
 import OrderDetails from "../orders/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
 import ReviewsModal from "../ReviewModal";
-import { useGetRestaurant } from "@/lib/hooks/queries";
+import { useGetVendorById } from "@/lib/hooks/queries/useVendors";
+import { useCheckoutPreview } from "@/lib/hooks/queries/useCheckoutPreview";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 
@@ -41,13 +41,46 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   const [showFavourites, setShowFavourites] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
   const [openCheckout, setOpenCheckout] = useState(false);
+  const [deliveryType, setDeliveryType] = useState<"DELIVERY" | "PICKUP">(
+    "DELIVERY"
+  );
 
-  const { data, isPending, error } = useGetRestaurant(id);
-  const items = useCartStore((s) => s.items);
+  const { data, isLoading, error } = useGetVendorById(id);
   const router = useRouter();
 
-  const confirmCheckout = items.length > 0;
-  console.log("Restaurant page Id:", id);
+  // Fetch checkout preview to check if cart has items
+  // Enable fetching on component mount to check cart status
+  const {
+    data: checkoutData,
+    isLoading: isCheckoutLoading,
+    error: checkoutError,
+  } = useCheckoutPreview(id, deliveryType, true);
+
+  const vendor = data?.data;
+  const rating = data?.averageRating;
+  const menus = data?.data.menus || [];
+
+  // Check if cart has items from checkout preview
+  // If error (e.g., 400 "No active cart"), treat as empty cart
+  const hasItemsInCart =
+    !checkoutError &&
+    checkoutData &&
+    checkoutData.cartItem &&
+    checkoutData.cartItem.items &&
+    checkoutData.cartItem.items.length > 0;
+
+  // Calculate local total for mobile button (sum of all item totalPrice)
+  const calculateLocalTotal = () => {
+    if (!checkoutData || !checkoutData.cartItem) return 0;
+    const itemsTotal = checkoutData.cartItem.items.reduce((sum, item) => {
+      return sum + Number(item.totalPrice);
+    }, 0);
+    return itemsTotal;
+  };
+
+  // console.log("Restaurant page Id:", id);
+  // console.log("Restaurant page Data:", vendor);
+  // console.log("Checkout Data:", checkoutData);
 
   const handleBack = () => {
     router.back();
@@ -57,16 +90,19 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
     setselectedId(id === selectedId ? null : id);
   };
 
-  if (isPending) {
+  if (isLoading) {
     return <RestaurantPageSkeleton />;
   }
 
   return (
     <div className="flex gap-10 h-full">
-      <div
-        className={`w-full relative ${
-          confirmCheckout ? "max-w-[814px]" : "max-w-[1006px]"
-        } mx-auto transitoin-all duration-300 flex-1`}
+      <motion.div
+        className="w-full relative mx-auto min-h-screen flex-1 flex flex-col"
+        layout
+        transition={{
+          duration: 0.5,
+          ease: [0.4, 0, 0.2, 1],
+        }}
       >
         {/* Back button */}
         <button
@@ -81,11 +117,11 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
         <div className="relative">
           <h3 className="sm:hidden">Restaurants</h3>
           {/* Banner Image */}
-          <div className="relative h-25.5 sm:h-48 md:h-[274px] w-full overflow-hidden rounded-xl mt-2">
+          <div className="relative h-25.5 sm:h-48 xl:h-[274px] w-full overflow-hidden rounded-xl mt-2">
             <img
               src={shawarma.src}
               alt="Shawarma Plus banner"
-              className="w-full h-full object-cover rounded-xl object-[0px_-50px] sm:object-[0px_-82px]"
+              className="w-full h-full object-cover rounded-xl "
               loading="lazy"
             />
             {/* Favourite and Comments */}
@@ -111,10 +147,10 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
           </div>
 
           <div className="my-3 sm:my-10 max-sm:space-y-[3px]">
-            <h2>Shawarma Plus +</h2>
+            <h2>{vendor?.businessName}</h2>
             {/* Stats Line (Rating, Delivery Fee, Time) */}
             <RestaurantStats
-              rating={4.7}
+              rating={rating?.bayesianRating || 0}
               deliveryFee={0}
               deliveryTime="20 min"
             />
@@ -123,7 +159,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
 
         {/* 2. Category Tabs Section */}
         <div className="sticky -top-2 sm:-top-4 z-10 sm:pb-10 sm:px-4">
-          <div className="flex gap-2.5 sm:gap-4.5 max-w-[606px] h-11.5 justify-start overflow-x-auto hide-scrollbar">
+          <div className="flex gap-2.5 sm:gap-4.5 max-w-[606px] h-11.5 shrink justify-start overflow-x-auto hide-scrollbar">
             {categories.map(({ name }, i) => (
               <CategoryTab
                 name={name}
@@ -136,13 +172,14 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
         </div>
 
         {/* 3. Product Listing Section */}
-        <div className="sm:p-4 max-sm:mt-3">
+        <div className="sm:p-4 max-sm:mt-3 flex-1">
           <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-10">
             {!error &&
-              data.map((item) => (
+              menus.length > 0 &&
+              menus.map((item) => (
                 <RestaurantItemCard
                   key={item.id}
-                  product={item}
+                  menu={item}
                   handleSelect={handleSelect}
                   selectedId={selectedId}
                 />
@@ -152,7 +189,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
 
         {/* Mobile Screen Checkout prompt */}
         <AnimatePresence>
-          {confirmCheckout && (
+          {hasItemsInCart && (
             <motion.div
               initial={{ y: 100 }}
               animate={{ y: 0 }}
@@ -160,7 +197,9 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
               transition={{ duration: 0.3 }}
               className="sticky sm:hidden pt-5 pb-8 px-8 -bottom-4 inset-x-0 flex justify-between items-center bg-white"
             >
-              <p className="text-xl font-medium ">11,000</p>
+              <p className="text-xl font-medium ">
+                ₦{calculateLocalTotal().toLocaleString()}
+              </p>
               <Button
                 onClick={() => setOpenCheckout(true)}
                 className="uppercase py-3.5 px-5.5 h-10.5 sm:h-12 text-sm font-bold w-[184px]"
@@ -170,32 +209,47 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       <FavouritesModal open={showFavourites} onOpenChange={setShowFavourites} />
       <ReviewsModal open={showReviews} onClose={setShowReviews} />
       <OrderDetails />
 
       {/* Large Screens Checkout component */}
-      <AnimatePresence mode="wait">
-        {confirmCheckout && (
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.4 }}
-            className="sticky top-6 self-start max-sm:hidden"
+      <AnimatePresence mode="popLayout">
+        {hasItemsInCart && (
+          <motion.aside
+            initial={{ x: "100%", opacity: 0 }}
+            animate={{
+              x: 0,
+              opacity: 1,
+            }}
+            exit={{
+              x: "100%",
+              opacity: 0,
+            }}
+            transition={{
+              duration: 0.5,
+              ease: [0.4, 0, 0.2, 1],
+            }}
+            className="sticky top-6 self-start max-lg:hidden w-[400px] shrink-0"
           >
-            <ScrollArea className="max-w-[400px] h-[85vh] shadow-lg rounded-xl">
-              <Checkout />
+            <ScrollArea className="max-w-[400px] h-[85vh] shadow-2xl rounded-2xl border border-gray-100 bg-white">
+              <PageCheckOut
+                vendorId={id}
+                checkoutData={checkoutData}
+                isLoading={isCheckoutLoading}
+                deliveryType={deliveryType}
+                onDeliveryTypeChange={setDeliveryType}
+              />
             </ScrollArea>
-          </motion.div>
+          </motion.aside>
         )}
       </AnimatePresence>
 
       {/* Mobile Screens Checkout Component */}
       <AnimatePresence mode="wait">
-        {confirmCheckout && openCheckout && (
+        {hasItemsInCart && openCheckout && (
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
@@ -203,7 +257,14 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
             className="sm:hidden fixed inset-0 pt-10 px-6 bg-white z-35 "
           >
-            <Checkout closeCheckout={setOpenCheckout} />
+            <PageCheckOut
+              vendorId={id}
+              checkoutData={checkoutData}
+              isLoading={isCheckoutLoading}
+              deliveryType={deliveryType}
+              onDeliveryTypeChange={setDeliveryType}
+              closeCheckout={setOpenCheckout}
+            />
           </motion.div>
         )}
       </AnimatePresence>

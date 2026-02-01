@@ -3,7 +3,7 @@ import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
 import mockClient from "../api/mock-client";
 
-export interface Vendor {
+export interface Menu {
   id: number;
   title: string;
   image: StaticImageData;
@@ -20,13 +20,18 @@ interface HotPicks {
 }
 
 export interface Promotions {
-  discount: Vendor[];
-  featured: Vendor[];
+  discount: Menu[];
+  featured: Menu[];
 }
 
 export const promotions = {
   async getPromotions(): Promise<Promotions> {
     const res = await mockClient.get<Promotions>(API_ROUTES.promotions);
+    return res.data;
+  },
+
+  async getDiscounts() {
+    const res = await apiClient.get(API_ROUTES.promotions);
     return res.data;
   },
 
