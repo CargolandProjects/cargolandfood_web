@@ -15,10 +15,9 @@ import OrderDetails from "../globalUi/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
 import ReviewsModal from "../ReviewModal";
 import { useGetVendorById } from "@/lib/hooks/queries/useVendors";
-import { useCheckoutPreview } from "@/lib/hooks/queries/useCheckoutPreview";
+import { useCheckoutPreview } from "@/lib/hooks/queries/useCheckoutFlow";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
-import { useAuthSessionStore } from "@/lib/stores/authSessionStore";
 
 export interface CategoryTab {
   name: string;
@@ -49,7 +48,6 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   const { data, isLoading, error } = useGetVendorById(id);
   const router = useRouter();
 
-
   // update({ fullName: "Ojo Prime" });
 
   // Fetch checkout preview to check if cart has items
@@ -58,6 +56,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
     data: checkoutData,
     isLoading: isCheckoutLoading,
     error: checkoutError,
+    isSuccess: checkoutSuccess,
   } = useCheckoutPreview(id, deliveryType, true);
 
   const vendor = data?.data;
@@ -237,11 +236,13 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             }}
             className="sticky top-6 self-start max-lg:hidden w-[400px] shrink-0"
           >
-            <ScrollArea className="max-w-[400px] h-[85vh] shadow-2xl rounded-2xl border border-gray-100 bg-white">
+            <ScrollArea className="max-w-[400px] shadow-2xl rounded-2xl border border-gray-100 bg-white">
               <PageCheckOut
                 vendorId={id}
                 checkoutData={checkoutData}
                 isLoading={isCheckoutLoading}
+                isError={checkoutError}
+                isSuccess={checkoutSuccess}
                 deliveryType={deliveryType}
                 onDeliveryTypeChange={setDeliveryType}
               />
@@ -258,12 +259,14 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
-            className="sm:hidden fixed inset-0 pt-10 px-6 bg-white z-35 "
+            className="sm:hidden pt-10 px-6 bg-white z-35 "
           >
             <PageCheckOut
               vendorId={id}
               checkoutData={checkoutData}
               isLoading={isCheckoutLoading}
+              isError={checkoutError}
+              isSuccess={checkoutSuccess}
               deliveryType={deliveryType}
               onDeliveryTypeChange={setDeliveryType}
               closeCheckout={setOpenCheckout}

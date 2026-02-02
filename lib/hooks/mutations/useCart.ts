@@ -30,9 +30,26 @@ export function useAddToCart(vendorId: string) {
   });
 }
 
-/**
- * Clear cart for a vendor
- */
+export const useRemoveCartItem = (vendorId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: cartService.removeCartItem,
+
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({
+        queryKey: ["checkoutPreview", vendorId],
+      });
+
+      toast.success(response.message || "Item removed from cart");
+    },
+
+    onError: (error) => {
+      toast.error(error.message || "Failed to remove item from cart");
+    },
+  });
+};
+
 export function useClearCart(vendorId: string) {
   const queryClient = useQueryClient();
 

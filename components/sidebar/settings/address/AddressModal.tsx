@@ -59,13 +59,13 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
 
     try {
       const results = await getGeocode({ placeId: place_id });
-      console.log(" GeoCode Results:", results);
+      // console.log(" GeoCode Results:", results);
       const { lat, lng } = await getLatLng(results[0]);
 
       const placeDetails = results[0];
       const components = placeDetails.address_components;
 
-      console.log("Place Details:", placeDetails);
+      // console.log("Place Details:", placeDetails);
 
       const payload = {
         addressLine1: placeDetails.formatted_address,

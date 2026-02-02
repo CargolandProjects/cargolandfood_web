@@ -19,7 +19,11 @@ import {
 } from "react-icons/ri";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import type { CheckoutPreview } from "@/lib/types/cart.types";
-import { useClearCart, useAddToCart } from "@/lib/hooks/mutations/useCart";
+import {
+  useClearCart,
+  useAddToCart,
+  useRemoveCartItem,
+} from "@/lib/hooks/mutations/useCart";
 import { usePlaceOrder } from "@/lib/hooks/mutations/useOrder";
 import ConfirmationModal from "../ConfirmationModal";
 import RiderNote from "./RiderNoteModal";
@@ -28,14 +32,19 @@ import CouponModal from "./CouponModal";
 import OrderSuccessModal from "./OrderSuccessModal";
 import GiftModal from "./GiftModal";
 import PickupConfirmModal from "./PickupConfirmModal";
+import ErrorStateUi from "../ErrorStateUi";
+import Loader from "../Loader";
+import EmptyStateUi from "../EmptyStateUi";
 
-type Delivery = "delivery" | "pickup";
+type Delivery = "DELIVERY" | "PICKUP";
 type PaymentMethod = "wallet" | "newCard" | "bankTransfer";
 
 interface CheckoutProps {
   vendorId: string;
-  checkoutData: CheckoutPreview | undefined;
+  checkoutData: CheckoutPreview;
   isLoading: boolean;
+  isError: boolean;
+  isSuccess: boolean;
   deliveryType: "DELIVERY" | "PICKUP";
   onDeliveryTypeChange: (type: "DELIVERY" | "PICKUP") => void;
   closeCheckout?: (v: boolean) => void;
@@ -44,8 +53,10 @@ interface CheckoutProps {
 const PageCheckOut = ({
   vendorId,
   checkoutData,
+  isError,
   isLoading,
-  deliveryType: apiDeliveryType,
+  isSuccess,
+  deliveryType,
   onDeliveryTypeChange,
   closeCheckout,
 }: CheckoutProps) => {
@@ -53,25 +64,8 @@ const PageCheckOut = ({
   const clearCartMutation = useClearCart(vendorId);
   const placeOrderMutation = usePlaceOrder(vendorId);
   const { mutate, isPending } = useAddToCart(vendorId);
-
-  // Initialize delivery type from backend data (cart's deliveryType)
-  const backendDeliveryType = checkoutData?.deliveryType;
-  const [deliveryType, setDeliveryType] = useState<Delivery>(() => {
-    // Prefer backend data over prop
-    if (backendDeliveryType) {
-      return backendDeliveryType === "DELIVERY" ? "delivery" : "pickup";
-    }
-    return apiDeliveryType === "DELIVERY" ? "delivery" : "pickup";
-  });
-
-  // Sync UI with backend when data changes
-  React.useEffect(() => {
-    if (backendDeliveryType) {
-      const uiType = backendDeliveryType === "DELIVERY" ? "delivery" : "pickup";
-      setDeliveryType(uiType);
-    }
-  }, [backendDeliveryType]);
-
+  const { mutate: removeItem, isPending: isRemovingItem } =
+    useRemoveCartItem(vendorId);
   const [showAlert, setShowAlert] = useState(false);
   const [showRiderNote, setShowRiderNote] = useState(false);
   const [showCoupon, setShowCoupon] = useState(false);
@@ -94,9 +88,8 @@ const PageCheckOut = ({
   };
 
   // Handle delivery type change - convert UI lowercase to API uppercase
-  const handleDeliveryTypeChange = (type: Delivery) => {
-    setDeliveryType(type);
-    onDeliveryTypeChange(type === "delivery" ? "DELIVERY" : "PICKUP");
+  const handleDeliveryTypeChange = (type: "DELIVERY" | "PICKUP") => {
+    onDeliveryTypeChange(type);
   };
 
   const handleOrder = useCallback(() => {
@@ -109,7 +102,7 @@ const PageCheckOut = ({
 
   // Handle place order
   const handlePlaceOrder = () => {
-    if (deliveryType === "pickup") {
+    if (deliveryType === "PICKUP") {
       setShowConfirmPickup(true);
       return;
     }
@@ -129,6 +122,10 @@ const PageCheckOut = ({
     });
   };
 
+  const handleRemoveCartItem = (cartId: string, cartItemId: string) => {
+    removeItem({ cartId: cartId, cartItemId: cartItemId });
+  };
+
   // Handle quantity change (increase or decrease)
   const handleQuantityChange = (
     item: (typeof cartItems)[0],
@@ -141,7 +138,7 @@ const PageCheckOut = ({
       menuId: item.menuId,
       menuName: item.menuName,
       unitPrice: item.unitPrice,
-      quantity: action === "increase" ? 1 : -1,
+      quantity: 1,
       action: action === "increase" ? "INCREMENT" : "DECREMENT",
       currency: "NGN",
       // addons: item.addons.map((addon) => ({
@@ -200,32 +197,38 @@ const PageCheckOut = ({
     ]
   );
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="max-sm:fixed max-sm:inset-0 bg-white p-4 flex items-center justify-center">
-        <p className="text-gray-500">Loading checkout...</p>
-      </div>
-    );
-  }
+  // // Loading state
+  // if (isLoading) {
+  //   return (
+  //     <div className="max-sm:fixed max-sm:inset-0 bg-white p-4 flex items-center justify-center">
+  //       <p className="text-gray-500">Loading checkout...</p>
+  //     </div>
+  //   );
+  // }
 
-  // Empty cart state
-  if (!checkoutData || !checkoutData.items.length) {
-    return (
-      <div className="max-sm:fixed max-sm:inset-0 bg-white p-4 flex items-center justify-center">
-        <p className="text-gray-500">Your cart is empty</p>
-      </div>
-    );
-  }
+  // // Empty cart state
+  // if (!checkoutData || !checkoutData.items.length) {
+  //   return (
+  //     <div className="max-sm:fixed max-sm:inset-0 bg-white p-4 flex items-center justify-center">
+  //       <p className="text-gray-500">Your cart is empty</p>
+  //     </div>
+  //   );
+  // }
 
   // Extract data from API response
-  const { items: cartItems, subtotal, deliveryFee, serviceFee, discountTotal, total } =
-    checkoutData;
- 
+  const {
+    cartId,
+    items: cartItems = [],
+    subtotal = "0",
+    deliveryFee = "0",
+    serviceFee = "0",
+    discountTotal = "0",
+    total = "0",
+  } = checkoutData || {};
 
   return (
     <>
-      <div className="max-sm:fixed max-sm:inset-0 bg-white p-4 overflow-auto hide-scrollbar ">
+      <div className="max-sm:fixed max-sm:inset-0 sm:h-[85vh] bg-white p-4 overflow-auto hide-scrollbar ">
         {/* Header */}
         <div className="relative max-sm:flex items-center justify-center">
           {closeCheckout && (
@@ -240,286 +243,320 @@ const PageCheckOut = ({
             Your Order Summary
           </h2>
         </div>
-        <Separator className="mt-3 mb-6 max-sm:hidden" />
+        <Separator className={`mt-3 ${isSuccess && "mb-6"} max-sm:hidden`} />
 
-        {/* Pack Items */}
-        <div className="space-y-4 sm:space-y-6 max-sm:mt-5">
-          {cartItems.map((item, index) => (
-            <div
-              key={item.menuId}
-              className="rounded-2xl border border-gray-200 bg-white p-3"
-            >
-              {/* Pack Header */}
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-sm font-normal text-gray-500">
-                  Pack {index + 1}
-                </h2>
-                <button
-                  // disabled
-                  className="text-primary transition-colors bg-primary-300 p-1.5 rounded-md "
-                  aria-label="Delete pack"
+        {isLoading && (
+          <div className="h-full flex justify-center items-center">
+            <Loader size={12} />
+          </div>
+        )}
+
+        {isError && (
+          <div className="h-full flex justify-center items-center">
+            <ErrorStateUi message="Error Getting Checkout Details " />
+          </div>
+        )}
+
+        {isSuccess && cartItems.length === 0 && (
+          <div className="h-full flex justify-center items-center">
+            <EmptyStateUi
+              message="No pending Orders"
+              description="Order to proceed to checkout"
+            />
+          </div>
+        )}
+
+        {isSuccess && cartItems.length > 0 && (
+          <div>
+            {/* Pack Items */}
+            <div className="space-y-4 sm:space-y-6 max-sm:mt-5">
+              {cartItems.map((item, index) => (
+                <div
+                  key={item.menuId}
+                  className="rounded-2xl border border-gray-200 bg-white p-3"
                 >
-                  <RiDeleteBin6Line className="size-5 text-primary" />
-                </button>
-              </div>
+                  {/* Pack Header */}
+                  <div className="flex items-center justify-between mb-2">
+                    <h2 className="text-sm font-normal text-gray-500">
+                      Pack {index + 1}
+                    </h2>
+                    <button
+                      onClick={() => handleRemoveCartItem(cartId!, item.menuId)}
+                      // disabled
+                      className="text-primary transition-colors bg-primary-300 p-1.5 rounded-md "
+                      aria-label="Delete pack"
+                    >
+                      {isRemovingItem ? (
+                        <Loader2 className="size-5 animate-spin text-cargo-error/60" />
+                      ) : (
+                        <RiDeleteBin6Line className="size-5 text-primary" />
+                      )}
+                    </button>
+                  </div>
 
-              {/* Pack Item */}
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <span className="text-xl font-medium">{item.quantity}x</span>
-                  <div>
-                    <h3 className="text-base font-normal leading-5">
-                      {item.menuName}
-                    </h3>
-                    {/* {item.addons.length > 0 && (
+                  {/* Pack Item */}
+                  <div className="flex items-end justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl font-medium">
+                        {item.quantity}x
+                      </span>
+                      <div>
+                        <h3 className="text-base font-normal leading-5">
+                          {item.menuName}
+                        </h3>
+                        <span>+ extra sausage</span>
+                        {/* {item.addons.length > 0 && (
                       <p className="text-sm font-normal text-gray-500">
                         {item.addons
                           .map((addon) => `+ ${addon.name}`)
                           .join(", ")}
                       </p>
                     )} */}
+                      </div>
+                    </div>
+                    {/* Increment Decrement Buttons */}
+                    <div className="flex items-center gap-2.5">
+                      <button
+                        onClick={() => handleQuantityChange(item, "decrease")}
+                        disabled={isPending}
+                        className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Decrease packs"
+                      >
+                        <Minus className="size-4" />
+                      </button>
+                      <span className="text-sm font-normal text-center">
+                        {isPending ? (
+                          <Loader2 className="size-4 animate-spin duration-300 text-neutral-400" />
+                        ) : (
+                          item.quantity
+                        )}
+                      </span>
+                      <button
+                        onClick={() => handleQuantityChange(item, "increase")}
+                        disabled={isPending}
+                        className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Increase packs"
+                      >
+                        <Plus className="size-4 text-black" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <span className="text-base font-medium">
-                  {currency(safePrice(item.totalPrice))}
-                </span>
-              </div>
 
-              {/* Packs Counter */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <span className="text-xl font-medium">1x</span>
-                  <span className="text-base font-normal leading-5">Packs</span>
-                  <div className="flex items-center gap-2.5">
-                    <button
-                      onClick={() => handleQuantityChange(item, "decrease")}
-                      disabled={item.quantity <= 1 || isPending}
-                      className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      aria-label="Decrease packs"
-                    >
-                      <Minus className="size-4" />
-                    </button>
-                    <span className="text-sm font-normal text-center">
-                      {isPending ? (
-                        <Loader2 className="size-4 animate-spin duration-300 text-neutral-400" />
-                      ) : (
-                        item.quantity
-                      )}
+                  {/* Packs Counter */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-base font-medium">
+                      {currency(safePrice(item.unitPrice))}
                     </span>
-                    <button
-                      onClick={() => handleQuantityChange(item, "increase")}
-                      disabled={isPending}
-                      className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      aria-label="Increase packs"
-                    >
-                      <Plus className="size-4 text-black" />
-                    </button>
                   </div>
                 </div>
-                <span className="text-base font-medium">
-                  {currency(safePrice(item.unitPrice))}
-                </span>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        <Separator className="my-4 sm:my-6" />
+            <Separator className="my-4 sm:my-6" />
 
-        {/* Message rows */}
-        <div className="space-y-4 mb-6">
-          <button
-            onClick={() => setShowRiderNote(true)}
-            className="w-full flex items-center justify-between hover:underline cursor-pointer"
-          >
-            <span className="flex items-center gap-2 text-base leading-5">
-              <RiRestaurant2Fill className="size-5 text-neutral-600" /> Have a
-              message for the rider ?
-            </span>
-            <RiArrowRightSLine className="size-5 text-neutral-500" />
-          </button>
-
-          <button
-            onClick={() => setSuccess(true)}
-            className="w-full flex items-center justify-between hover:underline cursor-pointer"
-          >
-            <span className="flex items-center gap-2 text-base leading-5">
-              <RiEBike2Line className="size-5 icon-r-left text-neutral-600" />{" "}
-              Have a message for the restaurant ?
-            </span>
-            <RiArrowRightSLine className="size-5 text-neutral-500" />
-          </button>
-
-          <button
-            onClick={() => setShowGift(true)}
-            className="w-full p-3 bg-neutral-100 rounded-md flex items-center justify-between hover:underline cursor-pointer"
-          >
-            <span className="flex items-center gap-2 text-sm">
-              <RiGiftFill className="size-5 icon-r-left text-primary" />
-              Ordering for someone else?
-            </span>
-            <RiArrowRightSLine className="size-5 text-neutral-500" />
-          </button>
-        </div>
-
-        {/* Delivery vs Pickup */}
-        <div className="space-y-2">
-          <label className="flex items-center justify-between cursor-pointer">
-            <span className="text-base leading-5">Delivery</span>
-            <RadioGroup
-              value={deliveryType}
-              onValueChange={(v: Delivery) => handleDeliveryTypeChange(v)}
-              className="contents"
-            >
-              <RadioGroupItem value="delivery" />
-            </RadioGroup>
-          </label>
-          <label className="flex items-center justify-between cursor-pointer">
-            <span className="text-base leading-5">Pickup</span>
-            <RadioGroup
-              value={deliveryType}
-              onValueChange={(v: Delivery) => handleDeliveryTypeChange(v)}
-              className="contents"
-            >
-              <RadioGroupItem value="pickup" />
-            </RadioGroup>
-          </label>
-        </div>
-
-        <Separator className="my-4 sm:my-6" />
-
-        {/* Delivery details */}
-        {deliveryType === "delivery" && (
-          <div className="mb-6">
-            <h3 className="text-base font-medium leading-6">
-              Delivery Details
-            </h3>
-            <div className="space-y-2 mt-4">
-              <button className="w-full flex items-center justify-between">
+            {/* Message rows */}
+            <div className="space-y-4 mb-6">
+              <button
+                onClick={() => setShowRiderNote(true)}
+                className="w-full flex items-center justify-between hover:underline cursor-pointer"
+              >
                 <span className="flex items-center gap-2 text-base leading-5">
-                  <RiMapPinFill className="size-5 text-primary" /> 45 Denkede
-                  Street, Shomolu
+                  <RiRestaurant2Fill className="size-5 text-neutral-600" /> Have
+                  a message for the rider ?
+                </span>
+                <RiArrowRightSLine className="size-5 text-neutral-500" />
+              </button>
+
+              <button
+                onClick={() => setSuccess(true)}
+                className="w-full flex items-center justify-between hover:underline cursor-pointer"
+              >
+                <span className="flex items-center gap-2 text-base leading-5">
+                  <RiEBike2Line className="size-5 icon-r-left text-neutral-600" />{" "}
+                  Have a message for the restaurant ?
+                </span>
+                <RiArrowRightSLine className="size-5 text-neutral-500" />
+              </button>
+
+              <button
+                onClick={() => setShowGift(true)}
+                className="w-full p-3 bg-neutral-100 rounded-md flex items-center justify-between hover:underline cursor-pointer"
+              >
+                <span className="flex items-center gap-2 text-sm">
+                  <RiGiftFill className="size-5 icon-r-left text-primary" />
+                  Ordering for someone else?
                 </span>
                 <RiArrowRightSLine className="size-5 text-neutral-500" />
               </button>
             </div>
+
+            {/* Delivery vs Pickup */}
+            <div className="space-y-2">
+              <label className="flex items-center justify-between cursor-pointer">
+                <span className="text-base leading-5">Delivery</span>
+                <RadioGroup
+                  value={deliveryType}
+                  onValueChange={(v: Delivery) => handleDeliveryTypeChange(v)}
+                  className="contents"
+                >
+                  <RadioGroupItem value="DELIVERY" />
+                </RadioGroup>
+              </label>
+              <label className="flex items-center justify-between cursor-pointer">
+                <span className="text-base leading-5">Pickup</span>
+                <RadioGroup
+                  value={deliveryType}
+                  onValueChange={(v: Delivery) => handleDeliveryTypeChange(v)}
+                  className="contents"
+                >
+                  <RadioGroupItem value="PICKUP" />
+                </RadioGroup>
+              </label>
+            </div>
+
+            <Separator className="my-4 sm:my-6" />
+
+            {/* Delivery details */}
+            {deliveryType === "DELIVERY" && (
+              <div className="mb-6">
+                <h3 className="text-base font-medium leading-6">
+                  Delivery Details
+                </h3>
+                <div className="space-y-2 mt-4">
+                  <button className="w-full flex items-center justify-between">
+                    <span className="flex items-center gap-2 text-base leading-5">
+                      <RiMapPinFill className="size-5 text-primary" /> 45
+                      Denkede Street, Shomolu
+                    </span>
+                    <RiArrowRightSLine className="size-5 text-neutral-500" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Payment method */}
+            <div>
+              <h3 className="text-base font-medium leading-6">
+                Payment Method
+              </h3>
+              <div className="mt-4 space-y-2">
+                <div className="w-full flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-base">
+                    <RiWallet3Fill className="size-5 text-primary" /> Wallet
+                    Balance -{" "}
+                    <span className="text-base font-medium ml-1">
+                      {currency(32600)}
+                    </span>
+                  </span>
+                  <RadioGroup
+                    value={paymentMethod}
+                    onValueChange={(v: PaymentMethod) => setPaymentMethod(v)}
+                    className="contents"
+                  >
+                    <RadioGroupItem value="wallet" />
+                  </RadioGroup>
+                </div>
+
+                <div className="w-full flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-base">
+                    <RiBankCardFill className="size-5 text-primary" /> Add New
+                    Card
+                  </span>
+                  <RadioGroup
+                    value={paymentMethod}
+                    onValueChange={(v: PaymentMethod) => setPaymentMethod(v)}
+                    className="contents"
+                  >
+                    <RadioGroupItem value="newCard" />
+                  </RadioGroup>
+                </div>
+
+                <div className="w-full flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-base">
+                    <RiBankFill className="size-5 text-primary" /> Bank Transfer
+                  </span>
+                  <RadioGroup
+                    value={paymentMethod}
+                    onValueChange={(v: PaymentMethod) => setPaymentMethod(v)}
+                    className="contents"
+                  >
+                    <RadioGroupItem value="bankTransfer" />
+                  </RadioGroup>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-4 sm:my-6" />
+
+            {/* Coupon code */}
+            <div>
+              <button
+                onClick={() => setShowCoupon(true)}
+                className="w-full flex items-center justify-between hover:underline"
+              >
+                <span className="flex items-center gap-2 text-base leading-5">
+                  <RiCoupon2Fill className="size-5 text-primary" /> Enter Coupon
+                  Code
+                </span>
+                <RiArrowRightSLine className="size-5 text-neutral-500" />
+              </button>
+            </div>
+
+            <Separator className="my-6" />
+
+            {/* Payment summary */}
+            <div className="">
+              <h3 className="text-base font-medium leading-6">
+                Payment Summary
+              </h3>
+              <div className="mt-4 space-y-1.5">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-sm leading-4.5">Orders</span>
+                  <span>{currency(safePrice(subtotal))}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-sm leading-4.5">Delivery Fee</span>
+                  <span>{currency(safePrice(deliveryFee))}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-sm leading-4.5">Service Fee</span>
+                  <span>{currency(safePrice(serviceFee))}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-sm leading-4.5">Discounts</span>
+                  <span>{currency(safePrice(discountTotal))}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-sm font-medium mt-4">
+                  <span className="text-base font-medium ">Total</span>
+                  <span className="text-base font-medium ">
+                    {currency(safePrice(total) || safePrice(subtotal))}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 mt-6">
+              <Button
+                onClick={handlePlaceOrder}
+                disabled={placeOrderMutation?.isPending}
+                className="submit-btn flex-1"
+              >
+                {placeOrderMutation?.isPending
+                  ? "PLACING ORDER..."
+                  : "PLACE ORDER"}
+              </Button>
+              <Button
+                onClick={() => setShowAlert(true)}
+                variant="outline"
+                className="submit-btn flex-1 hover:bg-gray-50 text-neutral-500 border-neutral-300"
+              >
+                CANCEL ORDERS
+              </Button>
+            </div>
           </div>
         )}
-
-        {/* Payment method */}
-        <div>
-          <h3 className="text-base font-medium leading-6">Payment Method</h3>
-          <div className="mt-4 space-y-2">
-            <div className="w-full flex items-center justify-between">
-              <span className="flex items-center gap-2 text-base">
-                <RiWallet3Fill className="size-5 text-primary" /> Wallet Balance
-                -{" "}
-                <span className="text-base font-medium ml-1">
-                  {currency(32600)}
-                </span>
-              </span>
-              <RadioGroup
-                value={paymentMethod}
-                onValueChange={(v: PaymentMethod) => setPaymentMethod(v)}
-                className="contents"
-              >
-                <RadioGroupItem value="wallet" />
-              </RadioGroup>
-            </div>
-
-            <div className="w-full flex items-center justify-between">
-              <span className="flex items-center gap-2 text-base">
-                <RiBankCardFill className="size-5 text-primary" /> Add New Card
-              </span>
-              <RadioGroup
-                value={paymentMethod}
-                onValueChange={(v: PaymentMethod) => setPaymentMethod(v)}
-                className="contents"
-              >
-                <RadioGroupItem value="newCard" />
-              </RadioGroup>
-            </div>
-
-            <div className="w-full flex items-center justify-between">
-              <span className="flex items-center gap-2 text-base">
-                <RiBankFill className="size-5 text-primary" /> Bank Transfer
-              </span>
-              <RadioGroup
-                value={paymentMethod}
-                onValueChange={(v: PaymentMethod) => setPaymentMethod(v)}
-                className="contents"
-              >
-                <RadioGroupItem value="bankTransfer" />
-              </RadioGroup>
-            </div>
-          </div>
-        </div>
-
-        <Separator className="my-4 sm:my-6" />
-
-        {/* Coupon code */}
-        <div>
-          <button
-            onClick={() => setShowCoupon(true)}
-            className="w-full flex items-center justify-between hover:underline"
-          >
-            <span className="flex items-center gap-2 text-base leading-5">
-              <RiCoupon2Fill className="size-5 text-primary" /> Enter Coupon
-              Code
-            </span>
-            <RiArrowRightSLine className="size-5 text-neutral-500" />
-          </button>
-        </div>
-
-        <Separator className="my-6" />
-
-        {/* Payment summary */}
-        <div className="">
-          <h3 className="text-base font-medium leading-6">Payment Summary</h3>
-          <div className="mt-4 space-y-1.5">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-sm leading-4.5">Orders</span>
-              <span>{currency(safePrice(subtotal))}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-sm leading-4.5">Delivery Fee</span>
-              <span>{currency(safePrice(deliveryFee))}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-sm leading-4.5">Service Fee</span>
-              <span>{currency(safePrice(serviceFee))}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-sm leading-4.5">Discounts</span>
-              <span>{currency(safePrice(discountTotal))}</span>
-            </div>
-
-            <div className="flex items-center justify-between text-sm font-medium mt-4">
-              <span className="text-base font-medium ">Total</span>
-              <span className="text-base font-medium ">
-                {currency(safePrice(total) || safePrice(subtotal))}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-6">
-          <Button
-            onClick={handlePlaceOrder}
-            disabled={placeOrderMutation?.isPending}
-            className="submit-btn flex-1"
-          >
-            {placeOrderMutation?.isPending ? "PLACING ORDER..." : "PLACE ORDER"}
-          </Button>
-          <Button
-            onClick={() => setShowAlert(true)}
-            variant="outline"
-            className="submit-btn flex-1 hover:bg-gray-50 text-neutral-500 border-neutral-300"
-          >
-            CANCEL ORDERS
-          </Button>
-        </div>
       </div>
 
       {/* Activity Modals */}

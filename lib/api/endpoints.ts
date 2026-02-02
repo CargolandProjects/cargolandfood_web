@@ -22,11 +22,13 @@ export const API_ROUTES = {
   },
 
   cart: {
-    useCart: (vendorId: string) => `/orders/cart-item/${vendorId}`,
+    getCart: "orders/user-carts",
     addOrUpdateItem: (vendorId: string) => `/orders/cart-item/${vendorId}`,
     clearCart: (cartId: string) => `/orders/clear-cart/${cartId}`,
     checkoutPreview: (vendorId: string) =>
       `/orders/checkout-preview/${vendorId}`,
+    removeCartItem: (cartId: string, cartItemId: string) =>
+      `orders/cart-item/${cartId}/${cartItemId}`,
   },
 
   order: {

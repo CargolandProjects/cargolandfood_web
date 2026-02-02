@@ -23,3 +23,10 @@ export function useCheckoutPreview(
     },
   });
 }
+
+export const useGetCart = () => {
+  return useQuery({
+    queryKey: ["cart"],
+    queryFn: cartService.getCart
+  })
+}

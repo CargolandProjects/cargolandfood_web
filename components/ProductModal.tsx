@@ -121,6 +121,7 @@ const ProductModal = ({
         menuName: name!,
         unitPrice: price,
         quantity: quantity,
+        action: "SET",
         currency: "NGN",
         addons: addonsPayload.length > 0 ? addonsPayload : undefined,
       },
@@ -222,9 +223,7 @@ const ProductModal = ({
                         >
                           <RiSubtractFill className="size-4" />
                         </button>
-                        <span className="text-center">
-                          {addonQty}
-                        </span>
+                        <span className="text-center">{addonQty}</span>
                         <button
                           type="button"
                           onClick={() => handleAddonIncrease(addon.id)}
