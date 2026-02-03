@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { cartService } from "@/lib/services/cart.service";
+import { cart } from "@/lib/services/cart.service";
 import { toast } from "sonner";
 import type { AddToCartPayload } from "@/lib/types/cart.types";
 
@@ -12,7 +12,7 @@ export function useAddToCart(vendorId: string) {
 
   return useMutation({
     mutationFn: (payload: AddToCartPayload) =>
-      cartService.addOrUpdateItem(vendorId, payload),
+      cart.addOrUpdateItem(vendorId, payload),
 
     onSuccess: (response) => {
       // Invalidate checkout preview to refetch with updated cart
@@ -34,7 +34,7 @@ export const useRemoveCartItem = (vendorId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: cartService.removeCartItem,
+    mutationFn: cart.removeCartItem,
 
     onSuccess: (response) => {
       queryClient.invalidateQueries({
@@ -54,7 +54,7 @@ export function useClearCart(vendorId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (cartId: string) => cartService.clearCart(cartId),
+    mutationFn: (cartId: string) => cart.clearCart(cartId),
 
     onSuccess: () => {
       // Invalidate checkout preview to reflect empty cart

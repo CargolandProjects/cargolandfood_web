@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { cartService } from "@/lib/services/cart.service";
+import { cart } from "@/lib/services/cart.service";
 
 export function useCheckoutPreview(
   vendorId: string, 
@@ -8,7 +8,7 @@ export function useCheckoutPreview(
 ) {
   return useQuery({
     queryKey: ["checkoutPreview", vendorId, deliveryType],
-    queryFn: () => cartService.checkoutPreview(vendorId, deliveryType),
+    queryFn: () => cart.checkoutPreview(vendorId, deliveryType),
     enabled: enabled && !!vendorId, // Only fetch when enabled and vendorId exists
     staleTime: 0, // Always fetch fresh data when deliveryType changes
     // gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
@@ -22,11 +22,4 @@ export function useCheckoutPreview(
       return failureCount < 1;
     },
   });
-}
-
-export const useGetCart = () => {
-  return useQuery({
-    queryKey: ["cart"],
-    queryFn: cartService.getCart
-  })
 }

@@ -12,7 +12,7 @@ interface RemoveItemParams {
   cartItemId: string;
 }
 
-export const cartService = {
+export const cart = {
   async getCart() {
     const res = await apiClient.get(API_ROUTES.cart.getCart);
     return res.data;

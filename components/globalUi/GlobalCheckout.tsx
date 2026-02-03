@@ -284,7 +284,7 @@ const GlobalCheckout = () => {
                             <h3 className="text-base font-normal leading-5">
                               {item.menuName}
                             </h3>
-                            <span>+ extra sausage</span>
+                            <span className="text-neutral-600">+ extra sausage</span>
                             {/* {item.addons.length > 0 && (
                                  <p className="text-sm font-normal text-gray-500">
                                    {item.addons

@@ -22,13 +22,13 @@ export const API_ROUTES = {
   },
 
   cart: {
-    getCart: "orders/user-carts",
+    getCart: "/orders/user-carts",
     addOrUpdateItem: (vendorId: string) => `/orders/cart-item/${vendorId}`,
     clearCart: (cartId: string) => `/orders/clear-cart/${cartId}`,
     checkoutPreview: (vendorId: string) =>
       `/orders/checkout-preview/${vendorId}`,
     removeCartItem: (cartId: string, cartItemId: string) =>
-      `orders/cart-item/${cartId}/${cartItemId}`,
+      `/orders/cart-item/${cartId}/${cartItemId}`,
   },
 
   order: {
@@ -47,4 +47,9 @@ export const API_ROUTES = {
     getReviews: "/users/menu-reviews-by-user",
     submitReview: "/users/submit-menu-review",
   },
+
+  favourites: {
+    getFavourites: (userId: string)=> `/users/favourite-vendor/${userId}`,
+    makeFavourite: "/users/favourite-vendor"
+  }
 };
