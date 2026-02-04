@@ -1,4 +1,6 @@
 import { shawarma } from "@/assets/images";
+import { useMakeFavourite } from "@/lib/hooks/mutations/useMakeFavourite";
+import { useSession } from "@/lib/hooks/useSession";
 import { Vendor } from "@/lib/services/vendors.service";
 import { useRouter } from "next/navigation";
 import {
@@ -9,17 +11,21 @@ import {
   RiTimeLine,
 } from "react-icons/ri";
 
-const VendorCard = ({
-  vendor: { id, businessName, ratings, profileImg },
-  routes = "Restaurant",
-  isFavourite = false,
-  asFavouriteCard = false,
-}: {
+interface VendorCardProps {
   vendor: Vendor;
+  vendorId: string;
   routes?: string;
-  isFavourite?: boolean;
   asFavouriteCard?: boolean;
-}) => {
+}
+
+const VendorCard = ({
+  vendor: { businessName, ratings, profileImg, isFavourite },
+  vendorId,
+  routes = "Restaurant",
+  asFavouriteCard = false,
+}: VendorCardProps) => {
+  const { user } = useSession(); 
+  const { mutate: toggleFavourite, isPending } = useMakeFavourite();
   const router = useRouter();
   const route =
     routes === "Restaurant"
@@ -29,29 +35,65 @@ const VendorCard = ({
       : "markets";
 
   const handleClick = () => {
-    router.push(`/${route}/${id}`);
+    // There is id from the getAllVendors endpoint as "id" and from getFavourites as vendorId (both referencing the actual vendorId)
+    // This card is being used in both hence
+    router.push(`/${route}/${vendorId}`);
   };
+
+  const handleToggle = (
+    isFavourite: boolean,
+    vendorId: string,
+    e: React.MouseEvent
+  ) => {
+    e.stopPropagation();
+    if (!user || !vendorId) return;
+    const payload = {
+      isFavourite: !isFavourite,
+      vendorId: vendorId,
+      userId: user?.id,
+    };
+
+    toggleFavourite(payload);
+  };
+
   const deliveryFee = 20;
   const deliveryTime = 10;
 
   return (
     <div onClick={handleClick} className="w-full cursor-pointer">
-      <div className={`relative w-full ${asFavouriteCard ? "h-[114px]" : "h-[114px] xl:h-[144px] "  } overflow-hidden rounded-md`}>
+      <div
+        className={`relative w-full ${
+          asFavouriteCard ? "h-[114px]" : "h-[114px] xl:h-[144px] "
+        } overflow-hidden rounded-md`}
+      >
         <img
           src={profileImg}
           alt={businessName}
           className="size-full object-cover"
           loading="lazy"
         />
-        <div className="absolute top-3 left-3 rounded-full flex justify-center items-center gap-1 py-1 px-2 bg-primary-50 border-[0.5px] border-primary-900">
-          <RiGiftLine className="size-3 text-primary" />
-          <p className="font-medium text-xs">{20}% Off</p>
-        </div>
+        {!asFavouriteCard && (
+          <div className="absolute top-3 left-3 rounded-full flex justify-center items-center gap-1 py-1 px-2 bg-primary-50 border-[0.5px] border-primary-900">
+            <RiGiftLine className="size-3 text-primary" />
+            <p className="font-medium text-xs">{20}% Off</p>
+          </div>
+        )}
       </div>
       <div className="mt-2.5">
         <div className="flex justify-between">
           <p className="text-base leading-5">{businessName}</p>
-          <RiHeartFill className={`${isFavourite ? "text-primary" : "text-gray-300"} size-6 `} />
+          <button
+            disabled={isPending}
+            onClick={(e: React.MouseEvent) =>
+              handleToggle(isFavourite, vendorId, e)
+            }
+          >
+            <RiHeartFill
+              className={`${
+                isFavourite ? "text-primary" : "text-gray-300"
+              } size-6 `}
+            />
+          </button>
         </div>
         <div className="mt-1 flex gap-3 md:gap-4">
           <div className="flex justify-center items-center gap-1">

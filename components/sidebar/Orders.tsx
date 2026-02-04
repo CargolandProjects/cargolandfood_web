@@ -22,7 +22,7 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
         <button onClick={() => setActiveTab(null)} className="absolute left-0">
           <RiArrowGoBackLine className="size-5" />
         </button>
-        <h2 className="text-lg leading-6">Favourite</h2>
+        <h2 className="text-lg leading-6">Orders</h2>
       </div>
 
       {isLoading && (

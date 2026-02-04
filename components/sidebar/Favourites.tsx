@@ -6,6 +6,8 @@ import VendorCard from "../VendorCard";
 import Loader from "../Loader";
 import ErrorStateUi from "../ErrorStateUi";
 import EmptyStateUi from "../EmptyStateUi";
+import { useFavourites } from "@/lib/hooks/queries/useFavourites";
+import { useSession } from "@/lib/hooks/useSession";
 
 interface FavouritesProps {
   setActiveTab: (tab: ActiveTab) => void;
@@ -46,9 +48,18 @@ const favouriteVendor: FavouriteVendor[] = [
 ];
 
 const Favourites = ({ setActiveTab }: FavouritesProps) => {
-  const isLoading = false;
-  const isError = false;
-  const isSuccess = true;
+  const { user } = useSession();
+  // console.log("Session Datassss", user.id)
+  const {
+    data: favouriteVendors,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useFavourites(user?.id || "");
+
+  // const isLoading = false;
+  // const isError = false;
+  // const isSuccess = true;
 
   return (
     <div className="h-full">
@@ -72,7 +83,7 @@ const Favourites = ({ setActiveTab }: FavouritesProps) => {
         </div>
       )}
 
-      {favouriteVendor.length === 0 && (
+      {isSuccess &&favouriteVendors.length === 0 && (
         <div className="mt-20.5 ">
           <EmptyStateUi
             message="No favourite yet"
@@ -81,13 +92,13 @@ const Favourites = ({ setActiveTab }: FavouritesProps) => {
         </div>
       )}
 
-      {isSuccess && favouriteVendor.length > 0 && (
+      {isSuccess && favouriteVendors.length > 0 && (
         <div className="mt-4 space-y-4">
-          {favouriteVendor.map((vendor) => (
+          {favouriteVendors.map((vendor) => (
             <VendorCard
               key={vendor.id}
               vendor={vendor}
-              isFavourite
+              vendorId={vendor.vendorId}
               asFavouriteCard
             />
           ))}
