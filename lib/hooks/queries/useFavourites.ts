@@ -6,6 +6,7 @@ export const useFavourites = (userId: string) => {
     queryKey: ["favourites", userId],
     queryFn: () => favourites.getAllFavourites(userId),
     enabled: !!userId,
+    refetchOnMount: true,
     select: (data) => data.data,
   });
 };

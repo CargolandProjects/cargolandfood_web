@@ -1,7 +1,6 @@
 import React from "react";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { ActiveTab } from "./Sidebar";
-import { riceDish, shawarma } from "@/assets/images";
 import VendorCard from "../VendorCard";
 import Loader from "../Loader";
 import ErrorStateUi from "../ErrorStateUi";
@@ -12,40 +11,31 @@ import { useSession } from "@/lib/hooks/useSession";
 interface FavouritesProps {
   setActiveTab: (tab: ActiveTab) => void;
 }
-
-interface FavouriteVendor {
-  id: string;
-  businessName: string;
-  ratings: number;
-  profileImg: string;
-}
-
-const favouriteVendor: FavouriteVendor[] = [
-  {
-    id: "1",
-    businessName: "Shawarma Plus+",
-    ratings: 4.7,
-    profileImg: shawarma.src,
-  },
-  {
-    id: "2",
-    businessName: "Mavise Foods",
-    ratings: 4.7,
-    profileImg: riceDish.src,
-  },
-  {
-    id: "3",
-    businessName: "Shawarma Plus+",
-    ratings: 4.7,
-    profileImg: shawarma.src,
-  },
-  {
-    id: "3",
-    businessName: "Shawarma Plus+",
-    ratings: 4.7,
-    profileImg: shawarma.src,
-  },
-];
+//   {
+//     id: "1",
+//     businessName: "Shawarma Plus+",
+//     ratings: 4.7,
+//     profileImg: shawarma.src,
+//   },
+//   {
+//     id: "2",
+//     businessName: "Mavise Foods",
+//     ratings: 4.7,
+//     profileImg: riceDish.src,
+//   },
+//   {
+//     id: "3",
+//     businessName: "Shawarma Plus+",
+//     ratings: 4.7,
+//     profileImg: shawarma.src,
+//   },
+//   {
+//     id: "3",
+//     businessName: "Shawarma Plus+",
+//     ratings: 4.7,
+//     profileImg: shawarma.src,
+//   },
+// ];
 
 const Favourites = ({ setActiveTab }: FavouritesProps) => {
   const { user } = useSession();
@@ -93,7 +83,7 @@ const Favourites = ({ setActiveTab }: FavouritesProps) => {
       )}
 
       {isSuccess && favouriteVendors.length > 0 && (
-        <div className="mt-4 space-y-4">
+        <div className="mt-4 pb-6 space-y-4">
           {favouriteVendors.map((vendor) => (
             <VendorCard
               key={vendor.id}

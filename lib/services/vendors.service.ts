@@ -102,7 +102,7 @@ interface VendorDetail extends Omit<Vendor, "ratings"> {
   promotions: Promotions[];
 }
 
-interface vendorById {
+export interface vendorById {
   status: string;
   message: string;
   data: VendorDetail;
