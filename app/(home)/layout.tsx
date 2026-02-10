@@ -2,13 +2,11 @@
 
 import { Header } from "@/components/Header";
 import Footer from "@/components/home/Footer";
-import GlobalCheckout from "@/components/globalUi/GlobalCheckout";
 import Sidebar from "@/components/sidebar/Sidebar";
-import TrackOrder from "@/components/globalUi/TrackOrder";
 import ContextProviders from "@/contexts/ContextProviders";
 import { usePathname } from "next/navigation";
 import { ReactNode, useState } from "react";
-import OrderDetails from "@/components/globalUi/OrderDetails";
+import GlobalUI from "@/components/globalUi/GlobalUI";
 
 export default function HomeLayout({
   children,
@@ -37,10 +35,7 @@ export default function HomeLayout({
             <div className="w-full mx-auto min-w-0">{children}</div>
           </div>
 
-          {/* Globally Triggered UI Components - Outside scroll area */}
-          <GlobalCheckout />
-          <TrackOrder />
-          <OrderDetails />
+          <GlobalUI />
         </div>
       </main>
       <Footer />

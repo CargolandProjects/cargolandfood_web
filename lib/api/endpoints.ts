@@ -35,11 +35,13 @@ export const API_ROUTES = {
     checkoutPreview: (vendorId: string) =>
       `/orders/checkout-preview/${vendorId}`,
     placeOrder: (vendorId: string) => `/orders/placeOrder/${vendorId}`,
+    makePayment: (orderId: string) => `/orders/payment-simulation/${orderId}`,
   },
 
   address: {
     getAddresses: "/users/addresses",
     createAddress: "/users/create-address",
+    selectAddress: (addressId: string) => `/users/select-address/${addressId}`,
     deleteAddress: (addressId: string) => `/users/delete-address/${addressId}`,
   },
 
@@ -49,7 +51,7 @@ export const API_ROUTES = {
   },
 
   favourites: {
-    getFavourites: (userId: string)=> `/users/favourite-vendor/${userId}`,
-    makeFavourite: "/users/favourite-vendor"
-  }
+    getFavourites: (userId: string) => `/users/favourite-vendor/${userId}`,
+    makeFavourite: "/users/favourite-vendor",
+  },
 };

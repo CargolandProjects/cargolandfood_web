@@ -27,6 +27,10 @@ export type UIStoreState = {
   orderDetails: PanelState<OrderDetailsPayload>;
   checkout: PanelState<CheckoutPayload>;
   trackOrder: PanelState;
+  addresses: PanelState;
+
+  openAddresses: () => void;
+  closeAddresses: () => void;
 
   // Actions: Order Details
   openOrderDetails: (payload?: OrderDetailsPayload) => void;
@@ -50,6 +54,7 @@ export const useUIStore = create<UIStoreState>((set) => ({
   orderDetails: { open: false, payload: null },
   checkout: { open: false, payload: null },
   trackOrder: { open: false },
+  addresses: { open: false },
 
   openTrackOrder: () => {
     set({ trackOrder: { open: true } });
@@ -59,6 +64,14 @@ export const useUIStore = create<UIStoreState>((set) => ({
     set({
       trackOrder: { open: false },
     });
+  },
+
+  openAddresses: () => {
+    set({ addresses: { open: true } });
+  },
+
+  closeAddresses: () => {
+    set({ addresses: { open: false } });
   },
 
   // Order Details actions

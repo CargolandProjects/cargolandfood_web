@@ -1,5 +1,5 @@
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { Dialog, DialogContent, DialogHeader } from "../../../ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
@@ -9,22 +9,34 @@ import { useAddresses } from "@/lib/hooks/queries/useAddresses";
 import { Loader2 } from "lucide-react";
 import type { Suggestion } from "use-places-autocomplete";
 import { Input } from "@/components/ui/input";
-import { useAddress, useDeleteAddress } from "@/lib/hooks/mutations/useAddress";
-import { useState } from "react";
+import {
+  useAddAddress,
+  useDeleteAddress,
+  useSelectAddress,
+} from "@/lib/hooks/mutations/useAddress";
+import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useUIStore } from "@/lib/stores/uiStore";
+import { toast } from "sonner";
+// import { GetAddress } from "@/lib/services/address.service";
+import { useGoogleMaps } from "@/lib/GoogleMapsProvider";
+// import { useSession } from "@/lib/hooks/useSession";
 
-interface AddressProps {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-}
-
-const AddressModal = ({ open, onOpenChange }: AddressProps) => {
+const AddressModal = () => {
+  const open = useUIStore((s) => s.addresses.open);
+  const close = useUIStore((s) => s.closeAddresses);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [settingId, setSettingId] = useState<string | null>(null);
   const { data: addresses, isLoading, isError, isSuccess } = useAddresses();
-  const { mutate: addAddress, isPending } = useAddress();
+  const { mutate: addAddress, isPending } = useAddAddress();
+  const { mutate: selectAddress } = useSelectAddress();
   const { mutate: deleteAddress } = useDeleteAddress();
+
+  // Get Google Maps loading state from provider
+  const { isLoaded: mapsLoaded } = useGoogleMaps();
+
+  // Only initialize usePlacesAutocomplete AFTER Google Maps is loaded
   const {
-    ready,
     value,
     suggestions: { data, loading },
     setValue,
@@ -32,11 +44,15 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
   } = usePlacesAutocomplete({
     requestOptions: {
       types: ["address"],
-      componentRestrictions: { country: "NG" }, // Change to your country
+      componentRestrictions: { country: "NG" },
     },
     debounce: 400,
+    initOnMount: mapsLoaded, // Only init when Maps is loaded
   });
 
+  // console.log("Session Data", user)
+
+  // refreshSession();
   // console.log("The addresses debugging log:", {
   //   isLoading,
   //   isError,
@@ -53,7 +69,7 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
 
   // console.log("Suggestions:", data);
 
-  const handleSelect = async (address: Suggestion) => {
+  const handleCreate = async (address: Suggestion) => {
     const { description, place_id } = address;
     setValue(description, false);
 
@@ -89,6 +105,7 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
         onSuccess: () => {
           setValue("");
           clearSuggestions();
+          toast.success("address added");
         },
       });
       // setValue("");
@@ -97,15 +114,29 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
     }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     setDeletingId(id);
     deleteAddress(id, {
       onSettled: () => setDeletingId(null),
     });
   };
 
+  const handleSelect = (addressId: string) => {
+    if (!addressId) return;
+    setSettingId(addressId);
+
+    const payload = { isSelected: true };
+    selectAddress(
+      { addressId, payload },
+      {
+        onSettled: () => setSettingId(null),
+      }
+    );
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={close}>
       <DialogContent className="dialog max-sm:px-6! flex flex-col overflow-auto! hide-scrollbar pb-7!">
         <DialogHeader>
           <DialogTitle className="dialog-title mt-[74px]">
@@ -121,8 +152,10 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
               <Input
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                disabled={!ready}
-                placeholder="Add new address"
+                disabled={!mapsLoaded}
+                placeholder={
+                  !mapsLoaded ? "Loading maps..." : "Add new address"
+                }
                 className=" flex-1 h-full px-3 pr-9 py-2.5 text-sm font-medium rounded-button placeholder:text-[#8A8F98] border-none ring-0 focus-visible:ring-0"
               />
               {(isPending || loading) && (
@@ -149,7 +182,7 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
                       data.length > 0 &&
                       data.map((address) => (
                         <div
-                          onClick={() => handleSelect(address)}
+                          onClick={() => handleCreate(address)}
                           className="hover:cursor-pointer hover:bg-gray-100 p-1"
                           key={address.place_id}
                         >
@@ -184,14 +217,21 @@ const AddressModal = ({ open, onOpenChange }: AddressProps) => {
               <div className="space-y-4 mb-2">
                 {addresses.map((address) => (
                   <div
+                    onClick={() => handleSelect(address.id)}
                     key={address.id}
-                    className="flex items-center justify-between w-full py-2.5"
+                    className="flex items-center justify-between w-full py-2.5 hover:cursor-pointer"
                   >
-                    <p className="text-sm text-neutral-600 max-w-[260px] line-clamp-1">
+                    <p
+                      className={`${
+                        settingId === address.id && "animate-pulse duration-300"
+                      } text-sm text-neutral-600 max-w-[260px] line-clamp-1`}
+                    >
                       {address.addressLine1}
                     </p>
                     <button
-                      onClick={() => handleDelete(address.id)}
+                      onClick={(e: React.MouseEvent) =>
+                        handleDelete(address.id, e)
+                      }
                       className="size-9 rounded-full flex justify-center items-center bg-cargo-error/7"
                     >
                       {address.id === deletingId ? (

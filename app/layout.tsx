@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "./Providers";
 import AuthModalContainer from "@/components/auth/AuthModalContainer";
-import GoogleMapsProvider from "@/lib/GoogleMapsProvider";
 
 const satoshi = localFont({
   src: [
@@ -45,12 +44,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${satoshi.variable} antialiased`}>
-        <GoogleMapsProvider>
-          <Providers>
-            {children}
-            <AuthModalContainer />
-          </Providers>
-        </GoogleMapsProvider>
+        <Providers>
+          {children}
+          <AuthModalContainer />
+        </Providers>
       </body>
     </html>
   );

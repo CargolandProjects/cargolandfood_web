@@ -3,6 +3,7 @@ import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
 import { VerifyOtp } from "@/components/auth/OTPModal";
 import { Signin } from "@/components/auth/SignInModal";
+import { GetAddress } from "./address.service";
 
 interface Message {
   status?: string;
@@ -15,24 +16,6 @@ interface Token {
   refreshToken: string;
 }
 
-interface Address {
-  id: string;
-  userId: string;
-  addressLine1: string;
-  addressLine2: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-  latitude: string;
-  longitude: string;
-  placeId: string;
-  provider: string;
-  instructions: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface User {
   id: string;
   country: string;
@@ -43,7 +26,7 @@ export interface User {
   avatarUrl: string;
   fullName: string;
   addressess: string;
-  address: Address[];
+  address: GetAddress[];
   others: string;
   labelAs: string;
   couponCode: string;
@@ -106,10 +89,7 @@ export const auth = {
   },
 
   async updateUserById(id: string, payload: Partial<User>) {
-    const res = await apiClient.patch<UserData>(
-      API_ROUTES.user(id),
-      payload
-    );
+    const res = await apiClient.patch<UserData>(API_ROUTES.user(id), payload);
     return res.data;
   },
 

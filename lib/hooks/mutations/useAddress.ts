@@ -1,18 +1,19 @@
 import { useMutation, useQueryClient } from "@tanStack/react-query";
 import { address } from "@/lib/services/address.service";
 import { toast } from "sonner";
+import { useSession } from "../useSession";
 
-export const useAddress = () => {
+export const useAddAddress = () => {
   const queryClient = useQueryClient();
+  const { refreshSession } = useSession();
   return useMutation({
     mutationFn: address.createAddress,
-    
+
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["addresses"],
       });
-
-      toast.success("address added");
+      refreshSession();
     },
 
     onError: (error) => {
@@ -21,8 +22,25 @@ export const useAddress = () => {
   });
 };
 
+export const useSelectAddress = () => {
+  const queryClient = useQueryClient();
+  const { refreshSession } = useSession();
+  return useMutation({
+    mutationFn: address.selectAddress,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart"],
+      });
+      refreshSession();
+      toast.success("address selected");
+    },
+  });
+};
+
 export const useDeleteAddress = () => {
   const queryClient = useQueryClient();
+  const { refreshSession } = useSession();
+
   return useMutation({
     mutationFn: address.deleteAddress,
 
@@ -30,6 +48,7 @@ export const useDeleteAddress = () => {
       queryClient.invalidateQueries({
         queryKey: ["addresses"],
       });
+      refreshSession();
       toast.success("address removed successfully");
     },
 

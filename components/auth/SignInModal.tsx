@@ -67,7 +67,7 @@ const SignInModal = () => {
       onSuccess: (res) => {
         try {
           // Save pending user until OTP verification completes
-          const pendingUser = res.data.user;
+          const pendingUser = res.data.data;
           if (pendingUser) setPendingUser(pendingUser);
         } catch {}
         console.log("Submitted Successfully:", data);

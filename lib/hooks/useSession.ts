@@ -39,6 +39,7 @@ export function useSession() {
     try {
       const response = await auth.getUserById(userId);
       if (response?.data) {
+        // console.log("Refreshed session:", response.data);
         setUser(response.data);
       }
     } catch (error) {
