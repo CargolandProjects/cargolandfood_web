@@ -3,10 +3,11 @@ import { cart } from "@/lib/services/cart.service";
 import { toast } from "sonner";
 import type { AddToCartPayload } from "@/lib/types/cart.types";
 
-/**
- * Add item to cart or update quantity
- * Uses optimistic updates for instant UI feedback
- */
+interface ClearCartVars {
+  cartId: string;
+  vendorId: string;
+}
+
 export function useAddToCart(vendorId: string) {
   const queryClient = useQueryClient();
 
@@ -18,6 +19,9 @@ export function useAddToCart(vendorId: string) {
       // Invalidate checkout preview to refetch with updated cart
       queryClient.invalidateQueries({
         queryKey: ["checkoutPreview", vendorId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart"],
       });
 
       toast.success(response.message || "Item added to cart");
@@ -40,7 +44,9 @@ export const useRemoveCartItem = (vendorId: string) => {
       queryClient.invalidateQueries({
         queryKey: ["checkoutPreview", vendorId],
       });
-
+      queryClient.invalidateQueries({
+        queryKey: ["cart"],
+      });
       toast.success(response.message || "Item removed from cart");
     },
 
@@ -50,16 +56,19 @@ export const useRemoveCartItem = (vendorId: string) => {
   });
 };
 
-export function useClearCart(vendorId: string) {
+export function useClearCart() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (cartId: string) => cart.clearCart(cartId),
+    mutationFn: ({ cartId }: ClearCartVars) => cart.clearCart(cartId),
 
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
       // Invalidate checkout preview to reflect empty cart
       queryClient.invalidateQueries({
-        queryKey: ["checkoutPreview", vendorId],
+        queryKey: ["checkoutPreview", vars.vendorId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart"],
       });
 
       toast.success("Cart cleared");

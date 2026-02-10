@@ -2,19 +2,35 @@ import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
 import type {
   AddToCartPayload,
+  Cart,
   CartItem,
   CheckoutPreview,
   ApiResponse,
 } from "@/lib/types/cart.types";
+import { GetAddress } from "./address.service";
 
 interface RemoveItemParams {
   cartId: string;
   cartItemId: string;
 }
 
+interface CartResponse {
+  status: string;
+  message: string;
+  address: GetAddress;
+  data: {
+    vendor: {
+      vendorId: string;
+      businessName: string;
+      profileImg: string;
+    };
+    carts: Cart[];
+  }[];
+}
+
 export const cart = {
   async getCart() {
-    const res = await apiClient.get(API_ROUTES.cart.getCart);
+    const res = await apiClient.get<CartResponse>(API_ROUTES.cart.getCart);
     return res.data;
   },
 

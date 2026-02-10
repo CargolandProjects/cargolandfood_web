@@ -5,5 +5,11 @@ export const useCart = () => {
   return useQuery({
     queryKey: ["cart"],
     queryFn: cart.getCart,
+    refetchOnMount: true,
+    staleTime: 0,
+    select: (data) => ({
+      address: data.address,
+      data: data.data,
+    }),
   });
 };
