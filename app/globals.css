@@ -72,7 +72,8 @@
   /* Neutral Colors */
   --color-neutral-black: #0A0D14;
   --color-neutral-900: #20232D;
-  --color-neutral-700: #F6F8FA;
+  --color-neutral-800: #414651;
+  --color-neutral-700: #535862;
   --color-neutral-600: #525866;
   --color-neutral-500: #868C98;
   --color-neutral-400: #CDD0D5;
@@ -166,7 +167,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
- --breakpoint-xs: 20rem;
+  --breakpoint-xs: 20rem;
   --font-satoshi: var(--font-satoshi);
   --text-xxs: var(--ultra-small);
 
