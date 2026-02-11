@@ -1,8 +1,11 @@
-// Cart and Order Type Definitions based on actual API responses
-interface APIResponse {
+// Response wrapper from API
+export interface APIResponse<T> {
   status: string;
   message: string;
+  data: T;
 }
+
+// Cart and Order Type Definitions based on actual API responses
 export interface CartAddon {
   id: string;
   cartItemId: string;
@@ -85,13 +88,6 @@ export interface AddToCartPayload {
   }[];
 }
 
-// Response wrapper from API
-export interface ApiResponse<T> {
-  status: string;
-  message: string;
-  data: T;
-}
-
 type PlaceOrderItems = CheckoutPreviewCart & {
   id: string;
   orderId: string;
@@ -99,34 +95,34 @@ type PlaceOrderItems = CheckoutPreviewCart & {
 };
 
 // Place order response - will be updated after testing
-export interface PlaceOrderResponse extends APIResponse {
-  data: {
-    id: string;
-    orderNumber: string;
-    userId: string;
-    vendorId: string;
-    cartId: string;
-    deliveryType: "PICKUP | DElIVERY";
-    addressSnapshot: string | null;
-    couponCode: string | null;
-    isCoupon: boolean;
-    status: "NEW";
-    paymentStatus: "PENDING_PAYMENT";
-    subtotal: string;
-    discountTotal: string;
-    deliveryFee: string;
-    serviceFee: string;
-    total: string;
-    appliedDiscounts: string | null;
-    acceptedAt: string | null;
-    preparedAt: string | null;
-    readyAt: string | null;
-    completedAt: string | null;
-    cancelledAt: string | null;
-    createdAt: string;
-    items: PlaceOrderItems[];
-  };
+interface PlaceOrder {
+  id: string;
+  orderNumber: string;
+  userId: string;
+  vendorId: string;
+  cartId: string;
+  deliveryType: "PICKUP | DElIVERY";
+  addressSnapshot: string | null;
+  couponCode: string | null;
+  isCoupon: boolean;
+  status: "NEW";
+  paymentStatus: "PENDING_PAYMENT";
+  subtotal: string;
+  discountTotal: string;
+  deliveryFee: string;
+  serviceFee: string;
+  total: string;
+  appliedDiscounts: string | null;
+  acceptedAt: string | null;
+  preparedAt: string | null;
+  readyAt: string | null;
+  completedAt: string | null;
+  cancelledAt: string | null;
+  createdAt: string;
+  items: PlaceOrderItems[];
 }
+
+export type PlaceOrderResponse = APIResponse<PlaceOrder>;
 
 export interface Order {
   id: string;
@@ -186,6 +182,4 @@ export interface OrderItem {
   addonItem: unknown[];
 }
 
-export interface PaymentResponse extends APIResponse {
-  data: Order;
-}
+export type PaymentResponse = APIResponse<Order>;

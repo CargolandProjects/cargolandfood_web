@@ -15,7 +15,7 @@ export const useSubmitReview = () => {
     },
 
     onError: (error) => {
-      toast.error(error.message || "Failed to submit review");
+      toast.error(error.message || "Failed to send review");
     },
   });
 };

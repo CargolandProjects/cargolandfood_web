@@ -1,9 +1,7 @@
 import { Loader2 } from "lucide-react";
 
 const Loader = ({ size }: { size?: number }) => {
-  const style = `size-${
-    size ? size : "6"
-  } animate-spin duration-300 text-primary`;
+  const style = `size-${size ? size : "6"} `;
   console.log(style);
   return (
     <Loader2

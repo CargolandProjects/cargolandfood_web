@@ -1,11 +1,6 @@
 import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
-
-interface APIResponse<T> {
-  status: string;
-  message: string;
-  data: T;
-}
+import { APIResponse } from "../types/cart.types";
 
 export interface Address {
   addressLine1: string;
