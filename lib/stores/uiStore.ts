@@ -21,6 +21,10 @@ export type CheckoutPayload = {
   // You can add: addressId, paymentMethodId, etc.
 } | null;
 
+// export type OrderSuccesPayload = {
+//   closeCheckout?: (v: boolean) => void;
+// } | null;
+
 // UI store shape
 export type UIStoreState = {
   // Panels
@@ -28,9 +32,13 @@ export type UIStoreState = {
   checkout: PanelState<CheckoutPayload>;
   trackOrder: PanelState;
   addresses: PanelState;
+  orderSuccess: PanelState;
 
   openAddresses: () => void;
   closeAddresses: () => void;
+
+  openOrderSuccess: () => void;
+  closeOrderSuccess: () => void;
 
   // Actions: Order Details
   openOrderDetails: (payload?: OrderDetailsPayload) => void;
@@ -55,6 +63,11 @@ export const useUIStore = create<UIStoreState>((set) => ({
   checkout: { open: false, payload: null },
   trackOrder: { open: false },
   addresses: { open: false },
+  orderSuccess: { open: false, payload: null },
+
+  openOrderSuccess: () => set({ orderSuccess: { open: true } }),
+  closeOrderSuccess: () =>
+    set({ orderSuccess: { open: false, payload: null } }),
 
   openTrackOrder: () => {
     set({ trackOrder: { open: true } });

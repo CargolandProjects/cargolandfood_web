@@ -2,18 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orderService } from "@/lib/services/order.service";
 import { toast } from "sonner";
 
-export function usePlaceOrder(vendorId: string) {
-  const queryClient = useQueryClient();
-
+export function useMakePayment() {
   return useMutation({
-    mutationFn: () => orderService.placeOrder(vendorId),
+    mutationFn: orderService.makePayment,
 
-    onSuccess: () => {
-      // Invalidate checkout preview (cart will be cleared by backend)
-      queryClient.invalidateQueries({
-        queryKey: ["checkoutPreview", vendorId],
-      });
-
+    onSuccess: (_, vendorId) => {
       toast.success("Order placed successfully");
     },
 
@@ -23,3 +16,20 @@ export function usePlaceOrder(vendorId: string) {
     },
   });
 }
+
+export const useSimulatePayment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: orderService.simulatePayment,
+    onSuccess(data) {
+      toast.success(data.message || "Payment successful");
+
+      queryClient.invalidateQueries({
+        queryKey: ["checkoutPreview", data.data.vendorId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart"],
+      });
+    },
+  });
+};

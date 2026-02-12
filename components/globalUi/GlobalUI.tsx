@@ -1,4 +1,5 @@
 import CancelOrderModal from "../orders/CancelOrderModal";
+import OrderSuccessModal from "../orders/OrderSuccessModal";
 import ReviewOrderModal from "../orders/ReviewOrderModal";
 import AddressModal from "./AddressModal";
 import GlobalCheckout from "./GlobalCheckout";
@@ -14,6 +15,7 @@ const GlobalUI = () => {
       <TrackOrder />
       <CancelOrderModal />
       <ReviewOrderModal />
+      <OrderSuccessModal />
     </>
   );
 };

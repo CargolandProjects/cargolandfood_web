@@ -34,8 +34,9 @@ export const API_ROUTES = {
   order: {
     checkoutPreview: (vendorId: string) =>
       `/orders/checkout-preview/${vendorId}`,
-    placeOrder: (vendorId: string) => `/orders/placeOrder/${vendorId}`,
-    makePayment: (orderId: string) => `/orders/payment-simulation/${orderId}`,
+    makePayment: (cartId: string) => `/orders/make-payment/${cartId}`,
+    simulatePayment: (checkoutSessionId: string) =>
+      `/orders/payment-simulation/${checkoutSessionId}`,
   },
 
   address: {

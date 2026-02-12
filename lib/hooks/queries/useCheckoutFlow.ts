@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { cart } from "@/lib/services/cart.service";
 
 export function useCheckoutPreview(
-  vendorId: string, 
+  vendorId: string,
   deliveryType: "DELIVERY" | "PICKUP",
   enabled: boolean = false
 ) {
@@ -15,9 +15,10 @@ export function useCheckoutPreview(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     retry: (failureCount, error: any) => {
       // Don't retry if cart is empty (400 error)
-      if (error?.response?.status === 400) {
+      if (error?.statusCode === 400) {
         return false;
       }
+
       // Retry once for other errors
       return failureCount < 1;
     },

@@ -124,6 +124,13 @@ interface PlaceOrder {
 
 export type PlaceOrderResponse = APIResponse<PlaceOrder>;
 
+export interface MakePaymentResponse {
+  status: string;
+  redirect: string;
+  checkoutSessionId: string;
+  amount: string;
+}
+
 export interface Order {
   id: string;
   orderNumber: string;

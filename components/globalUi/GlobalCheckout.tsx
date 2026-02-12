@@ -6,7 +6,6 @@ import { useUIStore } from "@/lib/stores/uiStore";
 import RiderNoteModal from "../orders/RiderNoteModal";
 import CouponSuccessModal from "../orders/CouponSuccessModal";
 import CouponModal from "../orders/CouponModal";
-import OrderSuccessModal from "../orders/OrderSuccessModal";
 import GiftModal from "../orders/GiftModal";
 import PickupConfirmModal from "../orders/PickupConfirmModal";
 import { Button } from "../ui/button";
@@ -14,8 +13,11 @@ import {
   useAddToCart,
   useClearCart,
   useRemoveCartItem,
-} from "@/lib/hooks/mutations/useCart";
-import { usePlaceOrder } from "@/lib/hooks/mutations/useOrder";
+} from "@/lib/hooks/mutations/useMutateCart";
+import {
+  useMakePayment,
+  useSimulatePayment,
+} from "@/lib/hooks/mutations/useOrder";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Separator } from "../ui/separator";
 import {
@@ -27,6 +29,7 @@ import {
   RiDeleteBin6Line,
   RiEBike2Line,
   RiGiftFill,
+  RiLoader2Line,
   RiMapPinFill,
   RiRestaurant2Fill,
   RiWallet3Fill,
@@ -37,6 +40,7 @@ import ConfirmationModal from "../ConfirmationModal";
 import Loader from "../Loader";
 import ErrorStateUi from "../ErrorStateUi";
 import EmptyStateUi from "../EmptyStateUi";
+import { useSession } from "@/lib/hooks/useSession";
 
 type Delivery = "delivery" | "pickup";
 type PaymentMethod = "wallet" | "newCard" | "bankTransfer";
@@ -44,6 +48,7 @@ type PaymentMethod = "wallet" | "newCard" | "bankTransfer";
 const GlobalCheckout = () => {
   const open = useUIStore((s) => s.checkout.open);
   const closeCheckout = useUIStore((s) => s.closeCheckout);
+  const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
   const vendorId = useUIStore((s) => s.checkout.payload)?.vendorId || "";
   const [deliveryType, setDeliveryType] = useState<Delivery>("delivery");
 
@@ -56,21 +61,24 @@ const GlobalCheckout = () => {
     isSuccess,
   } = useCheckoutPreview(vendorId!, deliveryValue, true);
 
-  const clearCartMutation = useClearCart(vendorId);
-  const placeOrderMutation = usePlaceOrder(vendorId);
+  const clearCartMutation = useClearCart();
   const { mutate, isPending } = useAddToCart(vendorId);
   const { mutate: removeItem, isPending: isRemovingItem } =
     useRemoveCartItem(vendorId);
+
   const [showAlert, setShowAlert] = useState(false);
   const [showRiderNote, setShowRiderNote] = useState(false);
   const [showCoupon, setShowCoupon] = useState(false);
-  const [showOrderSuccess, setShowOrderSuccess] = useState(false);
   const [showGift, setShowGift] = useState(false);
   const [showConfirmPickup, setShowConfirmPickup] = useState(false);
   const [showSuccess, setSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
     null
   );
+  const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
+  const { mutate: simulatePayent } = useSimulatePayment();
+  const openAddresses = useUIStore((s) => s.openAddresses);
+  const { user } = useSession();
 
   // Format currency
   const currency = (n: number) => `₦ ${n.toLocaleString()}`;
@@ -88,38 +96,59 @@ const GlobalCheckout = () => {
   //   onDeliveryTypeChange(type === "delivery" ? "DELIVERY" : "PICKUP");
   // };
 
-  const handleOrder = useCallback(() => {
-    placeOrderMutation.mutate(undefined, {
-      onSuccess: () => {
-        setShowOrderSuccess(true);
-      },
-    });
-  }, [placeOrderMutation]);
+  const handleOrder = useCallback(
+    (cartId: string) => {
+      makePayment(cartId, {
+        onSuccess: (data) => {
+          console.log("Checkout Session ID: ", data.checkoutSessionId);
+
+          if (!data.checkoutSessionId) return;
+          simulatePayent(data.checkoutSessionId, {
+            onSuccess: () => {
+              closeCheckout();
+              openOrderSuccess();
+            },
+          });
+        },
+      });
+    },
+    [makePayment, simulatePayent, closeCheckout, openOrderSuccess]
+  );
 
   // Handle place order
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = (cartId: string) => {
     if (deliveryType === "pickup") {
       setShowConfirmPickup(true);
       return;
     }
 
-    handleOrder();
+    handleOrder(cartId);
   };
 
   // Handle clear cart
   const handleClearCart = () => {
-    if (!checkoutData?.cartId) return;
+    if (!checkoutData?.cart.id) return;
 
-    clearCartMutation.mutate(checkoutData.cartId, {
-      onSuccess: () => {
-        setShowAlert(false);
-        if (closeCheckout) closeCheckout();
-      },
-    });
+    clearCartMutation.mutate(
+      { cartId: checkoutData.cart.id, vendorId },
+      {
+        onSuccess: () => {
+          setShowAlert(false);
+          if (closeCheckout) closeCheckout();
+        },
+      }
+    );
   };
 
   const handleRemoveCartItem = (cartId: string, cartItemId: string) => {
-    removeItem({ cartId: cartId, cartItemId: cartItemId });
+    removeItem(
+      { cartId: cartId, cartItemId: cartItemId },
+      {
+        onSuccess: () => {
+          closeCheckout();
+        },
+      }
+    );
   };
 
   // Handle quantity change (increase or decrease)
@@ -157,11 +186,6 @@ const GlobalCheckout = () => {
         open: showCoupon,
         onOpenChange: setShowCoupon,
       },
-      orderSuccess: {
-        open: showOrderSuccess,
-        onOpenChange: setShowOrderSuccess,
-        closeCheckout: closeCheckout,
-      },
       gift: {
         open: showGift,
         onOpenChange: setShowGift,
@@ -169,7 +193,7 @@ const GlobalCheckout = () => {
       pickupConfirm: {
         open: showConfirmPickup,
         onOpenChange: setShowConfirmPickup,
-        onConfirm: handleOrder,
+        onConfirm: (cartId: string) => handleOrder(cartId),
       },
       couponSuccess: {
         open: showSuccess,
@@ -183,27 +207,24 @@ const GlobalCheckout = () => {
     [
       showRiderNote,
       showCoupon,
-      showOrderSuccess,
       showGift,
       showConfirmPickup,
       showSuccess,
       showAlert,
-      closeCheckout,
       handleOrder,
     ]
   );
 
   const {
-    cartId = "",
-    items: cartItems = [],
     subtotal = "0",
     deliveryFee = "0",
     serviceFee = "0",
     discountTotal = "0",
     total = "0",
   } = checkoutData || {};
+  const cartItems = checkoutData?.cart.items || [];
 
-  console.log("Checkout Data:", checkoutData);
+  const defaultAdresses = user?.address.find((addr) => addr.setAddressDefault);
 
   return (
     <Sheet open={open} onOpenChange={closeCheckout}>
@@ -260,7 +281,7 @@ const GlobalCheckout = () => {
                         </h2>
                         <button
                           onClick={() =>
-                            handleRemoveCartItem(cartId!, item.menuId)
+                            handleRemoveCartItem(item.cartId, item.id)
                           }
                           // disabled
                           className="text-primary transition-colors bg-primary-300 p-1.5 rounded-md "
@@ -284,7 +305,9 @@ const GlobalCheckout = () => {
                             <h3 className="text-base font-normal leading-5">
                               {item.menuName}
                             </h3>
-                            <span className="text-neutral-600">+ extra sausage</span>
+                            <span className="text-neutral-600">
+                              + extra sausage
+                            </span>
                             {/* {item.addons.length > 0 && (
                                  <p className="text-sm font-normal text-gray-500">
                                    {item.addons
@@ -407,11 +430,16 @@ const GlobalCheckout = () => {
                       Delivery Details
                     </h3>
                     <div className="space-y-2 mt-4">
-                      <button className="w-full flex items-center justify-between">
-                        <span className="flex items-center gap-2 text-base leading-5">
-                          <RiMapPinFill className="size-5 text-primary" /> 45
-                          Denkede Street, Shomolu
-                        </span>
+                      <button
+                        onClick={openAddresses}
+                        className="w-full flex items-center justify-between"
+                      >
+                        <p className="flex items-center gap-2 ">
+                          <RiMapPinFill className="size-5 text-primary" />
+                          <span className="text-base leading-5 line-clamp-1">
+                            {defaultAdresses?.addressLine1 || "Add an address"}
+                          </span>
+                        </p>
                         <RiArrowRightSLine className="size-5 text-neutral-500" />
                       </button>
                     </div>
@@ -530,13 +558,15 @@ const GlobalCheckout = () => {
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 mt-6">
                   <Button
-                    onClick={handlePlaceOrder}
-                    disabled={placeOrderMutation?.isPending}
+                    onClick={() => handlePlaceOrder(cartItems[0].cartId)}
+                    disabled={isMakingPayment}
                     className="submit-btn flex-1"
                   >
-                    {placeOrderMutation?.isPending
-                      ? "PLACING ORDER..."
-                      : "PLACE ORDER"}
+                    {isMakingPayment ? (
+                      <RiLoader2Line className="size-5 animate-spin" />
+                    ) : (
+                      "PLACE ORDER"
+                    )}
                   </Button>
                   <Button
                     onClick={() => setShowAlert(true)}
@@ -554,12 +584,11 @@ const GlobalCheckout = () => {
           <RiderNoteModal {...modalProps.riderNote} />
           <CouponSuccessModal {...modalProps.couponSuccess} />
           <CouponModal {...modalProps.coupon} />
-          <OrderSuccessModal
-            {...modalProps.orderSuccess}
-            closeCheckout={closeCheckout}
-          />
           <GiftModal {...modalProps.gift} />
-          <PickupConfirmModal {...modalProps.pickupConfirm} />
+          <PickupConfirmModal
+            {...modalProps.pickupConfirm}
+            cartId={cartItems[0]?.cartId}
+          />
 
           <ConfirmationModal
             confirmText="Clear"

@@ -13,6 +13,7 @@ import {
   RiDeleteBin6Line,
   RiEBike2Line,
   RiGiftFill,
+  RiLoader2Line,
   RiMapPinFill,
   RiRestaurant2Fill,
   RiWallet3Fill,
@@ -23,18 +24,22 @@ import {
   useClearCart,
   useAddToCart,
   useRemoveCartItem,
-} from "@/lib/hooks/mutations/useCart";
-import { usePlaceOrder } from "@/lib/hooks/mutations/useOrder";
+} from "@/lib/hooks/mutations/useMutateCart";
+import {
+  useMakePayment,
+  useSimulatePayment,
+} from "@/lib/hooks/mutations/useOrder";
 import ConfirmationModal from "../ConfirmationModal";
 import RiderNote from "./RiderNoteModal";
 import CouponSuccess from "./CouponSuccessModal";
 import CouponModal from "./CouponModal";
-import OrderSuccessModal from "./OrderSuccessModal";
 import GiftModal from "./GiftModal";
 import PickupConfirmModal from "./PickupConfirmModal";
 import ErrorStateUi from "../ErrorStateUi";
 import Loader from "../Loader";
 import EmptyStateUi from "../EmptyStateUi";
+import { useUIStore } from "@/lib/stores/uiStore";
+import { useSession } from "@/lib/hooks/useSession";
 
 type Delivery = "DELIVERY" | "PICKUP";
 type PaymentMethod = "wallet" | "newCard" | "bankTransfer";
@@ -60,25 +65,29 @@ const PageCheckOut = ({
   onDeliveryTypeChange,
   closeCheckout,
 }: CheckoutProps) => {
-  // API mutations
-  const clearCartMutation = useClearCart(vendorId);
-  const placeOrderMutation = usePlaceOrder(vendorId);
-  const { mutate, isPending } = useAddToCart(vendorId);
-  const { mutate: removeItem, isPending: isRemovingItem } =
-    useRemoveCartItem(vendorId);
   const [showAlert, setShowAlert] = useState(false);
   const [showRiderNote, setShowRiderNote] = useState(false);
   const [showCoupon, setShowCoupon] = useState(false);
-  const [showOrderSuccess, setShowOrderSuccess] = useState(false);
   const [showGift, setShowGift] = useState(false);
   const [showConfirmPickup, setShowConfirmPickup] = useState(false);
   const [showSuccess, setSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
     null
   );
+  const openAddresses = useUIStore((s) => s.openAddresses);
+  const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
+  const { user } = useSession();
+
+  // API mutations
+  const clearCartMutation = useClearCart();
+  const { mutate, isPending } = useAddToCart(vendorId);
+  const { mutate: removeItem, isPending: isRemovingItem } =
+    useRemoveCartItem(vendorId);
+  const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
+  const { mutate: simulatePayent } = useSimulatePayment();
 
   // Format currency
-  const currency = (n: number) => `₦ ${n.toLocaleString()}`;
+  const currency = (n: number) => `₦${n.toLocaleString()}`;
 
   // Safe number parsing for API string values
   const safePrice = (value: string | undefined | null) => {
@@ -92,34 +101,48 @@ const PageCheckOut = ({
     onDeliveryTypeChange(type);
   };
 
-  const handleOrder = useCallback(() => {
-    placeOrderMutation.mutate(undefined, {
-      onSuccess: () => {
-        setShowOrderSuccess(true);
-      },
-    });
-  }, [placeOrderMutation]);
+  const handleOrder = useCallback(
+    (cartId: string) => {
+      makePayment(cartId, {
+        onSuccess: (data) => {
+          // setShowOrderSuccess(true);
+
+          console.log("Checkout Session ID: ", data.checkoutSessionId);
+
+          if (!data.checkoutSessionId) return;
+          simulatePayent(data.checkoutSessionId, {
+            onSuccess: () => {
+              openOrderSuccess();
+            },
+          });
+        },
+      });
+    },
+    [makePayment, simulatePayent, openOrderSuccess]
+  );
 
   // Handle place order
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = (cartId: string) => {
     if (deliveryType === "PICKUP") {
       setShowConfirmPickup(true);
       return;
     }
 
-    handleOrder();
+    handleOrder(cartId);
   };
 
-  // Handle clear cart
   const handleClearCart = () => {
-    if (!checkoutData?.cartId) return;
+    if (!checkoutData?.cart.id) return;
 
-    clearCartMutation.mutate(checkoutData.cartId, {
-      onSuccess: () => {
-        setShowAlert(false);
-        if (closeCheckout) closeCheckout(false);
-      },
-    });
+    clearCartMutation.mutate(
+      { cartId: checkoutData.cart.id, vendorId },
+      {
+        onSuccess: () => {
+          setShowAlert(false);
+          if (closeCheckout) closeCheckout(false);
+        },
+      }
+    );
   };
 
   const handleRemoveCartItem = (cartId: string, cartItemId: string) => {
@@ -161,11 +184,6 @@ const PageCheckOut = ({
         open: showCoupon,
         onOpenChange: setShowCoupon,
       },
-      orderSuccess: {
-        open: showOrderSuccess,
-        onOpenChange: setShowOrderSuccess,
-        closeCheckout: closeCheckout,
-      },
       gift: {
         open: showGift,
         onOpenChange: setShowGift,
@@ -173,7 +191,7 @@ const PageCheckOut = ({
       pickupConfirm: {
         open: showConfirmPickup,
         onOpenChange: setShowConfirmPickup,
-        onConfirm: handleOrder,
+        onConfirm: (cartId: string) => handleOrder(cartId),
       },
       couponSuccess: {
         open: showSuccess,
@@ -187,44 +205,25 @@ const PageCheckOut = ({
     [
       showRiderNote,
       showCoupon,
-      showOrderSuccess,
       showGift,
       showConfirmPickup,
       showSuccess,
       showAlert,
-      closeCheckout,
       handleOrder,
     ]
   );
 
-  // // Loading state
-  // if (isLoading) {
-  //   return (
-  //     <div className="max-sm:fixed max-sm:inset-0 bg-white p-4 flex items-center justify-center">
-  //       <p className="text-gray-500">Loading checkout...</p>
-  //     </div>
-  //   );
-  // }
-
-  // // Empty cart state
-  // if (!checkoutData || !checkoutData.items.length) {
-  //   return (
-  //     <div className="max-sm:fixed max-sm:inset-0 bg-white p-4 flex items-center justify-center">
-  //       <p className="text-gray-500">Your cart is empty</p>
-  //     </div>
-  //   );
-  // }
-
   // Extract data from API response
   const {
-    cartId,
-    items: cartItems = [],
     subtotal = "0",
     deliveryFee = "0",
     serviceFee = "0",
     discountTotal = "0",
     total = "0",
   } = checkoutData || {};
+  const cartItems = checkoutData.cart.items;
+
+  const defaultAdresses = user?.address.find((addr) => addr.setAddressDefault);
 
   return (
     <>
@@ -281,7 +280,7 @@ const PageCheckOut = ({
                       Pack {index + 1}
                     </h2>
                     <button
-                      onClick={() => handleRemoveCartItem(cartId!, item.menuId)}
+                      onClick={() => handleRemoveCartItem(item.cartId, item.id)}
                       // disabled
                       className="text-primary transition-colors bg-primary-300 p-1.5 rounded-md "
                       aria-label="Delete pack"
@@ -304,7 +303,9 @@ const PageCheckOut = ({
                         <h3 className="text-base font-normal leading-5">
                           {item.menuName}
                         </h3>
-                        <span className="text-neutral-600">+ extra sausage</span>
+                        <span className="text-neutral-600">
+                          + extra sausage
+                        </span>
                         {/* {item.addons.length > 0 && (
                       <p className="text-sm font-normal text-gray-500">
                         {item.addons
@@ -423,11 +424,16 @@ const PageCheckOut = ({
                   Delivery Details
                 </h3>
                 <div className="space-y-2 mt-4">
-                  <button className="w-full flex items-center justify-between">
-                    <span className="flex items-center gap-2 text-base leading-5">
-                      <RiMapPinFill className="size-5 text-primary" /> 45
-                      Denkede Street, Shomolu
-                    </span>
+                  <button
+                    onClick={openAddresses}
+                    className="w-full flex items-center justify-between"
+                  >
+                    <p className="flex items-center gap-2 ">
+                      <RiMapPinFill className="size-5 text-primary" />
+                      <span className="text-base leading-5 line-clamp-1">
+                        {defaultAdresses?.addressLine1 || "Add an address"}
+                      </span>
+                    </p>
                     <RiArrowRightSLine className="size-5 text-neutral-500" />
                   </button>
                 </div>
@@ -539,13 +545,15 @@ const PageCheckOut = ({
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mt-6">
               <Button
-                onClick={handlePlaceOrder}
-                disabled={placeOrderMutation?.isPending}
+                onClick={() => handlePlaceOrder(cartItems[0].cartId)}
+                disabled={isMakingPayment}
                 className="submit-btn flex-1"
               >
-                {placeOrderMutation?.isPending
-                  ? "PLACING ORDER..."
-                  : "PLACE ORDER"}
+                {isMakingPayment ? (
+                  <RiLoader2Line className="size-5 animate-spin" />
+                ) : (
+                  "PLACE ORDER"
+                )}
               </Button>
               <Button
                 onClick={() => setShowAlert(true)}
@@ -563,12 +571,11 @@ const PageCheckOut = ({
       <RiderNote {...modalProps.riderNote} />
       <CouponSuccess {...modalProps.couponSuccess} />
       <CouponModal {...modalProps.coupon} />
-      <OrderSuccessModal
-        {...modalProps.orderSuccess}
-        closeCheckout={closeCheckout}
-      />
       <GiftModal {...modalProps.gift} />
-      <PickupConfirmModal {...modalProps.pickupConfirm} />
+      <PickupConfirmModal
+        {...modalProps.pickupConfirm}
+        cartId={cartItems[0]?.cartId}
+      />
 
       <ConfirmationModal
         confirmText="Clear"

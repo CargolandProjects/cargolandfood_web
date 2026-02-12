@@ -4,16 +4,18 @@ import { Button } from "../ui/button";
 interface PickupConfirmProps {
   open: boolean;
   onOpenChange: (close: boolean) => void;
-  onConfirm: () => void;
+  onConfirm: (cartId: string) => void;
+  cartId: string;
 }
 
 const PickupConfirmModal = ({
   open,
   onOpenChange,
   onConfirm,
+  cartId,
 }: PickupConfirmProps) => {
   const handleClick = () => {
-    onConfirm();
+    onConfirm(cartId);
   };
 
   return (

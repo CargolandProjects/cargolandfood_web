@@ -3,29 +3,27 @@ import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import success from "@/assets/gifs/success.gif";
 import { RiTimeLine } from "react-icons/ri";
 import { Button } from "../ui/button";
+import { useUIStore } from "@/lib/stores/uiStore";
 
 interface OrderSuccessfulProps {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
   closeCheckout?: (v: boolean) => void;
 }
 
-const OrderSuccessModal = ({
-  open,
-  onOpenChange,
-  closeCheckout,
-}: OrderSuccessfulProps) => {
+const OrderSuccessModal = ({ closeCheckout }: OrderSuccessfulProps) => {
+  const open = useUIStore((s) => s.orderSuccess.open);
+  const closeOrderSuccess = useUIStore((s) => s.closeOrderSuccess);
+
   return (
     <Dialog
       open={open}
-      onOpenChange={(value) => {
-        onOpenChange(value);
+      onOpenChange={() => {
+        closeOrderSuccess();
         if (closeCheckout) closeCheckout(false);
-      }}
+      } }
     >
       <DialogContent className="dialog px-6! sm:px-9!">
         <div className="size-[124px] sm:size-[180px] self-center justify-self-center mt-8">
-          <img src={success.src} alt="coupon added " className="size-full " />
+          <img src={success.src} alt="coupon added" className="size-full " />
         </div>
 
         <div className="sm:mt-1 flex flex-col justify-center items-center gap-3">
