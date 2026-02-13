@@ -11,45 +11,15 @@ import { useSession } from "@/lib/hooks/useSession";
 interface FavouritesProps {
   setActiveTab: (tab: ActiveTab) => void;
 }
-//   {
-//     id: "1",
-//     businessName: "Shawarma Plus+",
-//     ratings: 4.7,
-//     profileImg: shawarma.src,
-//   },
-//   {
-//     id: "2",
-//     businessName: "Mavise Foods",
-//     ratings: 4.7,
-//     profileImg: riceDish.src,
-//   },
-//   {
-//     id: "3",
-//     businessName: "Shawarma Plus+",
-//     ratings: 4.7,
-//     profileImg: shawarma.src,
-//   },
-//   {
-//     id: "3",
-//     businessName: "Shawarma Plus+",
-//     ratings: 4.7,
-//     profileImg: shawarma.src,
-//   },
-// ];
 
 const Favourites = ({ setActiveTab }: FavouritesProps) => {
   const { user } = useSession();
-  // console.log("Session Datassss", user.id)
   const {
     data: favouriteVendors,
     isLoading,
     isError,
     isSuccess,
   } = useFavourites(user?.id || "");
-
-  // const isLoading = false;
-  // const isError = false;
-  // const isSuccess = true;
 
   return (
     <div className="h-full">
@@ -73,7 +43,7 @@ const Favourites = ({ setActiveTab }: FavouritesProps) => {
         </div>
       )}
 
-      {isSuccess &&favouriteVendors.length === 0 && (
+      {isSuccess && favouriteVendors.length === 0 && (
         <div className="mt-20.5 ">
           <EmptyStateUi
             message="No favourite yet"

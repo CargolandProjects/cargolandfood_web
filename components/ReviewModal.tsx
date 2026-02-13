@@ -6,9 +6,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { RiStarFill, RiStarLine } from "react-icons/ri";
 import { ScrollArea } from "./ui/scroll-area";
 import { useReviews } from "@/lib/hooks/queries/useReviews";
-import { Loader2 } from "lucide-react";
 import ErrorStateUi from "./ErrorStateUi";
 import Loader from "./Loader";
+import { formatDMY } from "@/lib/utils";
 
 // interface Review {
 //   id: number;
@@ -92,16 +92,16 @@ export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="dialog p-0!">
+      <DialogContent className="dialog flex flex-col">
         <DialogHeader className="mt-13.5 sm:mt-[74px]">
           <DialogTitle className="dialog-title max-sm:text-lg! max-sm:leading-6! ">
             Reviews
           </DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[486px] mt-4 sm:mt-7 px-7">
+        <div className="h-[486px] mt-4 sm:mt-7">
           {isLoading && (
-            <div className="h-full flex justify-center items-center pb-12">
+            <div className=" h-full flex justify-center items-center pb-12">
               <Loader size={12} />
             </div>
           )}
@@ -113,15 +113,15 @@ export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
           )}
 
           {isSuccess && (
-            <>
+            <ScrollArea className="h-full">
               {reviews.length === 0 && (
-                <p className="text-sm text-neutral-600">
+                <p className="text-sm text-neutral-600 text-center">
                   No reviews yet. Order and be the first!
                 </p>
               )}
 
               {reviews.length > 0 && (
-                <div className="space-y-4 sm:space-y-6 py-1">
+                <div className="space-y-4 sm:space-y-6 pt-1 mb-6">
                   {reviews.map((review) => (
                     <div key={review.id} className="flex gap-2.5">
                       <Avatar className="size-10 shrink-0">
@@ -132,23 +132,23 @@ export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
                         <AvatarFallback>U</AvatarFallback>
                       </Avatar>
 
-                      <div className="flex-1 bg-neutral-700 rounded-button px-4 pt-2.5 pb-6">
-                        <p className="text-xs">{review.date}</p>
-                        <h3 className="text-sm font-medium mb-0.5 leading-5 mt-0.5">
-                          {review.title}
+                      <div className="flex-1 bg-neutral-100 rounded-button px-4 pt-2.5 pb-6">
+                        <p className="text-xs">{formatDMY(review.createdAt)}</p>
+                        <h3 className="text-sm font-medium mb-0.5 leading-5 mt-0.5 line-clamp-1">
+                          {review.comment}
                         </h3>
                         <StarRating rating={review.rating} />
                         <p className="text-xs text-neutral-600 mt-3">
-                          {review.content}
+                          {review.comment}
                         </p>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
-            </>
+            </ScrollArea>
           )}
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );

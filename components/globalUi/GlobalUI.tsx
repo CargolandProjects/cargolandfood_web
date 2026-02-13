@@ -1,4 +1,4 @@
-import CancelOrderModal from "../orders/CancelOrderModal";
+// import CancelOrderModal from "../orders/CancelOrderModal";
 import OrderSuccessModal from "../orders/OrderSuccessModal";
 import ReviewOrderModal from "../orders/ReviewOrderModal";
 import AddressModal from "./AddressModal";
@@ -13,7 +13,7 @@ const GlobalUI = () => {
       <AddressModal />
       <OrderDetails />
       <TrackOrder />
-      <CancelOrderModal />
+      {/* <CancelOrderModal /> */}
       <ReviewOrderModal />
       <OrderSuccessModal />
     </>

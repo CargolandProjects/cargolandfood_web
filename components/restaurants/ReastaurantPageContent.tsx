@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import CategoryTab from "@/components/home/CategoryTab";
-import { shawarma } from "@/assets/images";
 import RestaurantStats from "@/components/RestaurantStats";
 import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
 import RestaurantItemCard from "@/components/restaurants/RestaurantItemCard";
@@ -18,6 +17,10 @@ import { useGetVendorById } from "@/lib/hooks/queries/useVendors";
 import { useCheckoutPreview } from "@/lib/hooks/queries/useCheckoutFlow";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
+import { useToggleFavourite } from "@/lib/hooks/mutations/useToggleFavourite";
+import { useSession } from "@/lib/hooks/useSession";
+import { fallbackImg } from "@/lib/utils";
+import NotFound from "../NotFound";
 
 export interface CategoryTab {
   name: string;
@@ -46,9 +49,10 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   );
 
   const { data, isLoading, error } = useGetVendorById(id);
-  const router = useRouter();
+  const { mutate: toggleFavourite } = useToggleFavourite();
+  const { user } = useSession();
 
-  // update({ fullName: "Ojo Prime" });
+  const router = useRouter();
 
   // Fetch checkout preview to check if cart has items
   // Enable fetching on component mount to check cart status
@@ -68,13 +72,13 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   const hasItemsInCart =
     !checkoutError &&
     checkoutData &&
-    checkoutData.items &&
-    checkoutData.items.length > 0;
+    checkoutData.cart.items &&
+    checkoutData.cart.items.length > 0;
 
   // Calculate local total for mobile button (sum of all item totalPrice)
   const calculateLocalTotal = () => {
-    if (!checkoutData || !checkoutData.items) return 0;
-    const itemsTotal = checkoutData.items.reduce((sum, item) => {
+    if (!checkoutData || !checkoutData.cart.items) return 0;
+    const itemsTotal = checkoutData.cart.items.reduce((sum, item) => {
       return sum + Number(item.totalPrice);
     }, 0);
     return itemsTotal;
@@ -82,7 +86,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
 
   // console.log("Restaurant page Id:", id);
   // console.log("Restaurant page Data:", vendor);
-  console.log("Checkout Data:", checkoutData);
+  // console.log("Checkout Data:", checkoutData);
 
   const handleBack = () => {
     router.back();
@@ -92,8 +96,35 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
     setselectedId(id === selectedId ? null : id);
   };
 
+  const handleToggle = (
+    isFavourite: boolean,
+    vendorId: string,
+
+    e: React.MouseEvent
+  ) => {
+    e.stopPropagation();
+    // console.log(user, vendorId, isFavourite);
+    if (!user || !vendorId) return;
+    const payload = {
+      isFavourite: !isFavourite,
+      vendorId: vendorId,
+      userId: user.id,
+    };
+
+    toggleFavourite(payload);
+  };
+
   if (isLoading) {
     return <RestaurantPageSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <NotFound
+        title="Vendor not found"
+        description="Sorry, the vendor you are looking for doesn't exist. Here are some helpful links:"
+      />
+    );
   }
 
   return (
@@ -121,18 +152,25 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
           {/* Banner Image */}
           <div className="relative h-25.5 sm:h-48 xl:h-[274px] w-full overflow-hidden rounded-xl mt-2">
             <img
-              src={shawarma.src}
+              src={vendor?.profileImg || "/fallback_vendor.webp"}
               alt="Shawarma Plus banner"
               className="w-full h-full object-cover rounded-xl "
               loading="lazy"
+              onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
             />
             {/* Favourite and Comments */}
             <div className="absolute top-3 sm:top-6 right-3 sm:right-6 flex gap-2.5">
               <button
-                onClick={() => setShowFavourites(true)}
+                onClick={(e: React.MouseEvent) =>
+                  handleToggle(vendor!.isFavourite, vendor!.id, e)
+                }
                 className="size-8 sm:size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
               >
-                <RiHeartFill className="size-6 text-gray-300" />
+                <RiHeartFill
+                  className={`${
+                    vendor?.isFavourite ? "text-primary" : "text-neutral-400"
+                  } size-6`}
+                />
               </button>
               <button
                 onClick={() => setShowReviews(true)}

@@ -3,21 +3,18 @@ import { vendorById } from "@/lib/services/vendors.service";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export const useMakeFavourite = () => {
+export const useToggleFavourite = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: favourites.makeFavourite,
 
-    onSuccess: (vars) => {
+    onSuccess: (_, vars) => {
       const { vendorId, isFavourite } = vars;
 
       queryClient.invalidateQueries({
         queryKey: ["favourites"],
       });
-      //   queryClient.invalidateQueries({
-      //     queryKey: ["vendor", vendorId],
-      //   });
 
       //   This updates the isFavourite flag of the cache for ui update
       //  This prevents refetching the vendor just to update a flag
@@ -25,7 +22,7 @@ export const useMakeFavourite = () => {
         ["vendorById", vendorId],
         (oldData: vendorById) => {
           if (!oldData) return;
-          //   console.log("Old Data: ", oldData);
+          // console.log("Old Data: ", oldData);
 
           const newData = {
             ...oldData,
@@ -35,14 +32,17 @@ export const useMakeFavourite = () => {
             },
           };
 
-          //   console.log("New Data: ", newData);
+          // console.log("New Data: ", newData);
           return newData;
         }
       );
     },
 
-    onError: (error) => {
-      toast.error(error.message || "Failed to make favourite");
+    onError: (error, vars) => {
+      const fallbackMsg = vars.isFavourite
+        ? "Failed to add to favourites"
+        : "Failed to remove from favourites";
+      toast.error(error.message || fallbackMsg);
     },
   });
 };

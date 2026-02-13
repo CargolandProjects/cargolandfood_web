@@ -48,9 +48,9 @@ const ReviewOrderModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="dialog flex flex-col min-h-0!">
-        <DialogHeader className="gap-7.5">
-          <DialogTitle className="dialog-title mt-[74px] flex items-center justify-center">
+      <DialogContent className="dialog px-5! flex flex-col min-h-0!">
+        <DialogHeader className="gap-2 sm:gap-7.5">
+          <DialogTitle className="dialog-title max-sm:text-lg! max-sm:leading-6! mt-[74px] flex items-center justify-center">
             Did you like your order!
           </DialogTitle>
           <DialogDescription className="text-base leading-5 text-center">
@@ -67,7 +67,7 @@ const ReviewOrderModal = ({
           />
         </div>
 
-        <div className="relative mt-6">
+        <div className="relative mt-6 mx-[9.5px]">
           <textarea
             value={comment}
             onChange={(e) => setcomment(e.target.value)}

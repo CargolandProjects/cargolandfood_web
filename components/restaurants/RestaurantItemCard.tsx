@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { Menu } from "@/lib/services/vendors.service";
 import ProductModal from "../ProductModal";
-import { useAddToCart } from "@/lib/hooks/mutations/useCart";
+import { useAddToCart } from "@/lib/hooks/mutations/useMutateCart";
 import { RiAddFill } from "react-icons/ri";
 
 interface RestaurantItemCard {

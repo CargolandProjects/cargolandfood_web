@@ -1,7 +1,7 @@
-import { shawarma } from "@/assets/images";
-import { useMakeFavourite } from "@/lib/hooks/mutations/useMakeFavourite";
+import { useToggleFavourite } from "@/lib/hooks/mutations/useToggleFavourite";
 import { useSession } from "@/lib/hooks/useSession";
 import { Vendor } from "@/lib/services/vendors.service";
+import { fallbackImg } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import {
   RiEBike2Line,
@@ -24,8 +24,8 @@ const VendorCard = ({
   routes = "Restaurant",
   asFavouriteCard = false,
 }: VendorCardProps) => {
-  const { user } = useSession(); 
-  const { mutate: toggleFavourite, isPending } = useMakeFavourite();
+  const { user } = useSession();
+  const { mutate: toggleFavourite, isPending } = useToggleFavourite();
   const router = useRouter();
   const route =
     routes === "Restaurant"
@@ -67,10 +67,11 @@ const VendorCard = ({
         } overflow-hidden rounded-md`}
       >
         <img
-          src={profileImg}
+          src={profileImg || "/fallback_vendor.webp"}
           alt={businessName}
           className="size-full object-cover"
           loading="lazy"
+          onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
         />
         {!asFavouriteCard && (
           <div className="absolute top-3 left-3 rounded-full flex justify-center items-center gap-1 py-1 px-2 bg-primary-50 border-[0.5px] border-primary-900">

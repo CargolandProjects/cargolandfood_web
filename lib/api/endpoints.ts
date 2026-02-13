@@ -17,7 +17,7 @@ export const API_ROUTES = {
   user: (id: string) => `/users/${id}`,
 
   vendor: {
-    allVendors: "/users/vendors",
+    allVendors: (userAddressId: string) => `/users/vendors/${userAddressId}`,
     vendorById: (id: string) => `/users/menus/${id}`,
   },
 

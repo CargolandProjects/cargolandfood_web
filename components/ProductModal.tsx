@@ -9,7 +9,8 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Button } from "./ui/button";
 import { X } from "lucide-react";
 import { Menu } from "@/lib/services/vendors.service";
-import { useAddToCart } from "@/lib/hooks/mutations/useCart";
+import { useAddToCart } from "@/lib/hooks/mutations/useMutateCart";
+import { fallbackImg } from "@/lib/utils";
 
 interface ProductModalProps {
   menu: Menu;
@@ -145,9 +146,10 @@ const ProductModal = ({
       >
         <div className="w-full h-[177px] overflow-hidden rounded-t-lg relative">
           <img
-            src={uploadImageUrl}
+            src={uploadImageUrl || "/fallback_vendor.webp"}
             alt={name}
             className="size-full object-cover"
+            onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
           />
           <Button
             onClick={() => handleSelect(id!)}

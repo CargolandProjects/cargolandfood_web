@@ -22,6 +22,7 @@ import { X } from "lucide-react";
 import Cart from "./Cart";
 import Favourites from "./Favourites";
 import Orders from "./Orders";
+import { useCart } from "@/lib/hooks/queries/useCart";
 
 interface SIdeBar {
   open: boolean;
@@ -82,20 +83,24 @@ const getSidebarItems = (
 
 const Sidebar = ({ open, setOpen }: SIdeBar) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("Home");
-  const [isMobile, setIsMoble] = useState(false);
   const { setActiveCategory } = useCategory();
   const router = useRouter();
 
+  const cart = useCart();
+
+  // Detect if we're on desktop (only runs once on mount, then on resize)
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window === "undefined") return true; // SSR fallback to desktop
+    return window.matchMedia("(min-width: 640px)").matches;
+  });
+
   useEffect(() => {
-    const checkScreen = () => {
-      const mobile = window.innerWidth < 640;
-      setIsMoble(mobile);
-    };
+    const mediaQuery = window.matchMedia("(min-width: 640px)");
 
-    checkScreen();
-    window.addEventListener("resize", checkScreen);
+    const handleChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mediaQuery.addEventListener("change", handleChange);
 
-    return () => window.removeEventListener("resize", checkScreen);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
   const handleTabChange = (tabId: ActiveTab) => {
@@ -114,7 +119,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
   return (
     <>
       {/* Large Screens */}
-      {!isMobile && (
+      {isDesktop && (
         <aside className=" sticky left-0 inset-y-0 w-sidebar shrink-0 bg-white border-r border-gray-100">
           <div className="flex flex-col items-center py-4">
             {/* Logo */}
@@ -201,7 +206,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
 
       {/* Mobile Screens */}
       <AnimatePresence>
-        {isMobile && open && (
+        {!isDesktop && open && (
           <motion.aside
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
