@@ -112,8 +112,8 @@ export interface vendorById {
   };
 }
 export const vendors = {
-  async getAllVendors() {
-    const res = await apiClient.get<Vendors>(API_ROUTES.vendor.allVendors(""));
+  async getAllVendors(zoneId: string) {
+    const res = await apiClient.get<Vendors>(API_ROUTES.vendor.allVendors(zoneId));
     return res.data;
   },
 

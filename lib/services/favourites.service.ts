@@ -1,10 +1,6 @@
 import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
-
-interface Message {
-  status: string;
-  message: string;
-}
+import { APIResponse } from "../types/cart.types";
 
 interface MakeFavourite {
   isFavourite: boolean;
@@ -21,9 +17,8 @@ interface Favourite {
   updatedAt: string;
 }
 
-interface Favourites extends Message {
-  data: Favourite[];
-}
+type Favourites = APIResponse<Favourite[]>;
+
 
 export const favourites = {
   async getAllFavourites(userId: string) {

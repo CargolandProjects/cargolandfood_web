@@ -1,10 +1,11 @@
 import { vendors } from "@/lib/services/vendors.service";
 import { useQuery } from "@tanstack/react-query";
 
-export const useVendors = () => {
+export const useVendors = (zoneId: string) => {
   return useQuery({
-    queryKey: ["vendors"],
-    queryFn: vendors.getAllVendors,
+    queryKey: ["vendors", zoneId],
+    queryFn: () => vendors.getAllVendors(zoneId),
+    enabled: !!zoneId
   });
 };
 
