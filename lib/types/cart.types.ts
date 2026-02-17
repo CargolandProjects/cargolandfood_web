@@ -174,6 +174,7 @@ export interface AddressSnapshot {
   addressLine1: string;
   addressLine2: string;
   instructions: string | null;
+  setAddressDefault: boolean;
 }
 
 export interface OrderItem {

@@ -37,11 +37,13 @@ export const API_ROUTES = {
     makePayment: (cartId: string) => `/orders/make-payment/${cartId}`,
     simulatePayment: (checkoutSessionId: string) =>
       `/orders/payment-simulation/${checkoutSessionId}`,
+    getOrders: "/orders/get-all-user-orders",
   },
 
   address: {
     getAddresses: "/users/addresses",
     createAddress: "/users/create-address",
+    setGuestAddress: "/users/set-guest-user-address",
     selectAddress: (addressId: string) => `/users/select-address/${addressId}`,
     deleteAddress: (addressId: string) => `/users/delete-address/${addressId}`,
   },

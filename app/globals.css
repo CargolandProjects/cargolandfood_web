@@ -93,6 +93,7 @@
   --color-cargo-cyan: #35B9E9;
 
   --color-brand-black: #0A0D14;
+  --color-alt-black: #363A33;
 
   /* Shadows */
   --shadow-xs: 0 1px 2px 0 rgba(228, 229, 231, 0.24);
@@ -177,6 +178,7 @@
   /* ===== CARGOLANacDFOOD BRAND COLORS FOR TAILWIND ===== */
 
   --color-brand-black: var(--color-brand-black);
+  --color-alt-black: var(--color-alt-black);
   --color-primary: var(--primary);
   --color-primary-50: var(--color-primary-50);
   --color-primary-100: var(--color-primary-100);
