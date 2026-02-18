@@ -30,6 +30,9 @@ import {
 import Notifications from "./Notifications";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import MenuContent from "./MenuContent";
+import { useActiveLocation } from "@/lib/hooks/useActiveZone";
+import { useUIStore } from "@/lib/stores/uiStore";
+import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
 
 interface HeaderProps {
   setSideBar: (v: boolean) => void;
@@ -43,8 +46,10 @@ export function Header({ setSideBar }: HeaderProps) {
   const router = useRouter();
   const path = usePathname();
   const OpenAuth = useAuthFlow((s) => s.openAuth);
+  const { guestLocation } = useGuestLocation();
+  const openAdress = useUIStore((s) => s.openAddresses);
   const { user: session, isAuthenticated, signOut } = useSession();
-  console.log("Session Data:", session);
+  console.log("Session Data:", guestLocation);
 
   const [firstName, lastName] = session?.fullName.split(" ") || [];
   const initials =
@@ -78,6 +83,7 @@ export function Header({ setSideBar }: HeaderProps) {
   const showSearch = matchRoutes(SEARCH_ROUTES, path);
   const showBack = matchRoutes(BACK_ROUTES, path);
 
+  const defaultAddress = session?.address.find((a) => a.setAddressDefault);
   // session.signOut();
   return (
     <header className="sticky top-0 z-30 px-4 sm:px-6 py-2 max-sm:pb-1 bg-white sm:border-b border-gray-100">
@@ -98,21 +104,28 @@ export function Header({ setSideBar }: HeaderProps) {
                 <button className="flex">
                   <RiMapPinFill className="size-6 text-primary mb-1" />
                   <div className="text-left ml-0.5 flex-1 sm:space-y-0.5">
-                    <div className="text-xs font-medium leading-4">
+                    <p className="text-xs font-medium leading-4">
                       Your Location
-                    </div>
-                    <div className="text-xxs leading-3 text-gray-600">
-                      45 Denkede St, Shomolu...
-                    </div>
+                    </p>
+                    <p className="text-xxs leading-3 text-gray-600 line-clamp-1 max-w-[120px]">
+                      {(isAuthenticated
+                        ? defaultAddress?.addressLine1
+                        : guestLocation?.addressLine1) ||
+                        "No location selected"}
+                    </p>
                   </div>
                   <RiArrowDownSLine className="size-5 text-neutral-600 ml-0.5" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56">
                 <DropdownMenuItem>
-                  45 Denkede St, Shomolu, Lagos
+                  {(isAuthenticated
+                    ? defaultAddress?.addressLine1
+                    : guestLocation?.addressLine1) || "No location selected"}
                 </DropdownMenuItem>
-                <DropdownMenuItem>Add new location</DropdownMenuItem>
+                <DropdownMenuItem onSelect={openAdress}>
+                  Add new location
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 

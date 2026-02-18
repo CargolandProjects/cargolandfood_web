@@ -13,6 +13,7 @@ import {
   useAddAddress,
   useDeleteAddress,
   useSelectAddress,
+  useSetGuestAddress,
 } from "@/lib/hooks/mutations/useAddress";
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -20,20 +21,29 @@ import { useUIStore } from "@/lib/stores/uiStore";
 import { toast } from "sonner";
 // import { GetAddress } from "@/lib/services/address.service";
 import { useGoogleMaps } from "@/lib/GoogleMapsProvider";
+import { useSession } from "@/lib/hooks/useSession";
+import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
 // import { useSession } from "@/lib/hooks/useSession";
 
 const AddressModal = () => {
   const open = useUIStore((s) => s.addresses.open);
   const close = useUIStore((s) => s.closeAddresses);
+  const { isAuthenticated } = useSession();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [settingId, setSettingId] = useState<string | null>(null);
-  const { data: addresses, isLoading, isError, isSuccess } = useAddresses();
+  const {
+    data: addresses,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useAddresses(isAuthenticated);
   const { mutate: addAddress, isPending } = useAddAddress();
   const { mutate: selectAddress } = useSelectAddress();
   const { mutate: deleteAddress } = useDeleteAddress();
-
-  // Get Google Maps loading state from provider
+  const { mutate: setGuestaddress, isPending: isGuestPending } =
+    useSetGuestAddress();
   const { isLoaded: mapsLoaded } = useGoogleMaps();
+  const { setGuestLocation } = useGuestLocation();
 
   // Only initialize usePlacesAutocomplete AFTER Google Maps is loaded
   const {
@@ -83,31 +93,49 @@ const AddressModal = () => {
 
       // console.log("Place Details:", placeDetails);
 
-      const payload = {
-        addressLine1: placeDetails.formatted_address,
-        addressLine2: "string",
-        city:
-          getAddressComponent(components, "locality") ||
-          getAddressComponent(components, "administrative_area_level_2"),
-        state: getAddressComponent(components, "administrative_area_level_1"),
-        postalCode: getAddressComponent(components, "postal_code"),
-        country: getAddressComponent(components, "country"),
-        latitude: lat.toLocaleString(),
-        longitude: lng.toLocaleString(),
-        placeId: placeDetails.place_id,
-        provider: "string",
-        instructions: "string",
-      };
+      if (isAuthenticated) {
+        const payload = {
+          addressLine1: placeDetails.formatted_address,
+          addressLine2: "string",
+          city:
+            getAddressComponent(components, "locality") ||
+            getAddressComponent(components, "administrative_area_level_2"),
+          state: getAddressComponent(components, "administrative_area_level_1"),
+          postalCode: getAddressComponent(components, "postal_code"),
+          country: getAddressComponent(components, "country"),
+          latitude: lat.toLocaleString(),
+          longitude: lng.toLocaleString(),
+          placeId: placeDetails.place_id,
+          provider: "string",
+          instructions: "string",
+        };
+        addAddress(payload, {
+          onSuccess: (res) => {
+            selectAddress(res.data.id);
+            setValue("");
+            clearSuggestions();
+            toast.success("address added");
+          },
+        });
+      } else {
+        const guestPayload = {
+          latitude: lat.toLocaleString(),
+          longitude: lng.toLocaleString(),
+        };
+        setGuestaddress(guestPayload, {
+          onSuccess: (data) => {
+            setValue("");
+            clearSuggestions();
+            toast.success("Guest location set");
+            setGuestLocation({
+              zoneId: data.zoneId,
+              addressLine1: placeDetails.formatted_address,
+            });
+            close();
+          },
+        });
+      }
 
-      // console.log("Payload:", payload);
-
-      addAddress(payload, {
-        onSuccess: () => {
-          setValue("");
-          clearSuggestions();
-          toast.success("address added");
-        },
-      });
       // setValue("");
     } catch (error) {
       console.error("Error getting geocode:", error);
@@ -126,13 +154,9 @@ const AddressModal = () => {
     if (!addressId) return;
     setSettingId(addressId);
 
-    const payload = { isSelected: true };
-    selectAddress(
-      { addressId, payload },
-      {
-        onSettled: () => setSettingId(null),
-      }
-    );
+    selectAddress(addressId, {
+      onSettled: () => setSettingId(null),
+    });
   };
 
   return (
@@ -158,7 +182,7 @@ const AddressModal = () => {
                 }
                 className=" flex-1 h-full px-3 pr-9 py-2.5 text-sm font-medium rounded-button placeholder:text-[#8A8F98] border-none ring-0 focus-visible:ring-0"
               />
-              {(isPending || loading) && (
+              {(isPending || loading || isGuestPending) && (
                 <Loader2 className="absolute right-2 transform text-primary top-1/2 -translate-y-1/2 size-4 animate-spin duration-300" />
               )}
             </div>
@@ -196,12 +220,12 @@ const AddressModal = () => {
           </div>
 
           {/* Users Address List */}
-          <div className="mt-4">
+          <div className="mt-8">
             {isLoading && (
               <Loader2 className="size-8 transition duration-300 animate-spin text-primary mx-auto mt-4" />
             )}
 
-            {!isLoading && isError && (
+            {isError && (
               <p className="text-red-400 text-center">
                 Failed to fetch addresses
               </p>
