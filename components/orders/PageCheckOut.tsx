@@ -161,6 +161,7 @@ const PageCheckOut = ({
       menuId: item.menuId,
       menuName: item.menuName,
       unitPrice: item.unitPrice,
+      menuImg: item.menuImg,
       quantity: 1,
       action: action === "increase" ? "INCREMENT" : "DECREMENT",
       currency: "NGN",

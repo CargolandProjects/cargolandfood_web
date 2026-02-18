@@ -11,6 +11,9 @@ import { X } from "lucide-react";
 import { Menu } from "@/lib/services/vendors.service";
 import { useAddToCart } from "@/lib/hooks/mutations/useMutateCart";
 import { fallbackImg } from "@/lib/utils";
+import { useSession } from "@/lib/hooks/useSession";
+import { toast } from "sonner";
+import useAuthFlow from "@/lib/stores/authFlowStore";
 
 interface ProductModalProps {
   menu: Menu;
@@ -24,6 +27,8 @@ const ProductModal = ({
   handleSelect,
 }: ProductModalProps) => {
   const { description, id, uploadImageUrl, name, price } = menu;
+  const { isAuthenticated } = useSession();
+  const openAuth = useAuthFlow((s) => s.openAuth);
 
   const params = useParams();
   const vendorId = params.id as string;
@@ -103,18 +108,28 @@ const ProductModal = ({
 
   // Handle add to cart
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast.error("Please signin to add item to cart");
+      openAuth();
+      return;
+    }
     // Build addons payload (only include addons with quantity > 0)
     const addonsPayload = Object.entries(selectedAddons)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, qty]) => qty > 0)
       .map(([addonId, qty]) => {
         const addon = menu.addons.find((a) => a.id === addonId);
+        if (!addon) return null;
         return {
           menuAddonId: addonId,
-          name: addon!.name,
-          price: parseFloat(addon!.price),
+          name: addon.name,
+          addonImg: addon.addonImage,
+          price: parseFloat(addon.price),
           quantity: qty,
+          action: "SET" as const, // Add the required action field
         };
-      });
+      })
+      .filter((addon) => addon !== null); // Remove nulls and fix type
 
     addToCart.mutate(
       {
@@ -122,6 +137,7 @@ const ProductModal = ({
         menuName: name!,
         unitPrice: price,
         quantity: quantity,
+        menuImg: uploadImageUrl,
         action: "SET",
         currency: "NGN",
         addons: addonsPayload.length > 0 ? addonsPayload : undefined,

@@ -10,19 +10,15 @@ import { Button } from "../ui/button";
 import { RiLoader2Line } from "react-icons/ri";
 import { useSubmitReview } from "@/lib/hooks/mutations/useSubmitReview";
 import { StarInput } from "@/components/ui/StarInput";
+import { useUIStore } from "@/lib/stores/uiStore";
 
-interface LikeOrderProps {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-  vendorId: string;
-}
-const ReviewOrderModal = ({
-  open,
-  onOpenChange,
-  vendorId = "cbijscd6",
-}: LikeOrderProps) => {
+const ReviewOrderModal = () => {
   const [rating, setRating] = useState(0);
   const [comment, setcomment] = useState("");
+  const open = useUIStore((s) => s.reviewOrder.open);
+  const close = useUIStore((s) => s.closeReviewOrder);
+  const payload = useUIStore((s) => s.reviewOrder.payload);
+  const vendorId = payload?.vendorId;
   const { mutate: submitRevuew, isPending } = useSubmitReview();
   const maxLength = 200;
 
@@ -47,7 +43,7 @@ const ReviewOrderModal = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={close}>
       <DialogContent className="dialog px-5! flex flex-col min-h-0!">
         <DialogHeader className="gap-2 sm:gap-7.5">
           <DialogTitle className="dialog-title max-sm:text-lg! max-sm:leading-6! mt-[74px] flex items-center justify-center">

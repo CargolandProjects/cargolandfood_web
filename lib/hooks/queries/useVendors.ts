@@ -5,7 +5,7 @@ export const useVendors = (zoneId: string) => {
   return useQuery({
     queryKey: ["vendors", zoneId],
     queryFn: () => vendors.getAllVendors(zoneId),
-    enabled: !!zoneId
+    enabled: !!zoneId.trim(),
   });
 };
 

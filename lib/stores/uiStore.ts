@@ -21,6 +21,10 @@ export type CheckoutPayload = {
   // You can add: addressId, paymentMethodId, etc.
 } | null;
 
+export type ReviewOrderPayload = {
+  vendorId: string;
+} | null;
+
 // export type OrderSuccesPayload = {
 //   closeCheckout?: (v: boolean) => void;
 // } | null;
@@ -33,6 +37,7 @@ export type UIStoreState = {
   trackOrder: PanelState;
   addresses: PanelState;
   orderSuccess: PanelState;
+  reviewOrder: PanelState<ReviewOrderPayload>;
 
   openAddresses: () => void;
   closeAddresses: () => void;
@@ -53,6 +58,9 @@ export type UIStoreState = {
   // Actions: Checkout
   openCheckout: (payload?: CheckoutPayload) => void;
   closeCheckout: () => void;
+
+  openReviewOrder: (payload?: CheckoutPayload) => void;
+  closeReviewOrder: () => void;
   // setCheckoutPayload: (patch: Partial<CheckoutPayload>) => void;
   // replaceCheckoutPayload: (payload: CheckoutPayload | null) => void;
 };
@@ -64,6 +72,11 @@ export const useUIStore = create<UIStoreState>((set) => ({
   trackOrder: { open: false },
   addresses: { open: false },
   orderSuccess: { open: false, payload: null },
+  reviewOrder: { open: false, payload: null },
+
+  openReviewOrder: (payload = null) =>
+    set({ reviewOrder: { open: true, payload } }),
+  closeReviewOrder: () => set({ reviewOrder: { open: false, payload: null } }),
 
   openOrderSuccess: () => set({ orderSuccess: { open: true } }),
   closeOrderSuccess: () =>

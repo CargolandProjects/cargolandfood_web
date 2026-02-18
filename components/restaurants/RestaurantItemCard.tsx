@@ -5,6 +5,10 @@ import { Menu } from "@/lib/services/vendors.service";
 import ProductModal from "../ProductModal";
 import { useAddToCart } from "@/lib/hooks/mutations/useMutateCart";
 import { RiAddFill } from "react-icons/ri";
+import { fallbackImg } from "@/lib/utils";
+import useAuthFlow from "@/lib/stores/authFlowStore";
+import { useSession } from "@/lib/hooks/useSession";
+import { toast } from "sonner";
 
 interface RestaurantItemCard {
   menu: Menu;
@@ -19,6 +23,8 @@ const RestaurantItemCard = ({
 }: RestaurantItemCard) => {
   const { description, id, uploadImageUrl, name, price } = menu;
   const isSelected = id === selectedId;
+  const { isAuthenticated } = useSession();
+  const openAuth = useAuthFlow((s) => s.openAuth);
 
   const params = useParams();
   const vendorId = params.id as string;
@@ -27,12 +33,19 @@ const RestaurantItemCard = ({
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
 
+    if (!isAuthenticated) {
+      toast.error("Please signin to add item to cart");
+      openAuth();
+      return;
+    }
+
     addToCart.mutate({
       menuId: id!,
       menuName: name!,
       unitPrice: price!,
       action: "SET",
       quantity: 1,
+      menuImg: uploadImageUrl,
       currency: "NGN",
       // No addons for quick add
     });
@@ -41,7 +54,7 @@ const RestaurantItemCard = ({
   return (
     <>
       <div
-        onClick={() => handleSelect(id!)}
+        onClick={() => handleSelect(id)}
         className="flex h-[116px] min-w-[310px] sm:h-34.5 rounded-2xl overflow-hidden border border-neutral-300 gap-2 cursor-pointer"
       >
         {/* Product Image - Adjusted for Left-Side Radius Only */}
@@ -51,6 +64,7 @@ const RestaurantItemCard = ({
             src={uploadImageUrl}
             alt={name || "Product image"}
             className="w-full h-full object-cover rounded-l-2xl"
+            onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
           />
         </div>
 

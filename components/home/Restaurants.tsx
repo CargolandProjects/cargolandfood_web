@@ -1,13 +1,13 @@
 import VendorCard from "../VendorCard";
 import Loading from "../LoadingSkeleton";
 import { useVendors } from "@/lib/hooks/queries/useVendors";
-import { useActiveZone } from "@/lib/hooks/useActiveZone";
+import { useActiveLocation } from "@/lib/hooks/useActiveZone";
 // import ErrorStateUi from "../ErrorStateUi";
 
 const Restaurants = () => {
-  const { zoneId } = useActiveZone();
-  const { data, isLoading, isSuccess } = useVendors(zoneId || "1");
-  
+  const { zoneId } = useActiveLocation();
+  const { data, isLoading, isSuccess } = useVendors(zoneId || "");
+
   const restaurants = (data?.vendors || []).filter(
     (vendor) => vendor.businessCategory === "Restaurant"
   );
@@ -28,12 +28,16 @@ const Restaurants = () => {
         </div>
       )} */}
 
+      {!zoneId && (
+        <p className="text-neutral-500 text-center">
+          Please select your location
+        </p>
+      )}
       {isSuccess && restaurants.length === 0 && (
         <p className="text-neutral-500 text-left sm:text-center">
           No vendors found for your current location
         </p>
       )}
-
       {isSuccess && restaurants.length > 0 && (
         <div>
           <h3>Restaurants</h3>
