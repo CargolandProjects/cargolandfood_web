@@ -10,7 +10,7 @@ import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
  * 2. Guest location zoneId
  * 3. null (no zone set)
  */
-export const useActiveLocation = () => {
+export const useActiveZone = () => {
   const { user, isAuthenticated } = useSession();
   const { zoneId: guestZoneId, isHydrated: guestHydrated } = useGuestLocation();
 

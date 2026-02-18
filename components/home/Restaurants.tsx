@@ -1,11 +1,11 @@
 import VendorCard from "../VendorCard";
 import Loading from "../LoadingSkeleton";
 import { useVendors } from "@/lib/hooks/queries/useVendors";
-import { useActiveLocation } from "@/lib/hooks/useActiveZone";
+import { useActiveZone } from "@/lib/hooks/useActiveZone";
 // import ErrorStateUi from "../ErrorStateUi";
 
 const Restaurants = () => {
-  const { zoneId } = useActiveLocation();
+  const { zoneId } = useActiveZone();
   const { data, isLoading, isSuccess } = useVendors(zoneId || "");
 
   const restaurants = (data?.vendors || []).filter(
