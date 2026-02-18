@@ -8,8 +8,7 @@ import { create } from "zustand";
 
 export interface GuestLocation {
   zoneId: string;
-  latitude: string;
-  longitude: string;
+  addressLine1: string;
   // Add any other fields the backend returns from set-guest-user-address
 }
 
@@ -57,7 +56,10 @@ export const useGuestLocationStore = create<GuestLocationStore>((set) => ({
         const location = JSON.parse(stored) as GuestLocation;
         set({ guestLocation: location, isHydrated: true });
       } catch (error) {
-        console.error("Failed to parse guest location from localStorage:", error);
+        console.error(
+          "Failed to parse guest location from localStorage:",
+          error
+        );
         localStorage.removeItem(STORAGE_KEY);
         set({ isHydrated: true });
       }

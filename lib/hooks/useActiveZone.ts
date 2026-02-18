@@ -10,13 +10,13 @@ import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
  * 2. Guest location zoneId
  * 3. null (no zone set)
  */
-export const useActiveZone = () => {
+export const useActiveLocation = () => {
   const { user, isAuthenticated } = useSession();
   const { zoneId: guestZoneId, isHydrated: guestHydrated } = useGuestLocation();
 
   // For authenticated users, get zoneId from their address
   // TODO: Adjust based on which address you want to use (first, default, selected, etc.)
-  const getDefaultAddress = user?.address.find((a) => a.setAddressDefault);
+  const getDefaultAddress = user?.address?.find((a) => a.setAddressDefault);
   const authZoneId = isAuthenticated && getDefaultAddress?.zoneId;
 
   return {

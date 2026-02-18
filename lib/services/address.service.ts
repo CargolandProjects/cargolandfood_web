@@ -12,6 +12,7 @@ export interface Address {
   latitude: string;
   longitude: string;
   placeId: string;
+  zoneId?: string;
   provider: string;
   instructions: string;
   setAddressDefault?: boolean;
@@ -24,16 +25,14 @@ export type GetAddress = Address & {
   updatedAt: string;
 };
 
+interface GuestAddressPayload {
+  latitude: string;
+  longitude: string;
+}
+
 type Addresses = APIResponse<GetAddress[]>;
 
 type SelectAddressResponse = APIResponse<GetAddress>;
-
-interface SelectAddressPayload {
-  addressId: string;
-  payload: {
-    isSelected: boolean;
-  };
-}
 
 export const address = {
   async getAddresses() {
@@ -46,10 +45,18 @@ export const address = {
     return res.data;
   },
 
-  async selectAddress({ addressId, payload }: SelectAddressPayload) {
+  async setGuestAddress(payload: GuestAddressPayload) {
+    const res = await apiClient.post(
+      API_ROUTES.address.setGuestAddress,
+      payload
+    );
+    return res.data;
+  },
+
+  async selectAddress(addressId: string) {
     const res = await apiClient.post<SelectAddressResponse>(
       API_ROUTES.address.selectAddress(addressId),
-      payload
+      { isSelected: true }
     );
     return res.data;
   },

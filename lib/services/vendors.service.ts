@@ -25,6 +25,7 @@ interface Vendors {
 interface Addon {
   id: string;
   name: string;
+  addonImage: string;
   price: string;
   menuId: string;
   createdAt: string;
@@ -113,7 +114,9 @@ export interface vendorById {
 }
 export const vendors = {
   async getAllVendors(zoneId: string) {
-    const res = await apiClient.get<Vendors>(API_ROUTES.vendor.allVendors(zoneId));
+    const res = await apiClient.get<Vendors>(
+      API_ROUTES.vendor.allVendors(zoneId)
+    );
     return res.data;
   },
 

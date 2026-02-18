@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanStack/react-query";
 import { address } from "@/lib/services/address.service";
 import { toast } from "sonner";
 import { useSession } from "../useSession";
+import { useGuestLocation } from "../useGuestLocation";
 
 export const useAddAddress = () => {
   const queryClient = useQueryClient();
@@ -22,9 +23,25 @@ export const useAddAddress = () => {
   });
 };
 
+export const useSetGuestAddress = () => {
+  const { setGuestLocation } = useGuestLocation();
+  return useMutation({
+    mutationFn: address.setGuestAddress,
+    onSuccess: (data) => {
+      toast.success("Guest address set successfully");
+      setGuestLocation(data);
+    },
+
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+};
+
 export const useSelectAddress = () => {
   const queryClient = useQueryClient();
   const { refreshSession } = useSession();
+
   return useMutation({
     mutationFn: address.selectAddress,
     onSuccess: () => {
@@ -33,6 +50,9 @@ export const useSelectAddress = () => {
       });
       refreshSession();
       toast.success("address selected");
+    },
+    onError: () => {
+      toast.error("failed to select address");
     },
   });
 };

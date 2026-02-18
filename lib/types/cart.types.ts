@@ -10,6 +10,7 @@ export interface CartAddon {
   id: string;
   cartItemId: string;
   menuAddonId: string;
+  addonImg: string;
   name: string;
   price: string; // Backend returns as string
   quantity: number;
@@ -20,9 +21,13 @@ export interface CartItem {
   id: string;
   cartId: string;
   menuId: string;
+  menuImg: string;
   menuName: string;
   unitPrice: string; // Backend returns as string
   quantity: number;
+  sizeName: string | null;
+  sizeValue: string | null;
+  sizePrice: string | null;
   addonsTotal: string;
   totalPrice: string;
   createdAt: string;
@@ -78,13 +83,16 @@ export interface AddToCartPayload {
   menuName: string;
   unitPrice: string;
   quantity: number;
+  menuImg: string;
   action: "INCREMENT" | "DECREMENT" | "SET";
   currency: "NGN";
   addons?: {
     menuAddonId: string;
+    addonImg: string;
     name: string;
     price: number;
     quantity: number;
+    action: "INCREMENT" | "DECREMENT" | "SET";
   }[];
 }
 
