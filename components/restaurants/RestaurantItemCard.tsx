@@ -9,6 +9,7 @@ import { fallbackImg } from "@/lib/utils";
 import useAuthFlow from "@/lib/stores/authFlowStore";
 import { useSession } from "@/lib/hooks/useSession";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface RestaurantItemCard {
   menu: Menu;
@@ -32,7 +33,7 @@ const RestaurantItemCard = ({
 
   const params = useParams();
   const vendorId = params.id as string;
-  const addToCart = useAddToCart(vendorId);
+  const { mutate, isPending } = useAddToCart(vendorId);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -43,7 +44,7 @@ const RestaurantItemCard = ({
       return;
     }
 
-    addToCart.mutate({
+    mutate({
       menuId: id!,
       menuName: name!,
       unitPrice: price!,
@@ -83,10 +84,10 @@ const RestaurantItemCard = ({
             <h3 className="text-sm sm:text-lg leading-5 sm:leading-6 line-clamp-1">
               {name}
             </h3>
-            <p className="text-xs leading-4 sm:mt-1 text-neutral-600 line-clamp-1 max-w-[70%]">
+            <p className="text-xs leading-4 text-neutral-600 line-clamp-2 max-w-[70%]">
               {description}
             </p>
-            <span className="text-base sm:text-xl font-medium max-sm:mt-[13px]">
+            <span className="text-base sm:text-xl font-medium mt-[13px] sm:mt-6">
               ₦{Number(price).toLocaleString()}
             </span>
           </div>
@@ -97,11 +98,11 @@ const RestaurantItemCard = ({
               // Match the light orange background, right-side rounding, and padding/size
               className="self-end shrink-0 bg-primary-100 size-9 flex items-center justify-center rounded-md disabled:opacity-50 mr-2.5 mb-2.5"
               onClick={handleQuickAdd}
-              disabled={addToCart.isPending}
+              disabled={isPending}
               aria-label={`Add ${name} to cart`}
             >
-              {addToCart.isPending ? (
-                <span className="text-xs text-primary">...</span>
+              {isPending ? (
+                <Loader2 className="size-5 text-primary animate-spin" />
               ) : (
                 <RiAddFill className="size-6 text-primary" />
               )}
