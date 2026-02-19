@@ -52,6 +52,11 @@ interface VerifyOtpResponse extends Message {
   token: Token;
 }
 
+interface UpdateUserPayload {
+  id: string;
+  payload: Partial<User>;
+}
+
 export const auth = {
   async createUser(data: Omit<Signup, "confirmPassword">) {
     const res = await apiClient.post<AuthResponse>(
@@ -88,7 +93,7 @@ export const auth = {
     return res.data;
   },
 
-  async updateUserById(id: string, payload: Partial<User>) {
+  async updateUserById({ id, payload }: UpdateUserPayload) {
     const res = await apiClient.patch<UserData>(API_ROUTES.user(id), payload);
     return res.data;
   },

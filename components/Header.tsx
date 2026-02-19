@@ -30,7 +30,6 @@ import {
 import Notifications from "./Notifications";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import MenuContent from "./MenuContent";
-import { useActiveLocation } from "@/lib/hooks/useActiveZone";
 import { useUIStore } from "@/lib/stores/uiStore";
 import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
 
@@ -49,7 +48,7 @@ export function Header({ setSideBar }: HeaderProps) {
   const { guestLocation } = useGuestLocation();
   const openAdress = useUIStore((s) => s.openAddresses);
   const { user: session, isAuthenticated, signOut } = useSession();
-  console.log("Session Data:", guestLocation);
+  console.log("Session Data:", session);
 
   const [firstName, lastName] = session?.fullName.split(" ") || [];
   const initials =
@@ -83,7 +82,7 @@ export function Header({ setSideBar }: HeaderProps) {
   const showSearch = matchRoutes(SEARCH_ROUTES, path);
   const showBack = matchRoutes(BACK_ROUTES, path);
 
-  const defaultAddress = session?.address.find((a) => a.setAddressDefault);
+  const defaultAddress = session?.address?.find((a) => a.setAddressDefault);
   // session.signOut();
   return (
     <header className="sticky top-0 z-30 px-4 sm:px-6 py-2 max-sm:pb-1 bg-white sm:border-b border-gray-100">

@@ -5,7 +5,8 @@ export const API_ROUTES = {
   categories: "/categories",
   hotPicks: "/hotPicks",
   restaurant: (id: string) => `/restaurants/${id}`,
-  search: (query: string) => `/users/search-vendor-menus?query=${query}`,
+  searchVendorMenu: (zoneId: string, query: string) =>
+    `/users/search-vendor-menus/${zoneId}?query=${query}`,
 
   auth: {
     signUp: "/users",

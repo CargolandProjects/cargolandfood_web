@@ -47,7 +47,8 @@ export const useAuthSessionStore = create<AuthSessionState>((set, get) => ({
 
   hydrateFromStorage: async () => {
     // Determine status from storage
-    const access = typeof window !== "undefined" ? localStorage.getItem(ACCESS_KEY) : null;
+    const access =
+      typeof window !== "undefined" ? localStorage.getItem(ACCESS_KEY) : null;
     const storedUser = readJSON<User>(USER_KEY);
     const pending = readJSON<User>(USER_PENDING_KEY);
 
@@ -61,13 +62,18 @@ export const useAuthSessionStore = create<AuthSessionState>((set, get) => ({
       return;
     }
 
-    const userId = typeof window !== "undefined" ? localStorage.getItem(USER_ID_KEY) : null;
+    const userId =
+      typeof window !== "undefined" ? localStorage.getItem(USER_ID_KEY) : null;
     if (userId) {
       try {
         const res = await auth.getUserById(userId);
         if (res?.data) {
           writeJSON(USER_KEY, res.data);
-          set({ user: res.data, pendingUser: pending, status: "authenticated" });
+          set({
+            user: res.data,
+            pendingUser: pending,
+            status: "authenticated",
+          });
           return;
         }
       } catch {
@@ -109,7 +115,7 @@ export const useAuthSessionStore = create<AuthSessionState>((set, get) => ({
   updateUser: async (patch) => {
     const current = get().user;
     if (!current?.id) return;
-    const res = await auth.updateUserById(current.id, patch);
+    const res = await auth.updateUserById({ id: current.id, payload: patch });
     if (res?.user) {
       writeJSON(USER_KEY, res.user);
       set({ user: res.user, status: "authenticated" });

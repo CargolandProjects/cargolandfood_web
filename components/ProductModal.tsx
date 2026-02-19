@@ -18,7 +18,7 @@ import useAuthFlow from "@/lib/stores/authFlowStore";
 interface ProductModalProps {
   menu: Menu;
   isSelected: boolean;
-  handleSelect: (id: string) => void;
+  handleSelect?: (id: string) => void;
 }
 
 const ProductModal = ({
@@ -89,7 +89,7 @@ const ProductModal = ({
 
     // Add size price if selected
     if (selectedSize) {
-      const size = menu.sizes.find((s) => s.id === selectedSize);
+      const size = menu.sizes?.find((s) => s.id === selectedSize);
       if (size) {
         total += parseFloat(size.price) * quantity;
       }
@@ -97,7 +97,7 @@ const ProductModal = ({
 
     // Add addons prices
     Object.entries(selectedAddons).forEach(([addonId, qty]) => {
-      const addon = menu.addons.find((a) => a.id === addonId);
+      const addon = menu.addons?.find((a) => a.id === addonId);
       if (addon && qty > 0) {
         total += parseFloat(addon.price) * qty;
       }
@@ -118,7 +118,7 @@ const ProductModal = ({
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, qty]) => qty > 0)
       .map(([addonId, qty]) => {
-        const addon = menu.addons.find((a) => a.id === addonId);
+        const addon = menu.addons?.find((a) => a.id === addonId);
         if (!addon) return null;
         return {
           menuAddonId: addonId,
@@ -148,14 +148,14 @@ const ProductModal = ({
           setQuantity(1);
           setSelectedAddons({});
           setSelectedSize(null);
-          handleSelect(id!); // Close modal
+          handleSelect?.(id!); // Close modal
         },
       }
     );
   };
 
   return (
-    <Dialog open={isSelected} onOpenChange={() => handleSelect(id!)}>
+    <Dialog open={isSelected} onOpenChange={() => handleSelect?.(id!)}>
       <DialogContent
         showCloseButton={false}
         className="dialog hide-scrollbar max-h-[90vh]! p-0! border-none! outline-none! gap-0"
@@ -168,7 +168,7 @@ const ProductModal = ({
             onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
           />
           <Button
-            onClick={() => handleSelect(id!)}
+            onClick={() => handleSelect?.(id!)}
             variant="link"
             className="size-10 rounded-full bg-white absolute right-4.5 top-4.5"
           >

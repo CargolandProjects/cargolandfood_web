@@ -1,7 +1,7 @@
 import { useToggleFavourite } from "@/lib/hooks/mutations/useToggleFavourite";
 import { useSession } from "@/lib/hooks/useSession";
 import { Vendor } from "@/lib/services/vendors.service";
-import { fallbackImg } from "@/lib/utils";
+import { fallbackImg, getCategoryPath } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import {
   RiEBike2Line,
@@ -21,23 +21,20 @@ interface VendorCardProps {
 const VendorCard = ({
   vendor: { businessName, ratings, profileImg, isFavourite },
   vendorId,
+  //SEE
+  //TO
+  //THIS!!!!!!!
   routes = "Restaurant",
   asFavouriteCard = false,
 }: VendorCardProps) => {
   const { user } = useSession();
   const { mutate: toggleFavourite, isPending } = useToggleFavourite();
   const router = useRouter();
-  const route =
-    routes === "Restaurant"
-      ? "restaurants"
-      : routes === "Grocery"
-      ? "groceries"
-      : "markets";
 
   const handleClick = () => {
     // There is id from the getAllVendors endpoint as "id" and from getFavourites as vendorId (both referencing the actual vendorId)
     // This card is being used in both hence
-    router.push(`/${route}/${vendorId}`);
+    router.push(`/${getCategoryPath(routes)}/${vendorId}`);
   };
 
   const handleToggle = (

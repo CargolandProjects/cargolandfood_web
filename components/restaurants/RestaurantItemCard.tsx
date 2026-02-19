@@ -12,14 +12,18 @@ import { toast } from "sonner";
 
 interface RestaurantItemCard {
   menu: Menu;
-  handleSelect: (id: string) => void;
-  selectedId: string | null;
+  handleSelect?: (id: string) => void;
+  onNavigate?: () => void;
+  selectedId?: string | null;
+  isSearch: boolean;
 }
 
 const RestaurantItemCard = ({
   menu,
   handleSelect,
+  onNavigate,
   selectedId,
+  isSearch = false,
 }: RestaurantItemCard) => {
   const { description, id, uploadImageUrl, name, price } = menu;
   const isSelected = id === selectedId;
@@ -51,10 +55,15 @@ const RestaurantItemCard = ({
     });
   };
 
+  const handleClick = () => {
+    if (onNavigate) onNavigate();
+    if (handleSelect) handleSelect(id);
+  };
+
   return (
     <>
       <div
-        onClick={() => handleSelect(id)}
+        onClick={handleClick}
         className="flex h-[116px] min-w-[310px] sm:h-34.5 rounded-2xl overflow-hidden border border-neutral-300 gap-2 cursor-pointer"
       >
         {/* Product Image - Adjusted for Left-Side Radius Only */}
@@ -69,24 +78,24 @@ const RestaurantItemCard = ({
         </div>
 
         {/* Product Details */}
-        <div className="flex flex-col justify-center flex-1">
-          <div>
+        <div className="flex flex-1 justify-between gap-[13px]">
+          <div className="flex flex-col justify-center">
             <h3 className="text-sm sm:text-lg leading-5 sm:leading-6 line-clamp-1">
               {name}
             </h3>
-            <p className="text-xs leading-4 sm:mt-1 text-neutral-600 line-clamp-2 max-w-[145px]">
+            <p className="text-xs leading-4 sm:mt-1 text-neutral-600 line-clamp-1 max-w-[70%]">
               {description}
             </p>
-          </div>
-
-          <div className="flex justify-between items-center sm:mt-4 sm:mr-2.5">
-            <span className="text-base sm:text-xl font-medium">
+            <span className="text-base sm:text-xl font-medium max-sm:mt-[13px]">
               ₦{Number(price).toLocaleString()}
             </span>
-            {/* ADDED: Plus Icon Button */}
+          </div>
+
+          {/* ADDED: Plus Icon Button */}
+          {!isSearch && (
             <button
               // Match the light orange background, right-side rounding, and padding/size
-              className="bg-primary-100 size-9 flex items-center justify-center rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              className="self-end  bg-primary-100 size-9 flex items-center justify-center rounded-md disabled:opacity-50 mr-2.5 mb-2.5"
               onClick={handleQuickAdd}
               disabled={addToCart.isPending}
               aria-label={`Add ${name} to cart`}
@@ -97,7 +106,7 @@ const RestaurantItemCard = ({
                 <RiAddFill className="size-6 text-primary" />
               )}
             </button>
-          </div>
+          )}
         </div>
       </div>
 

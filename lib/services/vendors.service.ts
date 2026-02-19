@@ -48,13 +48,14 @@ export interface Menu {
   description: string;
   price: string;
   uploadImageUrl: string;
+  imageUrl: string;
   categoryId: string;
   vendorId: string;
-  outOfStock: boolean;
-  addons: Addon[];
-  sizes: Size[];
+  outOfStock?: boolean;
+  addons?: Addon[];
+  sizes?: Size[];
   isMenuSet: boolean;
-  PromotionItem: {
+  PromotionItem?: {
     id: string;
     promotionId: string;
     menuItemId: string;

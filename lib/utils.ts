@@ -17,8 +17,8 @@ export function formatPrettyDate(date: Date | string) {
   )}`;
 }
 
-export function formatDMY(date: Date | string){
-  return `${format(date, "dd/mm/yyyy")}`
+export function formatDMY(date: Date | string) {
+  return `${format(date, "dd/mm/yyyy")}`;
 }
 
 export function formatTime(date: Date | string) {
@@ -40,3 +40,14 @@ export function fallbackImg(
   img.dataset.fallbackApplied = "true";
   img.src = fallbackSrc;
 }
+
+export const getCategoryPath = (categoryId: string) => {
+  switch (categoryId) {
+    case "Restaurant":
+      return "restaurants";
+    case "Groceries":
+      return "groceries";
+    case "Markets":
+      return "markets";
+  }
+};

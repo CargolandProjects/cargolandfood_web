@@ -1,4 +1,4 @@
-import { auth, User } from "@/lib/services/auth.service";
+import { auth } from "@/lib/services/auth.service";
 import { useMutation } from "@tanstack/react-query";
 import { useSession } from "@/lib/hooks/useSession";
 import { toast } from "sonner";
@@ -28,15 +28,15 @@ export const useResendOtp = () => {
 };
 
 export const useUpdateUser = () => {
-  const { setUser } = useSession();
+  const { setUser, user } = useSession();
 
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: Partial<User> }) =>
-      auth.updateUserById(id, payload),
+    mutationFn: auth.updateUserById,
     onSuccess: async (response) => {
-      if (response?.user) {
-        await setUser(response.user);
+      if (response?.user && user) {
+        await setUser({ ...user, ...response.user });
       }
+
       toast.success(response.message || "User updated successfully");
     },
     onError: (error) => {

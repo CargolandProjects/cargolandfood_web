@@ -36,7 +36,7 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
     }) || [];
 
   return (
-    <div>
+    <div className="h-full">
       {/* Header */}
       <div className="relative flex items-center justify-center">
         <button onClick={() => setActiveTab(null)} className="absolute left-0">

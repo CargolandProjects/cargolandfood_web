@@ -48,7 +48,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
     "DELIVERY"
   );
 
-  const { data, isLoading, error } = useGetVendorById(id);
+  const { data, isLoading, error, isSuccess } = useGetVendorById(id);
   const { mutate: toggleFavourite } = useToggleFavourite();
   const { user } = useSession();
 
@@ -214,7 +214,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
         {/* 3. Product Listing Section */}
         <div className="sm:p-4 max-sm:mt-3 flex-1">
           <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-10">
-            {!error &&
+            {isSuccess &&
               menus.length > 0 &&
               menus.map((item) => (
                 <RestaurantItemCard
