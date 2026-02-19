@@ -15,7 +15,7 @@ interface RestaurantItemCard {
   handleSelect?: (id: string) => void;
   onNavigate?: () => void;
   selectedId?: string | null;
-  isSearch: boolean;
+  isSearch?: boolean;
 }
 
 const RestaurantItemCard = ({
@@ -95,7 +95,7 @@ const RestaurantItemCard = ({
           {!isSearch && (
             <button
               // Match the light orange background, right-side rounding, and padding/size
-              className="self-end  bg-primary-100 size-9 flex items-center justify-center rounded-md disabled:opacity-50 mr-2.5 mb-2.5"
+              className="self-end shrink-0 bg-primary-100 size-9 flex items-center justify-center rounded-md disabled:opacity-50 mr-2.5 mb-2.5"
               onClick={handleQuickAdd}
               disabled={addToCart.isPending}
               aria-label={`Add ${name} to cart`}

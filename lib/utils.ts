@@ -49,5 +49,8 @@ export const getCategoryPath = (categoryId: string) => {
       return "groceries";
     case "Markets":
       return "markets";
+      
+    default:
+      return null;
   }
 };

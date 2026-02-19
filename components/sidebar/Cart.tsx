@@ -12,7 +12,8 @@ import ErrorStateUi from "../ErrorStateUi";
 import EmptyStateUi from "../EmptyStateUi";
 import { useCart } from "@/lib/hooks/queries/useCart";
 import { useClearCart } from "@/lib/hooks/mutations/useMutateCart";
-import { fallbackImg } from "@/lib/utils";
+import { fallbackImg, getCategoryPath } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface SettingsProps {
   setActiveTab: (tab: ActiveTab) => void;
@@ -82,19 +83,37 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
   const openCheckout = useUIStore((s) => s.openCheckout);
   const { data, isLoading, isError, isSuccess } = useCart();
   const { mutate: deleteCart, isPending } = useClearCart();
+  const router = useRouter();
+
   const carts = data?.data || [];
   const address = data?.address;
+
   console.log("cart data", carts);
   // const cartWithItems = carts?.filter((cart) => cart.items.length > 0) || [];
 
-  const handleDeleteCart = (cartId: string, vendorId: string) => {
+  const handleDeleteCart = (
+    cartId: string,
+    vendorId: string,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
     deleteCart({ cartId, vendorId });
   };
 
-  const handleOpenCHeckout = (id: string) => {
+  const handleOpenCHeckout = (
+    id: string,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
     console.log("id", "I was trigered", id);
     if (!id.trim()) return;
     openCheckout({ vendorId: id });
+  };
+
+  const handleRoute = (category: string, vendorId: string) => {
+    if (!category && !vendorId) return;
+
+    router.push(`/${getCategoryPath(category)}/${vendorId}`);
   };
 
   return (
@@ -151,7 +170,13 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
             );
 
             return (
-              <div className="" key={idx}>
+              <div
+                onClick={() =>
+                  handleRoute(cart.vendor.businessName, cart.vendor.vendorId)
+                }
+                className="hover:cursor-pointer"
+                key={idx}
+              >
                 <div
                   key={idx}
                   className="space-y-4 px-3 py-4 rounded-md border border-neutral-300"
@@ -191,10 +216,11 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
 
                   <div className="flex flex-col sm:flex-row gap-4 mt-6">
                     <Button
-                      onClick={() =>
+                      onClick={(e) =>
                         handleDeleteCart(
                           cart.carts[0].items[0].cartId,
-                          cart.vendor.vendorId
+                          cart.vendor.vendorId,
+                          e
                         )
                       }
                       variant="outline"
@@ -207,7 +233,9 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
                       )}
                     </Button>
                     <Button
-                      onClick={() => handleOpenCHeckout(cart.vendor.vendorId)}
+                      onClick={(e) =>
+                        handleOpenCHeckout(cart.vendor.vendorId, e)
+                      }
                       className="submit-btn flex-1"
                     >
                       Checkout
