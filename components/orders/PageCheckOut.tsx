@@ -25,10 +25,7 @@ import {
   useAddToCart,
   useRemoveCartItem,
 } from "@/lib/hooks/mutations/useMutateCart";
-import {
-  useMakePayment,
-  useSimulatePayment,
-} from "@/lib/hooks/mutations/useOrder";
+import { useMakePayment } from "@/lib/hooks/mutations/useOrder";
 import ConfirmationModal from "../ConfirmationModal";
 import RiderNote from "./RiderNoteModal";
 import CouponSuccess from "./CouponSuccessModal";
@@ -40,6 +37,9 @@ import Loader from "../Loader";
 import EmptyStateUi from "../EmptyStateUi";
 import { useUIStore } from "@/lib/stores/uiStore";
 import { useSession } from "@/lib/hooks/useSession";
+import { toast } from "sonner";
+// import { useSuccessfulPaymentEvent } from "@/lib/hooks/useSocket";
+// import { useQueryClient } from "@tanstack/react-query";
 
 type Delivery = "DELIVERY" | "PICKUP";
 type PaymentMethod = "wallet" | "newCard" | "bankTransfer";
@@ -70,12 +70,12 @@ const PageCheckOut = ({
   const [showCoupon, setShowCoupon] = useState(false);
   const [showGift, setShowGift] = useState(false);
   const [showConfirmPickup, setShowConfirmPickup] = useState(false);
-  const [showSuccess, setSuccess] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
     null
   );
   const openAddresses = useUIStore((s) => s.openAddresses);
-  const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
+  // const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
   const { user } = useSession();
 
   // API mutations
@@ -84,7 +84,27 @@ const PageCheckOut = ({
   const { mutate: removeItem, isPending: isRemovingItem } =
     useRemoveCartItem(vendorId);
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
-  const { mutate: simulatePayent } = useSimulatePayment();
+  // const queryClient = useQueryClient();
+
+  // Hook to listen to successful payment event
+  // useSuccessfulPaymentEvent((data) => {
+  //   try {
+  //     // console.log("Payment Success Event: ", data);
+  //     openOrderSuccess();
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["cart"],
+  //     });
+
+  //     const vendorId = data.payload?.data?.vendorId;
+  //     if (vendorId)
+  //       queryClient.invalidateQueries({
+  //         queryKey: ["checkoutPreview"],
+  //       });
+  //   } catch (error) {
+  //     console.error("Error handling successful payment:", error);
+  //     toast.error("Payment successful, but UI update failed. Please refresh.");
+  //   }
+  // });
 
   // Format currency
   const currency = (n: number) => `₦${n.toLocaleString()}`;
@@ -104,21 +124,32 @@ const PageCheckOut = ({
   const handleOrder = useCallback(
     (cartId: string) => {
       makePayment(cartId, {
-        onSuccess: (data) => {
-          // setShowOrderSuccess(true);
+        onSuccess: (res) => {
+          const authUrl = res.data.authorization_url;
 
-          console.log("Checkout Session ID: ", data.checkoutSessionId);
-
-          if (!data.checkoutSessionId) return;
-          simulatePayent(data.checkoutSessionId, {
-            onSuccess: () => {
-              openOrderSuccess();
-            },
-          });
+          if (!authUrl) {
+            toast.error("Payment initiation failed");
+            return;
+          }
+          // Try to open in new tab
+          const paymentWindow = window.open(
+            authUrl,
+            "_blank",
+            "noopener,noreferrer"
+          );
+          // If redirect blocked, fallback to redirect
+          if (
+            !paymentWindow ||
+            paymentWindow.closed ||
+            typeof paymentWindow.closed === "undefined"
+          ) {
+            // Popup was blocked - use redirect instead
+            window.location.href = authUrl;
+          }
         },
       });
     },
-    [makePayment, simulatePayent, openOrderSuccess]
+    [makePayment]
   );
 
   // Handle place order
@@ -196,7 +227,7 @@ const PageCheckOut = ({
       },
       couponSuccess: {
         open: showSuccess,
-        onOpenChange: setSuccess,
+        onOpenChange: setShowSuccess,
       },
       clearCartModal: {
         open: showAlert,
@@ -370,7 +401,7 @@ const PageCheckOut = ({
               </button>
 
               <button
-                onClick={() => setSuccess(true)}
+                onClick={() => setShowSuccess(true)}
                 className="w-full flex items-center justify-between hover:underline cursor-pointer"
               >
                 <span className="flex items-center gap-2 text-base leading-5">

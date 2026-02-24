@@ -38,7 +38,7 @@ const AddressModal = () => {
     isSuccess,
   } = useAddresses(isAuthenticated);
   const { mutate: addAddress, isPending } = useAddAddress();
-  const { mutate: selectAddress } = useSelectAddress();
+  const { mutate: selectAddress, isPending: isSelecting } = useSelectAddress();
   const { mutate: deleteAddress } = useDeleteAddress();
   const { mutate: setGuestaddress, isPending: isGuestPending } =
     useSetGuestAddress();
@@ -151,6 +151,7 @@ const AddressModal = () => {
   };
 
   const handleSelect = (addressId: string) => {
+    if (isSelecting) return;
     if (!addressId) return;
     setSettingId(addressId);
 

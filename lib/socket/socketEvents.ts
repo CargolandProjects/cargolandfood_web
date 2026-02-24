@@ -3,6 +3,8 @@
  * These match the events emitted by the backend
  */
 
+import { APIResponse, Order } from "../types/cart.types";
+
 export const SOCKET_EVENTS = {
   NOTIFICATION: "notification",
   SUCCESSFUL_PAYMENT: "successful-payment",
@@ -22,14 +24,28 @@ export interface NotificationEvent {
   // Add other fields based on your backend response
 }
 
-export interface SuccessfulPaymentEvent {
-  reference: string;
-  orderId: string;
-  amount: string;
-  status: "success";
-  message: string;
-  // Add other fields based on your backend response
+interface VerificationCode {
+  VerificationCode: {
+    id: string;
+    orderId: string;
+    code: string;
+    userId: string;
+    riderId: string | null;
+    isUsed: boolean;
+    usedAt: string | null; // ISO date string or null
+    createdAt: string; // ISO date string
+    updatedAt: string; // ISO date string
+  };
 }
+
+type SuccessPaymentResponse = Order &
+  VerificationCode & {
+    checkoutSessionId: string;
+  };
+
+export type SuccessfulPaymentEvent = {
+  payload: APIResponse<SuccessPaymentResponse>;
+};
 
 export interface FailedPaymentEvent {
   reference: string;

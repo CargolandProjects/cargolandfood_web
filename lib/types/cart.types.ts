@@ -132,12 +132,29 @@ interface PlaceOrder {
 
 export type PlaceOrderResponse = APIResponse<PlaceOrder>;
 
-export interface MakePaymentResponse {
-  status: string;
-  redirect: string;
-  checkoutSessionId: string;
-  amount: string;
+interface MakePayment {
+  authorization_url: string;
+  access_code: string;
+  reference: string;
 }
+
+export type MakePaymentResponse = APIResponse<MakePayment>;
+
+// Enums for status fields
+export type OrderStatus =
+  | "NEW"
+  | "ACCEPTED"
+  | "PREPARING"
+  | "READY"
+  | "COMPLETED"
+  | "CANCELLED";
+
+export type PaymentStatus =
+  | "PAID"
+  | "UNPAID"
+  | "REFUNDED"
+  | "FAILED"
+  | "PENDING";
 
 export interface Order {
   id: string;
@@ -145,12 +162,12 @@ export interface Order {
   userId: string;
   vendorId: string;
   cartId: string;
-  deliveryType: "DELIVERY" | string;
+  deliveryType: "DELIVERY" | "PICKUP";
   addressSnapshot: AddressSnapshot;
   couponCode: string | null;
   isCoupon: boolean;
-  status: "NEW" | string;
-  paymentStatus: "PAID" | string;
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
   subtotal: string;
   discountTotal: string;
   deliveryFee: string;
@@ -189,6 +206,7 @@ export interface OrderItem {
   id: string;
   orderId: string;
   menuId: string;
+  menuImg: string;
   menuName: string;
   unitPrice: string;
   quantity: number;

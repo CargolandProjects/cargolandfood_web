@@ -1,66 +1,46 @@
 import { useEffect } from "react";
-import { socketManager } from "@/lib/socket/socketManager";
-import {
-  SOCKET_EVENTS,
+import { useSocketContext } from "@/lib/socket/SocketProvider";
+import type {
   NotificationEvent,
   SuccessfulPaymentEvent,
   FailedPaymentEvent,
 } from "@/lib/socket/socketEvents";
 
 /**
- * Type-safe event listeners
+ * Generic hook to listen to socket events
+ * Automatically cleans up listener on unmount
  */
-type SocketEventName = (typeof SOCKET_EVENTS)[keyof typeof SOCKET_EVENTS];
+export const useSocketEvent = <T = unknown>(
+  eventName: string,
+  callback: (data: T) => void
+) => {
+  const socket = useSocketContext();
 
-type EventCallback<T> = (data: T) => void;
-
-/**
- * Hook to listen to a specific Socket.IO event
- * Automatically handles cleanup on component unmount
- * 
- * @example
- * useSocketEvent("notification", (data) => {
- *   toast.info(data.message);
- * });
- */
-export function useSocketEvent<T = unknown>(
-  eventName: SocketEventName,
-  callback: EventCallback<T>
-) {
   useEffect(() => {
-    const socket = socketManager.getSocket();
-
     if (!socket) {
-      console.warn(`Socket not connected. Cannot listen to "${eventName}" event.`);
-      return;
+      throw new Error("useSocketEvent must be used within a SocketContext");
     }
 
-    // Type-safe event listener
-    const handler = (data: T) => {
-      callback(data);
-    };
+    socket.on(eventName, callback);
 
-    socket.on(eventName, handler);
-
-    // Cleanup: Remove listener on unmount
+    // Cleanup listener on unmount
     return () => {
-      socket.off(eventName, handler);
+      socket.off(eventName, callback);
     };
-  }, [eventName, callback]);
-}
+  }, [socket, eventName, callback]);
+};
 
 /**
- * Convenience hooks for specific events (optional, for better DX)
+ * Convenience hooks for specific events
  */
+export const useNotificationEvent = (
+  callback: (data: NotificationEvent) => void
+) => useSocketEvent<NotificationEvent>("notification", callback);
 
-export function useNotificationEvent(callback: EventCallback<NotificationEvent>) {
-  useSocketEvent(SOCKET_EVENTS.NOTIFICATION, callback);
-}
+export const useSuccessfulPaymentEvent = (
+  callback: (data: SuccessfulPaymentEvent) => void
+) => useSocketEvent<SuccessfulPaymentEvent>("successful-payment", callback);
 
-export function useSuccessfulPaymentEvent(callback: EventCallback<SuccessfulPaymentEvent>) {
-  useSocketEvent(SOCKET_EVENTS.SUCCESSFUL_PAYMENT, callback);
-}
-
-export function useFailedPaymentEvent(callback: EventCallback<FailedPaymentEvent>) {
-  useSocketEvent(SOCKET_EVENTS.FAILED_PAYMENT, callback);
-}
+export const useFailedPaymentEvent = (
+  callback: (data: FailedPaymentEvent) => void
+) => useSocketEvent<FailedPaymentEvent>("failed-payment", callback);

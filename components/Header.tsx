@@ -48,7 +48,7 @@ export function Header({ setSideBar }: HeaderProps) {
   const { guestLocation } = useGuestLocation();
   const openAdress = useUIStore((s) => s.openAddresses);
   const { user: session, isAuthenticated, signOut } = useSession();
-  console.log("Session Data:", session);
+  // console.log("Session Data:", session);
 
   const [firstName, lastName] = session?.fullName.split(" ") || [];
   const initials =

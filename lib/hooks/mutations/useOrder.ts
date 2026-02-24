@@ -6,8 +6,8 @@ export function useMakePayment() {
   return useMutation({
     mutationFn: orderService.makePayment,
 
-    onSuccess: (_, vendorId) => {
-      toast.success("Order placed successfully");
+    onSuccess: (res) => {
+      toast.success(res.message || "Order placed successfully");
     },
 
     onError: (error) => {
