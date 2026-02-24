@@ -25,17 +25,17 @@ export interface NotificationEvent {
 }
 
 interface VerificationCode {
-  VerificationCode: {
-    id: string;
-    orderId: string;
-    code: string;
-    userId: string;
-    riderId: string | null;
-    isUsed: boolean;
-    usedAt: string | null; // ISO date string or null
-    createdAt: string; // ISO date string
-    updatedAt: string; // ISO date string
-  };
+VerificationCode: {
+  id: string;
+  orderId: string;
+  code: string;
+  userId: string;
+  riderId: string | null;
+  isUsed: boolean;
+  usedAt: string | null; // ISO date string or null
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+};
 }
 
 type SuccessPaymentResponse = Order &

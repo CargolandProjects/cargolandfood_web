@@ -25,7 +25,7 @@ import {
   useAddToCart,
   useRemoveCartItem,
 } from "@/lib/hooks/mutations/useMutateCart";
-import { useMakePayment } from "@/lib/hooks/mutations/useOrder";
+import { useMakePayment } from "@/lib/hooks/mutations/usePlaceOrder";
 import ConfirmationModal from "../ConfirmationModal";
 import RiderNote from "./RiderNoteModal";
 import CouponSuccess from "./CouponSuccessModal";
@@ -131,21 +131,8 @@ const PageCheckOut = ({
             toast.error("Payment initiation failed");
             return;
           }
-          // Try to open in new tab
-          const paymentWindow = window.open(
-            authUrl,
-            "_blank",
-            "noopener,noreferrer"
-          );
-          // If redirect blocked, fallback to redirect
-          if (
-            !paymentWindow ||
-            paymentWindow.closed ||
-            typeof paymentWindow.closed === "undefined"
-          ) {
-            // Popup was blocked - use redirect instead
-            window.location.href = authUrl;
-          }
+          //Navigate to payment gateway url
+          window.location.href = authUrl;
         },
       });
     },

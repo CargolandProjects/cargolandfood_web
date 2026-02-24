@@ -39,6 +39,7 @@ export const API_ROUTES = {
     simulatePayment: (checkoutSessionId: string) =>
       `/orders/payment-simulation/${checkoutSessionId}`,
     getOrders: "/orders/get-all-user-orders",
+    orderDetails: (orderId: string) => `/orders/order/${orderId}`,
   },
 
   address: {

@@ -60,9 +60,9 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
   const [showDetails, setShowDetails] = useState(true);
   const isLoading = false;
   const isError = false;
-  // const isSuccess = true;
+  const isSuccess = true;
   return (
-    <ScrollArea className="h-screen ">
+    <ScrollArea className="h-dvh ">
       <div className="py-4 sm:p-6">
         {isDesktop ? (
           // Desktop Header
@@ -100,144 +100,148 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
         )}
 
         {isDesktop && <Separator className="mt-3 mb-6" />}
-        {/* Delivery Trackinf Map */}
-        <div className="h-[432px] sm:h-[416px] w-full overflow-hidden rounded-xl max-sm:mt-4">
-          <img src={map.src} alt="map" className="size-full object-cover" />
-        </div>
-
-        <div className="mt-6 sm:mt-3 max-sm:px-5">
-          {/* Delivery Rider details */}
-          <div className="flex justify-between items-center">
-            <div className="flex gap-3 items-center">
-              <div className="size-12 rounded-full overflow-hidden">
-                <img
-                  src={user1.src}
-                  alt="map"
-                  className="size-full object-cover"
-                />
-              </div>
-              <div className="">
-                <p className="text-base font-medium ">Precious Eric</p>
-                <p className="text-xs text-neutral-600">Delivery man</p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" className="size-10 rounded-button">
-                <RiMessage2Fill className="size-5 text-neutral-600" />
-              </Button>
-              <Button variant="outline" className="size-10 rounded-button">
-                <RiPhoneFill className="size-5 text-neutral-600" />
-              </Button>
-            </div>
-          </div>
-
-          <Separator className="my-5" />
-
-          <div className="space-y-5">
-            <div className="flex justify-between">
-              <div className="flex gap-2 items-center">
-                <RiTimeFill className="size-5 text-neutral-500" />
-                <span className="text-base leading-5 text-neutral-600">
-                  Estimated time
-                </span>
-              </div>
-              <span className="text-base leading-5">20 mins</span>
+        {isSuccess && (
+          <div>
+            {/* Delivery Trackinf Map */}
+            <div className="h-[432px] sm:h-[416px] w-full overflow-hidden rounded-xl max-sm:mt-4">
+              <img src={map.src} alt="map" className="size-full object-cover" />
             </div>
 
-            {showDetails && (
-              <div className="border rounded-xl px-6 py-4 space-y-6">
-                {orderState.map((item, idx) => (
-                  <div className="flex gap-4 items-center" key={idx}>
-                    {/* Left-Hand Side Progress Indicators */}
-                    <div className="relative">
-                      {item.status === "success" ? (
-                        <div className="size-7 bg-primary rounded-full" />
-                      ) : idx === 0 || item.status === "pending" ? (
-                        <RiMapPin2Fill className="size-7 text-primary" />
-                      ) : (
-                        <div className="size-8 bg-neutral-100 rounded-full" />
-                      )}
-                      {/* 
+            <div className="mt-6 sm:mt-3 max-sm:px-5">
+              {/* Delivery Rider details */}
+              <div className="flex justify-between items-center">
+                <div className="flex gap-3 items-center">
+                  <div className="size-12 rounded-full overflow-hidden">
+                    <img
+                      src={user1.src}
+                      alt="map"
+                      className="size-full object-cover"
+                    />
+                  </div>
+                  <div className="">
+                    <p className="text-base font-medium ">Precious Eric</p>
+                    <p className="text-xs text-neutral-600">Delivery man</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" className="size-10 rounded-button">
+                    <RiMessage2Fill className="size-5 text-neutral-600" />
+                  </Button>
+                  <Button variant="outline" className="size-10 rounded-button">
+                    <RiPhoneFill className="size-5 text-neutral-600" />
+                  </Button>
+                </div>
+              </div>
+
+              <Separator className="my-5" />
+
+              <div className="space-y-5">
+                <div className="flex justify-between">
+                  <div className="flex gap-2 items-center">
+                    <RiTimeFill className="size-5 text-neutral-500" />
+                    <span className="text-base leading-5 text-neutral-600">
+                      Estimated time
+                    </span>
+                  </div>
+                  <span className="text-base leading-5">20 mins</span>
+                </div>
+
+                {showDetails && (
+                  <div className="border rounded-xl px-6 py-4 space-y-6">
+                    {orderState.map((item, idx) => (
+                      <div className="flex gap-4 items-center" key={idx}>
+                        {/* Left-Hand Side Progress Indicators */}
+                        <div className="relative">
+                          {item.status === "success" ? (
+                            <div className="size-7 bg-primary rounded-full" />
+                          ) : idx === 0 || item.status === "pending" ? (
+                            <RiMapPin2Fill className="size-7 text-primary" />
+                          ) : (
+                            <div className="size-8 bg-neutral-100 rounded-full" />
+                          )}
+                          {/* 
                           Okay to sync this progress bar appropriately, I had to push up the the bars to the top using -top-6.5
                           and then only render those with index greater than zero. The reason for this is because when the state is idle,
                           it's gray else it's primary {PENDING, SUCCESS}, and this made the bar beneath light up when the first step was sill pending
                           which is against the design as the step/icon beneath it is still gray. Hence the earlier stated fix for proper syncing
                         */}
-                      {idx > 0 && (
-                        // Status Bar
-                        <div
-                          className={` ${
-                            item.status === "idle"
-                              ? "bg-neutral-100"
-                              : "bg-primary"
-                          } w-1 h-full absolute -top-6.5 left-1/2 -z-1 transform -translate-x-1/2 `}
-                        />
-                      )}
-                    </div>
+                          {idx > 0 && (
+                            // Status Bar
+                            <div
+                              className={` ${
+                                item.status === "idle"
+                                  ? "bg-neutral-100"
+                                  : "bg-primary"
+                              } w-1 h-full absolute -top-6.5 left-1/2 -z-1 transform -translate-x-1/2 `}
+                            />
+                          )}
+                        </div>
 
-                    <p className="text-base leading-5">{item.title}</p>
+                        <p className="text-base leading-5">{item.title}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
+                )}
 
-            {/* Order Details Summary */}
-            <div className="flex justify-between">
-              <div className="flex gap-2 items-center">
-                <RiMapPin2Fill className="size-5 text-neutral-500" />
-                <span className="text-base leading-5 text-neutral-600">
-                  Deliver to
-                </span>
-              </div>
-              <span className="text-base leading-5">Home</span>
-            </div>
-
-            {showDetails && (
-              <div className="flex justify-between">
-                <div className="flex gap-2 items-center">
-                  <RiMapPin2Fill className="size-5 text-neutral-500" />
-                  <span className="text-base leading-5 text-neutral-600">
-                    Amount Paid
-                  </span>
+                {/* Order Details Summary */}
+                <div className="flex justify-between">
+                  <div className="flex gap-2 items-center">
+                    <RiMapPin2Fill className="size-5 text-neutral-500" />
+                    <span className="text-base leading-5 text-neutral-600">
+                      Deliver to
+                    </span>
+                  </div>
+                  <span className="text-base leading-5">Home</span>
                 </div>
-                <span className="text-base leading-5">₦14, 490</span>
-              </div>
-            )}
-          </div>
 
-          {showDetails && (
-            <div className="mt-6">
-              <h3 className="text-sm font-medium leading-5 text-neutral-600">
-                Food to be delivered
-              </h3>
-
-              <div className="flex gap-4 mt-3">
-                {menuImg.map((menu) => (
-                  <div key={menu.id} className="">
-                    <div className="size-16 rounded-lg overflow-hidden">
-                      <img
-                        src={menu.img}
-                        alt={menu.id}
-                        className="size-full object-cover"
-                      />
+                {showDetails && (
+                  <div className="flex justify-between">
+                    <div className="flex gap-2 items-center">
+                      <RiMapPin2Fill className="size-5 text-neutral-500" />
+                      <span className="text-base leading-5 text-neutral-600">
+                        Amount Paid
+                      </span>
                     </div>
-                    <p className="ml-1 mt-1 font-medium text-neutral-600">
-                      x{menu.qty}
-                    </p>
+                    <span className="text-base leading-5">₦14, 490</span>
                   </div>
-                ))}
+                )}
               </div>
-            </div>
-          )}
 
-          <Button
-            className="mt-6 sm:mt-20 md:py-3.5 submit-btn"
-            onClick={() => setShowDetails((prev) => !prev)}
-            // disabled={isPending}
-          >
-            {showDetails ? "Hide Details" : "More Details"}
-          </Button>
-        </div>
+              {showDetails && (
+                <div className="mt-6">
+                  <h3 className="text-sm font-medium leading-5 text-neutral-600">
+                    Food to be delivered
+                  </h3>
+
+                  <div className="flex gap-4 mt-3">
+                    {menuImg.map((menu) => (
+                      <div key={menu.id} className="">
+                        <div className="size-16 rounded-lg overflow-hidden">
+                          <img
+                            src={menu.img}
+                            alt={menu.id}
+                            className="size-full object-cover"
+                          />
+                        </div>
+                        <p className="ml-1 mt-1 font-medium text-neutral-600">
+                          x{menu.qty}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <Button
+                className="mt-6 sm:mt-20 md:py-3.5 submit-btn"
+                onClick={() => setShowDetails((prev) => !prev)}
+                // disabled={isPending}
+              >
+                {showDetails ? "Hide Details" : "More Details"}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </ScrollArea>
   );
@@ -245,6 +249,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
 
 const TrackOrder = () => {
   const open = useUIStore((s) => s.trackOrder.open);
+  // const open = true;
   const close = useUIStore((s) => s.closeTrackOrder);
 
   // Detect if we're on desktop (only runs once on mount, then on resize)

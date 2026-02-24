@@ -11,6 +11,7 @@ interface AddonItem {
   id: string;
   orderItemId: string;
   menuAddonId: string;
+  addonImg: string;
   name: string;
   price: string;
   quantity: number;
@@ -21,6 +22,7 @@ interface Items {
   id: string;
   orderId: string;
   menuId: string;
+  menuImg: string;
   menuName: string;
   unitPrice: string;
   quantity: number;
@@ -76,6 +78,13 @@ export const orderService = {
   async getOrders() {
     const res = await apiClient.get<APIResponse<GetOrdersResponse[]>>(
       API_ROUTES.order.getOrders
+    );
+    return res.data;
+  },
+
+  async orderDetails(orderId: string) {
+    const res = await apiClient.get<APIResponse<GetOrdersResponse>>(
+      API_ROUTES.order.orderDetails(orderId)
     );
     return res.data;
   },

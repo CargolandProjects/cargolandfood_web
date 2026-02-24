@@ -3,7 +3,7 @@ import { ActiveTab } from "./Sidebar";
 import Loader from "../Loader";
 import ErrorStateUi from "../ErrorStateUi";
 import EmptyStateUi from "../EmptyStateUi";
-import { useGetOrders } from "@/lib/hooks/queries/useGetOrders";
+import { useGetOrders } from "@/lib/hooks/queries/useOrders";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { fallbackImg } from "@/lib/utils";
+import { useUIStore } from "@/lib/stores/uiStore";
 
 interface OrdersProps {
   setActiveTab: (tab: ActiveTab) => void;
@@ -24,7 +25,7 @@ type Tabs = "current" | "previous";
 const Orders = ({ setActiveTab }: OrdersProps) => {
   const { data: orders, isLoading, isError, isSuccess } = useGetOrders();
   const [currentTab, setCurrentTab] = useState<Tabs>("current");
-
+  const openOrderDetails = useUIStore((s) => s.openOrderDetails);
   const filteredOrders =
     orders?.filter((order) => {
       if (currentTab === "current")
@@ -36,7 +37,7 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
     }) || [];
 
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col">
       {/* Header */}
       <div className="relative flex items-center justify-center">
         <button onClick={() => setActiveTab(null)} className="absolute left-0">
@@ -72,9 +73,9 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
         <Tabs
           value={currentTab}
           onValueChange={(v) => setCurrentTab(v as Tabs)}
-          className="mt-4 gap-0"
+          className="mt-4 gap-1 flex-1 h-full flex flex-col"
         >
-          <TabsList className="w-full h-12.5! bg-[#FEF3EB]">
+          <TabsList className="w-full min-h-12.5! bg-[#FEF3EB]">
             <TabsTrigger
               value="current"
               className="text-neutral-500 text-base font-medium leading-6"
@@ -89,7 +90,10 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="current" className="space-y-6 mt-4">
+          <TabsContent
+            value="current"
+            className="space-y-6 pt-3 pb-8 sm:pb-4 overflow-auto h-full hide-scrollbar"
+          >
             {filteredOrders.map((order, idx) => {
               const orderSummary = order.items
                 .map((item) => {
@@ -170,6 +174,7 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
 
                   <div className="mt-3 flex gap-2">
                     <Button
+                      onClick={() => openOrderDetails({ orderId: order.id })}
                       variant="outline"
                       className="h-10 flex-1 uppercase rounded-button!"
                     >
@@ -181,7 +186,10 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
             })}
           </TabsContent>
 
-          <TabsContent value="previous" className="space-y-6 mt-4">
+          <TabsContent
+            value="previous"
+            className="space-y-6 pt-3 pb-8 sm:pb-4 overflow-auto h-full hide-scrollbar"
+          >
             {filteredOrders.map((order, idx) => {
               const orderSummary = order.items
                 .map((item) => {

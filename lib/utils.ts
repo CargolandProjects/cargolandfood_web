@@ -6,8 +6,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatDateWComma(date: Date | string) {
-  return ` ${format(date, "d MMM")}, ${format(date, "yyyy")}`;
+export function formatDateWComma(date: Date | string, wComma: boolean = true) {
+  return ` ${format(date, "d MMM")}${wComma ? "," : ""} ${format(
+    date,
+    "yyyy"
+  )}`;
 }
 
 export function formatPrettyDate(date: Date | string) {
@@ -49,7 +52,7 @@ export const getCategoryPath = (categoryId: string) => {
       return "groceries";
     case "Markets":
       return "markets";
-      
+
     default:
       return null;
   }

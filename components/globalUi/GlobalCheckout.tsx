@@ -16,8 +16,7 @@ import {
 } from "@/lib/hooks/mutations/useMutateCart";
 import {
   useMakePayment,
-  useSimulatePayment,
-} from "@/lib/hooks/mutations/useOrder";
+} from "@/lib/hooks/mutations/usePlaceOrder";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Separator } from "../ui/separator";
 import {
@@ -43,6 +42,7 @@ import ErrorStateUi from "../ErrorStateUi";
 import EmptyStateUi from "../EmptyStateUi";
 import { useSession } from "@/lib/hooks/useSession";
 import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "sonner";
 
 type Delivery = "delivery" | "pickup";
 type PaymentMethod = "wallet" | "newCard" | "bankTransfer";
@@ -55,7 +55,7 @@ const GlobalCheckoutCOntent = ({
   isDesktop,
   closeCheckout,
 }: GlobalCheckoutProps) => {
-  const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
+  // const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
   const vendorId = useUIStore((s) => s.checkout.payload)?.vendorId || "";
   const [deliveryType, setDeliveryType] = useState<Delivery>("delivery");
 
@@ -83,7 +83,6 @@ const GlobalCheckoutCOntent = ({
     null
   );
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
-  const { mutate: simulatePayent } = useSimulatePayment();
   const openAddresses = useUIStore((s) => s.openAddresses);
   const { user } = useSession();
 
@@ -100,20 +99,19 @@ const GlobalCheckoutCOntent = ({
   const handleOrder = useCallback(
     (cartId: string) => {
       makePayment(cartId, {
-        onSuccess: (data) => {
-          console.log("Checkout Session ID: ", data.checkoutSessionId);
+        onSuccess: (res) => {
+          const authUrl = res.data.authorization_url;
 
-          if (!data.checkoutSessionId) return;
-          simulatePayent(data.checkoutSessionId, {
-            onSuccess: () => {
-              closeCheckout();
-              openOrderSuccess();
-            },
-          });
+          if (!authUrl) {
+            toast.error("Payment initiation failed");
+            return;
+          }
+          //Navigate to payment gateway url
+          window.location.href = authUrl;
         },
       });
     },
-    [makePayment, simulatePayent, closeCheckout, openOrderSuccess]
+    [makePayment]
   );
 
   // Handle place order

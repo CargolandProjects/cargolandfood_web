@@ -17,9 +17,12 @@ import {
   RiTimeLine,
 } from "react-icons/ri";
 import { restaurant } from "@/assets/svgs";
-import { useCartStore } from "@/lib/stores/CartStore";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useOrderDetails } from "@/lib/hooks/queries/useOrders";
+import Loader from "../Loader";
+import ErrorStateUi from "../ErrorStateUi";
+import { fallbackImg, formatDateWComma, formatTime } from "@/lib/utils";
 
 interface OrderDetailsContentProps {
   isDesktop: boolean;
@@ -30,70 +33,82 @@ const OrderDetailsContent = ({
   isDesktop,
   close,
 }: OrderDetailsContentProps) => {
-  const getTotalPrice = useCartStore((s) => s.getTotalPrice);
-  const items = useCartStore((s) => s.items);
+  const orderId = useUIStore((s) => s.orderDetails.payload?.orderId);
+  const openTrackOrder = useUIStore((s) => s.openTrackOrder);
+  const { data, isLoading, isError, isSuccess } = useOrderDetails(
+    orderId || ""
+  );
 
-  const currency = (n: number) => `₦ ${n.toLocaleString()}`;
-
-  // Payment summary (stubbed for now)
-  const subTotal = getTotalPrice();
-  const deliveryFee = 800 * items.length;
-  const serviceFee = 900;
-  const discounts = 660;
-  const total = subTotal + deliveryFee + serviceFee - discounts;
+  const currency = (n: string) => `₦ ${Number(n).toLocaleString()}`;
 
   return (
-    <ScrollArea className="h-screen ">
-      <div className="p-4 sm:p-6">
-        {isDesktop ? (
-          // Desktop Header
-          <SheetHeader className="p-0 flex-row justify-between items-center">
-            <SheetTitle className="text-xl font-medium leading-7">
-              Order Details
-            </SheetTitle>
-            <SheetClose asChild>
-              <button className="size-10 flex justify-center items-center rounded-full bg-neutral-100">
-                <RiCloseFill className="size-6" />
-              </button>
-            </SheetClose>
-          </SheetHeader>
-        ) : (
-          // Mobile Header
-          <div className="relative flex items-center justify-center max-sm:mx-2">
-            <button onClick={close} className="absolute left-0">
-              <RiArrowLeftLine className="size-5" />
+    <ScrollArea className="h-dvh px-4 sm:px-6">
+      {isDesktop ? (
+        // Desktop Header
+        <SheetHeader className="p-0 flex-row justify-between items-center mt-6 ">
+          <SheetTitle className="text-xl font-medium leading-7">
+            Order Details
+          </SheetTitle>
+          <SheetClose asChild>
+            <button className="size-10 flex justify-center items-center rounded-full bg-neutral-100">
+              <RiCloseFill className="size-6" />
             </button>
-            <h2 className="text-xl font-medium leading-7">Order Details</h2>
-          </div>
-        )}
+          </SheetClose>
+        </SheetHeader>
+      ) : (
+        // Mobile Header
+        <div className="relative flex items-center justify-center mb-5 mt-3.5">
+          <button onClick={close} className="absolute left-0">
+            <RiArrowLeftLine className="size-5" />
+          </button>
+          <h2 className="text-xl font-medium leading-7">Order Details</h2>
+        </div>
+      )}
 
-        {!isDesktop && <Separator className="mt-3 mb-4" />}
+      {isDesktop && <Separator className="mt-3 mb-4" />}
 
-        <div>
+      {isLoading && (
+        <div className="h-full flex justify-center items-center">
+          <Loader size={12} />
+        </div>
+      )}
+
+      {isError && (
+        <div className="h-full flex justify-center items-center">
+          <ErrorStateUi message="Error Getting Order Details " />
+        </div>
+      )}
+
+      {isSuccess && (
+        <div className="max-sm:mt-1">
           {/* General Info */}
-          <div className="space-y-2">
+          <div className="space-y-2 ">
             <h3 className="text-base font-medium leading-6">General Info</h3>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-1">
               <div className="flex items-center gap-2 text-sm">
                 <span>Order ID:</span>
-                <span className="font-bold ">100014</span>
+                <span className="font-bold line-clamp-1">{data.id}</span>
               </div>
               <div className="flex items-center gap-0.5 text-sm font-normal">
                 <RiTimeLine className="size-4.5 text-neutral-600" />
-                <span>16 Sep 2025 07:49PM</span>
+
+                <span>
+                  {formatDateWComma(data.createdAt, false)}{" "}
+                  {formatTime(data.createdAt)}
+                </span>
               </div>
             </div>
 
             <div className="flex items-center justify-between text-sm">
               <span>Delivery Verification Code:</span>
-              <span className="font-bold">9818</span>
+              <span className="font-bold">{9818}</span>
             </div>
 
             <div className="flex items-center justify-between text-sm">
-              <span>Delivery</span>
+              <span>Delivery:</span>
               <span className="bg-primary-50 text-primary p-1.5 rounded-[5px] text-xxs font-medium">
-                Digital Payment
+                {data.deliveryType}
               </span>
             </div>
           </div>
@@ -103,24 +118,25 @@ const OrderDetailsContent = ({
           {/* Item Info */}
           <div className="space-y-2">
             <h3 className="text-base font-medium leading-6">Item Info</h3>
-            {items.map((item, index) => (
+            {data.items.map((item, index) => (
               <div className="flex gap-1.5 p-1" key={index}>
-                <div className="max-w-[78px] h-[74px] bg-amber-100 overflow-hidden rounded-l-md rounded-r-[2.5px]">
+                <div className="w-[78px] h-[74px] bg-neutral-100 overflow-hidden rounded-l-md rounded-r-[2.5px]">
                   <img
-                    src={item.product.imageUrl}
+                    src={item.menuImg || "/fallback_menu.webp"}
                     alt="Pepperoni Pizza"
                     className="size-full object-cover"
+                    onError={(e) => fallbackImg(e, "/fallback_menu.webp")}
                   />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-sm font-medium leading-5">
-                    {item.product.name}
+                    {item.menuName}
                   </h3>
                   <p className="text-neutral-600 text-sm line-clamp-2 mt-0.5 ">
-                    {item.product.description}
+                    {item.menuName}
                   </p>
                   <p className="text-sm font-medium leading-3 mt-1">
-                    ₦{item.unitPrice}
+                    {currency(item.unitPrice)}
                   </p>
                 </div>
               </div>
@@ -157,7 +173,7 @@ const OrderDetailsContent = ({
               <div className="flex-1">
                 <p className="font-medium mb-1">To</p>
                 <p className="text-gray-600 text-sm line-clamp-1">
-                  Cargo Terminal: 2nd Floor SAHCO Business Com...
+                  {data.addressSnapshot?.addressLine1}
                 </p>
               </div>
             </div>
@@ -172,40 +188,43 @@ const OrderDetailsContent = ({
             <div className=" space-y-1.5">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-sm leading-4.5">Orders</span>
-                <span>{currency(subTotal)}</span>
+                <span>{currency(data.subtotal)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-sm leading-4.5">Delivery Fee</span>
-                <span>{currency(deliveryFee)}</span>
+                <span>{currency(data.deliveryFee)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-sm leading-4.5">Service Fee</span>
-                <span>{currency(serviceFee)}</span>
+                <span>{currency(data.serviceFee)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-sm leading-4.5">Discounts</span>
-                <span>{currency(discounts)}</span>
+                <span>{currency(data.discountTotal)}</span>
               </div>
 
               <div className="flex items-center justify-between text-sm font-medium mt-4">
                 <span className="text-base font-medium ">Total</span>
                 <span className="text-base font-medium ">
-                  {currency(total)}
+                  {currency(data.total)}
                 </span>
               </div>
             </div>
           </div>
 
           {/* Track Order Button */}
-          <Button className="submit-btn my-10">TRACK ORDER</Button>
+          <Button onClick={openTrackOrder} className="submit-btn my-10">
+            TRACK ORDER
+          </Button>
         </div>
-      </div>
+      )}
     </ScrollArea>
   );
 };
 
 export default function OrderDetails() {
   const open = useUIStore((s) => s.orderDetails.open);
+  // const open = true;
   const close = useUIStore((s) => s.closeOrderDetails);
 
   // Detect if we're on desktop (only runs once on mount, then on resize)

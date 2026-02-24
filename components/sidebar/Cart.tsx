@@ -119,7 +119,7 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
   return (
     <div className="h-full">
       {/* Header */}
-      <div className="relative flex items-center justify-center">
+      <div className="relative flex items-center justify-center max-sm:pb-3">
         <button onClick={() => setActiveTab(null)} className="absolute left-0">
           <RiArrowGoBackLine className="size-5" />
         </button>
@@ -150,7 +150,7 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
       )}
 
       {isSuccess && carts.length > 0 && (
-        <div className="mt-4 space-y-3">
+        <div className="max-sm:pt-1 sm:mt-4 pb-4 space-y-3 h-full overflow-y-auto hide-scrollbar">
           {carts.map((cart, idx) => {
             // const item = cart.items[0];
 
