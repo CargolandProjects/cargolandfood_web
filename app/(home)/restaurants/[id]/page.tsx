@@ -9,4 +9,3 @@ export default async function RestaurantDetailsPage({
   return <ReastaurantPageContent id={id} />;
 }
 
-// NOTE: Remember to install the lucide-react library: npm install lucide-react

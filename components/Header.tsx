@@ -63,11 +63,11 @@ export function Header({ setSideBar }: HeaderProps) {
   const matchRoutes = (routes: string[], path: string) =>
     routes.some((route) => path === route || path.startsWith(route + "/"));
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     if (!search.trim()) return;
 
-    router.push(`?search=${search}`);
+    router.push(`/?search=${search}`);
     setSearch("");
   };
 
@@ -156,7 +156,7 @@ export function Header({ setSideBar }: HeaderProps) {
           <div className="flex sm:flex-1 bg-amber-00 shrink items-center justify-end gap-2 sm:gap-6">
             {/* Search Bar */}
             <form
-              onSubmit={handleSubmit}
+              onSubmit={handleSearch}
               className="max-sm:hidden relative flex-1 max-w-[416px]"
             >
               <RiSearchLine className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -257,7 +257,7 @@ export function Header({ setSideBar }: HeaderProps) {
           )}
 
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleSearch}
             className="relative flex-1 sm:max-w-[416px]"
           >
             <RiSearchLine className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />

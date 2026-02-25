@@ -31,8 +31,6 @@ const ReviewOrderModal = () => {
       comment,
     };
 
-    console.log("payload :", payload);
-
     submitRevuew(payload, {
       onSuccess: () => {
         // onOpenChange(false);
