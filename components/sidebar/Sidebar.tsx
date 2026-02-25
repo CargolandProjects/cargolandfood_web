@@ -120,7 +120,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
     <>
       {/* Large Screens */}
       {isDesktop && (
-        <aside className=" sticky left-0 inset-y-0 w-sidebar shrink-0 bg-white border-r border-gray-100">
+        <aside className="max-sm:hidden sticky left-0 inset-y-0 w-sidebar shrink-0 bg-white border-r border-gray-100">
           <div className="flex flex-col items-center py-4">
             {/* Logo */}
             <Link

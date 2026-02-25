@@ -15,7 +15,11 @@ export const API_ROUTES = {
     resendOtp: "/users/resend-phone-otp",
     refresh: "/users/refresh-token",
   },
-  user: (id: string) => `/users/${id}`,
+
+  user: {
+    user: (id: string) => `/users/${id}`,
+    updatePersonalInfo: "/users/personal-info",
+  },
 
   vendor: {
     allVendors: (userAddressId: string) => `/users/vendors/${userAddressId}`,

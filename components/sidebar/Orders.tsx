@@ -25,7 +25,10 @@ type Tabs = "current" | "previous";
 const Orders = ({ setActiveTab }: OrdersProps) => {
   const { data: orders, isLoading, isError, isSuccess } = useGetOrders();
   const [currentTab, setCurrentTab] = useState<Tabs>("current");
+  const openTrackOrder = useUIStore((s) => s.openTrackOrder);
   const openOrderDetails = useUIStore((s) => s.openOrderDetails);
+  const openReviewOrder = useUIStore((s) => s.openReviewOrder);
+
   const filteredOrders =
     orders?.filter((order) => {
       if (currentTab === "current")
@@ -174,7 +177,7 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
 
                   <div className="mt-3 flex gap-2">
                     <Button
-                      onClick={() => openOrderDetails({ orderId: order.id })}
+                      onClick={openTrackOrder}
                       variant="outline"
                       className="h-10 flex-1 uppercase rounded-button!"
                     >
@@ -286,8 +289,20 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
                       </DropdownMenuTrigger>
 
                       <DropdownMenuContent>
-                        <DropdownMenuItem>View details</DropdownMenuItem>
-                        <DropdownMenuItem>Give ratings</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onSelect={() =>
+                            openOrderDetails({ orderId: order.id })
+                          }
+                        >
+                          View details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onSelect={() =>
+                            openReviewOrder({ vendorId: order.vendorId })
+                          }
+                        >
+                          Rate Order
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>

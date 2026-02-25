@@ -45,6 +45,24 @@ export const useUpdateUser = () => {
   });
 };
 
+export const useUpdatePersonalInfo = () => {
+  const { setUser, user } = useSession();
+
+  return useMutation({
+    mutationFn: auth.updatePersonalInfo,
+    onSuccess: (res) => {
+      if (res.data && user) {
+        setUser({ ...user, ...res.data });
+      }
+
+      toast.success("Profile image updated successfully!");
+    },
+    onError: (error) => {
+      toast.error(error?.message || "Failed to update profile image");
+    },
+  });
+};
+
 export const useDeleteUser = () => {
   return useMutation({
     mutationFn: auth.deleteUser,

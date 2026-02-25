@@ -141,8 +141,8 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
       {isSuccess && carts.length === 0 && (
         <div className="mt-20.5">
           <EmptyStateUi
-            message=" Your cart is empty"
-            description="   Explore and add items to the cart to show here"
+            message="Your cart is empty"
+            description="Explore and add items to the cart to show here"
             btn
             btnText="Add To Cart"
           />

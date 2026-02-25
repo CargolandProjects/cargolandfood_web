@@ -15,6 +15,7 @@ import apple from "./apple.svg";
 import address from "./address.svg";
 import emptyBox from "./empty_box.svg";
 import map from "./map.svg";
+import camera from "./camera.svg";
 
 export {
   logo,
@@ -34,4 +35,5 @@ export {
   address,
   emptyBox,
   map,
+  camera,
 };

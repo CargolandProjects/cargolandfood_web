@@ -46,7 +46,7 @@ export type UIStoreState = {
   closeOrderSuccess: () => void;
 
   // Actions: Order Details
-  openOrderDetails: (payload?: OrderDetailsPayload) => void;
+  openOrderDetails: (payload: OrderDetailsPayload) => void;
   closeOrderDetails: () => void;
   // setOrderDetailsPayload: (patch: Partial<OrderDetailsPayload>) => void;
   // replaceOrderDetailsPayload: (payload: OrderDetailsPayload | null) => void;
@@ -56,7 +56,7 @@ export type UIStoreState = {
   closeTrackOrder: () => void;
 
   // Actions: Checkout
-  openCheckout: (payload?: CheckoutPayload) => void;
+  openCheckout: (payload: CheckoutPayload) => void;
   closeCheckout: () => void;
 
   openReviewOrder: (payload?: CheckoutPayload) => void;

@@ -17,8 +17,8 @@ const ReviewOrderModal = () => {
   const [comment, setcomment] = useState("");
   const open = useUIStore((s) => s.reviewOrder.open);
   const close = useUIStore((s) => s.closeReviewOrder);
-  const payload = useUIStore((s) => s.reviewOrder.payload);
-  const vendorId = payload?.vendorId;
+  const vendorId = useUIStore((s) => s.reviewOrder.payload?.vendorId);
+
   const { mutate: submitRevuew, isPending } = useSubmitReview();
   const maxLength = 200;
 
@@ -26,7 +26,7 @@ const ReviewOrderModal = () => {
     if (!vendorId || rating === 0) return;
 
     const payload = {
-      vendorId: "08503157-05af-4d34-a5e5-fe9bf061dcf0",
+      vendorId,
       rating,
       comment,
     };
@@ -38,6 +38,7 @@ const ReviewOrderModal = () => {
         // onOpenChange(false);
         setRating(0); // Reset for next time
         setcomment("");
+        close();
       },
     });
   };

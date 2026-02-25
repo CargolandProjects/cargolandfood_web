@@ -42,7 +42,7 @@ const OrderDetailsContent = ({
   const currency = (n: string) => `₦ ${Number(n).toLocaleString()}`;
 
   return (
-    <ScrollArea className="h-dvh px-4 sm:px-6">
+    <div className="h-dvh px-4 sm:px-6 overflow-auto hide-scrollbar">
       {isDesktop ? (
         // Desktop Header
         <SheetHeader className="p-0 flex-row justify-between items-center mt-6 ">
@@ -218,7 +218,7 @@ const OrderDetailsContent = ({
           </Button>
         </div>
       )}
-    </ScrollArea>
+    </div>
   );
 };
 
