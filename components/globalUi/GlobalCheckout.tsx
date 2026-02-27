@@ -244,7 +244,7 @@ const GlobalCheckoutCOntent = ({
         ) : (
           // Mobile Header
           <div className="relative flex items-center justify-center max-sm:mx-2">
-            <button onClick={close} className="absolute left-0">
+            <button onClick={closeCheckout} className="absolute left-0">
               <RiArrowLeftLine className="size-5" />
             </button>
             <h2 className="text-lg sm:text-xl font-medium leading-6 sm:leading-7">

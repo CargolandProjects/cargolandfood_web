@@ -23,16 +23,16 @@ export default function HomeLayout({
 
   return (
     <ContextProviders>
-      <main className="font-satoshi text-brand-black flex h-screen overflow-hidden">
+      <main className="font-satoshi text-brand-black flex min-h-dvh">
         <Sidebar open={open} setOpen={setOpen} />
         <div className="flex-1 flex flex-col min-w-0">
           <Header setSideBar={setOpen} />
           <div
             className={`${
               applyPadding && "max-sm:pt-3"
-            } flex-1 overflow-auto py-4 md:py-6 px-4 sm:px-6 md:px-13.5 min-w-0 hide-scrollbar`}
+            } flex-1 py-4 md:py-6 px-4 sm:px-6 md:px-13.5 min-w-0`}
           >
-            <div className="w-full mx-auto min-w-0 h-full">{children}</div>
+            <div className="w-full mx-auto min-w-0 h-full max-w-[1400px]">{children}</div>
           </div>
 
           <GlobalUI />

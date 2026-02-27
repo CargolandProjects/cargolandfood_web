@@ -89,7 +89,7 @@ interface Promotions {
   updatedAt: string;
 }
 
-interface Categories {
+export interface Categories {
   id: string;
   name: string;
   publishNow: boolean;

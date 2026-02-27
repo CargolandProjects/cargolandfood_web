@@ -16,30 +16,23 @@ import ReviewsModal from "../ReviewModal";
 import { useGetVendorById } from "@/lib/hooks/queries/useVendors";
 import { useCheckoutPreview } from "@/lib/hooks/queries/useCheckoutFlow";
 import { Button } from "../ui/button";
-import { ScrollArea } from "../ui/scroll-area";
 import { useToggleFavourite } from "@/lib/hooks/mutations/useToggleFavourite";
 import { useSession } from "@/lib/hooks/useSession";
 import { fallbackImg } from "@/lib/utils";
 import NotFound from "../NotFound";
 
-export interface CategoryTab {
-  name: string;
-  isActive?: boolean;
-  selectTab: (tab: string) => void;
-}
-
 // type Categoriess = "All" | "Sharwarma" | "Sandwich" | "Pizza" | "Milk Shake";
 
-const categories = [
-  { name: "All" },
-  { name: "Sharwarma" },
-  { name: "Sandwich" },
-  { name: "Pizza" },
-  { name: "Milk Shake" },
-];
+// const categories = [
+//   { name: "All" },
+//   { name: "Sharwarma" },
+//   { name: "Sandwich" },
+//   { name: "Pizza" },
+//   { name: "Milk Shake" },
+// ];
 
 const ReastaurantPageContent = ({ id }: { id: string }) => {
-  const [isActive, setIsActive] = useState("All");
+  const [activeCatId, setActiveCatId] = useState<string | null>(null);
   const [selectedId, setselectedId] = useState<string | null>(null);
   const [showFavourites, setShowFavourites] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
@@ -66,6 +59,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   const vendor = data?.data;
   const rating = data?.averageRating;
   const menus = data?.data.menus || [];
+  const categories = data?.data.categories || [];
 
   // Check if cart has items from checkout preview
   // If error (e.g., 400 "No active cart"), treat as empty cart
@@ -114,6 +108,11 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
     toggleFavourite(payload);
   };
 
+  const filteredMenu =
+    activeCatId === null
+      ? menus
+      : menus.filter((menu) => menu.categoryId === activeCatId);
+
   if (isLoading) {
     return <RestaurantPageSkeleton />;
   }
@@ -130,8 +129,8 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   return (
     <div className="flex gap-10 h-full">
       <motion.div
-        className="w-full relative mx-auto min-h-screen flex-1 flex flex-col"
-        layout
+        className="w-full h-full flex-1"
+        // layout
         transition={{
           duration: 0.5,
           ease: [0.4, 0, 0.2, 1],
@@ -147,14 +146,14 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
         </button>
 
         {/* 1. Header Image and Info Section */}
-        <div className="relative">
+        <div>
           <h3 className="sm:hidden">Restaurants</h3>
           {/* Banner Image */}
           <div className="relative h-25.5 sm:h-48 xl:h-[274px] w-full overflow-hidden rounded-xl mt-2">
             <img
               src={vendor?.profileImg || "/fallback_vendor.webp"}
               alt="Shawarma Plus banner"
-              className="w-full h-full object-cover rounded-xl "
+              className="w-full h-full object-cover rounded-xl bg-neutral-100"
               loading="lazy"
               onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
             />
@@ -198,25 +197,25 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
         </div>
 
         {/* 2. Category Tabs Section */}
-        <div className="sticky -top-2 sm:-top-4 z-10 sm:pb-10 sm:px-4">
-          <div className="flex gap-2.5 sm:gap-4.5 max-w-[606px] h-11.5 shrink justify-start overflow-x-auto hide-scrollbar">
-            {categories.map(({ name }, i) => (
-              <CategoryTab
-                name={name}
-                isActive={name === isActive}
-                selectTab={setIsActive}
-                key={i}
-              />
-            ))}
-          </div>
+        <div className="sm:mb-10 sm:px-4">
+          <CategoryTab
+            categories={categories}
+            activeCatId={activeCatId}
+            selectCatId={setActiveCatId}
+          />
         </div>
 
         {/* 3. Product Listing Section */}
-        <div className="sm:p-4 max-sm:mt-3 flex-1">
+        <div className="sm:px-4 max-sm:mt-3 flex-1">
+          {isSuccess && filteredMenu.length === 0 && (
+            <p className="text-center text-gray-500 py-8">
+              No items in this category
+            </p>
+          )}
           <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-10">
             {isSuccess &&
-              menus.length > 0 &&
-              menus.map((item) => (
+              filteredMenu.length > 0 &&
+              filteredMenu.map((item) => (
                 <RestaurantItemCard
                   key={item.id}
                   menu={item}
@@ -235,14 +234,14 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
               animate={{ y: 0 }}
               exit={{ y: 100 }}
               transition={{ duration: 0.3 }}
-              className="sticky sm:hidden pt-5 pb-8 px-8 -bottom-4 inset-x-0 flex justify-between items-center bg-white"
+              className="sticky sm:hidden pt-5 pb-8 px-8 bottom-0 inset-x-0 flex justify-between items-center bg-white"
             >
               <p className="text-xl font-medium ">
                 ₦{calculateLocalTotal().toLocaleString()}
               </p>
               <Button
                 onClick={() => setOpenCheckout(true)}
-                className="uppercase py-3.5 px-5.5 h-10.5 sm:h-12 text-sm font-bold w-[184px]"
+                className="uppercase py-3.5 px-5.5 h-12 text-sm font-bold w-[184px]"
               >
                 Checkout
               </Button>
@@ -250,10 +249,6 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
           )}
         </AnimatePresence>
       </motion.div>
-
-      <FavouritesModal open={showFavourites} onOpenChange={setShowFavourites} />
-      <ReviewsModal open={showReviews} onClose={setShowReviews} />
-      <OrderDetails />
 
       {/* Large Screens Checkout component */}
       <AnimatePresence mode="popLayout">
@@ -272,19 +267,17 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
               duration: 0.5,
               ease: [0.4, 0, 0.2, 1],
             }}
-            className="sticky top-6 self-start max-lg:hidden w-[400px] shrink-0"
+            className="max-lg:hidden mt-8 sticky top-[65px] sm:h-[calc(100dvh-80px)] w-[400px] min-w-[307px] shadow-2xl rounded-2xl border overflow-hidden border-gray-100"
           >
-            <ScrollArea className="max-w-[400px] shadow-2xl rounded-2xl border border-gray-100 bg-white">
-              <PageCheckOut
-                vendorId={id}
-                checkoutData={checkoutData}
-                isLoading={isCheckoutLoading}
-                isError={checkoutError}
-                isSuccess={checkoutSuccess}
-                deliveryType={deliveryType}
-                onDeliveryTypeChange={setDeliveryType}
-              />
-            </ScrollArea>
+            <PageCheckOut
+              vendorId={id}
+              checkoutData={checkoutData}
+              isLoading={isCheckoutLoading}
+              isError={checkoutError}
+              isSuccess={checkoutSuccess}
+              deliveryType={deliveryType}
+              onDeliveryTypeChange={setDeliveryType}
+            />
           </motion.aside>
         )}
       </AnimatePresence>
@@ -312,6 +305,11 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Modals */}
+      <FavouritesModal open={showFavourites} onOpenChange={setShowFavourites} />
+      <ReviewsModal open={showReviews} onClose={setShowReviews} />
+      <OrderDetails />
     </div>
   );
 };

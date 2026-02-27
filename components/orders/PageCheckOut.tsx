@@ -246,7 +246,7 @@ const PageCheckOut = ({
 
   return (
     <>
-      <div className="max-sm:fixed max-sm:inset-0 sm:h-[85vh] bg-white p-4 overflow-auto hide-scrollbar ">
+      <div className="h-full max-sm:fixed max-sm:inset-0  overflow-auto hide-scrollbar p-4 bg-white">
         {/* Header */}
         <div className="relative max-sm:flex items-center justify-center">
           {closeCheckout && (
@@ -562,11 +562,11 @@ const PageCheckOut = ({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-6">
+            <div className="flex flex-col sm:flex-row gap-4 max-sm:mx-2 mt-6">
               <Button
                 onClick={() => handlePlaceOrder(cartItems[0].cartId)}
                 disabled={isMakingPayment}
-                className="submit-btn flex-1"
+                className="submit-btn"
               >
                 {isMakingPayment ? (
                   <RiLoader2Line className="size-5 animate-spin" />
@@ -577,7 +577,7 @@ const PageCheckOut = ({
               <Button
                 onClick={() => setShowAlert(true)}
                 variant="outline"
-                className="submit-btn flex-1 hover:bg-gray-50 text-neutral-500 border-neutral-300"
+                className="submit-btn hover:bg-gray-50 text-neutral-500 border-neutral-300"
               >
                 CANCEL ORDERS
               </Button>
