@@ -21,16 +21,6 @@ import { useSession } from "@/lib/hooks/useSession";
 import { fallbackImg } from "@/lib/utils";
 import NotFound from "../NotFound";
 
-// type Categoriess = "All" | "Sharwarma" | "Sandwich" | "Pizza" | "Milk Shake";
-
-// const categories = [
-//   { name: "All" },
-//   { name: "Sharwarma" },
-//   { name: "Sandwich" },
-//   { name: "Pizza" },
-//   { name: "Milk Shake" },
-// ];
-
 const ReastaurantPageContent = ({ id }: { id: string }) => {
   const [activeCatId, setActiveCatId] = useState<string | null>(null);
   const [selectedId, setselectedId] = useState<string | null>(null);
@@ -127,10 +117,10 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   }
 
   return (
-    <div className="flex gap-10 h-full">
+    <div className="flex gap-6 xl:gap-10 h-full">
       <motion.div
-        className="w-full h-full flex-1"
-        // layout
+        className="w-full h-full flex-1 flex flex-col"
+        layout
         transition={{
           duration: 0.5,
           ease: [0.4, 0, 0.2, 1],
@@ -149,7 +139,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
         <div>
           <h3 className="sm:hidden">Restaurants</h3>
           {/* Banner Image */}
-          <div className="relative h-25.5 sm:h-48 xl:h-[274px] w-full overflow-hidden rounded-xl mt-2">
+          <div className="relative h-25.5 sm:h-48 lg:h-[234px] xl:h-[284px] w-full overflow-hidden rounded-xl mt-2">
             <img
               src={vendor?.profileImg || "/fallback_vendor.webp"}
               alt="Shawarma Plus banner"
@@ -160,7 +150,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             {/* Favourite and Comments */}
             <div className="absolute top-3 sm:top-6 right-3 sm:right-6 flex gap-2.5">
               <button
-                onClick={(e: React.MouseEvent) =>
+                onClick={(e) =>
                   handleToggle(vendor!.isFavourite, vendor!.id, e)
                 }
                 className="size-8 sm:size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
@@ -212,7 +202,12 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
               No items in this category
             </p>
           )}
-          <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-10">
+
+          <div
+            className={`grid sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-10 ${
+              hasItemsInCart ? "lg:grid-cols-1 xl:grid-cols-2" : ""
+            }`}
+          >
             {isSuccess &&
               filteredMenu.length > 0 &&
               filteredMenu.map((item) => (

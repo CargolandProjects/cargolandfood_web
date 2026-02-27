@@ -7,7 +7,6 @@ import { Separator } from "../ui/separator";
 import {
   RiArrowLeftLine,
   RiArrowRightSLine,
-  RiBankCardFill,
   RiBankFill,
   RiCoupon2Fill,
   RiDeleteBin6Line,
@@ -42,7 +41,7 @@ import { toast } from "sonner";
 // import { useQueryClient } from "@tanstack/react-query";
 
 type Delivery = "DELIVERY" | "PICKUP";
-type PaymentMethod = "wallet" | "newCard" | "bankTransfer";
+type PaymentMethod = "wallet" | "digitalTransfer";
 
 interface CheckoutProps {
   vendorId: string;
@@ -72,8 +71,9 @@ const PageCheckOut = ({
   const [showConfirmPickup, setShowConfirmPickup] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
-    null
+    "wallet"
   );
+  const [isRemovingItemId, setIsRemovingItemId] = useState<string | null>(null);
   const openAddresses = useUIStore((s) => s.openAddresses);
   // const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
   const { user } = useSession();
@@ -81,8 +81,7 @@ const PageCheckOut = ({
   // API mutations
   const clearCartMutation = useClearCart();
   const { mutate, isPending } = useAddToCart(vendorId);
-  const { mutate: removeItem, isPending: isRemovingItem } =
-    useRemoveCartItem(vendorId);
+  const { mutate: removeItem } = useRemoveCartItem(vendorId);
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
   // const queryClient = useQueryClient();
 
@@ -123,6 +122,10 @@ const PageCheckOut = ({
 
   const handleOrder = useCallback(
     (cartId: string) => {
+      if (!paymentMethod) {
+        toast.error("Please select a payment method");
+        return;
+      }
       makePayment(cartId, {
         onSuccess: (res) => {
           const authUrl = res.data.authorization_url;
@@ -136,7 +139,7 @@ const PageCheckOut = ({
         },
       });
     },
-    [makePayment]
+    [makePayment, paymentMethod]
   );
 
   // Handle place order
@@ -164,7 +167,15 @@ const PageCheckOut = ({
   };
 
   const handleRemoveCartItem = (cartId: string, cartItemId: string) => {
-    removeItem({ cartId: cartId, cartItemId: cartItemId });
+    if (!cartId || !cartItemId) return;
+    setIsRemovingItemId(cartItemId);
+
+    removeItem(
+      { cartId: cartId, cartItemId: cartItemId },
+      {
+        onSettled: () => setIsRemovingItemId(null),
+      }
+    );
   };
 
   // Handle quantity change (increase or decrease)
@@ -288,88 +299,97 @@ const PageCheckOut = ({
           <div>
             {/* Pack Items */}
             <div className="space-y-4 sm:space-y-6 max-sm:mt-5">
-              {cartItems.map((item, index) => (
-                <div
-                  key={item.menuId}
-                  className="rounded-2xl border border-gray-200 bg-white p-3"
-                >
-                  {/* Pack Header */}
-                  <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-sm font-normal text-gray-500">
-                      Pack {index + 1}
-                    </h2>
-                    <button
-                      onClick={() => handleRemoveCartItem(item.cartId, item.id)}
-                      // disabled
-                      className="text-primary transition-colors bg-primary-300 p-1.5 rounded-md "
-                      aria-label="Delete pack"
-                    >
-                      {isRemovingItem ? (
-                        <Loader2 className="size-5 animate-spin text-cargo-error/60" />
-                      ) : (
-                        <RiDeleteBin6Line className="size-5 text-primary" />
-                      )}
-                    </button>
-                  </div>
+              {cartItems.map((item, index) => {
+                const addonsSummary = item.addons
+                  .map((addon) => addon.name)
+                  .join(", ");
+                return (
+                  <div
+                    key={item.menuId}
+                    className="rounded-2xl border border-gray-200 bg-white p-3"
+                  >
+                    {/* Pack Header */}
+                    <div className="flex items-center justify-between mb-2">
+                      <h2 className="text-sm font-normal text-gray-500">
+                        Pack {index + 1}
+                      </h2>
+                      <button
+                        onClick={() =>
+                          handleRemoveCartItem(item.cartId, item.id)
+                        }
+                        // disabled
+                        className="text-primary transition-colors bg-primary-300 p-1.5 rounded-md "
+                        aria-label="Delete pack"
+                      >
+                        {isRemovingItemId === item.id ? (
+                          <Loader2 className="size-5 animate-spin text-cargo-error/60" />
+                        ) : (
+                          <RiDeleteBin6Line className="size-5 text-primary" />
+                        )}
+                      </button>
+                    </div>
 
-                  {/* Pack Item */}
-                  <div className="flex items-end justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl font-medium">
-                        {item.quantity}x
-                      </span>
-                      <div>
-                        <h3 className="text-base font-normal leading-5">
-                          {item.menuName}
-                        </h3>
-                        <span className="text-neutral-600">
-                          + extra sausage
+                    {/* Pack Item */}
+                    <div className="flex items-end justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl font-medium">
+                          {item.quantity}x
                         </span>
-                        {/* {item.addons.length > 0 && (
+                        <div>
+                          <h3 className="text-base font-normal leading-5">
+                            {item.menuName}
+                          </h3>
+                          {addonsSummary && (
+                            <span className="text-neutral-600">
+                              + {addonsSummary}
+                            </span>
+                          )}
+                          {/* {item.addons.length > 0 && (
                       <p className="text-sm font-normal text-gray-500">
                         {item.addons
                           .map((addon) => `+ ${addon.name}`)
                           .join(", ")}
                       </p>
                     )} */}
+                        </div>
+                      </div>
+                      {/* Increment Decrement Buttons */}
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          onClick={() => handleQuantityChange(item, "decrease")}
+                          disabled={isPending}
+                          className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          aria-label="Decrease packs"
+                        >
+                          <Minus className="size-4" />
+                        </button>
+                        <span className="text-sm font-normal text-center">
+                          {isPending ? (
+                            <Loader2 className="size-4 animate-spin duration-300 text-neutral-400" />
+                          ) : (
+                            item.quantity
+                          )}
+                        </span>
+                        <button
+                          onClick={() => handleQuantityChange(item, "increase")}
+                          disabled={isPending}
+                          className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          aria-label="Increase packs"
+                        >
+                          <Plus className="size-4 text-black" />
+                        </button>
                       </div>
                     </div>
-                    {/* Increment Decrement Buttons */}
-                    <div className="flex items-center gap-2.5">
-                      <button
-                        onClick={() => handleQuantityChange(item, "decrease")}
-                        disabled={isPending}
-                        className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        aria-label="Decrease packs"
-                      >
-                        <Minus className="size-4" />
-                      </button>
-                      <span className="text-sm font-normal text-center">
-                        {isPending ? (
-                          <Loader2 className="size-4 animate-spin duration-300 text-neutral-400" />
-                        ) : (
-                          item.quantity
-                        )}
+
+                    {/* Packs Counter */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-base font-medium">
+                        {currency(safePrice(item.unitPrice))}
                       </span>
-                      <button
-                        onClick={() => handleQuantityChange(item, "increase")}
-                        disabled={isPending}
-                        className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        aria-label="Increase packs"
-                      >
-                        <Plus className="size-4 text-black" />
-                      </button>
                     </div>
                   </div>
-
-                  {/* Packs Counter */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-base font-medium">
-                      {currency(safePrice(item.unitPrice))}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <Separator className="my-4 sm:my-6" />
@@ -466,13 +486,13 @@ const PageCheckOut = ({
               </h3>
               <div className="mt-4 space-y-2">
                 <div className="w-full flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-base">
+                  <div className="flex items-center gap-2 text-base">
                     <RiWallet3Fill className="size-5 text-primary" /> Wallet
                     Balance -{" "}
                     <span className="text-base font-medium ml-1">
                       {currency(32600)}
                     </span>
-                  </span>
+                  </div>
                   <RadioGroup
                     value={paymentMethod}
                     onValueChange={(v: PaymentMethod) => setPaymentMethod(v)}
@@ -484,28 +504,15 @@ const PageCheckOut = ({
 
                 <div className="w-full flex items-center justify-between">
                   <span className="flex items-center gap-2 text-base">
-                    <RiBankCardFill className="size-5 text-primary" /> Add New
-                    Card
+                    <RiBankFill className="size-5 text-primary" /> Digital
+                    Transfer
                   </span>
                   <RadioGroup
                     value={paymentMethod}
                     onValueChange={(v: PaymentMethod) => setPaymentMethod(v)}
                     className="contents"
                   >
-                    <RadioGroupItem value="newCard" />
-                  </RadioGroup>
-                </div>
-
-                <div className="w-full flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-base">
-                    <RiBankFill className="size-5 text-primary" /> Bank Transfer
-                  </span>
-                  <RadioGroup
-                    value={paymentMethod}
-                    onValueChange={(v: PaymentMethod) => setPaymentMethod(v)}
-                    className="contents"
-                  >
-                    <RadioGroupItem value="bankTransfer" />
+                    <RadioGroupItem value="digitalTransfer" />
                   </RadioGroup>
                 </div>
               </div>
@@ -562,7 +569,7 @@ const PageCheckOut = ({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 max-sm:mx-2 mt-6">
+            <div className="grid sm:grid-cols-2 gap-4 max-sm:mx-2 mt-6">
               <Button
                 onClick={() => handlePlaceOrder(cartItems[0].cartId)}
                 disabled={isMakingPayment}

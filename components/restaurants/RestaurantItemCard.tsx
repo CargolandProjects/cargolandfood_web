@@ -65,7 +65,7 @@ const RestaurantItemCard = ({
     <>
       <div
         onClick={handleClick}
-        className="flex h-[116px] min-w-[310px] sm:h-34.5 rounded-2xl overflow-hidden border border-neutral-300 gap-2 cursor-pointer"
+        className="flex h-[116px] min-w-[235px] sm:h-34.5 rounded-2xl overflow-hidden border border-neutral-300 gap-2 cursor-pointer"
       >
         {/* Product Image - Adjusted for Left-Side Radius Only */}
         <div className="w-30 ml-[3px] my-[3px] shrink-0 rounded-l-xl rounded-r-xs overflow-hidden relative">
@@ -73,7 +73,7 @@ const RestaurantItemCard = ({
           <img
             src={uploadImageUrl}
             alt={name || "Product image"}
-            className="w-full h-full object-cover rounded-l-2xl"
+            className="w-full h-full object-cover rounded-l-2xl bg-neutral-100"
             onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
           />
         </div>
