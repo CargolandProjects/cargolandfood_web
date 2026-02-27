@@ -113,6 +113,12 @@ const ProductModal = ({
       openAuth();
       return;
     }
+    
+    // Get selected size details
+    const selectedSizeData = selectedSize 
+      ? menu.sizes?.find((s) => s.id === selectedSize) 
+      : null;
+
     // Build addons payload (only include addons with quantity > 0)
     const addonsPayload = Object.entries(selectedAddons)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -140,6 +146,9 @@ const ProductModal = ({
         menuImg: uploadImageUrl,
         action: "SET",
         currency: "NGN",
+        sizeName: selectedSizeData?.name || "",
+        sizeValue: selectedSizeData?.size || "",
+        sizePrice: selectedSizeData ? parseFloat(selectedSizeData.price) : 0,
         addons: addonsPayload.length > 0 ? addonsPayload : undefined,
       },
       {
@@ -196,7 +205,7 @@ const ProductModal = ({
               <h3 className="text-lg leading-6">{name} Size</h3>
               <RadioGroup
                 className="space-y-5 mt-5"
-                value={selectedSize || undefined}
+                value={selectedSize}
                 onValueChange={setSelectedSize}
               >
                 {menu.sizes.map((size) => (
