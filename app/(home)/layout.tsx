@@ -30,7 +30,7 @@ export default function HomeLayout({
           <div
             className={`${
               applyPadding && "max-sm:pt-3"
-            } flex-1 py-4 md:py-6 px-4 sm:px-6 md:px-13.5 min-w-0`}
+            } flex-1 py-4 md:py-6 px-4 sm:px-6 min-w-0`}
           >
             <div className="w-full mx-auto min-w-0 h-full max-w-[1400px]">{children}</div>
           </div>

@@ -88,4 +88,10 @@ export const orderService = {
     );
     return res.data;
   },
+  async getOrderByReference(reference: string) {
+    const res = await apiClient.get<APIResponse<GetOrdersResponse>>(
+      API_ROUTES.order.getOrderByReference(reference)
+    );
+    return res.data;
+  },
 };

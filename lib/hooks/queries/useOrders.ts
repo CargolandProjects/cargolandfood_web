@@ -17,3 +17,12 @@ export const useOrderDetails = (orderId: string) => {
     select: (res) => res.data,
   });
 };
+
+export const useOrderByReference = (reference: string) => {
+  return useQuery({
+    queryKey: ["orderDetails", reference],
+    queryFn: () => orderService.getOrderByReference(reference),
+    enabled: !!reference,
+    select: (res) => res.data,
+  });
+};

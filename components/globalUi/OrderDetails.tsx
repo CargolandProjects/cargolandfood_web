@@ -19,7 +19,10 @@ import {
 import { restaurant } from "@/assets/svgs";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useOrderDetails } from "@/lib/hooks/queries/useOrders";
+import {
+  useOrderByReference,
+  useOrderDetails,
+} from "@/lib/hooks/queries/useOrders";
 import Loader from "../Loader";
 import ErrorStateUi from "../ErrorStateUi";
 import { fallbackImg, formatDateWComma, formatTime } from "@/lib/utils";
@@ -33,11 +36,19 @@ const OrderDetailsContent = ({
   isDesktop,
   close,
 }: OrderDetailsContentProps) => {
-  const orderId = useUIStore((s) => s.orderDetails.payload?.orderId);
+  const payload = useUIStore((s) => s.orderDetails.payload);
   const openTrackOrder = useUIStore((s) => s.openTrackOrder);
-  const { data, isLoading, isError, isSuccess } = useOrderDetails(
-    orderId || ""
+
+  const sidebarQuery = useOrderDetails(
+    payload?.source === "sideBar" ? payload.orderId : ""
   );
+
+  const paymentQUery = useOrderByReference(
+    payload?.source === "paymentSuccessful" ? payload.reference : ""
+  );
+
+  const { data, isLoading, isError, isSuccess } =
+    payload?.source === "sideBar" ? sidebarQuery : paymentQUery;
 
   const currency = (n: string) => `₦ ${Number(n).toLocaleString()}`;
 

@@ -5,7 +5,7 @@ import type {
   Cart,
   CartItem,
   CheckoutPreview,
-  ApiResponse,
+  APIResponse,
 } from "@/lib/types/cart.types";
 import { GetAddress } from "./address.service";
 
@@ -35,7 +35,7 @@ export const cart = {
   },
 
   async addOrUpdateItem(vendorId: string, payload: AddToCartPayload) {
-    const response = await apiClient.post<ApiResponse<CartItem[]>>(
+    const response = await apiClient.post<APIResponse<CartItem[]>>(
       API_ROUTES.cart.addOrUpdateItem(vendorId),
       payload
     );

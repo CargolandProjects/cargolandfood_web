@@ -291,7 +291,10 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
                       <DropdownMenuContent>
                         <DropdownMenuItem
                           onSelect={() =>
-                            openOrderDetails({ orderId: order.id })
+                            openOrderDetails({
+                              orderId: order.id,
+                              source: "sideBar",
+                            })
                           }
                         >
                           View details

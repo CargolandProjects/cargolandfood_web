@@ -6,8 +6,10 @@ export function useMakePayment() {
   return useMutation({
     mutationFn: orderService.makePayment,
 
-    onSuccess: (res) => {
-      toast.success(res.message || "Order placed successfully");
+    onSuccess: () => {
+      toast.success("Order placed successfully", {
+        description: "You'll be redirected shortly",
+      });
     },
 
     onError: (error) => {
@@ -19,7 +21,7 @@ export function useMakePayment() {
 
 export const useSimulatePayment = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: orderService.simulatePayment,
     onSuccess(data) {

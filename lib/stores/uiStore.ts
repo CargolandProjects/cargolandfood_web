@@ -7,11 +7,16 @@ type PanelState<TPayload = null> = {
 };
 
 // Order Details payload (expand as needed)
-export type OrderDetailsPayload = {
-  orderId: string;
-  // Where this was triggered from (analytics/behavior tweaks)
-  // source?: "cart" | "orders" | "restaurant" | "search" | string;
-} | null;
+export type OrderDetailsPayload = 
+  | {
+      orderId: string;
+      source: "sideBar";
+    }
+  | {
+      reference: string;
+      source: "paymentSuccessful";
+    }
+  | null;
 
 // Checkout payload (expand as needed)
 export type CheckoutPayload = {
