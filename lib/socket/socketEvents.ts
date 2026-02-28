@@ -24,8 +24,7 @@ export interface NotificationEvent {
   // Add other fields based on your backend response
 }
 
-interface VerificationCode {
-VerificationCode: {
+export interface VerificationCode {
   id: string;
   orderId: string;
   code: string;
@@ -35,13 +34,12 @@ VerificationCode: {
   usedAt: string | null; // ISO date string or null
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
-};
 }
 
-type SuccessPaymentResponse = Order &
-  VerificationCode & {
-    checkoutSessionId: string;
-  };
+type SuccessPaymentResponse = Order & {
+  VerificationCode: VerificationCode;
+  checkoutSessionId: string;
+};
 
 export type SuccessfulPaymentEvent = {
   payload: APIResponse<SuccessPaymentResponse>;

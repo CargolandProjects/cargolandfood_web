@@ -6,6 +6,7 @@ import {
   RiMapPin2Fill,
   RiMessage2Fill,
   RiPhoneFill,
+  RiStarSFill,
   RiTimeFill,
 } from "react-icons/ri";
 import { Separator } from "../ui/separator";
@@ -26,20 +27,45 @@ interface TrackOrderDetailsProps {
 interface OrderState {
   title: string;
   status: "idle" | "pending" | "success";
+  description: string;
+  time?: string;
 }
 
 const orderState: OrderState[] = [
   {
     title: "Order prepared",
+    description: "Your order has been confirmed by the vendor",
+    time: "10",
     status: "success",
   },
   {
     title: "Order has been delivered",
-    status: "idle",
+    description: "Your order has been confirmed by the vendor",
+    time: "10",
+    status: "success",
   },
   {
-    title: "Order order has been delivered",
-    status: "idle",
+    title: "Preparing your order",
+    description: "Vendor is preparing your order",
+    time: "10",
+    status: "success",
+  },
+  {
+    title: "Order ready to go out",
+    description: "Vendor is ready to give out your order",
+    time: "10",
+    status: "success",
+  },
+  {
+    title: "Assign to rider",
+    description: "Order has been assigned to a rider",
+    time: "10mins",
+    status: "success",
+  },
+  {
+    title: "Completed",
+    description: "Your order has been delivered",
+    status: "success",
   },
 ];
 
@@ -57,12 +83,18 @@ const menuImg = [
 ];
 
 const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
+  const openRateOrder = useUIStore((s) => s.openReviewOrder);
   const [showDetails, setShowDetails] = useState(true);
   const isLoading = false;
   const isError = false;
   const isSuccess = true;
+
+  const handleOpenReview = () => {
+    openRateOrder({ vendorId: "123" });
+  };
+
   return (
-    <ScrollArea className="h-dvh ">
+    <ScrollArea className="h-full ">
       <div className="py-4 sm:p-6">
         {isDesktop ? (
           // Desktop Header
@@ -100,9 +132,10 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
         )}
 
         {isDesktop && <Separator className="mt-3 mb-6" />}
+
         {isSuccess && (
           <div>
-            {/* Delivery Trackinf Map */}
+            {/* Delivery Tracking Map */}
             <div className="h-[432px] sm:h-[416px] w-full overflow-hidden rounded-xl max-sm:mt-4">
               <img src={map.src} alt="map" className="size-full object-cover" />
             </div>
@@ -146,6 +179,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                   <span className="text-base leading-5">20 mins</span>
                 </div>
 
+                {/* Order Delivery State */}
                 {showDetails && (
                   <div className="border rounded-xl px-6 py-4 space-y-6">
                     {orderState.map((item, idx) => (
@@ -159,25 +193,59 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                           ) : (
                             <div className="size-8 bg-neutral-100 rounded-full" />
                           )}
-                          {/* 
-                          Okay to sync this progress bar appropriately, I had to push up the the bars to the top using -top-6.5
-                          and then only render those with index greater than zero. The reason for this is because when the state is idle,
-                          it's gray else it's primary {PENDING, SUCCESS}, and this made the bar beneath light up when the first step was sill pending
-                          which is against the design as the step/icon beneath it is still gray. Hence the earlier stated fix for proper syncing
-                        */}
+
+                          {/**
+                           * Okay to sync this progress bar appropriately, I had to push up the the bars to the top using -top-15
+                           * and then only render those with index greater than zero. The reason for this is because when the state is idle,
+                           * it's gray else it's primary {PENDING, SUCCESS}, and this made the bar beneath light up when the first step was sill pending
+                           * which is against the design as the step/icon beneath it is still gray. Hence the earlier stated fix for proper syncing
+                           */}
+
+                          {/* Status Bar */}
                           {idx > 0 && (
-                            // Status Bar
                             <div
                               className={` ${
                                 item.status === "idle"
                                   ? "bg-neutral-100"
                                   : "bg-primary"
-                              } w-1 h-full absolute -top-6.5 left-1/2 -z-1 transform -translate-x-1/2 `}
+                              } w-1 h-[260%] absolute -top-17 left-1/2 -z-1 transform -translate-x-1/2 `}
                             />
                           )}
                         </div>
 
-                        <p className="text-base leading-5">{item.title}</p>
+                        {/* State Description */}
+                        <div className="w-full sm:max-w-[250px]">
+                          <h3 className="text-base leading-6 font-medium">
+                            {item.title}
+                          </h3>
+                          <p className="text-xs text-neutral-500">
+                            {item.description}
+                          </p>
+                          {idx === 0 ? (
+                            <p className="font-medium text-neutral-700 mt-1">
+                              Time Req. {item.time}
+                              {Number(item.time) > 1 ? "mins" : "min"}
+                            </p>
+                          ) : item.title !== "Completed" ? (
+                            <p className="text-xs text-neutral-500 font-medium mt-1">
+                              Est. time {item.time}
+                              {Number(item.time) > 1 ? "mins" : "min"}
+                            </p>
+                          ) : (
+                            <Button
+                              onClick={handleOpenReview}
+                              disabled={
+                                item.status === "idle" ||
+                                item.status === "pending"
+                              }
+                              variant="outline"
+                              className="uppercase text-xs leading-5 text-neutral-500 w-full mt-1"
+                            >
+                              <RiStarSFill className="size-5 text-neutral-400 " />
+                              Rate The Food
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -194,6 +262,14 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                   <span className="text-base leading-5">Home</span>
                 </div>
 
+                <div className="flex justify-between">
+                  <span className="text-base leading-5 text-neutral-600">
+                    Delivery Verification Code:
+                  </span>
+
+                  <span className="font-bold leading-5">9818</span>
+                </div>
+
                 {showDetails && (
                   <div className="flex justify-between">
                     <div className="flex gap-2 items-center">
@@ -202,7 +278,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                         Amount Paid
                       </span>
                     </div>
-                    <span className="text-base leading-5">₦14, 490</span>
+                    <span className="text-base leading-5">₦14,490</span>
                   </div>
                 )}
               </div>

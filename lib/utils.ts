@@ -72,8 +72,8 @@ const ALLOWED_IMAGE_FORMATS = [
   "image/jpg",
   "image/png",
   "image/webp",
-  "image/gif",
 ];
+
 export async function uploadImageToCloudinary(file: File): Promise<string> {
   // Validate environment variables
   if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {

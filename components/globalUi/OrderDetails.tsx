@@ -9,7 +9,6 @@ import {
   SheetTitle,
 } from "../ui/sheet";
 import { Separator } from "../ui/separator";
-import { ScrollArea } from "../ui/scroll-area";
 import {
   RiArrowLeftLine,
   RiCloseFill,
@@ -43,12 +42,12 @@ const OrderDetailsContent = ({
     payload?.source === "sideBar" ? payload.orderId : ""
   );
 
-  const paymentQUery = useOrderByReference(
+  const paymentQuery = useOrderByReference(
     payload?.source === "paymentSuccessful" ? payload.reference : ""
   );
 
   const { data, isLoading, isError, isSuccess } =
-    payload?.source === "sideBar" ? sidebarQuery : paymentQUery;
+    payload?.source === "sideBar" ? sidebarQuery : paymentQuery;
 
   const currency = (n: string) => `₦ ${Number(n).toLocaleString()}`;
 
@@ -113,7 +112,7 @@ const OrderDetailsContent = ({
 
             <div className="flex items-center justify-between text-sm">
               <span>Delivery Verification Code:</span>
-              <span className="font-bold">{9818}</span>
+              <span className="font-bold">{data.VerificationCode.code}</span>
             </div>
 
             <div className="flex items-center justify-between text-sm">

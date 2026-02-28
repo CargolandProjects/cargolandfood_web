@@ -81,11 +81,14 @@ export interface CheckoutPreview {
 export interface AddToCartPayload {
   menuId: string;
   menuName: string;
+  menuImg: string;
   unitPrice: string;
   quantity: number;
-  menuImg: string;
-  action: "INCREMENT" | "DECREMENT" | "SET";
   currency: "NGN";
+  action: "INCREMENT" | "DECREMENT" | "SET";
+  sizeName?: string;
+  sizeValue?: string;
+  sizePrice?: number;
   addons?: {
     menuAddonId: string;
     addonImg: string;

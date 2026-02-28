@@ -6,6 +6,7 @@ import type {
   MakePaymentResponse,
   PaymentResponse,
 } from "@/lib/types/cart.types";
+import { VerificationCode } from "../socket/socketEvents";
 
 interface AddonItem {
   id: string;
@@ -58,6 +59,7 @@ interface GetOrdersResponse {
   cancelledAt: string | null;
   createdAt: string;
   items: Items[];
+  VerificationCode: VerificationCode;
 }
 
 export const orderService = {
