@@ -1,4 +1,5 @@
 import { useToggleFavourite } from "@/lib/hooks/mutations/useToggleFavourite";
+import { useActiveZone } from "@/lib/hooks/useActiveZone";
 import { useSession } from "@/lib/hooks/useSession";
 import { Vendor } from "@/lib/services/vendors.service";
 import { fallbackImg, getCategoryPath } from "@/lib/utils";
@@ -15,6 +16,7 @@ interface VendorCardProps {
   vendor: Vendor;
   vendorId: string;
   routes?: string;
+  source?: "homepage" | "vendorpage";
   asFavouriteCard?: boolean;
 }
 
@@ -26,9 +28,14 @@ const VendorCard = ({
   //THIS!!!!!!!
   routes = "Restaurant",
   asFavouriteCard = false,
+  source,
 }: VendorCardProps) => {
   const { user } = useSession();
-  const { mutate: toggleFavourite, isPending } = useToggleFavourite();
+  const { zoneId } = useActiveZone();
+  const { mutate: toggleFavourite, isPending } = useToggleFavourite(
+    source,
+    zoneId ?? ""
+  );
   const router = useRouter();
 
   const handleClick = () => {
@@ -37,7 +44,7 @@ const VendorCard = ({
     router.push(`/${getCategoryPath(routes)}/${vendorId}`);
   };
 
-  const handleToggle = (
+  const handleToggleFavourite = (
     isFavourite: boolean,
     vendorId: string,
     e: React.MouseEvent
@@ -83,7 +90,7 @@ const VendorCard = ({
           <button
             disabled={isPending}
             onClick={(e: React.MouseEvent) =>
-              handleToggle(isFavourite, vendorId, e)
+              handleToggleFavourite(isFavourite, vendorId, e)
             }
           >
             <RiHeartFill

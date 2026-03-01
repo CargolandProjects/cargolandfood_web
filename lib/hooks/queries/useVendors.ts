@@ -9,7 +9,7 @@ export const useVendors = (zoneId: string) => {
   });
 };
 
-export const useGetVendorById = (id: string) => {
+export const useVendorById = (id: string) => {
   return useQuery({
     queryKey: ["vendorById", id],
     queryFn: () => vendors.getVendorById(id),

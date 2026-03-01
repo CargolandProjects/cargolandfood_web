@@ -13,7 +13,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import OrderDetails from "../globalUi/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
 import ReviewsModal from "../ReviewModal";
-import { useGetVendorById } from "@/lib/hooks/queries/useVendors";
+import { useVendorById } from "@/lib/hooks/queries/useVendors";
 import { useCheckoutPreview } from "@/lib/hooks/queries/useCheckoutFlow";
 import { Button } from "../ui/button";
 import { useToggleFavourite } from "@/lib/hooks/mutations/useToggleFavourite";
@@ -31,8 +31,8 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
     "DELIVERY"
   );
 
-  const { data, isLoading, error, isSuccess } = useGetVendorById(id);
-  const { mutate: toggleFavourite } = useToggleFavourite();
+  const { data, isLoading, error, isSuccess } = useVendorById(id);
+  const { mutate: toggleFavourite } = useToggleFavourite("vendorpage");
   const { user } = useSession();
 
   const router = useRouter();
@@ -80,7 +80,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
     setselectedId(id === selectedId ? null : id);
   };
 
-  const handleToggle = (
+  const handleToggleFavourite = (
     isFavourite: boolean,
     vendorId: string,
 
@@ -151,7 +151,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
             <div className="absolute top-3 sm:top-6 right-3 sm:right-6 flex gap-2.5">
               <button
                 onClick={(e) =>
-                  handleToggle(vendor!.isFavourite, vendor!.id, e)
+                  handleToggleFavourite(vendor!.isFavourite, vendor!.id, e)
                 }
                 className="size-8 sm:size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
               >

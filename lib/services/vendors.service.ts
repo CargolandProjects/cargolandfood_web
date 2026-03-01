@@ -16,7 +16,7 @@ export interface Vendor {
   ratings: number;
 }
 
-interface Vendors {
+export interface Vendors {
   status: string;
   message: string;
   vendors: Vendor[];

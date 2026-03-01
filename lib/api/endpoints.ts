@@ -22,7 +22,7 @@ export const API_ROUTES = {
   },
 
   vendor: {
-    allVendors: (userAddressId: string) => `/users/vendors/${userAddressId}`,
+    allVendors: (zoneId: string) => `/users/vendors/${zoneId}`,
     vendorById: (id: string) => `/users/menus/${id}`,
   },
 
