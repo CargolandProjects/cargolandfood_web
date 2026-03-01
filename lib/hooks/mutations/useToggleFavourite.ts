@@ -19,8 +19,8 @@ export const useToggleFavourite = (
         queryKey: ["favourites"],
       });
 
-      //   This updates the isFavourite flag of the cache for ui update
-      //  This prevents refetching the vendor just to update a flag
+      //  This updates the isFavourite flag of the cache for ui update
+      //  And prevents refetching the vendor/vendors just to update a flag
       if (source === "vendorpage") {
         queryClient.setQueryData(
           ["vendorById", vendorId],

@@ -100,7 +100,7 @@ const OrderDetailsContent = ({
                 <span>Order ID:</span>
                 <span className="font-bold line-clamp-1">{data.id}</span>
               </div>
-              <div className="flex items-center gap-0.5 text-sm font-normal">
+              <div className="flex items-center gap-0.5 text-sm font-normal shrink-0">
                 <RiTimeLine className="size-4.5 text-neutral-600" />
 
                 <span>

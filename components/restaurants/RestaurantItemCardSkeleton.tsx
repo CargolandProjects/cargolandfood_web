@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const RestaurantItemCardSkeleton = () => {
   return (
     <div
-      className="flex rounded-2xl overflow-hidden border border-gray-200 shadow-sm h-[138px] relative"
+      className="flex rounded-2xl overflow-hidden border border-neutral-200 h-[138px] relative"
     >
       {/* Left image area */}
       <div className="w-[138px] h-full shrink-0 relative">

@@ -229,7 +229,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
               animate={{ y: 0 }}
               exit={{ y: 100 }}
               transition={{ duration: 0.3 }}
-              className="sticky sm:hidden pt-5 pb-8 px-8 bottom-0 inset-x-0 flex justify-between items-center bg-white"
+              className="sticky sm:hidden pt-5 pb-8 px-8 bottom-0 inset-x-0 flex gap-2 justify-between items-center bg-white"
             >
               <p className="text-xl font-medium ">
                 ₦{calculateLocalTotal().toLocaleString()}

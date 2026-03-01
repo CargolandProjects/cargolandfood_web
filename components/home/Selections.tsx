@@ -9,11 +9,11 @@ import Promotions from "../Promotions";
 import Reastaurants from "./Restaurants";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSearchVendorMenu } from "@/lib/hooks/queries/useSearch";
-import Loading from "../LoadingSkeleton";
 import { Suspense } from "react";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
 import RestaurantItemCard from "../restaurants/RestaurantItemCard";
 import { getCategoryPath } from "@/lib/utils";
+import RestaurantItemCardSkeleton from "../restaurants/RestaurantItemCardSkeleton";
 
 const SelectionsContent = () => {
   const { activeCategory } = useCategory();
@@ -39,13 +39,24 @@ const SelectionsContent = () => {
 
   return (
     <>
+      {/* Search results section if search query is present */}
       {searchTerm && (
         <section className="">
-          <h3 className="mb-6.5">Results for {searchTerm}</h3>
-          {isLoading && <Loading count={6} title />}
+          <h3 className="mb-4 sm:mb-6.5">Results for {searchTerm}</h3>
+          {isLoading && (
+            <div className="sm:px-4">
+              <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-10">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <RestaurantItemCardSkeleton key={i} />
+                ))}
+              </div>
+            </div>
+          )}
+
           {isSuccess && products.length === 0 && (
             <p className="">No Results Found for {searchTerm}</p>
           )}
+
           {isSuccess && products.length > 0 && (
             <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-10">
               {products.map((item) => (
@@ -56,7 +67,6 @@ const SelectionsContent = () => {
                   onNavigate={() =>
                     handleSelect(item.vendorId, item.vendor.businessCategory)
                   }
-                  // selectedId={selectedId}
                 />
               ))}
             </div>

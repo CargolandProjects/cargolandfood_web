@@ -65,7 +65,7 @@ const orderState: OrderState[] = [
   {
     title: "Completed",
     description: "Your order has been delivered",
-    status: "success",
+    status: "pending",
   },
 ];
 
@@ -234,10 +234,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                           ) : (
                             <Button
                               onClick={handleOpenReview}
-                              disabled={
-                                item.status === "idle" ||
-                                item.status === "pending"
-                              }
+                              disabled={item.status !== "success"}
                               variant="outline"
                               className="uppercase text-xs leading-5 text-neutral-500 w-full mt-1"
                             >
