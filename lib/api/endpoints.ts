@@ -44,7 +44,8 @@ export const API_ROUTES = {
       `/orders/payment-simulation/${checkoutSessionId}`,
     getOrders: "/orders/get-all-user-orders",
     orderDetails: (orderId: string) => `/orders/order/${orderId}`,
-    getOrderByReference: (reference: string) => `/orders/order-by-reference/${reference}`,
+    getOrderByReference: (reference: string) =>
+      `/orders/order-by-reference/${reference}`,
   },
 
   address: {
@@ -63,5 +64,11 @@ export const API_ROUTES = {
   favourites: {
     getFavourites: (userId: string) => `/users/favourite-vendor/${userId}`,
     makeFavourite: "/users/favourite-vendor",
+  },
+
+  wallet: {
+    fundWallet: "/users/fund-user-wallet",
+    walletBalance: "/users/user-wallet/balance",
+    transactionRecords: "/users/user-wallet-transaction/records",
   },
 };

@@ -143,7 +143,7 @@ const OrderDetailsContent = ({
                     {item.menuName}
                   </h3>
                   <p className="text-neutral-600 text-sm line-clamp-2 mt-0.5 ">
-                    {item.menuName}
+                    {item.description ?? "-"}
                   </p>
                   <p className="text-sm font-medium leading-3 mt-1">
                     {currency(item.unitPrice)}

@@ -5,6 +5,8 @@ export const useGetOrders = () => {
   return useQuery({
     queryKey: ["orders"],
     queryFn: orderService.getOrders,
+    staleTime: 0,
+    refetchOnMount: true,
     select: (res) => res.data,
   });
 };
@@ -14,6 +16,7 @@ export const useOrderDetails = (orderId: string) => {
     queryKey: ["orderDetails", orderId],
     queryFn: () => orderService.orderDetails(orderId),
     enabled: !!orderId,
+
     select: (res) => res.data,
   });
 };

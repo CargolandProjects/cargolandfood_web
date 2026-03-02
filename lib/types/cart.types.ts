@@ -88,7 +88,7 @@ export interface AddToCartPayload {
   action: "INCREMENT" | "DECREMENT" | "SET";
   sizeName?: string;
   sizeValue?: string;
-  sizePrice?: number;
+  sizePrice?: string;
   addons?: {
     menuAddonId: string;
     addonImg: string;

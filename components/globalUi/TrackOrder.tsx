@@ -60,12 +60,12 @@ const orderState: OrderState[] = [
     title: "Assign to rider",
     description: "Order has been assigned to a rider",
     time: "10mins",
-    status: "success",
+    status: "pending",
   },
   {
     title: "Completed",
     description: "Your order has been delivered",
-    status: "pending",
+    status: "idle",
   },
 ];
 

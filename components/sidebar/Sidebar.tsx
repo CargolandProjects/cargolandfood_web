@@ -120,23 +120,25 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
     <>
       {/* Large Screens */}
       {isDesktop && (
-        <aside className="max-sm:hidden sticky left-0 inset-y-0 w-sidebar shrink-0 bg-white border-r border-gray-100">
-          <div className="flex flex-col items-center py-4">
+        <aside className="max-sm:hidden h-full sticky inset-y-0 w-sidebar shrink-0 border-r border-gray-100">
+          <div className="flex flex-col items-center ">
             {/* Logo */}
-            <Link
-              href="/"
-              onClick={() => setActiveCategory(null)}
-              className="size-6 flex items-center justify-center rounded-sm bg-black overflow-hidden mb-8"
-            >
-              <img
-                src={logo.src}
-                alt="Cargoland Food"
-                className="object-cover"
-              />
-            </Link>
+            <div className="py-4 fixed h-5 z-20 bg-white">
+              <Link
+                href="/"
+                onClick={() => setActiveCategory(null)}
+                className=" size-6 flex items-center justify-center rounded-sm bg-black overflow-hidden mb-8"
+              >
+                <img
+                  src={logo.src}
+                  alt="Cargoland Food"
+                  className="object-cover"
+                />
+              </Link>
+            </div>
 
             {/* Navigation Items */}
-            <nav className="flex flex-col gap-7 flex-1">
+            <nav className="mt-[72px] flex flex-col gap-7 flex-1">
               {sidebarItems.map((item, idx) => {
                 const IconComponent = item.icon;
                 const isActive = activeTab === item.id;
@@ -172,9 +174,10 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                           key={item.id}
                           // variant="ghost"
                           onClick={() => handleTabChange(item.id)}
-                          className={`relative size-6 rounded-sm transition-colors flex justify-center items-center ${
-                            isActive && "bg-gray-100"
-                          }`}
+                          className={`relative size-6 rounded-sm transition-colors flex justify-center items-center 
+                            ${isActive && "bg-gray-100"}
+                            ${sidebarItems.length - 1 === idx && "mt-[238px] xl:mt-[320px] pb-6"}
+                          `}
                         >
                           <IconComponent
                             className={`w-5 h-5 transition-colors ${

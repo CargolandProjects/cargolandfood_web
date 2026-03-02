@@ -25,6 +25,7 @@ interface Items {
   menuId: string;
   menuImg: string;
   menuName: string;
+  description: string;
   unitPrice: string;
   quantity: number;
   discountApplied: string;

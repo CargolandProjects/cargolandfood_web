@@ -148,7 +148,7 @@ const ProductModal = ({
         currency: "NGN",
         sizeName: selectedSizeData?.name || "",
         sizeValue: selectedSizeData?.size || "",
-        sizePrice: selectedSizeData ? parseFloat(selectedSizeData.price) : 0,
+        sizePrice: selectedSizeData?.price ,
         addons: addonsPayload.length > 0 ? addonsPayload : undefined,
       },
       {
