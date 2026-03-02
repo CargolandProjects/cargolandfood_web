@@ -4,8 +4,6 @@ import TransactionHistory from "@/components/wallet/TransactionHistory";
 import WalletCard from "@/components/wallet/WalletCard";
 import { useRouter } from "next/navigation";
 import { RiArrowGoBackLine } from "react-icons/ri";
-import { useState } from "react";
-import TopUpModal from "./TopUpModal";
 
 export interface Transaction {
   id: string;
@@ -100,19 +98,14 @@ const TRANSACTIONS: TransactionGroup[] = [
 ];
 
 const WalletPageContent = () => {
-  const [amount, setAmount] = useState("");
-  const [showTopup, setShowTopUp] = useState(false);
-
   const router = useRouter();
 
   const handleBack = () => {
     router.back();
   };
 
-  const balance = 37500;
-
   return (
-    <div className=" max-w-[1006px] mx-auto">
+    <div className=" max-w-[1006px] mx-auto h-full flex flex-col">
       <button
         onClick={handleBack}
         className="flex items-center gap-4 mb-6 text-sm w-full pl-2 hover:cursor-pointer"
@@ -121,16 +114,8 @@ const WalletPageContent = () => {
         <span className="text-xl font-medium">My Wallet</span>
       </button>
 
-      <WalletCard balance={balance} showTopup={() => setShowTopUp(true)} />
-      <TransactionHistory transactions={TRANSACTIONS} />
-
-      <TopUpModal
-        amount={amount}
-        setAmount={setAmount}
-        balance={balance}
-        open={showTopup}
-        onOpenChange={setShowTopUp}
-      />
+      <WalletCard />
+      <TransactionHistory txHistory={TRANSACTIONS} />
     </div>
   );
 };

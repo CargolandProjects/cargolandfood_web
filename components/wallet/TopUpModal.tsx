@@ -1,13 +1,5 @@
-import React, { ChangeEvent, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import { useState } from "react";
+import { Dialog, DialogContent } from "../ui/dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import AmountModal from "./AmountModal";
 import PaymentMethodModal from "./PaymentMethodModal";
@@ -15,12 +7,12 @@ import PaymentMethodModal from "./PaymentMethodModal";
 interface TopupModalProps {
   open: boolean;
   onOpenChange: (close: boolean) => void;
-  balance: number;
+  balance: string | undefined;
   amount: string;
   setAmount: (amount: string) => void;
 }
 
-export type TopUpStep = "setAmount" | "paymentMthod";
+export type TopUpStep = "setAmount" | "paymentMethod";
 
 const TopUpModal = ({
   open,
@@ -42,7 +34,7 @@ const TopUpModal = ({
           />
         );
 
-      case "paymentMthod":
+      case "paymentMethod":
         return <PaymentMethodModal amount={amount} />;
     }
   };
@@ -54,7 +46,7 @@ const TopUpModal = ({
 
   return (
     <Dialog open={open} onOpenChange={(v) => handleClose(v)}>
-      <DialogContent className="dialog pb-4.5!">
+      <DialogContent className="dialog pb-4.5! flex flex-col">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}
@@ -62,6 +54,7 @@ const TopUpModal = ({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.1 }}
+            className="flex-1 flex flex-col"
           >
             {Step()}
           </motion.div>

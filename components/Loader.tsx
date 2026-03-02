@@ -1,11 +1,11 @@
 import { Loader2 } from "lucide-react";
 
-const Loader = ({ size }: { size?: number }) => {
-  const style = `size-${size ? size : "6"} `;
-  console.log(style);
+const Loader = ({ size, styles }: { size?: number; styles?: string }) => {
+  const baseStyles = `size-${size ? size : "6"} `;
+
   return (
     <Loader2
-      className={` ${style}
+      className={` ${baseStyles} ${styles}
         animate-spin duration-300 text-primary`}
     />
   );
