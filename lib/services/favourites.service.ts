@@ -8,7 +8,7 @@ interface MakeFavourite {
   userId: string;
 }
 
-interface Favourite {
+export interface Favourite {
   id: string;
   vendorId: string;
   userId: string;

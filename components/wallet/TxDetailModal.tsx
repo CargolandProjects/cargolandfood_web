@@ -1,12 +1,12 @@
 import { Separator } from "@radix-ui/react-separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import { Transaction } from "./WalletPageContent";
-import { formatDateWComma, formatPrettyDate, formatTime } from "@/lib/utils";
+import {  formatDateWCommaB, formatTime } from "@/lib/utils";
+import { TransactionRecord } from "@/lib/services/wallet.service";
 
 interface TxDetailModalProps {
   open: boolean;
   onOpenChange: (id: string | null) => void;
-  tx: Transaction;
+  tx: TransactionRecord;
 }
 
 const TxDetailModal = ({ open, onOpenChange, tx }: TxDetailModalProps) => {
@@ -22,44 +22,45 @@ const TxDetailModal = ({ open, onOpenChange, tx }: TxDetailModalProps) => {
         <div className="mt-3">
           <div className="space-y-3">
             <p className="text-neutral-600 text-base leading-5">Description</p>
-            <p className="text-base font-medium ">{tx.title}</p>
+            <p className="text-base font-medium ">{tx.description || tx.type}</p>
           </div>
 
           <Separator className="mt-3 mb-6" />
 
-          <div >
+          <div>
             <div className="flex justify-between">
               <div className="flex flex-col">
                 <span className="text-neutral-600">Amount</span>
                 <span
                   className={`whitespace-nowrap text-sm font-medium ${
-                    tx.type === "expense"
+                    tx.type === "DEBIT"
                       ? "text-cargo-error"
                       : "text-cargo-success"
                   }`}
                 >
-                  {tx.type === "expense" ? "-" : ""}₦
-                  {tx.amount.toLocaleString()}
+                  {tx.type === "DEBIT" ? "-" : ""}₦{Number(tx.amount).toLocaleString()}
                 </span>
               </div>
               <span
                 className={`${
-                  tx.status === "success"
+                  tx.status === "SUCCESS"
                     ? "border-[#027A48] text-[#054825] bg-[#E5F8EE]"
                     : "border-red-600 text-red-800 bg-cargo-error/10"
                 } px-3 py-1.25 h-fit border rounded-xl text-xxs font-medium leading-3`}
               >
-                {tx.status === "success" ? "Successful" : "Failed"}
+                {tx.status === "SUCCESS" ? "Successful" : "Failed"}
               </span>
             </div>
             <div className="mt-6 flex justify-between">
               <div className="flex flex-col">
                 <span className="text-neutral-600">Date</span>
-                <span className="font-medium">{formatDateWComma(tx.date)}</span>
+                <span className="font-medium">
+                  {formatDateWCommaB(tx.createdAt)}
+                </span>
               </div>
               <div className="flex flex-col">
                 <span className="text-neutral-600">Time</span>
-                <span className="font-medium">{formatTime(tx.date)}</span>
+                <span className="font-medium">{formatTime(tx.createdAt)}</span>
               </div>
             </div>
           </div>

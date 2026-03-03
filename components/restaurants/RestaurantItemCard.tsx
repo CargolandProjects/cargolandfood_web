@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { Menu } from "@/lib/services/vendors.service";
 import ProductModal from "../ProductModal";
 import { useAddToCart } from "@/lib/hooks/mutations/useMutateCart";
-import { RiAddFill } from "react-icons/ri";
+import { RiAddFill, RiGiftLine } from "react-icons/ri";
 import { fallbackImg } from "@/lib/utils";
 import useAuthFlow from "@/lib/stores/authFlowStore";
 import { useSession } from "@/lib/hooks/useSession";
@@ -26,7 +26,7 @@ const RestaurantItemCard = ({
   selectedId,
   isSearch = false,
 }: RestaurantItemCard) => {
-  const { description, id, uploadImageUrl, name, price } = menu;
+  const { description, id, uploadImageUrl, name, price, PromotionItem } = menu;
   const isSelected = id === selectedId;
   const { isAuthenticated } = useSession();
   const openAuth = useAuthFlow((s) => s.openAuth);
@@ -76,6 +76,14 @@ const RestaurantItemCard = ({
             className="w-full h-full object-cover rounded-l-2xl bg-neutral-100"
             onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
           />
+          {PromotionItem && PromotionItem?.length > 0 && (
+            <div className="absolute top-2 left-2 rounded-full flex justify-center items-center gap-1 py-1 px-2 bg-white">
+              <RiGiftLine className="size-3 text-primary" />
+              <p className="font-medium text-xs text-primary">
+                {PromotionItem?.[0]?.promotion.percentageValue}% Off
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Product Details */}

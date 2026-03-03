@@ -8,12 +8,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDateWComma(date: Date | string, wComma: boolean = true) {
-  return ` ${format(date, "d MMM")}${wComma ? "," : ""} ${format(
-    date,
-    "yyyy"
-  )}`;
+  return ` ${format(date, `d MMM${wComma ? "," : ""} yyyy`)} `;
 }
 
+export function formatDateWCommaB(date: Date | string) {
+  return `${format(date, "MMM do, yyyy")}`;
+}
 export function formatPrettyDate(date: Date | string) {
   return `${format(date, "EEEE")}, ${format(date, "do")} ${format(
     date,
@@ -58,6 +58,84 @@ export const getCategoryPath = (categoryId: string) => {
       return null;
   }
 };
+
+/**
+ * Group transaction records by month and transform to UI format
+ * Converts flat TransactionRecord[] into grouped TransactionGroup[] by "Month Year"
+ */
+export function groupTransactionsByMonth(
+  records: Array<{
+    id: string;
+    walletId: string;
+    type: "CREDIT" | "DEBIT";
+    amount: string;
+    reference: string;
+    description: string | null;
+    status: "SUCCESS" | "FAILED";
+    createdAt: string;
+  }>
+): Array<{
+  month: string;
+  transactions: Array<{
+    id: string;
+    walletId: string;
+    type: "CREDIT" | "DEBIT";
+    amount: string;
+    reference: string;
+    description: string | null;
+    status: "SUCCESS" | "FAILED";
+    createdAt: string;
+  }>;
+}> {
+  // 1. Sort by date (newest first)
+  const sorted = [...records].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  // 2. Group by "Month Year"
+  const grouped = sorted.reduce(
+    (acc, record) => {
+      const date = new Date(record.createdAt);
+      const monthYear = format(date, "MMMM yyyy"); // "September 2025"
+
+      if (!acc[monthYear]) {
+        acc[monthYear] = [];
+      }
+
+      acc[monthYear].push({
+        id: record.id,
+        walletId: record.walletId,
+        type: record.type,
+        amount: record.amount,
+        reference: record.reference,
+        description: record.description,
+        status: record.status,
+        createdAt: record.createdAt,
+      });
+
+      return acc;
+    },
+    {} as Record<
+      string,
+      Array<{
+        id: string;
+        walletId: string;
+        type: "CREDIT" | "DEBIT";
+        amount: string;
+        reference: string;
+        description: string | null;
+        status: "SUCCESS" | "FAILED";
+        createdAt: string;
+      }>
+    >
+  );
+
+  // 3. Convert to array format UI expects
+  return Object.entries(grouped).map(([month, transactions]) => ({
+    month,
+    transactions,
+  }));
+}
 
 /**
  * Cloudinary Image Upload Configuration

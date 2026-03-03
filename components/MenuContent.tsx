@@ -14,7 +14,7 @@ import {
 } from "react-icons/ri";
 import BackButton from "./BackButton";
 import { User } from "@/lib/services/auth.service";
-import { MenuScreen } from "./Header";
+import { MenuScreen } from "./header/Header";
 import { useState } from "react";
 import EditProfile from "./profile/EditProfile";
 import DeleteProfile from "./profile/DeleteProfile";

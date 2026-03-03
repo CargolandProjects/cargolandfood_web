@@ -18,14 +18,14 @@ interface FundWallet {
   reference: string;
 }
 
-interface TransactionRecord {
+export interface TransactionRecord {
   id: string;
   walletId: string;
-  type: string;
+  type: "CREDIT" | "DEBIT";
   amount: string;
   reference: string;
   description: string | null;
-  status: string;
+  status: "SUCCESS" | "FAILED";
   createdAt: string;
 }
 

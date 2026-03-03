@@ -27,11 +27,13 @@ import {
   RiMenu4Line,
   RiArrowLeftLine,
 } from "react-icons/ri";
-import Notifications from "./Notifications";
+import Notifications from "../Notifications";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
-import MenuContent from "./MenuContent";
+import MenuContent from "../MenuContent";
 import { useUIStore } from "@/lib/stores/uiStore";
 import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
+import Location from "./Location";
+import Wallet from "./Wallet";
 
 interface HeaderProps {
   setSideBar: (v: boolean) => void;
@@ -46,9 +48,9 @@ export function Header({ setSideBar }: HeaderProps) {
   const path = usePathname();
   const OpenAuth = useAuthFlow((s) => s.openAuth);
   const { guestLocation } = useGuestLocation();
-  const openAdress = useUIStore((s) => s.openAddresses);
   const { user: session, isAuthenticated, signOut } = useSession();
   // console.log("Session Data:", session);
+  const defaultAddress = session?.address?.find((a) => a.setAddressDefault);
 
   const [firstName, lastName] = session?.fullName.split(" ") || [];
   const initials =
@@ -82,7 +84,6 @@ export function Header({ setSideBar }: HeaderProps) {
   const showSearch = matchRoutes(SEARCH_ROUTES, path);
   const showBack = matchRoutes(BACK_ROUTES, path);
 
-  const defaultAddress = session?.address?.find((a) => a.setAddressDefault);
   // session.signOut();
   return (
     <header className="sticky top-0 z-30 px-4 sm:px-6 py-2 max-sm:pb-1 bg-white sm:border-b border-gray-100">
@@ -98,58 +99,15 @@ export function Header({ setSideBar }: HeaderProps) {
         <div className="max-w-full flex items-center justify-between gap-8">
           <div className="flex items-center gap-6">
             {/* Location Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex">
-                  <RiMapPinFill className="size-6 text-primary mb-1" />
-                  <div className="text-left ml-0.5 flex-1 sm:space-y-0.5">
-                    <p className="text-xs font-medium leading-4">
-                      Your Location
-                    </p>
-                    <p className="text-xxs leading-3 text-gray-600 line-clamp-1 max-w-[120px]">
-                      {(isAuthenticated
-                        ? defaultAddress?.addressLine1
-                        : guestLocation?.addressLine1) ||
-                        "No location selected"}
-                    </p>
-                  </div>
-                  <RiArrowDownSLine className="size-5 text-neutral-600 ml-0.5" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
-                <DropdownMenuItem>
-                  {(isAuthenticated
-                    ? defaultAddress?.addressLine1
-                    : guestLocation?.addressLine1) || "No location selected"}
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={openAdress}>
-                  Add new location
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Location
+              defaultAddress={defaultAddress}
+              guestLocation={guestLocation}
+              isAuthenticated={isAuthenticated}
+          
+            />
 
             {/* Wallet Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild className="max-sm:hidden">
-                <button className="flex items-center gap-1 hover:bg-gray-100">
-                  <RiWallet3Fill className="size-6  text-blue-400 " />
-                  <p className="text-xs font-medium text-gray-900">My Wallet</p>
-                  <RiArrowDownSLine className="size-5 text-gray-600 ml-2" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="start"
-                className="w-[161px] dropdown-content"
-              >
-                <DropdownMenuLabel className="p-0">
-                  Available Balance
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator className="border-gray-200 border mt-1 mb-2" />
-                <DropdownMenuItem className="text-gray-500 font-medium p-0 justify-between">
-                  #20,000.00 <RiArrowRightSLine className="size-6" />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+           <Wallet />
           </div>
 
           {/* Right Section */}

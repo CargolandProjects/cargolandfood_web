@@ -1,6 +1,6 @@
 "use client";
 
-import { Header } from "@/components/Header";
+import { Header } from "@/components/header/Header";
 import Footer from "@/components/home/Footer";
 import Sidebar from "@/components/sidebar/Sidebar";
 import ContextProviders from "@/contexts/ContextProviders";

@@ -5,98 +5,6 @@ import WalletCard from "@/components/wallet/WalletCard";
 import { useRouter } from "next/navigation";
 import { RiArrowGoBackLine } from "react-icons/ri";
 
-export interface Transaction {
-  id: string;
-  title: string;
-  date: string;
-  amount: number;
-  type: "expense" | "income";
-  status: string;
-}
-
-export interface TransactionGroup {
-  month: string;
-  transactions: Transaction[];
-}
-
-const TRANSACTIONS: TransactionGroup[] = [
-  {
-    month: "September 2025",
-    transactions: [
-      {
-        id: "1",
-        title:
-          "1 Portion of Stir fry Spaghetti, plantain, a bottle of coke and a slice of pizza with a jug 0f milk and a container of yoghurt",
-        date: "2025-08-18T09:15:30Z",
-        amount: 3635,
-        type: "expense",
-        status: "success",
-      },
-      {
-        id: "2",
-        title: "Wallet Top Up",
-        date: "2025-08-18T09:15:30",
-        amount: 5000,
-        type: "income",
-        status: "success",
-      },
-      {
-        id: "3",
-        title: "1 Portion of Stir fry Spaghetti, Plantain a...",
-        date: "2025-12-28T18:18:00",
-        amount: 3635,
-        type: "expense",
-        status: "success",
-      },
-      {
-        id: "4",
-        title: "Wallet Top Up",
-        date: "2025-11-30T08:18:00",
-        amount: 5000,
-        type: "income",
-        status: "success",
-      },
-    ],
-  },
-  {
-    month: "August 2025",
-    transactions: [
-      {
-        id: "5",
-        title: "1 Portion of Stir fry Spaghetti, Plantain a...",
-        date: "2025-10-25T14:00:00",
-        amount: 3635,
-        type: "expense",
-        status: "success",
-      },
-      {
-        id: "6",
-        title: "Wallet Top Up",
-        date: "2025-12-10T09:30:00",
-        amount: 5000,
-        type: "income",
-        status: "success",
-      },
-      {
-        id: "7",
-        title: "1 Portion of Stir fry Spaghetti, Plantain a...",
-        date: "2025-11-30T10:45:00",
-        amount: 3635,
-        type: "expense",
-        status: "success",
-      },
-      {
-        id: "8",
-        title: "Wallet Top Up",
-        date: "2025-06-05T08:20:00",
-        amount: 5000,
-        type: "income",
-        status: "success",
-      },
-    ],
-  },
-];
-
 const WalletPageContent = () => {
   const router = useRouter();
 
@@ -115,7 +23,7 @@ const WalletPageContent = () => {
       </button>
 
       <WalletCard />
-      <TransactionHistory txHistory={TRANSACTIONS} />
+      <TransactionHistory />
     </div>
   );
 };
