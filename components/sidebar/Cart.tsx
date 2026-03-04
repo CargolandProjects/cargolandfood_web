@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   RiArrowGoBackLine,
   RiLoader2Line,
@@ -82,7 +82,8 @@ interface Cart {
 const Cart = ({ setActiveTab }: SettingsProps) => {
   const openCheckout = useUIStore((s) => s.openCheckout);
   const { data, isLoading, isError, isSuccess } = useCart();
-  const { mutate: deleteCart, isPending } = useClearCart();
+  const { mutate: deleteCart } = useClearCart();
+  const [isDeletingCartId, setIsDeletingCartId] = useState<string | null>(null);
   const router = useRouter();
 
   const carts = data?.data || [];
@@ -97,7 +98,15 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
-    deleteCart({ cartId, vendorId });
+    if (!cartId || !vendorId) return;
+
+    setIsDeletingCartId(cartId);
+    deleteCart(
+      { cartId, vendorId },
+      {
+        onSettled: () => setIsDeletingCartId(null),
+      }
+    );
   };
 
   const handleOpenCHeckout = (
@@ -105,8 +114,8 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
-    console.log("id", "I was trigered", id);
     if (!id.trim()) return;
+
     openCheckout({ vendorId: id });
   };
 
@@ -218,7 +227,7 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
                     <Button
                       onClick={(e) =>
                         handleDeleteCart(
-                          cart.carts[0].items[0].cartId,
+                          cart.carts[0].id,
                           cart.vendor.vendorId,
                           e
                         )
@@ -226,7 +235,7 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
                       variant="outline"
                       className="submit-btn flex-1 hover:bg--gray-50  border-neutral-300 capitalize"
                     >
-                      {isPending ? (
+                      {cart.carts[0].id === isDeletingCartId ? (
                         <RiLoader2Line className="size-5 animate-spin" />
                       ) : (
                         "Delete"

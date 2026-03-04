@@ -23,6 +23,7 @@ import Cart from "./Cart";
 import Favourites from "./Favourites";
 import Orders from "./Orders";
 import { useCart } from "@/lib/hooks/queries/useCart";
+import { useGetOrders } from "@/lib/hooks/queries/useOrders";
 
 interface SIdeBar {
   open: boolean;
@@ -44,11 +45,13 @@ interface SidebarItem<P = any> {
   label: string;
   content?: React.ComponentType<P>;
   props?: P;
+  count?: number;
 }
 
 // Move sidebarItems outside component to prevent Fast Refresh issues
 const getSidebarItems = (
-  setActiveTab: (tab: ActiveTab) => void
+  setActiveTab: (tab: ActiveTab) => void,
+  count: { cartCount: number; OrdersCount: number }
 ): SidebarItem[] => [
   { id: "Home", icon: RiHome3Fill, label: "Home" },
   {
@@ -56,6 +59,7 @@ const getSidebarItems = (
     icon: RiShoppingCartFill,
     label: "Cart",
     content: Cart,
+    count: count.cartCount,
     props: { setActiveTab },
   },
   {
@@ -63,6 +67,7 @@ const getSidebarItems = (
     icon: RiShoppingBagFill,
     label: "Orders",
     content: Orders,
+    count: count.OrdersCount,
     props: { setActiveTab },
   },
   {
@@ -86,7 +91,11 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
   const { setActiveCategory } = useCategory();
   const router = useRouter();
 
-  const cart = useCart();
+  const { data: cart } = useCart();
+  const { data: orders } = useGetOrders();
+  const cartItems = cart?.data.length || 0;
+  const currentOrders =
+    orders?.filter((o) => o.status !== "COMPLETED").length || 0;
 
   // Detect if we're on desktop (only runs once on mount, then on resize)
   const [isDesktop, setIsDesktop] = useState(() => {
@@ -114,7 +123,10 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
     router.push("/");
   };
 
-  const sidebarItems = getSidebarItems(setActiveTab);
+  const sidebarItems = getSidebarItems(setActiveTab, {
+    cartCount: cartItems,
+    OrdersCount: currentOrders,
+  });
 
   return (
     <>
@@ -187,6 +199,11 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                               isActive ? "text-primary" : "text-gray-300"
                             }`}
                           />
+                          {item.count && (
+                            <div className="absolute -top-1.5 -right-4.5 px-1.5 bg-primary rounded-full text-xs text-white">
+                              {item.count}
+                            </div>
+                          )}
                           {isActive && (
                             <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
                               {item.label}
@@ -250,15 +267,23 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                           handleTabChange(item.id);
                         }
                       }}
-                      className="flex items-center gap-2 hover:cursor-pointer"
+                      className="flex items-center justify-between gap-2 hover:cursor-pointer"
                       key={idx}
                     >
-                      <div className="size-10 flex items-center justify-center bg-primary-50 rounded-full">
-                        <item.icon className="size-6 text-primary" />
+                      <div className="flex items-center gap-2">
+                        <div className="size-10 flex items-center justify-center bg-primary-50 rounded-full">
+                          <item.icon className="size-6 text-primary" />
+                        </div>
+                        <p className="text-xl font-medium leading-7">
+                          {item.label}
+                        </p>
                       </div>
-                      <p className="text-xl font-medium leading-7">
-                        {item.label}
-                      </p>
+
+                      {item.count && (
+                        <div className="flex items-center gap-2 bg-primary-100 px-3 rounded-full">
+                          <span className="text-primary">{item.count}</span>
+                        </div>
+                      )}
                     </div>
                     <AnimatePresence>
                       {item.content && isActive && (
