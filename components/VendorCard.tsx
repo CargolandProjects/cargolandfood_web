@@ -21,7 +21,7 @@ interface VendorCardProps {
 }
 
 const VendorCard = ({
-  vendor: { businessName, ratings, profileImg, isFavourite },
+  vendor: { businessName, ratings, profileImg, isFavourite, preparationTime },
   vendorId,
   //SEE
   //TO
@@ -103,7 +103,7 @@ const VendorCard = ({
         <div className="mt-1 flex gap-3 md:gap-4">
           <div className="flex justify-center items-center gap-1">
             <RiStarLine className="size-5.5 text-primary" />
-            <span className="leading-5 text-neutral-600">{ratings}</span>
+            <span className="leading-5 text-neutral-600">{ratings?.toFixed(2)}</span>
           </div>
           <div className="flex justify-center items-center gap-1">
             <RiEBike2Line className="size-5.5 text-primary" />
@@ -113,7 +113,7 @@ const VendorCard = ({
           </div>
           <div className="flex justify-center items-center gap-1">
             <RiTimeLine className="size-5.5 text-primary" />
-            <span className="leading-5 text-neutral-600">{deliveryTime}</span>
+            <span className="leading-5 text-neutral-600">{preparationTime}</span>
           </div>
         </div>
       </div>

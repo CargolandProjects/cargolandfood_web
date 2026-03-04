@@ -7,6 +7,7 @@ export interface Vendor {
   businessName: string;
   businessCategory: string;
   businessAddress: string;
+  preparationTime: string;
   isPreorder: boolean;
   isFavourite: boolean;
   golive: boolean;

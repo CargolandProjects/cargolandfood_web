@@ -46,7 +46,7 @@ function PaymentSuccessfulPageContent() {
 export default function PaymentSuccessfulPage() {
   return (
     <Suspense>
-      <PaymentSuccessfulPageContent />;
+      <PaymentSuccessfulPageContent />
     </Suspense>
   );
 }

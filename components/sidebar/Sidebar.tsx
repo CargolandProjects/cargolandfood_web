@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { logo } from "@/assets/svgs";
 import { Button } from "../ui/button";
 import { AnimatePresence, motion } from "framer-motion";
@@ -145,7 +145,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                 // const Content = item.content;
 
                 return (
-                  <>
+                  <React.Fragment key={idx}>
                     {/* Separate home button */}
                     {idx === 0 && (
                       <Button
@@ -176,7 +176,10 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                           onClick={() => handleTabChange(item.id)}
                           className={`relative size-6 rounded-sm transition-colors flex justify-center items-center 
                             ${isActive && "bg-gray-100"}
-                            ${sidebarItems.length - 1 === idx && "mt-[238px] xl:mt-[320px] pb-6"}
+                            ${
+                              sidebarItems.length - 1 === idx &&
+                              "mt-[238px] xl:mt-[320px] pb-6"
+                            }
                           `}
                         >
                           <IconComponent
@@ -199,7 +202,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                         </PopoverContent>
                       </Popover>
                     )}
-                  </>
+                  </React.Fragment>
                 );
               })}
             </nav>
