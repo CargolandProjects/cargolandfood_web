@@ -31,12 +31,9 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
 
   const filteredOrders =
     orders?.filter((order) => {
-      if (currentTab === "current")
-        return order.items.some(
-          (item) => item.addonItem && item.addonItem.length > 0
-        );
+      if (currentTab === "previous") return order.status === "COMPLETED";
 
-      return order.status === "NEW";
+      return order.status !== "COMPLETED";
     }) || [];
 
   return (
@@ -113,11 +110,13 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
                 <div key={idx}>
                   <div className="flex gap-4">
                     {/* Order images */}
-                    <div>
+                    <div className="flex flex-col gap-1">
                       {/* Menu image */}
-                      <div className="size-[68px] rounded-md overflow-hidden">
+                      <div className="size-[68px] min-h-[68px] flex-1 rounded-md overflow-hidden bg-neutral-100">
                         <img
-                          src={"/fallback_vendor.webp"}
+                          src={
+                            order.items[0].menuImg || "/fallback_vendor.webp"
+                          }
                           alt="menu item"
                           className="size-full object-cover"
                           onError={(e) =>
@@ -125,24 +124,28 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
                           }
                         />
                       </div>
-                      {/* Addons section */}
-                      <div className="mt-1 flex gap-1">
-                        <div className="size-8 rounded-md overflow-hidden">
-                          <img
-                            src={"/fallback_vendor.webp"}
-                            alt="menu item"
-                            className="size-full object-cover"
-                            onError={(e) =>
-                              fallbackImg(e, "/fallback_vendor.webp")
-                            }
-                          />
-                        </div>
-                        {order.items.length > 0 && (
+                      {/* additional items section */}
+                      {order.items.length > 1 && (
+                        <div className="flex gap-1">
+                          <div className="size-8 rounded-md overflow-hidden bg-neutral-100">
+                            <img
+                              src={
+                                order?.items[1]?.menuImg ||
+                                "/fallback_vendor.webp"
+                              }
+                              alt="menu item"
+                              className="size-full object-cover"
+                              onError={(e) =>
+                                fallbackImg(e, "/fallback_vendor.webp")
+                              }
+                            />
+                          </div>
+                          {/* Remianing items quantity */}
                           <p className="size-8 text-xs rounded-md font-medium text-neutral-500 leading-4 bg-neutral-100 flex justify-center items-center">
-                            +{order.items.length - 1}
+                            +{order.items.length - 2}
                           </p>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Order detials */}
@@ -211,7 +214,7 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
                     {/* Order images */}
                     <div className="flex flex-col gap-1">
                       {/* Menu image */}
-                      <div className="w-[68px] flex-1 rounded-md overflow-hidden bg-neutral-100">
+                      <div className="size-[68px] min-h-[68px] flex-1 rounded-md overflow-hidden bg-neutral-100">
                         <img
                           src={
                             order.items[0].menuImg || "/fallback_vendor.webp"
@@ -239,7 +242,7 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
                               }
                             />
                           </div>
-                          {/* Remianing items wuantity */}
+                          {/* Remianing items quantity */}
                           <p className="size-8 text-xs rounded-md font-medium text-neutral-500 leading-4 bg-neutral-100 flex justify-center items-center">
                             +{order.items.length - 2}
                           </p>

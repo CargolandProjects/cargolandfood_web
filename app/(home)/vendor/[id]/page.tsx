@@ -1,4 +1,4 @@
-import ReastaurantPageContent from "@/components/restaurants/ReastaurantPageContent";
+import VendorPageContent from "@/components/vendor/VendorPageContent";
 
 export default async function RestaurantDetailsPage({
   params,
@@ -6,6 +6,6 @@ export default async function RestaurantDetailsPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return <ReastaurantPageContent id={id} />;
+  return <VendorPageContent id={id} />;
 }
 

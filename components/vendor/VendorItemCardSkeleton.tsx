@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-const RestaurantItemCardSkeleton = () => {
+const VendorItemCardSkeleton = () => {
   return (
     <div
       className="flex rounded-2xl overflow-hidden border border-neutral-200 h-[138px] relative"
@@ -27,4 +27,4 @@ const RestaurantItemCardSkeleton = () => {
   );
 };
 
-export default RestaurantItemCardSkeleton;
+export default VendorItemCardSkeleton;

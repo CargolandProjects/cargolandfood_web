@@ -1,4 +1,4 @@
-import VendorCard from "../VendorCard";
+import VendorCard from "../vendor/VendorCard";
 import Loading from "../LoadingSkeleton";
 import { useVendors } from "@/lib/hooks/queries/useVendors";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";

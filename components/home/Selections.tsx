@@ -11,9 +11,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSearchVendorMenu } from "@/lib/hooks/queries/useSearch";
 import { Suspense } from "react";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
-import RestaurantItemCard from "../restaurants/RestaurantItemCard";
 import { getCategoryPath } from "@/lib/utils";
-import RestaurantItemCardSkeleton from "../restaurants/RestaurantItemCardSkeleton";
+import RestaurantItemCardSkeleton from "../vendor/VendorItemCardSkeleton";
+import VendorItemCardA from "../vendor/VendorItemCardA";
 
 const SelectionsContent = () => {
   const { activeCategory } = useCategory();
@@ -60,7 +60,7 @@ const SelectionsContent = () => {
           {isSuccess && products.length > 0 && (
             <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-10">
               {products.map((item) => (
-                <RestaurantItemCard
+                <VendorItemCardA
                   key={item.id}
                   menu={item}
                   isSearch

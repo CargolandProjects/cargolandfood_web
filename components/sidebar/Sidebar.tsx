@@ -154,7 +154,6 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
               {sidebarItems.map((item, idx) => {
                 const IconComponent = item.icon;
                 const isActive = activeTab === item.id;
-                // const Content = item.content;
 
                 return (
                   <React.Fragment key={idx}>
@@ -190,7 +189,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                             ${isActive && "bg-gray-100"}
                             ${
                               sidebarItems.length - 1 === idx &&
-                              "mt-[238px] xl:mt-[320px] pb-6"
+                              "mt-[238px] xl:mt-80 pb-6"
                             }
                           `}
                         >

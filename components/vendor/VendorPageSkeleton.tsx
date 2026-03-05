@@ -1,11 +1,11 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import RestaurantItemCardSkeleton from "@/components/restaurants/RestaurantItemCardSkeleton";
+import VendorItemCardSkeleton from "@/components/vendor/VendorItemCardSkeleton";
 
 const ChipSkeleton = () => (
   <Skeleton className="h-9 w-24 rounded-full" />
 );
 
-const RestaurantPageSkeleton = () => {
+const VendorPageSkeleton = () => {
   return (
     <div className="flex gap-10 h-full">
       <div className="w-full flex-1">
@@ -57,7 +57,7 @@ const RestaurantPageSkeleton = () => {
         <div className="sm:px-4 max-sm:mt-3 flex-1">
           <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-10">
             {Array.from({ length: 6 }).map((_, i) => (
-              <RestaurantItemCardSkeleton key={i} />
+              <VendorItemCardSkeleton key={i} />
             ))}
           </div>
         </div>
@@ -66,4 +66,4 @@ const RestaurantPageSkeleton = () => {
   );
 };
 
-export default RestaurantPageSkeleton;
+export default VendorPageSkeleton;

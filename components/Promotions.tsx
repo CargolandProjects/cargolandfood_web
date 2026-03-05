@@ -1,6 +1,6 @@
 "use client";
 
-import VendorCard from "./VendorCard";
+import VendorCard from "./vendor/VendorCard";
 import { Button } from "./ui/button";
 import { RiArrowLeftLine, RiArrowRightLine } from "react-icons/ri";
 import { Swiper, SwiperSlide } from "swiper/react";

@@ -5,7 +5,7 @@ import { useCartStore } from "@/lib/stores/CartStore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import MarketPageSkeleton from "./MarketPageSkeleton";
-import RestaurantStats from "../RestaurantStats";
+import RestaurantStats from "../vendor/VendorStats";
 import CategoryTab from "../home/CategoryTab";
 import { info } from "@/assets/svgs";
 import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";

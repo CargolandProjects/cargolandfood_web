@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePromotions } from "@/lib/hooks/queries/usePromotions";
 import FilterBar from "../FilterBar";
-import VendorCard from "../VendorCard";
+import VendorCard from "../vendor/VendorCard";
 import Loading from "../LoadingSkeleton";
 import { Swiper, SwiperSlide } from "swiper/react";
 

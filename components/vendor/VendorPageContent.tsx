@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import CategoryTab from "@/components/home/CategoryTab";
-import RestaurantStats from "@/components/RestaurantStats";
+import VendorStats from "@/components/vendor/VendorStats";
 import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
-import RestaurantItemCard from "@/components/restaurants/RestaurantItemCard";
-import RestaurantPageSkeleton from "@/components/restaurants/RestaurantPageSkeleton";
+import VendorItemCardA from "@/components/vendor/VendorItemCardA";
+import VendorPageSkeleton from "@/components/vendor/VendorPageSkeleton";
 import { useRouter } from "next/navigation";
 import { info } from "@/assets/svgs";
 import PageCheckOut from "../orders/PageCheckOut";
@@ -20,8 +20,9 @@ import { useToggleFavourite } from "@/lib/hooks/mutations/useToggleFavourite";
 import { useSession } from "@/lib/hooks/useSession";
 import { fallbackImg } from "@/lib/utils";
 import NotFound from "../NotFound";
+import VendorItemCardB from "./VendorItemCardB";
 
-const ReastaurantPageContent = ({ id }: { id: string }) => {
+const VendorPageContent = ({ id }: { id: string }) => {
   const [activeCatId, setActiveCatId] = useState<string | null>(null);
   const [selectedId, setselectedId] = useState<string | null>(null);
   const [showFavourites, setShowFavourites] = useState(false);
@@ -58,6 +59,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
     checkoutData &&
     checkoutData.cart.items &&
     checkoutData.cart.items.length > 0;
+  const isRestaurant = vendor?.businessCategory === "Restaurant";
 
   // Calculate local total for mobile button (sum of all item totalPrice)
   const calculateLocalTotal = () => {
@@ -104,7 +106,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
       : menus.filter((menu) => menu.categoryId === activeCatId);
 
   if (isLoading) {
-    return <RestaurantPageSkeleton />;
+    return <VendorPageSkeleton />;
   }
 
   if (error) {
@@ -118,6 +120,29 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
 
   return (
     <div className="flex gap-6 xl:gap-10 h-full">
+      {/* Single SVG clip-path definition for all VendorItemCardB instances */}
+      {!isRestaurant && (
+        <svg width="0" height="0" style={{ position: "absolute" }}>
+          <defs>
+            <clipPath id="trapezium-rounded" clipPathUnits="objectBoundingBox">
+              <path
+                d="
+                M 0.05,0.144
+                Q 0.05,0 0.107,0
+                L 0.893,0
+                Q 0.95,0 0.95,0.144
+                L 1,0.856
+                Q 1,1 0.943,1
+                L 0.057,1
+                Q 0,1 0,0.856
+                Z
+              "
+              />
+            </clipPath>
+          </defs>
+        </svg>
+      )}
+
       <motion.div
         className="w-full h-full flex-1 flex flex-col"
         layout
@@ -178,7 +203,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
           <div className="my-3 sm:my-10 max-sm:space-y-[3px]">
             <h2>{vendor?.businessName}</h2>
             {/* Stats Line (Rating, Delivery Fee, Time) */}
-            <RestaurantStats
+            <VendorStats
               rating={rating?.bayesianRating || 0}
               deliveryFee={0}
               deliveryTime="20 min"
@@ -204,20 +229,38 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
           )}
 
           <div
-            className={`grid sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-10 ${
-              hasItemsInCart ? "lg:grid-cols-1 xl:grid-cols-2" : ""
-            }`}
+            className={`grid gap-3 sm:gap-4 lg:gap-10 
+              ${
+                isRestaurant
+                  ? "grid-cols-1 sm:grid-cols-2"
+                  : "grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              }
+              ${
+                hasItemsInCart &&
+                !isRestaurant &&
+                "lg:grid-cols-2! xl:grid-cols-3!"
+              }
+              ${hasItemsInCart && "lg:grid-cols-1 xl:grid-cols-2"}`}
           >
             {isSuccess &&
               filteredMenu.length > 0 &&
-              filteredMenu.map((item) => (
-                <RestaurantItemCard
-                  key={item.id}
-                  menu={item}
-                  handleSelect={handleSelect}
-                  selectedId={selectedId}
-                />
-              ))}
+              filteredMenu.map((item) =>
+                isRestaurant ? (
+                  <VendorItemCardA
+                    key={item.id}
+                    menu={item}
+                    handleSelect={handleSelect}
+                    selectedId={selectedId}
+                  />
+                ) : (
+                  <VendorItemCardB
+                    key={item.id}
+                    menu={item}
+                    handleSelect={handleSelect}
+                    selectedId={selectedId}
+                  />
+                )
+              )}
           </div>
         </div>
 
@@ -229,7 +272,7 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
               animate={{ y: 0 }}
               exit={{ y: 100 }}
               transition={{ duration: 0.3 }}
-              className="sticky sm:hidden pt-5 pb-8 px-8 bottom-0 inset-x-0 flex gap-2 justify-between items-center bg-white"
+              className="sticky sm:hidden z-10 pt-5 pb-8 px-8 bottom-0 inset-x-0 flex gap-2 justify-between items-center bg-white"
             >
               <p className="text-xl font-medium ">
                 ₦{calculateLocalTotal().toLocaleString()}
@@ -309,4 +352,4 @@ const ReastaurantPageContent = ({ id }: { id: string }) => {
   );
 };
 
-export default ReastaurantPageContent;
+export default VendorPageContent;

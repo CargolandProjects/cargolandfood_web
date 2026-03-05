@@ -11,7 +11,7 @@ import { useSession } from "@/lib/hooks/useSession";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
-interface RestaurantItemCard {
+interface VendorItemCardA {
   menu: Menu;
   handleSelect?: (id: string) => void;
   onNavigate?: () => void;
@@ -19,13 +19,13 @@ interface RestaurantItemCard {
   isSearch?: boolean;
 }
 
-const RestaurantItemCard = ({
+const VendorItemCardA = ({
   menu,
   handleSelect,
   onNavigate,
   selectedId,
   isSearch = false,
-}: RestaurantItemCard) => {
+}: VendorItemCardA) => {
   const { description, id, uploadImageUrl, name, price, PromotionItem } = menu;
   const isSelected = id === selectedId;
   const { isAuthenticated } = useSession();
@@ -71,13 +71,13 @@ const RestaurantItemCard = ({
         <div className="w-30 ml-[3px] my-[3px] shrink-0 rounded-l-xl rounded-r-xs overflow-hidden relative">
           {/* Width set to 138px to match height for a square/large image area */}
           <img
-            src={uploadImageUrl}
+            src={uploadImageUrl || "/fallback_vendor.webp"}
             alt={name || "Product image"}
             className="w-full h-full object-cover rounded-l-2xl bg-neutral-100"
             onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
           />
           {PromotionItem && PromotionItem?.length > 0 && (
-            <div className="absolute top-2 left-2 rounded-full flex justify-center items-center gap-1 py-1 px-2 bg-white">
+            <div className="absolute top-2 left-2 rounded-full flex justify-center items-center gap-1 py-0.5 px-1 bg-white">
               <RiGiftLine className="size-3 text-primary" />
               <p className="font-medium text-xs text-primary">
                 {PromotionItem?.[0]?.promotion.percentageValue}% Off
@@ -127,4 +127,4 @@ const RestaurantItemCard = ({
     </>
   );
 };
-export default RestaurantItemCard;
+export default VendorItemCardA;

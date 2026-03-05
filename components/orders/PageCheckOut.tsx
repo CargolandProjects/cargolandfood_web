@@ -37,6 +37,7 @@ import EmptyStateUi from "../EmptyStateUi";
 import { useUIStore } from "@/lib/stores/uiStore";
 import { useSession } from "@/lib/hooks/useSession";
 import { toast } from "sonner";
+import { useNotificationEvent } from "@/lib/hooks/useSocket";
 // import { useSuccessfulPaymentEvent } from "@/lib/hooks/useSocket";
 // import { useQueryClient } from "@tanstack/react-query";
 
@@ -74,6 +75,7 @@ const PageCheckOut = ({
     "wallet"
   );
   const [isRemovingItemId, setIsRemovingItemId] = useState<string | null>(null);
+  const [quantityChangeId, setQuantityChangeId] = useState<string | null>(null);
   const openAddresses = useUIStore((s) => s.openAddresses);
   // const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
   const { user } = useSession();
@@ -86,19 +88,21 @@ const PageCheckOut = ({
   // const queryClient = useQueryClient();
 
   // Hook to listen to successful payment event
-  // useSuccessfulPaymentEvent((data) => {
+  // useNotificationEvent((data) => {
   //   try {
-  //     // console.log("Payment Success Event: ", data);
-  //     openOrderSuccess();
-  //     queryClient.invalidateQueries({
-  //       queryKey: ["cart"],
-  //     });
+  //     console.log("Notification Event: ", data);
 
-  //     const vendorId = data.payload?.data?.vendorId;
-  //     if (vendorId)
-  //       queryClient.invalidateQueries({
-  //         queryKey: ["checkoutPreview"],
-  //       });
+  //     // console.log("Payment Success Event: ", data);
+  //     // openOrderSuccess();
+  //     // queryClient.invalidateQueries({
+  //     //   queryKey: ["cart"],
+  //     // }); 
+
+  //     // const vendorId = data.payload?.data?.vendorId;
+  //     // if (vendorId)
+  //     //   queryClient.invalidateQueries({
+  //     //     queryKey: ["checkoutPreview"],
+  //     //   });0
   //   } catch (error) {
   //     console.error("Error handling successful payment:", error);
   //     toast.error("Payment successful, but UI update failed. Please refresh.");
@@ -185,22 +189,28 @@ const PageCheckOut = ({
   ) => {
     if (item.quantity < 1) return; // Don't allow quantity less than 1
 
+    setQuantityChangeId(item.id);
     // Re-add item with new quantity (API replaces/updates existing item)
-    mutate({
-      menuId: item.menuId,
-      menuName: item.menuName,
-      unitPrice: item.unitPrice,
-      menuImg: item.menuImg,
-      quantity: 1,
-      action: action === "increase" ? "INCREMENT" : "DECREMENT",
-      currency: "NGN",
-      // addons: item.addons.map((addon) => ({
-      //   menuAddonId: addon.menuAddonId,
-      //   name: addon.name,
-      //   price: safePrice(addon.price),
-      //   quantity: addon.quantity,
-      // })),
-    });
+    mutate(
+      {
+        menuId: item.menuId,
+        menuName: item.menuName,
+        unitPrice: item.unitPrice,
+        menuImg: item.menuImg,
+        quantity: 1,
+        action: action === "increase" ? "INCREMENT" : "DECREMENT",
+        currency: "NGN",
+        // addons: item.addons.map((addon) => ({
+        //   menuAddonId: addon.menuAddonId,
+        //   name: addon.name,
+        //   price: safePrice(addon.price),
+        //   quantity: addon.quantity,
+        // })),
+      },
+      {
+        onSettled: () => setQuantityChangeId(null),
+      }
+    );
   };
 
   // Create memoized modal props object
@@ -364,7 +374,8 @@ const PageCheckOut = ({
                           <Minus className="size-4" />
                         </button>
                         <span className="text-sm font-normal text-center">
-                          {isPending ? (
+                          hey
+                          {item.menuId === quantityChangeId ? (
                             <Loader2 className="size-4 animate-spin duration-300 text-neutral-400" />
                           ) : (
                             item.quantity

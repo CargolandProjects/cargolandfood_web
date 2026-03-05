@@ -1,7 +1,7 @@
 import React from "react";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { ActiveTab } from "./Sidebar";
-import VendorCard from "../VendorCard";
+import VendorCard from "../vendor/VendorCard";
 import Loader from "../Loader";
 import ErrorStateUi from "../ErrorStateUi";
 import EmptyStateUi from "../EmptyStateUi";

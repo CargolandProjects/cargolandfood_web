@@ -1,16 +1,16 @@
 import { RiEBike2Line, RiStarLine, RiTimeLine } from "react-icons/ri";
 
-interface RestaurantStatsProps {
+interface VendorStatsProps {
   rating: number;
   deliveryFee: number | string;
   deliveryTime: string;
 }
 
-const RestaurantStats = ({
+const VendorStats = ({
   rating,
   deliveryFee,
   deliveryTime,
-}: RestaurantStatsProps) => {
+}: VendorStatsProps) => {
   return (
     <div className="flex items-center gap-1.5 text-sm text-neutral-600">
       {/* Rating */}
@@ -22,7 +22,7 @@ const RestaurantStats = ({
       {/* Delivery Fee */}
       <div className="flex items-center gap-1">
         <RiEBike2Line className="size-5 text-primary" />
-        <span  className="font-normal text-sm text-neutral-600 ">
+        <span className="font-normal text-sm text-neutral-600 ">
           {deliveryFee !== 0 ? `₦${deliveryFee}` : "Free"}
         </span>
       </div>
@@ -33,10 +33,12 @@ const RestaurantStats = ({
       {/* Time */}
       <div className="flex items-center gap-1">
         <RiTimeLine className="size-5 text-primary" />
-        <span  className="font-normal text-sm text-neutral-600 ">{deliveryTime}</span>
+        <span className="font-normal text-sm text-neutral-600 ">
+          {deliveryTime}
+        </span>
       </div>
     </div>
   );
 };
 
-export default RestaurantStats;
+export default VendorStats;

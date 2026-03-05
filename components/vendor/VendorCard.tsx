@@ -2,7 +2,7 @@ import { useToggleFavourite } from "@/lib/hooks/mutations/useToggleFavourite";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
 import { useSession } from "@/lib/hooks/useSession";
 import { Vendor } from "@/lib/services/vendors.service";
-import { fallbackImg, getCategoryPath } from "@/lib/utils";
+import { fallbackImg } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import {
   RiEBike2Line,
@@ -23,10 +23,6 @@ interface VendorCardProps {
 const VendorCard = ({
   vendor: { businessName, ratings, profileImg, isFavourite, preparationTime },
   vendorId,
-  //SEE
-  //TO
-  //THIS!!!!!!!
-  routes = "Restaurant",
   asFavouriteCard = false,
   source,
 }: VendorCardProps) => {
@@ -41,7 +37,7 @@ const VendorCard = ({
   const handleClick = () => {
     // There is id from the getAllVendors endpoint as "id" and from getFavourites as vendorId (both referencing the actual vendorId)
     // This card is being used in both hence
-    router.push(`/${getCategoryPath(routes)}/${vendorId}`);
+    router.push(`/vendor/${vendorId}`);
   };
 
   const handleToggleFavourite = (
@@ -61,13 +57,12 @@ const VendorCard = ({
   };
 
   const deliveryFee = 20;
-  const deliveryTime = 10;
 
   return (
     <div onClick={handleClick} className="w-full cursor-pointer">
       <div
         className={`relative w-full ${
-          asFavouriteCard ? "h-[114px]" : "h-[114px] xl:h-[144px] "
+          asFavouriteCard ? "h-[114px]" : "h-[114px] xl:h-36 "
         } overflow-hidden rounded-md`}
       >
         <img
