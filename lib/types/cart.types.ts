@@ -23,7 +23,8 @@ export interface CartItem {
   menuId: string;
   menuImg: string;
   menuName: string;
-  unitPrice: string; // Backend returns as string
+  unitPrice: string;
+  description: string;
   quantity: number;
   sizeName: string | null;
   sizeValue: string | null;
@@ -83,6 +84,7 @@ export interface AddToCartPayload {
   menuName: string;
   menuImg: string;
   unitPrice: string;
+  description: string;
   quantity: number;
   currency: "NGN";
   action: "INCREMENT" | "DECREMENT" | "SET";

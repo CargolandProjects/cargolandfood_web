@@ -24,7 +24,7 @@ const VendorItemCardB = ({
   onNavigate,
   selectedId,
 }: VendorItemCard) => {
-  const { id, uploadImageUrl, name, price, PromotionItem } = menu;
+  const { id, uploadImageUrl, name, price, PromotionItem, description } = menu;
   const isSelected = id === selectedId;
   const { isAuthenticated } = useSession();
   const openAuth = useAuthFlow((s) => s.openAuth);
@@ -46,6 +46,7 @@ const VendorItemCardB = ({
       menuId: id!,
       menuName: name!,
       unitPrice: price!,
+      description,
       action: "SET",
       quantity: 1,
       menuImg: uploadImageUrl,

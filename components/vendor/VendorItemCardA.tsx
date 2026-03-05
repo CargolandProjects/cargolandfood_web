@@ -48,6 +48,7 @@ const VendorItemCardA = ({
       menuId: id!,
       menuName: name!,
       unitPrice: price!,
+      description,
       action: "SET",
       quantity: 1,
       menuImg: uploadImageUrl,

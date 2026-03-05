@@ -64,10 +64,10 @@ const TransactionHistory = () => {
                     <React.Fragment key={tx.id}>
                       <div
                         onClick={() => handleSelect(tx.id)}
-                        className="flex items-center justify-between hover:cursor-pointer"
+                        className="flex items-center justify-between hover:cursor-pointer gap-2"
                       >
                         <div className="flex flex-col gap-0.5 min-w-0">
-                          <p className="line-clamp-1 max-w-[300px] text-sm font-medium text-[#0A0D14]">
+                          <p className="line-clamp-1 max-w-[300] sm:max-w-[350px] text-sm font-medium text-[#0A0D14]">
                             {tx?.description || tx.type}
                           </p>
 

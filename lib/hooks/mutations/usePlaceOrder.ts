@@ -19,20 +19,52 @@ export function useMakePayment() {
   });
 }
 
-export const useSimulatePayment = () => {
+export function useChargeWallet() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: orderService.simulatePayment,
-    onSuccess(data) {
-      toast.success(data.message || "Payment successful");
+    mutationFn: orderService.chargeWallet,
 
+    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["checkoutPreview", data.data.vendorId],
+        queryKey: ["checkoutPreview"],
       });
+
       queryClient.invalidateQueries({
         queryKey: ["cart"],
       });
+      
+      queryClient.invalidateQueries({
+        queryKey: ["cart"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["walletBalance"],
+      });
+
+      toast.success("Order placed successfully");
+    },
+
+    onError: (error) => {
+      const message = error.message || "Failed to place order";
+      toast.error(message);
     },
   });
-};
+}
+
+// export const useSimulatePayment = () => {
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     mutationFn: orderService.simulatePayment,
+//     onSuccess(data) {
+//       toast.success(data.message || "Payment successful");
+
+//       queryClient.invalidateQueries({
+//         queryKey: ["checkoutPreview", data.data.vendorId],
+//       });
+//       queryClient.invalidateQueries({
+//         queryKey: ["cart"],
+//       });
+//     },
+//   });
+// };

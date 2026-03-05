@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { useUIStore } from "@/lib/stores/uiStore";
 import RiderNoteModal from "../orders/RiderNoteModal";
@@ -14,7 +14,10 @@ import {
   useClearCart,
   useRemoveCartItem,
 } from "@/lib/hooks/mutations/useMutateCart";
-import { useMakePayment } from "@/lib/hooks/mutations/usePlaceOrder";
+import {
+  useChargeWallet,
+  useMakePayment,
+} from "@/lib/hooks/mutations/usePlaceOrder";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Separator } from "../ui/separator";
 import {
@@ -40,6 +43,7 @@ import EmptyStateUi from "../EmptyStateUi";
 import { useSession } from "@/lib/hooks/useSession";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
+import { useWalletBalance } from "@/lib/hooks/queries/useWallet";
 
 type Delivery = "delivery" | "pickup";
 type PaymentMethod = "wallet" | "digitalTransfer";
@@ -52,9 +56,21 @@ const GlobalCheckoutCOntent = ({
   isDesktop,
   closeCheckout,
 }: GlobalCheckoutProps) => {
-  // const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
+  const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
   const vendorId = useUIStore((s) => s.checkout.payload)?.vendorId || "";
   const [deliveryType, setDeliveryType] = useState<Delivery>("delivery");
+  const [showAlert, setShowAlert] = useState(false);
+  const [showRiderNote, setShowRiderNote] = useState(false);
+  const [showCoupon, setShowCoupon] = useState(false);
+  const [showGift, setShowGift] = useState(false);
+  const [showConfirmPickup, setShowConfirmPickup] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
+    "wallet"
+  );
+  const [isRemovingItemId, setIsRemovingItemId] = useState<string | null>(null);
+  const openAddresses = useUIStore((s) => s.openAddresses);
+  const { user } = useSession();
 
   const deliveryValue = deliveryType === "delivery" ? "DELIVERY" : "PICKUP";
 
@@ -69,19 +85,9 @@ const GlobalCheckoutCOntent = ({
   const { mutate, isPending } = useAddToCart(vendorId);
   const { mutate: removeItem } = useRemoveCartItem(vendorId);
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [showRiderNote, setShowRiderNote] = useState(false);
-  const [showCoupon, setShowCoupon] = useState(false);
-  const [showGift, setShowGift] = useState(false);
-  const [showConfirmPickup, setShowConfirmPickup] = useState(false);
-  const [showSuccess, setSuccess] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
-    "wallet"
-  );
-  const [isRemovingItemId, setIsRemovingItemId] = useState<string | null>(null);
-  const openAddresses = useUIStore((s) => s.openAddresses);
-  const { user } = useSession();
+  const { mutate: chargeWallet, isPending: isChargingWallet } =
+    useChargeWallet();
+  const { data: balance, isLoading: isBalanceLoading } = useWalletBalance();
 
   // Format currency
   const currency = (n: number) => `₦ ${n.toLocaleString()}`;
@@ -94,35 +100,49 @@ const GlobalCheckoutCOntent = ({
   };
 
   const handleOrder = useCallback(
-    (cartId: string) => {
+    (cartId: string, description: string) => {
       if (!paymentMethod) {
         toast.error("Please select a payment method");
         return;
       }
-      makePayment(cartId, {
-        onSuccess: (res) => {
-          const authUrl = res.data.authorization_url;
 
-          if (!authUrl) {
-            toast.error("Payment initiation failed");
-            return;
+      if (paymentMethod === "digitalTransfer")
+        makePayment(cartId, {
+          onSuccess: (res) => {
+            const authUrl = res.data.authorization_url;
+
+            if (!authUrl) {
+              toast.error("Payment initiation failed");
+              return;
+            }
+            //Navigate to payment gateway url
+            window.location.href = authUrl;
+          },
+        });
+
+      if (paymentMethod === "wallet")
+        chargeWallet(
+          { cartId, description },
+          {
+            onSuccess: () => {
+              openOrderSuccess();
+              setShowConfirmPickup(false);
+              closeCheckout();
+            },
           }
-          //Navigate to payment gateway url
-          window.location.href = authUrl;
-        },
-      });
+        );
     },
-    [makePayment, paymentMethod]
+    [paymentMethod, makePayment, chargeWallet, openOrderSuccess, closeCheckout]
   );
 
   // Handle place order
-  const handlePlaceOrder = (cartId: string) => {
+  const handlePlaceOrder = (cartId: string, description: string) => {
     if (deliveryType === "pickup") {
       setShowConfirmPickup(true);
       return;
     }
 
-    handleOrder(cartId);
+    handleOrder(cartId, description);
   };
 
   // Handle clear cart
@@ -163,6 +183,7 @@ const GlobalCheckoutCOntent = ({
       menuId: item.menuId,
       menuName: item.menuName,
       unitPrice: item.unitPrice,
+      description: item.description,
       menuImg: item.menuImg,
       quantity: 1,
       action: action === "increase" ? "INCREMENT" : "DECREMENT",
@@ -176,9 +197,40 @@ const GlobalCheckoutCOntent = ({
     });
   };
 
+  // Extract data from API response
+  const {
+    subtotal = "0",
+    deliveryFee = "0",
+    serviceFee = "0",
+    discountTotal = "0",
+    total = "0",
+  } = checkoutData || {};
+  const cartItems = checkoutData?.cart.items || [];
+
+  const orderSummary = cartItems
+    .map((item) => {
+      const addonNames = item.addons.map((addon) => addon.name).join(", ");
+      return addonNames
+        ? `${
+            item.quantity > 1
+              ? `${item.quantity} portions of ${item.menuName}`
+              : `1 portion of ${item.menuName}`
+          } + ${addonNames}`
+        : `${
+            item.quantity > 1
+              ? `${item.quantity} portions of ${item.menuName}`
+              : `1 portion of ${item.menuName}`
+          }`;
+    })
+    .join(" • ");
+
   // Create memoized modal props object
-  const modalProps = useMemo(
-    () => ({
+  const getmodalProps = useCallback(
+    (
+      orderSummary: string,
+      isChargingWallet: boolean,
+      isMakingPayment: boolean
+    ) => ({
       riderNote: {
         open: showRiderNote,
         onOpenChange: setShowRiderNote,
@@ -194,11 +246,15 @@ const GlobalCheckoutCOntent = ({
       pickupConfirm: {
         open: showConfirmPickup,
         onOpenChange: setShowConfirmPickup,
-        onConfirm: (cartId: string) => handleOrder(cartId),
+        description: orderSummary,
+        isChargingWallet,
+        isMakingPayment,
+        onConfirm: (cartId: string, description: string) =>
+          handleOrder(cartId, description),
       },
       couponSuccess: {
         open: showSuccess,
-        onOpenChange: setSuccess,
+        onOpenChange: setShowSuccess,
       },
       clearCartModal: {
         open: showAlert,
@@ -216,14 +272,12 @@ const GlobalCheckoutCOntent = ({
     ]
   );
 
-  const {
-    subtotal = "0",
-    deliveryFee = "0",
-    serviceFee = "0",
-    discountTotal = "0",
-    total = "0",
-  } = checkoutData || {};
-  const cartItems = checkoutData?.cart.items || [];
+  console.log("Order SUmmary: ", orderSummary);
+  const modalProps = getmodalProps(
+    orderSummary,
+    isChargingWallet,
+    isMakingPayment
+  );
 
   const defaultAdresses = user?.address.find((addr) => addr.setAddressDefault);
 
@@ -389,7 +443,7 @@ const GlobalCheckoutCOntent = ({
               </button>
 
               <button
-                onClick={() => setSuccess(true)}
+                onClick={() => setShowSuccess(true)}
                 className="w-full flex items-center justify-between hover:underline cursor-pointer"
               >
                 <span className="flex items-center gap-2 text-base leading-5">
@@ -469,10 +523,14 @@ const GlobalCheckoutCOntent = ({
                 <div className="w-full flex items-center justify-between">
                   <span className="flex items-center gap-2 text-base">
                     <RiWallet3Fill className="size-5 text-primary" /> Wallet
-                    Balance -{" "}
-                    <span className="text-base font-medium ml-1">
-                      {currency(32600)}
-                    </span>
+                    Balance -
+                    {isBalanceLoading ? (
+                      <Loader styles="size-4! text-neutral-400!" />
+                    ) : (
+                      <span className="text-base font-medium ml-1">
+                        {currency(Number(balance))}
+                      </span>
+                    )}
                   </span>
                   <RadioGroup
                     value={paymentMethod}
@@ -552,11 +610,13 @@ const GlobalCheckoutCOntent = ({
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mt-6">
               <Button
-                onClick={() => handlePlaceOrder(cartItems[0].cartId)}
-                disabled={isMakingPayment}
+                onClick={() =>
+                  handlePlaceOrder(cartItems[0].cartId, orderSummary)
+                }
+                disabled={isMakingPayment || isChargingWallet}
                 className="submit-btn flex-1"
               >
-                {isMakingPayment ? (
+                {isMakingPayment || isChargingWallet ? (
                   <RiLoader2Line className="size-5 animate-spin" />
                 ) : (
                   "PLACE ORDER"

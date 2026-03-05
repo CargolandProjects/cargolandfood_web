@@ -24,7 +24,10 @@ import {
   useAddToCart,
   useRemoveCartItem,
 } from "@/lib/hooks/mutations/useMutateCart";
-import { useMakePayment } from "@/lib/hooks/mutations/usePlaceOrder";
+import {
+  useChargeWallet,
+  useMakePayment,
+} from "@/lib/hooks/mutations/usePlaceOrder";
 import ConfirmationModal from "../ConfirmationModal";
 import RiderNote from "./RiderNoteModal";
 import CouponSuccess from "./CouponSuccessModal";
@@ -37,7 +40,9 @@ import EmptyStateUi from "../EmptyStateUi";
 import { useUIStore } from "@/lib/stores/uiStore";
 import { useSession } from "@/lib/hooks/useSession";
 import { toast } from "sonner";
-import { useNotificationEvent } from "@/lib/hooks/useSocket";
+import { useWalletBalance } from "@/lib/hooks/queries/useWallet";
+import { is } from "zod/v4/locales";
+// import { useNotificationEvent } from "@/lib/hooks/useSocket";
 // import { useSuccessfulPaymentEvent } from "@/lib/hooks/useSocket";
 // import { useQueryClient } from "@tanstack/react-query";
 
@@ -65,6 +70,7 @@ const PageCheckOut = ({
   onDeliveryTypeChange,
   closeCheckout,
 }: CheckoutProps) => {
+  const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
   const [showAlert, setShowAlert] = useState(false);
   const [showRiderNote, setShowRiderNote] = useState(false);
   const [showCoupon, setShowCoupon] = useState(false);
@@ -85,6 +91,10 @@ const PageCheckOut = ({
   const { mutate, isPending } = useAddToCart(vendorId);
   const { mutate: removeItem } = useRemoveCartItem(vendorId);
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
+  const { mutate: chargeWallet, isPending: isChargingWallet } =
+    useChargeWallet();
+  const { data: balance, isLoading: isBalanceLoading } = useWalletBalance();
+
   // const queryClient = useQueryClient();
 
   // Hook to listen to successful payment event
@@ -96,7 +106,7 @@ const PageCheckOut = ({
   //     // openOrderSuccess();
   //     // queryClient.invalidateQueries({
   //     //   queryKey: ["cart"],
-  //     // }); 
+  //     // });
 
   //     // const vendorId = data.payload?.data?.vendorId;
   //     // if (vendorId)
@@ -125,35 +135,48 @@ const PageCheckOut = ({
   };
 
   const handleOrder = useCallback(
-    (cartId: string) => {
+    (cartId: string, description: string) => {
       if (!paymentMethod) {
         toast.error("Please select a payment method");
         return;
       }
-      makePayment(cartId, {
-        onSuccess: (res) => {
-          const authUrl = res.data.authorization_url;
 
-          if (!authUrl) {
-            toast.error("Payment initiation failed");
-            return;
+      if (paymentMethod === "digitalTransfer")
+        makePayment(cartId, {
+          onSuccess: (res) => {
+            const authUrl = res.data.authorization_url;
+
+            if (!authUrl) {
+              toast.error("Payment initiation failed");
+              return;
+            }
+            //Navigate to payment gateway url
+            window.location.href = authUrl;
+          },
+        });
+
+      if (paymentMethod === "wallet")
+        chargeWallet(
+          { cartId, description },
+          {
+            onSuccess: () => {
+              openOrderSuccess();
+              setShowConfirmPickup(false);
+            },
           }
-          //Navigate to payment gateway url
-          window.location.href = authUrl;
-        },
-      });
+        );
     },
-    [makePayment, paymentMethod]
+    [paymentMethod, makePayment, chargeWallet, openOrderSuccess]
   );
 
   // Handle place order
-  const handlePlaceOrder = (cartId: string) => {
+  const handlePlaceOrder = (cartId: string, description: string) => {
     if (deliveryType === "PICKUP") {
       setShowConfirmPickup(true);
       return;
     }
 
-    handleOrder(cartId);
+    handleOrder(cartId, description);
   };
 
   const handleClearCart = () => {
@@ -196,6 +219,7 @@ const PageCheckOut = ({
         menuId: item.menuId,
         menuName: item.menuName,
         unitPrice: item.unitPrice,
+        description: item.description,
         menuImg: item.menuImg,
         quantity: 1,
         action: action === "increase" ? "INCREMENT" : "DECREMENT",
@@ -213,9 +237,40 @@ const PageCheckOut = ({
     );
   };
 
+  // Extract data from API response
+  const {
+    subtotal = "0",
+    deliveryFee = "0",
+    serviceFee = "0",
+    discountTotal = "0",
+    total = "0",
+  } = checkoutData || {};
+  const cartItems = checkoutData.cart.items;
+
+  const orderSummary = cartItems
+    .map((item) => {
+      const addonNames = item.addons.map((addon) => addon.name).join(", ");
+      return addonNames
+        ? `${
+            item.quantity > 1
+              ? `${item.quantity} portions of ${item.menuName}`
+              : `1 portion of ${item.menuName}`
+          } + ${addonNames}`
+        : `${
+            item.quantity > 1
+              ? `${item.quantity} portions of ${item.menuName}`
+              : `1 portion of ${item.menuName}`
+          }`;
+    })
+    .join(" • ");
+
   // Create memoized modal props object
-  const modalProps = useMemo(
-    () => ({
+  const getmodalProps = useCallback(
+    (
+      orderSummary: string,
+      isChargingWallet: boolean,
+      isMakingPayment: boolean
+    ) => ({
       riderNote: {
         open: showRiderNote,
         onOpenChange: setShowRiderNote,
@@ -231,7 +286,11 @@ const PageCheckOut = ({
       pickupConfirm: {
         open: showConfirmPickup,
         onOpenChange: setShowConfirmPickup,
-        onConfirm: (cartId: string) => handleOrder(cartId),
+        description: orderSummary,
+        isChargingWallet,
+        isMakingPayment,
+        onConfirm: (cartId: string, description: string) =>
+          handleOrder(cartId, description),
       },
       couponSuccess: {
         open: showSuccess,
@@ -253,15 +312,12 @@ const PageCheckOut = ({
     ]
   );
 
-  // Extract data from API response
-  const {
-    subtotal = "0",
-    deliveryFee = "0",
-    serviceFee = "0",
-    discountTotal = "0",
-    total = "0",
-  } = checkoutData || {};
-  const cartItems = checkoutData.cart.items;
+  console.log("Order SUmmary: ", orderSummary);
+  const modalProps = getmodalProps(
+    orderSummary,
+    isChargingWallet,
+    isMakingPayment
+  );
 
   const defaultAdresses = user?.address.find((addr) => addr.setAddressDefault);
 
@@ -374,7 +430,6 @@ const PageCheckOut = ({
                           <Minus className="size-4" />
                         </button>
                         <span className="text-sm font-normal text-center">
-                          hey
                           {item.menuId === quantityChangeId ? (
                             <Loader2 className="size-4 animate-spin duration-300 text-neutral-400" />
                           ) : (
@@ -392,7 +447,7 @@ const PageCheckOut = ({
                       </div>
                     </div>
 
-                    {/* Packs Counter */}
+                    {/* Packs Price */}
                     <div className="flex items-center justify-between">
                       <span className="text-base font-medium">
                         {currency(safePrice(item.unitPrice))}
@@ -499,10 +554,14 @@ const PageCheckOut = ({
                 <div className="w-full flex items-center justify-between">
                   <div className="flex items-center gap-2 text-base">
                     <RiWallet3Fill className="size-5 text-primary" /> Wallet
-                    Balance -{" "}
-                    <span className="text-base font-medium ml-1">
-                      {currency(32600)}
-                    </span>
+                    Balance -
+                    {isBalanceLoading ? (
+                      <Loader styles="size-4! text-neutral-400!" />
+                    ) : (
+                      <span className="text-base font-medium ml-1">
+                        {currency(Number(balance))}
+                      </span>
+                    )}
                   </div>
                   <RadioGroup
                     value={paymentMethod}
@@ -582,11 +641,13 @@ const PageCheckOut = ({
             {/* Action Buttons */}
             <div className="grid sm:grid-cols-2 gap-4 max-sm:mx-2 mt-6">
               <Button
-                onClick={() => handlePlaceOrder(cartItems[0].cartId)}
-                disabled={isMakingPayment}
+                onClick={() =>
+                  handlePlaceOrder(cartItems[0].cartId, orderSummary)
+                }
+                disabled={isMakingPayment || isChargingWallet}
                 className="submit-btn"
               >
-                {isMakingPayment ? (
+                {isMakingPayment || isChargingWallet ? (
                   <RiLoader2Line className="size-5 animate-spin" />
                 ) : (
                   "PLACE ORDER"

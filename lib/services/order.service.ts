@@ -63,6 +63,11 @@ interface GetOrdersResponse {
   VerificationCode: VerificationCode;
 }
 
+interface ChargeWalletPayload {
+  description: string;
+  cartId: string;
+}
+
 export const orderService = {
   async makePayment(cartId: string) {
     const response = await apiClient.post<MakePaymentResponse>(
@@ -71,12 +76,17 @@ export const orderService = {
     return response.data;
   },
 
-  async simulatePayment(checkoutSessionId: string) {
-    const res = await apiClient.post<PaymentResponse>(
-      API_ROUTES.order.simulatePayment(checkoutSessionId)
-    );
+  async chargeWallet(payload: ChargeWalletPayload) {
+    const res = await apiClient.post(API_ROUTES.order.chargeWallet, payload);
     return res.data;
   },
+
+  // async simulatePayment(checkoutSessionId: string) {
+  //   const res = await apiClient.post<PaymentResponse>(
+  //     API_ROUTES.order.simulatePayment(checkoutSessionId)
+  //   );
+  //   return res.data;
+  // },
 
   async getOrders() {
     const res = await apiClient.get<APIResponse<GetOrdersResponse[]>>(
@@ -91,6 +101,7 @@ export const orderService = {
     );
     return res.data;
   },
+
   async getOrderByReference(reference: string) {
     const res = await apiClient.get<APIResponse<GetOrdersResponse>>(
       API_ROUTES.order.getOrderByReference(reference)

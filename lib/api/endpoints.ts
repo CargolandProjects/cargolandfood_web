@@ -40,6 +40,7 @@ export const API_ROUTES = {
     checkoutPreview: (vendorId: string) =>
       `/orders/checkout-preview/${vendorId}`,
     makePayment: (cartId: string) => `/orders/make-payment/${cartId}`,
+    chargeWallet: "/users/charge-user-wallet",
     simulatePayment: (checkoutSessionId: string) =>
       `/orders/payment-simulation/${checkoutSessionId}`,
     getOrders: "/orders/get-all-user-orders",
