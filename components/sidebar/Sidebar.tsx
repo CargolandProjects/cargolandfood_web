@@ -25,7 +25,7 @@ import Orders from "./Orders";
 import { useCart } from "@/lib/hooks/queries/useCart";
 import { useGetOrders } from "@/lib/hooks/queries/useOrders";
 
-interface SIdeBar {
+interface SideBar {
   open: boolean;
   setOpen: (v: boolean) => void;
 }
@@ -86,7 +86,7 @@ const getSidebarItems = (
   },
 ];
 
-const Sidebar = ({ open, setOpen }: SIdeBar) => {
+const Sidebar = ({ open, setOpen }: SideBar) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("Home");
   const { setActiveCategory } = useCategory();
   const router = useRouter();
@@ -154,7 +154,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
               {sidebarItems.map((item, idx) => {
                 const IconComponent = item.icon;
                 const isActive = activeTab === item.id;
-
+                console.log("ICON VARIABLES: ", item);
                 return (
                   <React.Fragment key={idx}>
                     {/* Separate home button */}
@@ -198,7 +198,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                               isActive ? "text-primary" : "text-gray-300"
                             }`}
                           />
-                          {item.count && (
+                          {(item.count ?? 0) > 0 && (
                             <div className="absolute -top-1.5 -right-4.5 px-1.5 bg-primary rounded-full text-xs text-white">
                               {item.count}
                             </div>
@@ -278,7 +278,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                         </p>
                       </div>
 
-                      {item.count && (
+                      {(item.count ?? 0) > 0 && (
                         <div className="flex items-center gap-2 bg-primary-100 px-3 rounded-full">
                           <span className="text-primary">{item.count}</span>
                         </div>
