@@ -14,17 +14,18 @@ interface RemoveItemParams {
   cartItemId: string;
 }
 
+type CartItems = Cart & { addressSnapshot: GetAddress };
+
 interface CartResponse {
   status: string;
   message: string;
-  address: GetAddress;
   data: {
     vendor: {
       vendorId: string;
       businessName: string;
       profileImg: string;
     };
-    carts: Cart[];
+    carts: CartItems[];
   }[];
 }
 

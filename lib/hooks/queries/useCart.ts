@@ -7,9 +7,6 @@ export const useCart = () => {
     queryFn: cart.getCart,
     refetchOnMount: true,
     staleTime: 0,
-    select: (data) => ({
-      address: data.address,
-      data: data.data,
-    }),
+    select: (res) => res.data
   });
 };

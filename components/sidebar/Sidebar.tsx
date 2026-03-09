@@ -93,7 +93,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
 
   const { data: cart } = useCart();
   const { data: orders } = useGetOrders();
-  const cartItems = cart?.data.length || 0;
+  const cartItems = cart?.length || 0;
   const currentOrders =
     orders?.filter((o) => o.status !== "COMPLETED").length || 0;
 
@@ -154,7 +154,6 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
               {sidebarItems.map((item, idx) => {
                 const IconComponent = item.icon;
                 const isActive = activeTab === item.id;
-                console.log("ICON VARIABLES: ", item);
                 return (
                   <React.Fragment key={idx}>
                     {/* Separate home button */}

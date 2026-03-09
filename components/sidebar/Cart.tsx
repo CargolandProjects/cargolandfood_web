@@ -86,8 +86,7 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
   const [isDeletingCartId, setIsDeletingCartId] = useState<string | null>(null);
   const router = useRouter();
 
-  const carts = data?.data || [];
-  const address = data?.address;
+  const carts = data || [];
 
   console.log("cart data", carts);
   // const cartWithItems = carts?.filter((cart) => cart.items.length > 0) || [];
@@ -161,8 +160,6 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
       {isSuccess && carts.length > 0 && (
         <div className="max-sm:pt-1 sm:mt-4 pb-4 space-y-3 h-full overflow-y-auto hide-scrollbar">
           {carts.map((cart, idx) => {
-            // const item = cart.items[0];
-
             const vendorTotal = cart.carts.reduce((vendorSum, c) => {
               return (
                 vendorSum +
@@ -219,7 +216,8 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
                   <div className="w-full flex gap-2 items-center">
                     <RiTakeawayFill className="size-5 text-neutral-600" />
                     <p className="text-base leading-5 line-clamp-1">
-                      {address?.addressLine1 || "No address added"}
+                      {cart.carts[0]?.addressSnapshot?.addressLine1 ||
+                        "No address added"}
                     </p>
                   </div>
 
