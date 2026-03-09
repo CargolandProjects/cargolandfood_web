@@ -79,7 +79,7 @@ export interface CheckoutPreview {
 // }
 
 // Request payload types
-export interface AddToCartPayload {
+export interface AddToCart {
   menuId: string;
   menuName: string;
   menuImg: string;

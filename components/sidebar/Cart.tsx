@@ -118,10 +118,10 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
     openCheckout({ vendorId: id });
   };
 
-  const handleRoute = (category: string, vendorId: string) => {
-    if (!category && !vendorId) return;
+  const handleRoute = (vendorId: string) => {
+    if (!vendorId) return;
 
-    router.push(`/${getCategoryPath(category)}/${vendorId}`);
+    router.push(`/vendor/${vendorId}`);
   };
 
   return (
@@ -177,9 +177,7 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
 
             return (
               <div
-                onClick={() =>
-                  handleRoute(cart.vendor.businessName, cart.vendor.vendorId)
-                }
+                onClick={() => handleRoute(cart.vendor.vendorId)}
                 className="hover:cursor-pointer"
                 key={idx}
               >

@@ -1,21 +1,19 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { cart } from "@/lib/services/cart.service";
 import { toast } from "sonner";
-import type { AddToCartPayload } from "@/lib/types/cart.types";
 
 interface ClearCartVars {
   cartId: string;
   vendorId: string;
 }
 
-export function useAddToCart(vendorId: string) {
+export function useAddToCart() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: AddToCartPayload) =>
-      cart.addOrUpdateItem(vendorId, payload),
+    mutationFn: cart.addOrUpdateItem,
 
-    onSuccess: (response) => {
+    onSuccess: (response, { vendorId, }) => {
       // Invalidate checkout preview to refetch with updated cart
       queryClient.invalidateQueries({
         queryKey: ["checkoutPreview", vendorId],

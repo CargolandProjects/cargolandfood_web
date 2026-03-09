@@ -1,5 +1,5 @@
 // import CancelOrderModal from "../orders/CancelOrderModal";
-import OrderSuccessModal from "../orders/OrderSuccessModal";
+import OrderSuccessModal from "./OrderSuccessModal";
 import ReviewOrderModal from "../orders/ReviewOrderModal";
 import AddressModal from "./AddressModal";
 import GlobalCheckout from "./GlobalCheckout";

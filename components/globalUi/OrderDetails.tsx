@@ -38,8 +38,8 @@ const OrderDetailsContent = ({
   const payload = useUIStore((s) => s.orderDetails.payload);
   const openTrackOrder = useUIStore((s) => s.openTrackOrder);
 
-  const sidebarQuery = useOrderDetails(
-    payload?.source === "sideBar" ? payload.orderId : ""
+  const generalQuery = useOrderDetails(
+    payload?.source === "general" ? payload.orderId : ""
   );
 
   const paymentQuery = useOrderByReference(
@@ -47,10 +47,14 @@ const OrderDetailsContent = ({
   );
 
   const { data, isLoading, isError, isSuccess } =
-    payload?.source === "sideBar" ? sidebarQuery : paymentQuery;
+    payload?.source === "general" ? generalQuery : paymentQuery;
 
   const currency = (n: string) => `₦ ${Number(n).toLocaleString()}`;
 
+  const handlOpenTrackOrder = (orderId: string) => {
+    if (!orderId) return;
+    openTrackOrder({ orderId });
+  };
   return (
     <div className="h-dvh px-4 sm:px-6 overflow-auto hide-scrollbar">
       {isDesktop ? (
@@ -112,7 +116,9 @@ const OrderDetailsContent = ({
 
             <div className="flex items-center justify-between text-sm">
               <span>Delivery Verification Code:</span>
-              <span className="font-bold">{data.VerificationCode.code}</span>
+              <span className="font-bold">
+                {data.VerificationCode?.code ?? "no code"}
+              </span>
             </div>
 
             <div className="flex items-center justify-between text-sm">
@@ -223,7 +229,10 @@ const OrderDetailsContent = ({
           </div>
 
           {/* Track Order Button */}
-          <Button onClick={openTrackOrder} className="submit-btn my-10">
+          <Button
+            onClick={() => handlOpenTrackOrder(data.id)}
+            className="submit-btn my-10"
+          >
             TRACK ORDER
           </Button>
         </div>

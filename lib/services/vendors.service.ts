@@ -98,7 +98,7 @@ export interface Categories {
   createdAt: string;
 }
 
-interface VendorDetail extends Omit<Vendor, "ratings"> {
+export interface VendorDetail extends Omit<Vendor, "ratings"> {
   categories: Categories[];
   menus: Menu[];
   review: Review[];

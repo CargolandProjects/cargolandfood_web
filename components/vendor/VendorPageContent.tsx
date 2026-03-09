@@ -248,6 +248,7 @@ const VendorPageContent = ({ id }: { id: string }) => {
                 isRestaurant ? (
                   <VendorItemCardA
                     key={item.id}
+                    vendorId={id}
                     menu={item}
                     handleSelect={handleSelect}
                     selectedId={selectedId}
@@ -255,6 +256,7 @@ const VendorPageContent = ({ id }: { id: string }) => {
                 ) : (
                   <VendorItemCardB
                     key={item.id}
+                    vendorId={id}
                     menu={item}
                     handleSelect={handleSelect}
                     selectedId={selectedId}
@@ -309,6 +311,7 @@ const VendorPageContent = ({ id }: { id: string }) => {
           >
             <PageCheckOut
               vendorId={id}
+              preparationTime={vendor?.preparationTime}
               checkoutData={checkoutData}
               isLoading={isCheckoutLoading}
               isError={checkoutError}
@@ -332,6 +335,7 @@ const VendorPageContent = ({ id }: { id: string }) => {
           >
             <PageCheckOut
               vendorId={id}
+              preparationTime={vendor?.preparationTime}
               checkoutData={checkoutData}
               isLoading={isCheckoutLoading}
               isError={checkoutError}

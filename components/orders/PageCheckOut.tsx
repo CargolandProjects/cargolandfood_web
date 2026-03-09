@@ -24,10 +24,7 @@ import {
   useAddToCart,
   useRemoveCartItem,
 } from "@/lib/hooks/mutations/useMutateCart";
-import {
-  useChargeWallet,
-  useMakePayment,
-} from "@/lib/hooks/mutations/usePlaceOrder";
+import { useMakePayment } from "@/lib/hooks/mutations/usePlaceOrder";
 import ConfirmationModal from "../ConfirmationModal";
 import RiderNote from "./RiderNoteModal";
 import CouponSuccess from "./CouponSuccessModal";
@@ -41,6 +38,7 @@ import { useUIStore } from "@/lib/stores/uiStore";
 import { useSession } from "@/lib/hooks/useSession";
 import { toast } from "sonner";
 import { useWalletBalance } from "@/lib/hooks/queries/useWallet";
+import { useChargeWallet } from "@/lib/hooks/mutations/useChargeWallet";
 // import { useNotificationEvent } from "@/lib/hooks/useSocket";
 // import { useSuccessfulPaymentEvent } from "@/lib/hooks/useSocket";
 // import { useQueryClient } from "@tanstack/react-query";
@@ -87,7 +85,7 @@ const PageCheckOut = ({
 
   // API mutations
   const clearCartMutation = useClearCart();
-  const { mutate, isPending } = useAddToCart(vendorId);
+  const { mutate, isPending } = useAddToCart();
   const { mutate: removeItem } = useRemoveCartItem(vendorId);
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
   const { mutate: chargeWallet, isPending: isChargingWallet } =
@@ -158,14 +156,18 @@ const PageCheckOut = ({
         chargeWallet(
           { cartId, description },
           {
-            onSuccess: () => {
-              openOrderSuccess();
+            onSuccess: (res) => {
+              const orderId = res.orderData.data.id;
+              openOrderSuccess({
+                preparationTime: "soon",
+                orderId,
+              });
               setShowConfirmPickup(false);
             },
           }
         );
     },
-    [paymentMethod, makePayment, chargeWallet, openOrderSuccess]
+    [paymentMethod, makePayment, chargeWallet, openOrderSuccess,]
   );
 
   // Handle place order
@@ -212,23 +214,26 @@ const PageCheckOut = ({
     if (item.quantity < 1) return; // Don't allow quantity less than 1
 
     setQuantityChangeId(item.id);
-    // Re-add item with new quantity (API replaces/updates existing item)
+
     mutate(
       {
-        menuId: item.menuId,
-        menuName: item.menuName,
-        unitPrice: item.unitPrice,
-        description: item.description,
-        menuImg: item.menuImg,
-        quantity: 1,
-        action: action === "increase" ? "INCREMENT" : "DECREMENT",
-        currency: "NGN",
-        // addons: item.addons.map((addon) => ({
-        //   menuAddonId: addon.menuAddonId,
-        //   name: addon.name,
-        //   price: safePrice(addon.price),
-        //   quantity: addon.quantity,
-        // })),
+        item: {
+          menuId: item.menuId,
+          menuName: item.menuName,
+          unitPrice: item.unitPrice,
+          description: item.description,
+          menuImg: item.menuImg,
+          quantity: 1,
+          action: action === "increase" ? "INCREMENT" : "DECREMENT",
+          currency: "NGN",
+          // addons: item.addons.map((addon) => ({
+          //   menuAddonId: addon.menuAddonId,
+          //   name: addon.name,
+          //   price: safePrice(addon.price),
+          //   quantity: addon.quantity,
+          // })),
+        },
+        vendorId,
       },
       {
         onSettled: () => setQuantityChangeId(null),

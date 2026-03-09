@@ -1,6 +1,6 @@
 import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
-import { APIResponse } from "../types/cart.types";
+import { APIResponse, Order } from "../types/cart.types";
 
 interface payload {
   amount: string;
@@ -29,14 +29,33 @@ export interface TransactionRecord {
   createdAt: string;
 }
 
+interface ChargeWalletPayload {
+  description: string;
+  cartId: string;
+}
+
 type FundWalletResponse = APIResponse<FundWallet>;
 type TransactionRecords = APIResponse<TransactionRecord[]>;
+
+interface ChargeWalletesponse {
+  status: string;
+  message: string;
+  orderData: APIResponse<Order & { paymentReference: string }>;
+}
 
 export const wallet = {
   async fundWallet(amount: payload) {
     const res = await apiClient.post<FundWalletResponse>(
       API_ROUTES.wallet.fundWallet,
       amount
+    );
+    return res.data;
+  },
+
+  async chargeWallet(payload: ChargeWalletPayload) {
+    const res = await apiClient.post<ChargeWalletesponse>(
+      API_ROUTES.order.chargeWallet,
+      payload
     );
     return res.data;
   },

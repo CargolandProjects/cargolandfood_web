@@ -1,7 +1,7 @@
 import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
 import type {
-  AddToCartPayload,
+  AddToCart,
   Cart,
   CartItem,
   CheckoutPreview,
@@ -29,16 +29,21 @@ interface CartResponse {
   }[];
 }
 
+interface AddToCartPayload {
+  item: AddToCart;
+  vendorId: string;
+}
+
 export const cart = {
   async getCart() {
     const res = await apiClient.get<CartResponse>(API_ROUTES.cart.getCart);
     return res.data;
   },
 
-  async addOrUpdateItem(vendorId: string, payload: AddToCartPayload) {
+  async addOrUpdateItem(payload: AddToCartPayload) {
     const response = await apiClient.post<APIResponse<CartItem[]>>(
-      API_ROUTES.cart.addOrUpdateItem(vendorId),
-      payload
+      API_ROUTES.cart.addOrUpdateItem(payload.vendorId),
+      payload.item
     );
     return response.data;
   },

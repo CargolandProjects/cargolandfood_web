@@ -11,7 +11,17 @@ interface OrderSuccessfulProps {
 
 const OrderSuccessModal = ({ closeCheckout }: OrderSuccessfulProps) => {
   const open = useUIStore((s) => s.orderSuccess.open);
+  const openOrderDetails = useUIStore((s) => s.openOrderDetails);
+  const preparationTime = useUIStore(
+    (s) => s.orderSuccess.payload?.preparationTime
+  );
+  const orderId = useUIStore((s) => s.orderSuccess.payload?.orderId);
   const closeOrderSuccess = useUIStore((s) => s.closeOrderSuccess);
+
+  const handleopenDetails = () => {
+    if (!orderId) return;
+    openOrderDetails({ orderId, source: "general" });
+  };
 
   return (
     <Dialog
@@ -19,7 +29,7 @@ const OrderSuccessModal = ({ closeCheckout }: OrderSuccessfulProps) => {
       onOpenChange={() => {
         closeOrderSuccess();
         if (closeCheckout) closeCheckout(false);
-      } }
+      }}
     >
       <DialogContent className="dialog px-6! sm:px-9!">
         <div className="size-[124px] sm:size-[180px] self-center justify-self-center mt-8">
@@ -31,14 +41,14 @@ const OrderSuccessModal = ({ closeCheckout }: OrderSuccessfulProps) => {
             Yay! Your Order has been placed.
           </DialogTitle>
           <p className="max-w-[260px] text-base leading-5 text-center">
-            Your order would be delivered in 20 mins at most
+            Your order would be delivered in {preparationTime} mins at most
           </p>
           <div className="flex justify-between w-full max-w-[287px]">
             <div className="flex gap-2 items-center">
               <RiTimeLine className="size-5" />
               <p className="leading-4.5">Estimated Time</p>
             </div>
-            <p className="text-base font-medium ">20mins</p>
+            <p className="text-base font-medium ">{preparationTime}</p>
           </div>
         </div>
 
@@ -49,7 +59,9 @@ const OrderSuccessModal = ({ closeCheckout }: OrderSuccessfulProps) => {
           >
             Cancel Orders
           </Button>
-          <Button className="submit-btn flex-1">Order Details</Button>
+          <Button onClick={handleopenDetails} className="submit-btn flex-1">
+            Order Details
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

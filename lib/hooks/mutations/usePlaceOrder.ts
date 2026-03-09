@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { orderService } from "@/lib/services/order.service";
 import { toast } from "sonner";
 
@@ -19,37 +19,7 @@ export function useMakePayment() {
   });
 }
 
-export function useChargeWallet() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: orderService.chargeWallet,
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["checkoutPreview"],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["cart"],
-      });
-      
-      queryClient.invalidateQueries({
-        queryKey: ["cart"],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["walletBalance"],
-      });
-
-      toast.success("Order placed successfully");
-    },
-
-    onError: (error) => {
-      const message = error.message || "Failed to place order";
-      toast.error(message);
-    },
-  });
-}
 
 // export const useSimulatePayment = () => {
 //   const queryClient = useQueryClient();

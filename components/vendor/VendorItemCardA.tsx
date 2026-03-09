@@ -1,6 +1,5 @@
 "use client";
 
-import { useParams } from "next/navigation";
 import { Menu } from "@/lib/services/vendors.service";
 import ProductModal from "../ProductModal";
 import { useAddToCart } from "@/lib/hooks/mutations/useMutateCart";
@@ -15,6 +14,7 @@ interface VendorItemCardA {
   menu: Menu;
   handleSelect?: (id: string) => void;
   onNavigate?: () => void;
+  vendorId: string;
   selectedId?: string | null;
   isSearch?: boolean;
 }
@@ -23,6 +23,7 @@ const VendorItemCardA = ({
   menu,
   handleSelect,
   onNavigate,
+  vendorId,
   selectedId,
   isSearch = false,
 }: VendorItemCardA) => {
@@ -31,9 +32,9 @@ const VendorItemCardA = ({
   const { isAuthenticated } = useSession();
   const openAuth = useAuthFlow((s) => s.openAuth);
 
-  const params = useParams();
-  const vendorId = params.id as string;
-  const { mutate, isPending } = useAddToCart(vendorId);
+  // const params = useParams();
+  // const vendorId = params.id as string;
+  const { mutate, isPending } = useAddToCart();
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -45,15 +46,18 @@ const VendorItemCardA = ({
     }
 
     mutate({
-      menuId: id!,
-      menuName: name!,
-      unitPrice: price!,
-      description,
-      action: "SET",
-      quantity: 1,
-      menuImg: uploadImageUrl,
-      currency: "NGN",
-      // No addons for quick add
+      item: {
+        menuId: id!,
+        menuName: name!,
+        unitPrice: price!,
+        description,
+        action: "SET",
+        quantity: 1,
+        menuImg: uploadImageUrl,
+        currency: "NGN",
+        // No addons for quick add
+      },
+      vendorId,
     });
   };
 
