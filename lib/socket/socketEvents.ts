@@ -17,11 +17,16 @@ export const SOCKET_EVENTS = {
 
 export interface NotificationEvent {
   id: string;
+  userId: string;
+  role: "USER";
+  type: "NEW" | "ACCEPTED" | "PREPARING" | "READY" | "ASSIGN_TO_RIDER" | "DELIVERED";
   title: string;
   message: string;
-  type: "info" | "success" | "warning" | "error";
-  timestamp: string;
-  // Add other fields based on your backend response
+  payload: {
+    orderId: string;
+  };
+  isRead: boolean;
+  createdAt: string;
 }
 
 export interface VerificationCode {

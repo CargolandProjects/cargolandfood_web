@@ -27,7 +27,7 @@ import {
   RiMenu4Line,
   RiArrowLeftLine,
 } from "react-icons/ri";
-import Notifications from "../Notifications";
+import Notifications from "./Notifications";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import MenuContent from "../MenuContent";
 import { useUIStore } from "@/lib/stores/uiStore";
@@ -128,28 +128,7 @@ export function Header({ setSideBar }: HeaderProps) {
             </form>
 
             {/* Notification Bell */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="rounded-full size-7 sm:size-10 max-sm:bg-neutral-300 flex justify-center items-center">
-                  <RiNotification2Fill className="size-6 text-gray-300 max-sm:hidden" />
-                  <img
-                    src={bell.src}
-                    alt="notification icon"
-                    className=" sm:hidden text-neutral-600"
-                  />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="dropdown-content w-[271px]"
-              >
-                <DropdownMenuLabel className="font-bold text-base flex gap-4.5 p-0 mb-6">
-                  {/* <RiArrowGoBackLine className="size-5" /> */}
-                  Notification
-                </DropdownMenuLabel>
-                <Notifications />
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Notifications />
 
             {/* User Profile Dropdown */}
             {isAuthenticated && session ? (

@@ -17,9 +17,7 @@ export const useSocketEvent = <T = unknown>(
   const socket = useSocketContext();
 
   useEffect(() => {
-    if (!socket) {
-      throw new Error("useSocketEvent must be used within a SocketContext");
-    }
+    if (!socket) return;
 
     socket.on(eventName, callback);
 

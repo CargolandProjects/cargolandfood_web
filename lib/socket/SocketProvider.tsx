@@ -22,7 +22,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       // Disconnect if user logs out
       if (socket) {
         console.log("❌ Socket disconnected");
-        // socket.disconnect();
+        socket.disconnect();
 
         // Wrap setState in callback to avoid cascading renders warning
         const clearSocket = () => setSocket(null);

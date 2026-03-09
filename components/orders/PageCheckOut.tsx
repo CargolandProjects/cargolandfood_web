@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Minus, Plus } from "lucide-react";
 import { Separator } from "../ui/separator";
@@ -41,7 +41,6 @@ import { useUIStore } from "@/lib/stores/uiStore";
 import { useSession } from "@/lib/hooks/useSession";
 import { toast } from "sonner";
 import { useWalletBalance } from "@/lib/hooks/queries/useWallet";
-import { is } from "zod/v4/locales";
 // import { useNotificationEvent } from "@/lib/hooks/useSocket";
 // import { useSuccessfulPaymentEvent } from "@/lib/hooks/useSocket";
 // import { useQueryClient } from "@tanstack/react-query";
@@ -312,7 +311,6 @@ const PageCheckOut = ({
     ]
   );
 
-  console.log("Order SUmmary: ", orderSummary);
   const modalProps = getmodalProps(
     orderSummary,
     isChargingWallet,
