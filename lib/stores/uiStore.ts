@@ -7,10 +7,10 @@ type PanelState<TPayload = null> = {
 };
 
 // Order Details payload (expand as needed)
-export type OrderDetailsPayload = 
+export type OrderDetailsPayload =
   | {
       orderId: string;
-      source: "sideBar";
+      source: "general";
     }
   | {
       reference: string;
@@ -30,6 +30,15 @@ export type ReviewOrderPayload = {
   vendorId: string;
 } | null;
 
+export type TrackOrderPayload = {
+  orderId: string;
+} | null;
+
+export type OrderSuccessPayload = {
+  preparationTime: string;
+  orderId: string;
+} | null;
+
 // export type OrderSuccesPayload = {
 //   closeCheckout?: (v: boolean) => void;
 // } | null;
@@ -39,15 +48,15 @@ export type UIStoreState = {
   // Panels
   orderDetails: PanelState<OrderDetailsPayload>;
   checkout: PanelState<CheckoutPayload>;
-  trackOrder: PanelState;
+  trackOrder: PanelState<TrackOrderPayload>;
   addresses: PanelState;
-  orderSuccess: PanelState;
+  orderSuccess: PanelState<OrderSuccessPayload>;
   reviewOrder: PanelState<ReviewOrderPayload>;
 
   openAddresses: () => void;
   closeAddresses: () => void;
 
-  openOrderSuccess: () => void;
+  openOrderSuccess: (payload: OrderSuccessPayload) => void;
   closeOrderSuccess: () => void;
 
   // Actions: Order Details
@@ -57,7 +66,7 @@ export type UIStoreState = {
   // replaceOrderDetailsPayload: (payload: OrderDetailsPayload | null) => void;
 
   // Actions: Track Order
-  openTrackOrder: () => void;
+  openTrackOrder: (payload: TrackOrderPayload) => void;
   closeTrackOrder: () => void;
 
   // Actions: Checkout
@@ -83,12 +92,13 @@ export const useUIStore = create<UIStoreState>((set) => ({
     set({ reviewOrder: { open: true, payload } }),
   closeReviewOrder: () => set({ reviewOrder: { open: false, payload: null } }),
 
-  openOrderSuccess: () => set({ orderSuccess: { open: true } }),
+  openOrderSuccess: (payload = null) =>
+    set({ orderSuccess: { open: true, payload } }),
   closeOrderSuccess: () =>
     set({ orderSuccess: { open: false, payload: null } }),
 
-  openTrackOrder: () => {
-    set({ trackOrder: { open: true } });
+  openTrackOrder: (payload: TrackOrderPayload) => {
+    set({ trackOrder: { open: true, payload } });
   },
 
   closeTrackOrder: () => {

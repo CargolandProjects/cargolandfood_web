@@ -3,15 +3,14 @@ import { API_ROUTES } from "../api/endpoints";
 
 export interface Vendor {
   id: string;
-  vendorId?: string; //added delibrately for the favourites endpoint response which returns this
   businessName: string;
-  businessCategory: string;
-  businessAddress: string;
-  preparationTime: string;
-  isPreorder: boolean;
+  businessCategory: string | null;
+  businessAddress: string | null;
+  preparationTime: string | null;
+  isPreorder: boolean | null;
   isFavourite: boolean;
-  golive: boolean;
-  totalOrders: number;
+  golive: boolean | null;
+  totalOrders: number | null;
   profileImg: string;
   createdAt: string;
   ratings: number;

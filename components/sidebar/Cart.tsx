@@ -12,7 +12,7 @@ import ErrorStateUi from "../ErrorStateUi";
 import EmptyStateUi from "../EmptyStateUi";
 import { useCart } from "@/lib/hooks/queries/useCart";
 import { useClearCart } from "@/lib/hooks/mutations/useMutateCart";
-import { fallbackImg, getCategoryPath } from "@/lib/utils";
+import { fallbackImg } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 interface SettingsProps {

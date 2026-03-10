@@ -9,16 +9,23 @@ interface MakeFavourite {
 }
 
 export interface Favourite {
-  id: string;
-  vendorId: string;
-  userId: string;
-  isFavourite: boolean;
-  createdAt: string;
-  updatedAt: string;
+  vendor: {
+    vendorId: string;
+    businessName: string;
+    profileImg: string;
+    ratings: number;
+  };
+  favourite: {
+    id: string;
+    vendorId: string;
+    userId: string;
+    isFavourite: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
 }
 
 type Favourites = APIResponse<Favourite[]>;
-
 
 export const favourites = {
   async getAllFavourites(userId: string) {

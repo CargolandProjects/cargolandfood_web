@@ -7,6 +7,22 @@ export const useFavourites = (userId: string) => {
     queryFn: () => favourites.getAllFavourites(userId),
     enabled: !!userId,
     refetchOnMount: true,
-    select: (data) => data.data,
+    select: (res) => {
+      const data = res.data.map((r) => ({
+        id: r.vendor.vendorId,
+        businessName: r.vendor.businessName,
+        businessCategory: null,
+        businessAddress: null,
+        preparationTime: null,
+        isPreorder: null,
+        isFavourite: r.favourite.isFavourite,
+        golive: null,
+        totalOrders: null,
+        profileImg: r.vendor.profileImg,
+        createdAt: r.favourite.createdAt,
+        ratings: r.vendor.ratings,
+      }));
+      return data;
+    },
   });
 };

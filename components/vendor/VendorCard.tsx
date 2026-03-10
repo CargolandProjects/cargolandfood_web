@@ -61,7 +61,7 @@ const VendorCard = ({
   return (
     <div onClick={handleClick} className="w-full cursor-pointer">
       <div
-        className={`relative w-full ${
+        className={`relative w-full bg-neutral-100 ${
           asFavouriteCard ? "h-[114px]" : "h-[114px] xl:h-36 "
         } overflow-hidden rounded-md`}
       >
@@ -98,7 +98,9 @@ const VendorCard = ({
         <div className="mt-1 flex gap-3 md:gap-4">
           <div className="flex justify-center items-center gap-1">
             <RiStarLine className="size-5.5 text-primary" />
-            <span className="leading-5 text-neutral-600">{ratings?.toFixed(2)}</span>
+            <span className="leading-5 text-neutral-600">
+              {ratings?.toFixed(2)}
+            </span>
           </div>
           <div className="flex justify-center items-center gap-1">
             <RiEBike2Line className="size-5.5 text-primary" />
@@ -106,10 +108,14 @@ const VendorCard = ({
               {!deliveryFee ? "Free" : deliveryFee}
             </span>
           </div>
-          <div className="flex justify-center items-center gap-1">
-            <RiTimeLine className="size-5.5 text-primary" />
-            <span className="leading-5 text-neutral-600">{preparationTime}</span>
-          </div>
+          {preparationTime && (
+            <div className="flex justify-center items-center gap-1">
+              <RiTimeLine className="size-5.5 text-primary" />
+              <span className="leading-5 text-neutral-600">
+                {preparationTime}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>
