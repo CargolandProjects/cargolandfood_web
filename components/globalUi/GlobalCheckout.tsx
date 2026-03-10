@@ -80,7 +80,7 @@ const GlobalCheckoutCOntent = ({
     isSuccess,
   } = useCheckoutPreview(vendorId!, deliveryValue, true);
 
-  const clearCartMutation = useClearCart();
+  const { mutate: clearCart, isPending: isClearingCart } = useClearCart();
   const { mutate } = useAddToCart();
   const { mutate: removeItem } = useRemoveCartItem(vendorId);
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
@@ -149,7 +149,7 @@ const GlobalCheckoutCOntent = ({
   const handleClearCart = () => {
     if (!checkoutData?.cart.id) return;
 
-    clearCartMutation.mutate(
+    clearCart(
       { cartId: checkoutData.cart.id, vendorId },
       {
         onSuccess: () => {
@@ -635,7 +635,11 @@ const GlobalCheckoutCOntent = ({
                 variant="outline"
                 className="submit-btn flex-1 hover:bg-gray-50 text-neutral-500 border-neutral-300"
               >
-                CANCEL ORDERS
+                {isClearingCart ? (
+                  <RiLoader2Line className="size-5 animate-spin" />
+                ) : (
+                  "CANCEL ORDERS"
+                )}
               </Button>
             </div>
           </div>

@@ -59,6 +59,7 @@ const Favourites = ({ setActiveTab }: FavouritesProps) => {
               key={vendor.id}
               vendor={vendor}
               vendorId={vendor.id}
+              source="general"
               asFavouriteCard
             />
           ))}

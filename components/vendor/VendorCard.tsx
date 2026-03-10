@@ -15,8 +15,7 @@ import {
 interface VendorCardProps {
   vendor: Vendor;
   vendorId: string;
-  routes?: string;
-  source?: "homepage" | "vendorpage";
+  source?: "homepage" | "vendorpage" | "general";
   asFavouriteCard?: boolean;
 }
 

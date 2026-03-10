@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export const useToggleFavourite = (
-  source: "homepage" | "vendorpage" | undefined,
+  source: "homepage" | "vendorpage" | "general" | undefined,
   zoneid?: string
 ) => {
   const queryClient = useQueryClient();
@@ -21,7 +21,7 @@ export const useToggleFavourite = (
 
       //  This updates the isFavourite flag of the cache for ui update
       //  And prevents refetching the vendor/vendors just to update a flag
-      if (source === "vendorpage") {
+      if (source === "vendorpage" || source === "general") {
         queryClient.setQueryData(
           ["vendorById", vendorId],
           (oldData: vendorById) => {
@@ -49,7 +49,7 @@ export const useToggleFavourite = (
         );
       }
 
-      if (source === "homepage") {
+      if (source === "homepage" || source === "general") {
         if (!zoneid) {
           console.error(
             "useToggleFavourite: zoneid is required for cache update when source is 'homepage'"
