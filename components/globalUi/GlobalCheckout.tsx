@@ -67,6 +67,7 @@ const GlobalCheckoutCOntent = ({
     "wallet"
   );
   const [isRemovingItemId, setIsRemovingItemId] = useState<string | null>(null);
+  const [quantityChangeId, setQuantityChangeId] = useState<string | null>(null);
   const openAddresses = useUIStore((s) => s.openAddresses);
   const { user } = useSession();
 
@@ -80,7 +81,7 @@ const GlobalCheckoutCOntent = ({
   } = useCheckoutPreview(vendorId!, deliveryValue, true);
 
   const clearCartMutation = useClearCart();
-  const { mutate, isPending } = useAddToCart();
+  const { mutate } = useAddToCart();
   const { mutate: removeItem } = useRemoveCartItem(vendorId);
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
   const { mutate: chargeWallet, isPending: isChargingWallet } =
@@ -176,27 +177,32 @@ const GlobalCheckoutCOntent = ({
     action: "increase" | "decrease"
   ) => {
     if (item.quantity < 1) return; // Don't allow quantity less than 1
+    setQuantityChangeId(item.menuId);
 
-    // Re-add item with new quantity (API replaces/updates existing item)
-    mutate({
-      item: {
-        menuId: item.menuId,
-        menuName: item.menuName,
-        unitPrice: item.unitPrice,
-        description: item.description,
-        menuImg: item.menuImg,
-        quantity: 1,
-        action: action === "increase" ? "INCREMENT" : "DECREMENT",
-        currency: "NGN",
-        // addons: item.addons.map((addon) => ({
-        //   menuAddonId: addon.menuAddonId,
-        //   name: addon.name,
-        //   price: safePrice(addon.price),
-        //   quantity: addon.quantity,
-        // })),
+    mutate(
+      {
+        item: {
+          menuId: item.menuId,
+          menuName: item.menuName,
+          unitPrice: item.unitPrice,
+          description: item.description,
+          menuImg: item.menuImg,
+          quantity: 1,
+          action: action === "increase" ? "INCREMENT" : "DECREMENT",
+          currency: "NGN",
+          // addons: item.addons.map((addon) => ({
+          //   menuAddonId: addon.menuAddonId,
+          //   name: addon.name,
+          //   price: safePrice(addon.price),
+          //   quantity: addon.quantity,
+          // })),
+        },
+        vendorId,
       },
-      vendorId,
-    });
+      {
+        onSettled: () => setQuantityChangeId(null),
+      }
+    );
   };
 
   // Extract data from API response
@@ -394,14 +400,14 @@ const GlobalCheckoutCOntent = ({
                       <div className="flex items-center gap-2.5">
                         <button
                           onClick={() => handleQuantityChange(item, "decrease")}
-                          disabled={isPending}
-                          className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          disabled={item.menuId === quantityChangeId}
+                          className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 transition-colors"
                           aria-label="Decrease packs"
                         >
                           <Minus className="size-4" />
                         </button>
                         <span className="text-sm font-normal text-center">
-                          {isPending ? (
+                          {item.menuId === quantityChangeId ? (
                             <Loader2 className="size-4 animate-spin duration-300 text-neutral-400" />
                           ) : (
                             item.quantity
@@ -409,8 +415,8 @@ const GlobalCheckoutCOntent = ({
                         </span>
                         <button
                           onClick={() => handleQuantityChange(item, "increase")}
-                          disabled={isPending}
-                          className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          disabled={item.menuId === quantityChangeId}
+                          className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 transition-colors"
                           aria-label="Increase packs"
                         >
                           <Plus className="size-4 text-black" />

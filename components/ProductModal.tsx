@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
-import { RiAddFill, RiSubtractFill } from "react-icons/ri";
+import { RiAddFill, RiLoader2Line, RiSubtractFill } from "react-icons/ri";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Separator } from "./ui/separator";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
@@ -18,10 +17,12 @@ import useAuthFlow from "@/lib/stores/authFlowStore";
 interface ProductModalProps {
   menu: Menu;
   isSelected: boolean;
+  vendorId: string;
   handleSelect?: (id: string) => void;
 }
 
 const ProductModal = ({
+  vendorId,
   menu,
   isSelected,
   handleSelect,
@@ -30,9 +31,7 @@ const ProductModal = ({
   const { isAuthenticated } = useSession();
   const openAuth = useAuthFlow((s) => s.openAuth);
 
-  const params = useParams();
-  const vendorId = params.id as string;
-  const addToCart = useAddToCart(vendorId);
+  const addToCart = useAddToCart();
 
   // State for main item quantity
   const [quantity, setQuantity] = useState(1);
@@ -113,10 +112,10 @@ const ProductModal = ({
       openAuth();
       return;
     }
-    
+
     // Get selected size details
-    const selectedSizeData = selectedSize 
-      ? menu.sizes?.find((s) => s.id === selectedSize) 
+    const selectedSizeData = selectedSize
+      ? menu.sizes?.find((s) => s.id === selectedSize)
       : null;
 
     // Build addons payload (only include addons with quantity > 0)
@@ -139,17 +138,21 @@ const ProductModal = ({
 
     addToCart.mutate(
       {
-        menuId: id!,
-        menuName: name!,
-        unitPrice: price,
-        quantity: quantity,
-        menuImg: uploadImageUrl,
-        action: "SET",
-        currency: "NGN",
-        sizeName: selectedSizeData?.name || "",
-        sizeValue: selectedSizeData?.size || "",
-        sizePrice: selectedSizeData?.price ,
-        addons: addonsPayload.length > 0 ? addonsPayload : undefined,
+        item: {
+          menuId: id!,
+          menuName: name!,
+          description,
+          unitPrice: price,
+          quantity: quantity,
+          menuImg: uploadImageUrl,
+          action: "SET",
+          currency: "NGN",
+          sizeName: selectedSizeData?.name || "",
+          sizeValue: selectedSizeData?.size || "",
+          sizePrice: selectedSizeData?.price,
+          addons: addonsPayload.length > 0 ? addonsPayload : undefined,
+        },
+        vendorId,
       },
       {
         onSuccess: () => {
@@ -291,10 +294,10 @@ const ProductModal = ({
           <Button
             onClick={handleAddToCart}
             disabled={addToCart.isPending}
-            className="uppercase py-3.5 px-5.5 h-10.5 sm:h-12 text-sm font-bold max-w-[184px] whitespace-normal disabled:opacity-50 disabled:cursor-not-allowed"
+            className="uppercase flex-1 py-3.5 px-5.5 h-10.5 sm:h-12 text-sm font-bold max-w-[184px] whitespace-normal disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {addToCart.isPending
-              ? "Adding..."
+              ? <RiLoader2Line className="size-5 animate-spin" />
               : `Order Item - ₦${calculateTotal().toLocaleString()}`}
           </Button>
         </div>

@@ -85,7 +85,7 @@ const PageCheckOut = ({
 
   // API mutations
   const clearCartMutation = useClearCart();
-  const { mutate, isPending } = useAddToCart();
+  const { mutate } = useAddToCart();
   const { mutate: removeItem } = useRemoveCartItem(vendorId);
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
   const { mutate: chargeWallet, isPending: isChargingWallet } =
@@ -167,7 +167,7 @@ const PageCheckOut = ({
           }
         );
     },
-    [paymentMethod, makePayment, chargeWallet, openOrderSuccess,]
+    [paymentMethod, makePayment, chargeWallet, openOrderSuccess]
   );
 
   // Handle place order
@@ -213,7 +213,7 @@ const PageCheckOut = ({
   ) => {
     if (item.quantity < 1) return; // Don't allow quantity less than 1
 
-    setQuantityChangeId(item.id);
+    setQuantityChangeId(item.menuId);
 
     mutate(
       {
@@ -372,6 +372,7 @@ const PageCheckOut = ({
                 const addonsSummary = item.addons
                   .map((addon) => addon.name)
                   .join(", ");
+
                 return (
                   <div
                     key={item.menuId}
@@ -422,12 +423,13 @@ const PageCheckOut = ({
                     )} */}
                         </div>
                       </div>
+
                       {/* Increment Decrement Buttons */}
                       <div className="flex items-center gap-2.5">
                         <button
                           onClick={() => handleQuantityChange(item, "decrease")}
-                          disabled={isPending}
-                          className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          disabled={item.menuId === quantityChangeId}
+                          className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 transition-colors"
                           aria-label="Decrease packs"
                         >
                           <Minus className="size-4" />
@@ -441,8 +443,8 @@ const PageCheckOut = ({
                         </span>
                         <button
                           onClick={() => handleQuantityChange(item, "increase")}
-                          disabled={isPending}
-                          className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          disabled={item.menuId === quantityChangeId}
+                          className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 transition-colors"
                           aria-label="Increase packs"
                         >
                           <Plus className="size-4 text-black" />

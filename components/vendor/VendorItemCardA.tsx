@@ -125,6 +125,7 @@ const VendorItemCardA = ({
       </div>
 
       <ProductModal
+        vendorId={vendorId}
         handleSelect={handleSelect}
         isSelected={isSelected}
         menu={menu}

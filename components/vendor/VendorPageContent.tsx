@@ -307,11 +307,10 @@ const VendorPageContent = ({ id }: { id: string }) => {
               duration: 0.5,
               ease: [0.4, 0, 0.2, 1],
             }}
-            className="max-lg:hidden mt-8 sticky top-[65px] sm:h-[calc(100dvh-80px)] w-[400px] min-w-[307px] shadow-2xl rounded-2xl border overflow-hidden border-gray-100"
+            className="max-lg:hidden mt-8 sticky top-[60px] sm:h-[calc(100dvh-100px)] w-[400px] min-w-[307px] shadow-2xl rounded-2xl border overflow-hidden border-gray-100"
           >
             <PageCheckOut
               vendorId={id}
-              preparationTime={vendor?.preparationTime}
               checkoutData={checkoutData}
               isLoading={isCheckoutLoading}
               isError={checkoutError}
@@ -335,7 +334,6 @@ const VendorPageContent = ({ id }: { id: string }) => {
           >
             <PageCheckOut
               vendorId={id}
-              preparationTime={vendor?.preparationTime}
               checkoutData={checkoutData}
               isLoading={isCheckoutLoading}
               isError={checkoutError}
