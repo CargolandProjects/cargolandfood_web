@@ -12,7 +12,7 @@ const VendorStats = ({
   deliveryTime,
 }: VendorStatsProps) => {
   return (
-    <div className="flex items-center gap-1.5 text-sm text-neutral-600">
+    <div className="flex items-center gap-2 text-sm text-neutral-600">
       {/* Rating */}
       <div className="flex items-center gap-1">
         <RiStarLine className="size-5 text-primary" />

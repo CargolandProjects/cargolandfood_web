@@ -1,10 +1,12 @@
 import { vendors } from "@/lib/services/vendors.service";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 export const useVendors = (zoneId: string) => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["vendors", zoneId],
-    queryFn: () => vendors.getAllVendors(zoneId),
+    queryFn: ({ pageParam }) => vendors.getAllVendors(zoneId, pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
     enabled: !!zoneId.trim(),
   });
 };

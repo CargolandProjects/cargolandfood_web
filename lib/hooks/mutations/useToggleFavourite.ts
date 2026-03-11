@@ -1,6 +1,6 @@
 import { favourites } from "@/lib/services/favourites.service";
 import { vendorById, Vendors } from "@/lib/services/vendors.service";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, InfiniteData } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export const useToggleFavourite = (
@@ -57,24 +57,27 @@ export const useToggleFavourite = (
           return;
         }
 
-        queryClient.setQueryData(["vendors", zoneid], (oldData: Vendors) => {
-          if (!oldData) {
-            console.warn(`No cached data found for ${source} update`);
-            return;
+        // Update cache for infinite query structure
+        queryClient.setQueryData(
+          ["vendors", zoneid],
+          (oldData: InfiniteData<Vendors> | undefined) => {
+            if (!oldData) {
+              console.warn(`No cached data found for ${source} update`);
+              return;
+            }
+
+            // Map through all pages and update the specific vendor
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                vendors: page.vendors.map((v) =>
+                  v.id === vendorId ? { ...v, isFavourite } : v
+                ),
+              })),
+            };
           }
-
-          const vendor = oldData.vendors.find((v) => v.id === vendorId);
-          if (!vendor) return;
-
-          // console.log("Vendor Found!", vendor);
-
-          return {
-            ...oldData,
-            vendors: oldData.vendors.map((v) =>
-              v.id === vendorId ? { ...v, isFavourite } : v
-            ),
-          };
-        });
+        );
       }
     },
 

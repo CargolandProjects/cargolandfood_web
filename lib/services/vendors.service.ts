@@ -20,6 +20,11 @@ export interface Vendors {
   status: string;
   message: string;
   vendors: Vendor[];
+  totalVendors: number | null;
+  currentPage: number | null;
+  totalPages: number | null;
+  nextPage: number | null;
+  prevPage: number | null;
 }
 
 interface Addon {
@@ -114,9 +119,9 @@ export interface vendorById {
   };
 }
 export const vendors = {
-  async getAllVendors(zoneId: string) {
+  async getAllVendors(zoneId: string, page: number = 1) {
     const res = await apiClient.get<Vendors>(
-      API_ROUTES.vendor.allVendors(zoneId)
+      `${API_ROUTES.vendor.allVendors(zoneId)}?page=${page}`
     );
     return res.data;
   },

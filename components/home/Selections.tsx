@@ -11,7 +11,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSearchVendorMenu } from "@/lib/hooks/queries/useSearch";
 import { Suspense } from "react";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
-import { getCategoryPath } from "@/lib/utils";
 import RestaurantItemCardSkeleton from "../vendor/VendorItemCardSkeleton";
 import VendorItemCardA from "../vendor/VendorItemCardA";
 
@@ -31,10 +30,10 @@ const SelectionsContent = () => {
   const showDefaultView = !activeCategory && !searchTerm;
   const showCategoryView = !searchTerm && !isLoading;
 
-  const handleSelect = (vendorId: string, businessCategory: string) => {
-    if (!vendorId && !businessCategory) return;
+  const handleSelect = (vendorId: string) => {
+    if (!vendorId) return;
 
-    router.push(`/${getCategoryPath(businessCategory)}/${vendorId}`);
+    router.push(`/vendor/${vendorId}`);
   };
 
   return (
@@ -62,11 +61,10 @@ const SelectionsContent = () => {
               {products.map((item) => (
                 <VendorItemCardA
                   key={item.id}
+                  vendorId={item.vendorId}
                   menu={item}
                   isSearch
-                  onNavigate={() =>
-                    handleSelect(item.vendorId, item.vendor.businessCategory)
-                  }
+                  onNavigate={() => handleSelect(item.vendorId)}
                 />
               ))}
             </div>
