@@ -10,55 +10,10 @@ import ErrorStateUi from "./ErrorStateUi";
 import Loader from "./Loader";
 import { formatDMY } from "@/lib/utils";
 
-// interface Review {
-//   id: number;
-//   date: string;
-//   title: string;
-//   rating: number;
-//   content: string;
-//   avatar: string;
-// }
-
 interface ReviewsModalProps {
   open: boolean;
   onClose: (close: boolean) => void;
 }
-
-// const reviews: Review[] = [
-//   {
-//     id: 1,
-//     date: "29/08/2025",
-//     title: "Good food",
-//     rating: 5,
-//     content:
-//       "Their food is so tasty & delicious. My lunch was delivered to my place in no time. Thanks for your great service.",
-//     avatar: user1.src,
-//   },
-//   {
-//     id: 2,
-//     date: "29/08/2025",
-//     title: "Awesome and nice",
-//     rating: 4.5,
-//     content: "Food was so good. Breakfast was fasty delivered to my place.",
-//     avatar: user1.src,
-//   },
-//   {
-//     id: 3,
-//     date: "29/08/2025",
-//     title: "Great meal",
-//     rating: 4,
-//     content: "Food was so good. Breakfast was fasty delivered to my place.",
-//     avatar: user1.src,
-//   },
-//   {
-//     id: 4,
-//     date: "29/08/2025",
-//     title: "Awesome and nice",
-//     rating: 4.5,
-//     content: "Food was so good. Breakfast was fasty delivered to my place.",
-//     avatar: user1.src,
-//   },
-// ];
 
 function StarRating({ rating }: { rating: number }) {
   const fullStars = Math.floor(rating);
@@ -86,6 +41,31 @@ function StarRating({ rating }: { rating: number }) {
     </div>
   );
 }
+
+const getRatingTitle = (rating: number): string => {
+  switch (true) {
+    case rating < 1.0:
+      return "Very Poor";
+    case rating < 1.5:
+      return "Poor";
+    case rating < 2.0:
+      return "Below Average";
+    case rating < 2.5:
+      return "Fair";
+    case rating < 3.0:
+      return "Average";
+    case rating < 3.5:
+      return "Good";
+    case rating < 4.0:
+      return "Very Good";
+    case rating < 4.5:
+      return "Great Meal";
+    case rating < 5.0:
+      return "Excellent";
+    default:
+      return "Outstanding Food 🍽️"; 
+  }
+};
 
 export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
   const { data: reviews = [], isLoading, isError, isSuccess } = useReviews();
@@ -135,7 +115,7 @@ export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
                       <div className="flex-1 bg-neutral-100 rounded-button px-4 pt-2.5 pb-6">
                         <p className="text-xs">{formatDMY(review.createdAt)}</p>
                         <h3 className="text-sm font-medium mb-0.5 leading-5 mt-0.5 line-clamp-1">
-                          {review.comment}
+                          {getRatingTitle(review.rating)}
                         </h3>
                         <StarRating rating={review.rating} />
                         <p className="text-xs text-neutral-600 mt-3">

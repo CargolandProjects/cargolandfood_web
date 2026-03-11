@@ -3,8 +3,8 @@ import TxDetailModal from "./TxDetailModal";
 import { formatPrettyDate } from "@/lib/utils";
 import { Separator } from "../ui/separator";
 import { useTransactionRecords } from "@/lib/hooks/queries/useWallet";
-import Loader from "../Loader";
 import ErrorStateUi from "../ErrorStateUi";
+import TransactionHistorySkeleton from "./TransactionHistorySkeleton";
 
 const TransactionHistory = () => {
   const {
@@ -30,13 +30,13 @@ const TransactionHistory = () => {
       </div>
 
       {isLoading && (
-        <div className="flex-1 flex flex-col justify-center items-center py-10">
-          <Loader size={8} />
+        <div className="mt-6">
+          <TransactionHistorySkeleton />
         </div>
       )}
 
       {isError && (
-        <div className="py-10">
+        <div className="py-10 h-full flex justify-center items-center">
           <ErrorStateUi message="Unable to fetch your transaction history. Please try again." />
         </div>
       )}
