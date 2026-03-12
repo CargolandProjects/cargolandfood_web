@@ -1,13 +1,10 @@
 "use client";
 
-import { bell } from "@/assets/svgs";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSession } from "@/lib/hooks/useSession";
@@ -17,20 +14,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import {
-  RiMapPinFill,
-  RiWallet3Fill,
   RiArrowDownSLine,
   RiSearchLine,
-  RiNotification2Fill,
   RiUser3Fill,
-  RiArrowRightSLine,
   RiMenu4Line,
   RiArrowLeftLine,
 } from "react-icons/ri";
 import Notifications from "./Notifications";
-import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import MenuContent from "../MenuContent";
-import { useUIStore } from "@/lib/stores/uiStore";
 import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
 import Location from "./Location";
 import Wallet from "./Wallet";

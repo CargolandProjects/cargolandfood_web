@@ -13,13 +13,19 @@ import {
   RiArrowRightSLine,
 } from "react-icons/ri";
 import { useWalletBalance } from "@/lib/hooks/queries/useWallet";
-import Loader from "../Loader";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
+import { useSession } from "@/lib/hooks/useSession";
 
 const Wallet = () => {
-  const { data: balance, isLoading, isError, isSuccess } = useWalletBalance();
+  const { isAuthenticated } = useSession();
   const router = useRouter();
+  const {
+    data: balance,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useWalletBalance(isAuthenticated);
 
   const handleRoute = () => {
     router.push("/wallet");
@@ -44,7 +50,7 @@ const Wallet = () => {
         <DropdownMenuSeparator className="border-gray-200 border mt-1 mb-2" />
         {isLoading && (
           <div className="flex justify-a items-center gap-5">
-            <Skeleton className="bg-gray-200 h-4 flex-1"/>
+            <Skeleton className="bg-gray-200 h-4 flex-1" />
             <Skeleton className="w-6 h-4 bg-gray-200" />
           </div>
         )}

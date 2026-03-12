@@ -69,6 +69,7 @@ const MenuContent = ({
                 <RiArrowRightSLine className="size-6" />
               </div>
             </DropdownMenuItem>
+            {/* Logout Seection */}
             <DropdownMenuItem
               className="text-red-600 text-base font-medium"
               onClick={(e) => {

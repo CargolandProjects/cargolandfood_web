@@ -9,6 +9,8 @@ import { useReviews } from "@/lib/hooks/queries/useReviews";
 import ErrorStateUi from "./ErrorStateUi";
 import Loader from "./Loader";
 import { formatDMY } from "@/lib/utils";
+import { useSession } from "@/lib/hooks/useSession";
+import UnauthenticatedUi from "./UnauthenticatedUi";
 
 interface ReviewsModalProps {
   open: boolean;
@@ -63,12 +65,18 @@ const getRatingTitle = (rating: number): string => {
     case rating < 5.0:
       return "Excellent";
     default:
-      return "Outstanding Food 🍽️"; 
+      return "Outstanding Food 🍽️";
   }
 };
 
 export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
-  const { data: reviews = [], isLoading, isError, isSuccess } = useReviews();
+  const { isAuthenticated } = useSession();
+  const {
+    data: reviews = [],
+    isLoading,
+    isError,
+    isSuccess,
+  } = useReviews(isAuthenticated);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -79,7 +87,11 @@ export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="h-[486px] mt-4 sm:mt-7">
+        <div className={`h-[486px] ${isAuthenticated && "mt-4 sm:mt-7"}`}>
+          {!isAuthenticated && (
+            <UnauthenticatedUi description="You need to sign in before performing any action on Cargoland Food." />
+          )}
+
           {isLoading && (
             <div className=" h-full flex justify-center items-center pb-12">
               <Loader size={12} />

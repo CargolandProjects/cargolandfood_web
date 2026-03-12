@@ -24,6 +24,7 @@ import Favourites from "./Favourites";
 import Orders from "./Orders";
 import { useCart } from "@/lib/hooks/queries/useCart";
 import { useGetOrders } from "@/lib/hooks/queries/useOrders";
+import { useSession } from "@/lib/hooks/useSession";
 
 interface SideBar {
   open: boolean;
@@ -51,6 +52,7 @@ interface SidebarItem<P = any> {
 // Move sidebarItems outside component to prevent Fast Refresh issues
 const getSidebarItems = (
   setActiveTab: (tab: ActiveTab) => void,
+  isAuthenticated: boolean,
   count: { cartCount: number; OrdersCount: number }
 ): SidebarItem[] => [
   { id: "Home", icon: RiHome3Fill, label: "Home" },
@@ -60,7 +62,7 @@ const getSidebarItems = (
     label: "Cart",
     content: Cart,
     count: count.cartCount,
-    props: { setActiveTab },
+    props: { setActiveTab, isAuthenticated },
   },
   {
     id: "Orders",
@@ -68,31 +70,32 @@ const getSidebarItems = (
     label: "Orders",
     content: Orders,
     count: count.OrdersCount,
-    props: { setActiveTab },
+    props: { setActiveTab, isAuthenticated },
   },
   {
     id: "Favourite",
     icon: RiHeartFill,
     label: "Favourite",
     content: Favourites,
-    props: { setActiveTab },
+    props: { setActiveTab, isAuthenticated },
   },
   {
     id: "Settings",
     icon: RiSettings3Fill,
     label: "Settings",
     content: SettingsMenu,
-    props: { setActiveTab },
+    props: { setActiveTab, isAuthenticated },
   },
 ];
 
 const Sidebar = ({ open, setOpen }: SideBar) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("Home");
   const { setActiveCategory } = useCategory();
+  const { isAuthenticated } = useSession();
   const router = useRouter();
 
-  const { data: cart } = useCart();
-  const { data: orders } = useGetOrders();
+  const { data: cart } = useCart(isAuthenticated);
+  const { data: orders } = useGetOrders(isAuthenticated);
   const cartItems = cart?.length || 0;
   const currentOrders =
     orders?.filter((o) => o.status !== "COMPLETED").length || 0;
@@ -123,7 +126,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
     router.push("/");
   };
 
-  const sidebarItems = getSidebarItems(setActiveTab, {
+  const sidebarItems = getSidebarItems(setActiveTab, isAuthenticated, {
     cartCount: cartItems,
     OrdersCount: currentOrders,
   });

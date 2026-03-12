@@ -69,7 +69,7 @@ const GlobalCheckoutCOntent = ({
   const [isRemovingItemId, setIsRemovingItemId] = useState<string | null>(null);
   const [quantityChangeId, setQuantityChangeId] = useState<string | null>(null);
   const openAddresses = useUIStore((s) => s.openAddresses);
-  const { user } = useSession();
+  const { user, isAuthenticated } = useSession();
 
   const deliveryValue = deliveryType === "delivery" ? "DELIVERY" : "PICKUP";
 
@@ -78,15 +78,15 @@ const GlobalCheckoutCOntent = ({
     isLoading,
     isError,
     isSuccess,
-  } = useCheckoutPreview(vendorId!, deliveryValue, true);
-
+  } = useCheckoutPreview(vendorId!, deliveryValue, true, isAuthenticated);
   const { mutate: clearCart, isPending: isClearingCart } = useClearCart();
   const { mutate } = useAddToCart();
   const { mutate: removeItem } = useRemoveCartItem(vendorId);
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
   const { mutate: chargeWallet, isPending: isChargingWallet } =
     useChargeWallet();
-  const { data: balance, isLoading: isBalanceLoading } = useWalletBalance();
+  const { data: balance, isLoading: isBalanceLoading } =
+    useWalletBalance(isAuthenticated);
 
   // Format currency
   const currency = (n: number) => `₦ ${n.toLocaleString()}`;

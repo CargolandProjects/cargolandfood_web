@@ -14,9 +14,11 @@ import { useCart } from "@/lib/hooks/queries/useCart";
 import { useClearCart } from "@/lib/hooks/mutations/useMutateCart";
 import { fallbackImg } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import UnauthenticatedUi from "../UnauthenticatedUi";
 
 interface SettingsProps {
   setActiveTab: (tab: ActiveTab) => void;
+  isAuthenticated: boolean;
 }
 
 interface Cart {
@@ -79,9 +81,9 @@ interface Cart {
 //   },
 // ];
 
-const Cart = ({ setActiveTab }: SettingsProps) => {
+const Cart = ({ setActiveTab, isAuthenticated }: SettingsProps) => {
   const openCheckout = useUIStore((s) => s.openCheckout);
-  const { data, isLoading, isError, isSuccess } = useCart();
+  const { data, isLoading, isError, isSuccess } = useCart(isAuthenticated);
   const { mutate: deleteCart } = useClearCart();
   const [isDeletingCartId, setIsDeletingCartId] = useState<string | null>(null);
   const router = useRouter();
@@ -133,6 +135,10 @@ const Cart = ({ setActiveTab }: SettingsProps) => {
         </button>
         <h2 className="text-lg leading-6">Cart</h2>
       </div>
+
+      {!isAuthenticated && (
+        <UnauthenticatedUi description="You need to sign in before performing any action on Cargoland Food." />
+      )}
 
       {isLoading && (
         <div className="h-full flex justify-center items-center">

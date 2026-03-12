@@ -34,7 +34,7 @@ const VendorPageContent = ({ id }: { id: string }) => {
 
   const { data, isLoading, error, isSuccess } = useVendorById(id);
   const { mutate: toggleFavourite } = useToggleFavourite("vendorpage");
-  const { user } = useSession();
+  const { user, isAuthenticated } = useSession();
 
   const router = useRouter();
 
@@ -45,7 +45,7 @@ const VendorPageContent = ({ id }: { id: string }) => {
     isLoading: isCheckoutLoading,
     error: checkoutError,
     isSuccess: checkoutSuccess,
-  } = useCheckoutPreview(id, deliveryType, true);
+  } = useCheckoutPreview(id, deliveryType, true, isAuthenticated);
 
   const vendor = data?.data;
   const rating = data?.averageRating;

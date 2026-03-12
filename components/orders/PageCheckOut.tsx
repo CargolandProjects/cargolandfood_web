@@ -81,7 +81,7 @@ const PageCheckOut = ({
   const [quantityChangeId, setQuantityChangeId] = useState<string | null>(null);
   const openAddresses = useUIStore((s) => s.openAddresses);
   // const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
-  const { user } = useSession();
+  const { user, isAuthenticated } = useSession();
 
   // API mutations
   const { mutate: clearCart, isPending: isClearingCart } = useClearCart();
@@ -90,7 +90,7 @@ const PageCheckOut = ({
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
   const { mutate: chargeWallet, isPending: isChargingWallet } =
     useChargeWallet();
-  const { data: balance, isLoading: isBalanceLoading } = useWalletBalance();
+  const { data: balance, isLoading: isBalanceLoading } = useWalletBalance(isAuthenticated);
 
   // const queryClient = useQueryClient();
 

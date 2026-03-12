@@ -5,14 +5,17 @@ import { Separator } from "../ui/separator";
 import { useTransactionRecords } from "@/lib/hooks/queries/useWallet";
 import ErrorStateUi from "../ErrorStateUi";
 import TransactionHistorySkeleton from "./TransactionHistorySkeleton";
+import { useSession } from "@/lib/hooks/useSession";
+import UnauthenticatedUi from "../UnauthenticatedUi";
 
 const TransactionHistory = () => {
+  const { isAuthenticated } = useSession();
   const {
     data: txHistory,
     isLoading,
     isSuccess,
     isError,
-  } = useTransactionRecords();
+  } = useTransactionRecords(isAuthenticated);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const handleSelect = (id: string) => {
@@ -28,6 +31,10 @@ const TransactionHistory = () => {
           See All
         </button>
       </div>
+
+      {!isAuthenticated && (
+        <UnauthenticatedUi description="You need to sign in to access your transaction record on Cargoland Food." />
+      )}
 
       {isLoading && (
         <div className="mt-6">

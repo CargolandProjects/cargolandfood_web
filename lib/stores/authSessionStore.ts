@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { auth, User } from "@/lib/services/auth.service";
+import type { QueryClient } from "@tanstack/react-query";
 
 export type SessionStatus = "loading" | "authenticated" | "unauthenticated";
 
@@ -14,7 +15,7 @@ interface AuthSessionState {
   completeOtp: () => void;
   setUser: (user: User | null) => void;
   updateUser: (patch: Partial<User>) => Promise<void>;
-  signOut: () => void;
+  signOut: (queryClient?: QueryClient) => void;
 }
 
 const USER_KEY = "user";
@@ -122,14 +123,32 @@ export const useAuthSessionStore = create<AuthSessionState>((set, get) => ({
     }
   },
 
-  signOut: () => {
+  signOut: (queryClient?: QueryClient) => {
     if (typeof window !== "undefined") {
       localStorage.removeItem(ACCESS_KEY);
       localStorage.removeItem(REFRESH_KEY);
       localStorage.removeItem(USER_KEY);
       localStorage.removeItem(USER_PENDING_KEY);
       // Don't remove USER_ID_KEY to allow future hydration if tokens come back
+      
+      // Clear persisted CartStore
+      localStorage.removeItem("cart_store_v1");
     }
+    
+    // Clear user-specific query cache
+    if (queryClient) {
+      queryClient.removeQueries({ queryKey: ["cart"] });
+      queryClient.removeQueries({ queryKey: ["orders"] });
+      queryClient.removeQueries({ queryKey: ["orderDetails"] });
+      queryClient.removeQueries({ queryKey: ["trackOrder"] });
+      queryClient.removeQueries({ queryKey: ["favourites"] });
+      queryClient.removeQueries({ queryKey: ["addresses"] });
+      queryClient.removeQueries({ queryKey: ["walletBalance"] });
+      queryClient.removeQueries({ queryKey: ["transactionRecords"] });
+      queryClient.removeQueries({ queryKey: ["checkoutPreview"] });
+      queryClient.removeQueries({ queryKey: ["reviews"] });
+    }
+    
     set({ user: null, pendingUser: null, status: "unauthenticated" });
   },
 }));

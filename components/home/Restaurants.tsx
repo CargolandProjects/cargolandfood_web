@@ -15,7 +15,7 @@ const Restaurants = () => {
     fetchNextPage, 
     hasNextPage, 
     isFetchingNextPage 
-  } = useVendors(zoneId || "");
+  } = useVendors(zoneId || "", 10);
 
   const { ref, inView } = useInView({
     threshold: 0,

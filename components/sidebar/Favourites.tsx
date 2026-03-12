@@ -7,19 +7,21 @@ import ErrorStateUi from "../ErrorStateUi";
 import EmptyStateUi from "../EmptyStateUi";
 import { useFavourites } from "@/lib/hooks/queries/useFavourites";
 import { useSession } from "@/lib/hooks/useSession";
+import UnauthenticatedUi from "../UnauthenticatedUi";
 
 interface FavouritesProps {
   setActiveTab: (tab: ActiveTab) => void;
+  isAuthenticated: boolean;
 }
 
-const Favourites = ({ setActiveTab }: FavouritesProps) => {
+const Favourites = ({ setActiveTab, isAuthenticated }: FavouritesProps) => {
   const { user } = useSession();
   const {
     data: favouriteVendors,
     isLoading,
     isError,
     isSuccess,
-  } = useFavourites(user?.id || "");
+  } = useFavourites(user?.id || "", isAuthenticated);
 
   return (
     <div className="h-full">
@@ -30,6 +32,10 @@ const Favourites = ({ setActiveTab }: FavouritesProps) => {
         </button>
         <h2 className="text-lg leading-6">Favourite</h2>
       </div>
+
+      {!isAuthenticated && (
+        <UnauthenticatedUi description="You need to sign in before performing any action on Cargoland Food." />
+      )}
 
       {isLoading && (
         <div className="h-full flex justify-center items-center">

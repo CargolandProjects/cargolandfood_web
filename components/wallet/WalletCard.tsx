@@ -4,11 +4,18 @@ import { RiAddFill } from "react-icons/ri";
 import Loader from "../Loader";
 import TopUpModal from "./TopUpModal";
 import { useState } from "react";
+import { useSession } from "@/lib/hooks/useSession";
 
 const WalletCard = () => {
   const [amount, setAmount] = useState("");
   const [showTopup, setShowTopUp] = useState(false);
-  const { data: balance, isLoading, isError, isSuccess } = useWalletBalance();
+  const { isAuthenticated } = useSession();
+  const {
+    data: balance,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useWalletBalance(isAuthenticated);
 
   return (
     <>
@@ -18,6 +25,10 @@ const WalletCard = () => {
             <span className="text-sm font-normal text-white/90">
               Available Balance
             </span>
+
+            {!isAuthenticated && (
+              <span className="text-2xl font-medium tracking-tight">----</span>
+            )}
 
             {isLoading && (
               <div className="mt-2">
@@ -35,6 +46,7 @@ const WalletCard = () => {
               <span className="text-2xl font-medium tracking-tight">----</span>
             )}
           </div>
+          
           <button
             onClick={() => setShowTopUp(true)}
             className="flex size-6 items-center justify-center rounded-full bg-white text-[#43B02A] transition-colors hover:bg-white/90"
@@ -53,7 +65,7 @@ const WalletCard = () => {
           }}
         />
       </div>
-      
+
       {/* Top up modal */}
       <TopUpModal
         amount={amount}

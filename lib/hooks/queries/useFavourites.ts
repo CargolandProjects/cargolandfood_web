@@ -1,11 +1,11 @@
 import { favourites } from "@/lib/services/favourites.service";
 import { useQuery } from "@tanstack/react-query";
 
-export const useFavourites = (userId: string) => {
+export const useFavourites = (userId: string, isAuthenticated: boolean) => {
   return useQuery({
     queryKey: ["favourites", userId],
     queryFn: () => favourites.getAllFavourites(userId),
-    enabled: !!userId,
+    enabled: !!userId && isAuthenticated,
     refetchOnMount: true,
     select: (res) => {
       const data = res.data.map((r) => ({
