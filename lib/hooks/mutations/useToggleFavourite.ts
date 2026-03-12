@@ -58,12 +58,12 @@ export const useToggleFavourite = (
         }
 
         // Update cache for infinite query structure
-        queryClient.setQueryData(
-          ["vendors", zoneid],
+        // Use setQueriesData to update all cache entries regardless of limit
+        queryClient.setQueriesData(
+          { queryKey: ["vendors", zoneid] },
           (oldData: InfiniteData<Vendors> | undefined) => {
             if (!oldData) {
-              console.warn(`No cached data found for ${source} update`);
-              return;
+              return oldData;
             }
 
             // Map through all pages and update the specific vendor

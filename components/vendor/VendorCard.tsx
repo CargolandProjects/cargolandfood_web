@@ -2,6 +2,7 @@ import { useToggleFavourite } from "@/lib/hooks/mutations/useToggleFavourite";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
 import { useSession } from "@/lib/hooks/useSession";
 import { Vendor } from "@/lib/services/vendors.service";
+import useAuthFlow from "@/lib/stores/authFlowStore";
 import { fallbackImg } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import {
@@ -11,6 +12,7 @@ import {
   RiStarLine,
   RiTimeLine,
 } from "react-icons/ri";
+import { toast } from "sonner";
 
 interface VendorCardProps {
   vendor: Vendor;
@@ -25,7 +27,8 @@ const VendorCard = ({
   asFavouriteCard = false,
   source,
 }: VendorCardProps) => {
-  const { user } = useSession();
+  const { user, isAuthenticated } = useSession();
+  const openAuth = useAuthFlow((s) => s.openAuth);
   const { zoneId } = useActiveZone();
   const { mutate: toggleFavourite, isPending } = useToggleFavourite(
     source,
@@ -45,6 +48,11 @@ const VendorCard = ({
     e: React.MouseEvent
   ) => {
     e.stopPropagation();
+    if (!isAuthenticated) {
+      toast.error("You have to sIgn in to perform this action");
+      openAuth();
+    }
+
     if (!user || !vendorId) return;
     const payload = {
       isFavourite: !isFavourite,
