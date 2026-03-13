@@ -1,4 +1,4 @@
-import { logout, icon } from "@/assets/svgs";
+import { logout, userIcon1 } from "@/assets/svgs";
 import { formatDateWComma } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -130,7 +130,7 @@ const MenuContent = ({
               <div className="flex gap-0.5  items-center">
                 <div className="size-10 rounded-full flex justify-center items-center">
                   <img
-                    src={icon.src}
+                    src={userIcon1.src}
                     alt="logout-button-icon"
                     className="size-4.5 md:size-6 object-contain"
                   />

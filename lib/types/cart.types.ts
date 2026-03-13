@@ -151,8 +151,8 @@ export type OrderStatus =
   | "ACCEPTED"
   | "PREPARING"
   | "READY"
-  | "COMPLETED"
-  | "CANCELLED";
+  | "ASSIGN_TO_RIDER"
+  | "DELIVERED";
 
 export type PaymentStatus =
   | "PAID"
@@ -213,6 +213,7 @@ export interface OrderItem {
   menuId: string;
   menuImg: string;
   menuName: string;
+  description: string;
   unitPrice: string;
   quantity: number;
   discountApplied: string;

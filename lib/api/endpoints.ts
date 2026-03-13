@@ -47,6 +47,7 @@ export const API_ROUTES = {
     orderDetails: (orderId: string) => `/orders/order/${orderId}`,
     getOrderByReference: (reference: string) =>
       `/orders/order-by-reference/${reference}`,
+    trackOrder: (orderId: string) => `/users/track-order/${orderId}`,
   },
 
   address: {

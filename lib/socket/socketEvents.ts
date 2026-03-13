@@ -3,7 +3,7 @@
  * These match the events emitted by the backend
  */
 
-import { APIResponse, Order } from "../types/cart.types";
+import { APIResponse, Order, OrderStatus } from "../types/cart.types";
 
 export const SOCKET_EVENTS = {
   NOTIFICATION: "notification",
@@ -19,7 +19,7 @@ export interface NotificationEvent {
   id: string;
   userId: string;
   role: "USER";
-  type: "NEW" | "ACCEPTED" | "PREPARING" | "READY" | "ASSIGN_TO_RIDER" | "DELIVERED";
+  type: OrderStatus;
   title: string;
   message: string;
   payload: {

@@ -4,15 +4,17 @@ import type {
   AddressSnapshot,
   APIResponse,
   MakePaymentResponse,
-  PaymentResponse,
+  OrderStatus,
 } from "@/lib/types/cart.types";
 import { VerificationCode } from "../socket/socketEvents";
+import { GetAddress } from "./address.service";
 
 interface AddonItem {
   id: string;
   orderItemId: string;
   menuAddonId: string;
   addonImg: string;
+  description: string | null;
   name: string;
   price: string;
   quantity: number;
@@ -39,9 +41,11 @@ interface GetOrdersResponse {
   orderNumber: string;
   userId: string;
   vendorId: string;
-  cartId: string;
+  riderId: string | null;
+  cartId: string | null;
   deliveryType: string;
   addressSnapshot: AddressSnapshot | null;
+  paymentReference: string | null;
   couponCode: string | null;
   isCoupon: boolean;
   status: string;
@@ -60,13 +64,30 @@ interface GetOrdersResponse {
   cancelledAt: string | null;
   createdAt: string;
   items: Items[];
-  VerificationCode: VerificationCode;
+  VerificationCode: VerificationCode | null;
 }
 
-interface ChargeWalletPayload {
-  description: string;
-  cartId: string;
+type VendorAddress = GetAddress & { vendorId: string };
+
+interface TrackOrder {
+  fullname: string | null;
+  phoneNumber: string | null;
+  profileImg: string | null;
+  addressSnapshot: GetAddress;
+  items: Items[];
+  subtotal: string | null;
+  discountTotal: string | null;
+  deliveryFee: string | null;
+  total: string | null;
+  orderStatus: OrderStatus | {
+    status: OrderStatus;
+    createdAt: string;
+  };
+  VerificationCode: null;
+  vendorAddress: VendorAddress;
 }
+
+export type TrackOrderResponse = APIResponse<TrackOrder>;
 
 export const orderService = {
   async makePayment(cartId: string) {
@@ -75,18 +96,6 @@ export const orderService = {
     );
     return response.data;
   },
-
-  async chargeWallet(payload: ChargeWalletPayload) {
-    const res = await apiClient.post(API_ROUTES.order.chargeWallet, payload);
-    return res.data;
-  },
-
-  // async simulatePayment(checkoutSessionId: string) {
-  //   const res = await apiClient.post<PaymentResponse>(
-  //     API_ROUTES.order.simulatePayment(checkoutSessionId)
-  //   );
-  //   return res.data;
-  // },
 
   async getOrders() {
     const res = await apiClient.get<APIResponse<GetOrdersResponse[]>>(
@@ -105,6 +114,13 @@ export const orderService = {
   async getOrderByReference(reference: string) {
     const res = await apiClient.get<APIResponse<GetOrdersResponse>>(
       API_ROUTES.order.getOrderByReference(reference)
+    );
+    return res.data;
+  },
+
+  async trackOrder(orderId: string) {
+    const res = await apiClient.post<TrackOrderResponse>(
+      API_ROUTES.order.trackOrder(orderId)
     );
     return res.data;
   },

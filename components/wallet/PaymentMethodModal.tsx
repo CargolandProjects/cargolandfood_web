@@ -2,8 +2,6 @@ import {
   RiArrowRightSLine,
   RiBankCardFill,
   RiLoader2Line,
-  RiBankFill,
-  RiSmartphoneFill,
 } from "react-icons/ri";
 import { Button } from "../ui/button";
 import { DialogHeader, DialogTitle } from "../ui/dialog";
@@ -81,7 +79,7 @@ const PaymentMethodModal = ({ amount }: PaymentMethodModalProps) => {
       <Separator className="mt-2 mb-5" />
 
       <div className="h-full flex-1 flex flex-col justify-between">
-        <div className="grid gap-[10px]">
+        <div className="grid gap-2.5">
           {paymentOptions.map((option, idx) => (
             <Button
               onClick={() => setPaymentMethod(option.method)}

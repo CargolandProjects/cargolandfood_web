@@ -41,7 +41,7 @@ const OrderSuccessModal = ({ closeCheckout }: OrderSuccessfulProps) => {
             Yay! Your Order has been placed.
           </DialogTitle>
           <p className="max-w-[260px] text-base leading-5 text-center">
-            Your order would be delivered in {preparationTime} mins at most
+            Your order would be ready in {preparationTime} mins at most
           </p>
           <div className="flex justify-between w-full max-w-[287px]">
             <div className="flex gap-2 items-center">

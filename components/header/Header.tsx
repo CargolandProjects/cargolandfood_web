@@ -94,11 +94,10 @@ export function Header({ setSideBar }: HeaderProps) {
               defaultAddress={defaultAddress}
               guestLocation={guestLocation}
               isAuthenticated={isAuthenticated}
-          
             />
 
             {/* Wallet Dropdown */}
-           <Wallet />
+            <Wallet />
           </div>
 
           {/* Right Section */}

@@ -46,7 +46,7 @@ const WalletCard = () => {
               <span className="text-2xl font-medium tracking-tight">----</span>
             )}
           </div>
-          
+
           <button
             onClick={() => setShowTopUp(true)}
             className="flex size-6 items-center justify-center rounded-full bg-white text-[#43B02A] transition-colors hover:bg-white/90"
@@ -57,7 +57,7 @@ const WalletCard = () => {
 
         {/* Decorative Wallet Image */}
         <div
-          className="absolute right-20 -bottom-9 h-24 w-24 opacity-38 rotate-[27deg]"
+          className="absolute right-20 -bottom-9 h-24 w-24 opacity-38 rotate-27"
           style={{
             backgroundImage: `url(${wallet.src})`,
             backgroundSize: "contain",

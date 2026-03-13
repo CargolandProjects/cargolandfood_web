@@ -8,13 +8,19 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDateWComma(date: Date | string, wComma: boolean = true) {
+  if (!date) return null;
+
   return ` ${format(date, `d MMM${wComma ? "," : ""} yyyy`)} `;
 }
 
 export function formatDateWCommaB(date: Date | string) {
+  if (!date) return null;
+
   return `${format(date, "MMM do, yyyy")}`;
 }
 export function formatPrettyDate(date: Date | string) {
+  if (!date) return null;
+
   return `${format(date, "EEEE")}, ${format(date, "do")} ${format(
     date,
     "MMMM, h:mm a"
@@ -22,10 +28,12 @@ export function formatPrettyDate(date: Date | string) {
 }
 
 export function formatDMY(date: Date | string) {
+  if (!date) return null;
   return `${format(date, "dd/mm/yyyy")}`;
 }
 
 export function formatTime(date: Date | string) {
+  if (!date) return null;
   return format(date, "h:mm a");
 }
 

@@ -15,15 +15,22 @@ import {
 } from "../ui/dropdown-menu";
 import { fallbackImg } from "@/lib/utils";
 import { useUIStore } from "@/lib/stores/uiStore";
+import UnauthenticatedUi from "../UnauthenticatedUi";
 
 interface OrdersProps {
   setActiveTab: (tab: ActiveTab) => void;
+  isAuthenticated: boolean;
 }
 
 type Tabs = "current" | "previous";
 
-const Orders = ({ setActiveTab }: OrdersProps) => {
-  const { data: orders, isLoading, isError, isSuccess } = useGetOrders();
+const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
+  const {
+    data: orders,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useGetOrders(isAuthenticated);
   const [currentTab, setCurrentTab] = useState<Tabs>("current");
   const openTrackOrder = useUIStore((s) => s.openTrackOrder);
   const openOrderDetails = useUIStore((s) => s.openOrderDetails);
@@ -36,6 +43,11 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
       return order.status !== "COMPLETED";
     }) || [];
 
+  const handleOpenTrackOrder = (orderId: string) => {
+    if (!orderId) return;
+    openTrackOrder({ orderId });
+  };
+
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
@@ -45,6 +57,10 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
         </button>
         <h2 className="text-lg leading-6">Orders</h2>
       </div>
+
+      {!isAuthenticated && (
+        <UnauthenticatedUi description="You need to sign in before performing any action on Cargoland Food." />
+      )}
 
       {isLoading && (
         <div className="h-full flex justify-center items-center">
@@ -180,7 +196,7 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
 
                   <div className="mt-3 flex gap-2">
                     <Button
-                      onClick={openTrackOrder}
+                      onClick={() => handleOpenTrackOrder(order.id)}
                       variant="outline"
                       className="h-10 flex-1 uppercase rounded-button!"
                     >
@@ -302,7 +318,7 @@ const Orders = ({ setActiveTab }: OrdersProps) => {
                           onSelect={() =>
                             openOrderDetails({
                               orderId: order.id,
-                              source: "sideBar",
+                              source: "general",
                             })
                           }
                         >

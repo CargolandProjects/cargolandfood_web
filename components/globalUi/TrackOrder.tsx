@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import {
   RiArrowGoBackLine,
   RiArrowLeftLine,
+  RiBankCardFill,
   RiMapPin2Fill,
   RiMessage2Fill,
   RiPhoneFill,
@@ -12,90 +13,83 @@ import {
 import { Separator } from "../ui/separator";
 import ErrorStateUi from "../ErrorStateUi";
 import Loader from "../Loader";
-import { map } from "@/assets/svgs";
-import { ScrollArea } from "../ui/scroll-area";
-import { burger, pizza, user1 } from "@/assets/images";
+import { map, userIcon2 } from "@/assets/svgs";
 import { Button } from "../ui/button";
 import { useUIStore } from "@/lib/stores/uiStore";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTrackOrder } from "@/lib/hooks/queries/useOrders";
+import { fallbackImg } from "@/lib/utils";
+import { mapOrderStatusToTimeline } from "@/lib/utils/orderStatusMapper";
+import { useNotificationEvent } from "@/lib/hooks/useSocket";
+import { useQueryClient } from "@tanstack/react-query";
+import { TrackOrderResponse } from "@/lib/services/order.service";
+import { formatTime } from "@/lib/utils";
 
 interface TrackOrderDetailsProps {
   isDesktop: boolean;
   close?: () => void;
 }
 
-interface OrderState {
-  title: string;
-  status: "idle" | "pending" | "success";
-  description: string;
-  time?: string;
-}
-
-const orderState: OrderState[] = [
-  {
-    title: "Order prepared",
-    description: "Your order has been confirmed by the vendor",
-    time: "10",
-    status: "success",
-  },
-  {
-    title: "Order has been delivered",
-    description: "Your order has been confirmed by the vendor",
-    time: "10",
-    status: "success",
-  },
-  {
-    title: "Preparing your order",
-    description: "Vendor is preparing your order",
-    time: "10",
-    status: "success",
-  },
-  {
-    title: "Order ready to go out",
-    description: "Vendor is ready to give out your order",
-    time: "10",
-    status: "success",
-  },
-  {
-    title: "Assign to rider",
-    description: "Order has been assigned to a rider",
-    time: "10mins",
-    status: "pending",
-  },
-  {
-    title: "Completed",
-    description: "Your order has been delivered",
-    status: "idle",
-  },
-];
-
-const menuImg = [
-  {
-    id: "pizza",
-    img: pizza.src,
-    qty: "2",
-  },
-  {
-    id: "burger",
-    img: burger.src,
-    qty: "1",
-  },
-];
-
 const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
+  const queryClient = useQueryClient();
   const openRateOrder = useUIStore((s) => s.openReviewOrder);
+  const orderId = useUIStore((s) => s.trackOrder.payload?.orderId);
   const [showDetails, setShowDetails] = useState(true);
-  const isLoading = false;
-  const isError = false;
-  const isSuccess = true;
+  const { data, isLoading, isError, isSuccess, refetch } = useTrackOrder(
+    orderId || ""
+  );
+
+  // Map backend orderStatus to UI timeline
+  const orderTimeline = useMemo(() => {
+    if (!data?.orderStatus) return [];
+    const status = mapOrderStatusToTimeline(data.orderStatus);
+    // console.log("Result: ", status);
+    return status;
+  }, [data]);
+
+  // Listen to WebSocket notifications for order status updates
+  useNotificationEvent((notification) => {
+    if (notification.payload?.orderId === orderId) {
+      console.log("Order status update received:", notification.type);
+
+      // Optimistically update the UI immediately with the new status from notification
+      queryClient.setQueryData(
+        ["trackOrder", orderId],
+        (oldData: TrackOrderResponse) => {
+          if (!oldData) return oldData;
+
+          // Handle both formats: string or object with status
+          const newOrderStatus =
+            typeof oldData.data.orderStatus === "string"
+              ? notification.type
+              : {
+                  status: notification.type,
+                  createdAt: notification.createdAt,
+                };
+
+          return {
+            ...oldData,
+            data: {
+              ...oldData.data,
+              orderStatus: newOrderStatus,
+            },
+          };
+        }
+      );
+
+      // Refetch in background to ensure data consistency
+      refetch();
+    }
+  });
 
   const handleOpenReview = () => {
-    openRateOrder({ vendorId: "123" });
+    if (!data?.vendorAddress) return;
+    openRateOrder({ vendorId: data?.vendorAddress.vendorId });
   };
 
   return (
-    <ScrollArea className="h-full ">
-      <div className="py-4 sm:p-6">
+    <div className="h-full overflow-y-auto hide-scrollbar">
+      <div className="h-full py-4 sm:p-6">
         {isDesktop ? (
           // Desktop Header
           <SheetHeader className="p-0 flex flex-row items-center justify-start gap-2">
@@ -146,15 +140,20 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                 <div className="flex gap-3 items-center">
                   <div className="size-12 rounded-full overflow-hidden">
                     <img
-                      src={user1.src}
+                      src={data.profileImg || userIcon2.src}
                       alt="map"
                       className="size-full object-cover"
+                      onError={(e) => fallbackImg(e, userIcon2.src)}
                     />
                   </div>
-                  <div className="">
-                    <p className="text-base font-medium ">Precious Eric</p>
-                    <p className="text-xs text-neutral-600">Delivery man</p>
-                  </div>
+                  {data.fullname ? (
+                    <div>
+                      <p className="text-base font-medium ">{data.fullname}</p>
+                      <p className="text-xs text-neutral-600">Delivery man</p>
+                    </div>
+                  ) : (
+                    <p className="">In Progress....</p>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" className="size-10 rounded-button">
@@ -182,16 +181,19 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                 {/* Order Delivery State */}
                 {showDetails && (
                   <div className="border rounded-xl px-6 py-4 space-y-6">
-                    {orderState.map((item, idx) => (
+                    {orderTimeline.map((item, idx) => (
                       <div className="flex gap-4 items-center" key={idx}>
                         {/* Left-Hand Side Progress Indicators */}
                         <div className="relative">
                           {item.status === "success" ? (
                             <div className="size-7 bg-primary rounded-full" />
-                          ) : idx === 0 || item.status === "pending" ? (
+                          ) : item.status === "pending" ? (
                             <RiMapPin2Fill className="size-7 text-primary" />
                           ) : (
-                            <div className="size-8 bg-neutral-100 rounded-full" />
+                            // Relative and right-0.5 here is tto aligh it with the bar when idle, there was a slightly noticesable offset
+                            <div
+                              className={`relative right-0.5 size-8 bg-neutral-100 rounded-full`}
+                            />
                           )}
 
                           {/**
@@ -204,37 +206,38 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                           {/* Status Bar */}
                           {idx > 0 && (
                             <div
+                              // left-[calc(50%-2px)] here is tto aligh the bar with the indicator below when idle, there was a slightly noticesable offset
                               className={` ${
                                 item.status === "idle"
-                                  ? "bg-neutral-100"
-                                  : "bg-primary"
-                              } w-1 h-[260%] absolute -top-17 left-1/2 -z-1 transform -translate-x-1/2 `}
+                                  ? "bg-neutral-100 left-[calc(50%-2px)] "
+                                  : "bg-primary left-1/2"
+                              } w-1 h-[260%] absolute -top-17 -z-1 transform -translate-x-1/2 `}
                             />
                           )}
                         </div>
 
                         {/* State Description */}
                         <div className="w-full sm:max-w-[250px]">
-                          <h3 className="text-base leading-6 font-medium">
+                          <h3
+                            className={`${
+                              item.status === "idle"
+                                ? "leading-5 font-normal text-[#31353F]"
+                                : "leading-6 font-medium"
+                            } text-base `}
+                          >
                             {item.title}
                           </h3>
-                          <p className="text-xs text-neutral-500">
+                          <p className="text-xs text-neutral-600">
                             {item.description}
                           </p>
-                          {idx === 0 ? (
-                            <p className="font-medium text-neutral-700 mt-1">
-                              Time Req. {item.time}
-                              {Number(item.time) > 1 ? "mins" : "min"}
-                            </p>
-                          ) : item.title !== "Completed" ? (
+                          {item.title !== "Completed" ? (
                             <p className="text-xs text-neutral-500 font-medium mt-1">
-                              Est. time {item.time}
-                              {Number(item.time) > 1 ? "mins" : "min"}
+                              {formatTime(item.time || "") || "10:32am"}
                             </p>
                           ) : (
                             <Button
                               onClick={handleOpenReview}
-                              disabled={item.status !== "success"}
+                              disabled={item.status !== "pending"}
                               variant="outline"
                               className="uppercase text-xs leading-5 text-neutral-500 w-full mt-1"
                             >
@@ -249,14 +252,16 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                 )}
 
                 {/* Order Details Summary */}
-                <div className="flex justify-between">
-                  <div className="flex gap-2 items-center">
+                <div className="flex justify-between gap-4">
+                  <div className="flex gap-2 items-center shrink-0">
                     <RiMapPin2Fill className="size-5 text-neutral-500" />
                     <span className="text-base leading-5 text-neutral-600">
                       Deliver to
                     </span>
                   </div>
-                  <span className="text-base leading-5">Home</span>
+                  <span className="text-base leading-5 line-clamp-1">
+                    {data.addressSnapshot.addressLine1}
+                  </span>
                 </div>
 
                 <div className="flex justify-between">
@@ -264,18 +269,22 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                     Delivery Verification Code:
                   </span>
 
-                  <span className="font-bold leading-5">9818</span>
+                  <span className="text-2xl font-bold leading-5">
+                    {data.VerificationCode ?? "no code"}
+                  </span>
                 </div>
 
                 {showDetails && (
                   <div className="flex justify-between">
                     <div className="flex gap-2 items-center">
-                      <RiMapPin2Fill className="size-5 text-neutral-500" />
+                      <RiBankCardFill className="size-5 text-neutral-500" />
                       <span className="text-base leading-5 text-neutral-600">
                         Amount Paid
                       </span>
                     </div>
-                    <span className="text-base leading-5">₦14,490</span>
+                    <span className="text-base leading-5">
+                      ₦{Number(data.total).toLocaleString()}
+                    </span>
                   </div>
                 )}
               </div>
@@ -287,17 +296,20 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                   </h3>
 
                   <div className="flex gap-4 mt-3">
-                    {menuImg.map((menu) => (
-                      <div key={menu.id} className="">
-                        <div className="size-16 rounded-lg overflow-hidden">
+                    {data.items.map((menu) => (
+                      <div key={menu.id}>
+                        <div className="size-16 rounded-lg overflow-hidden bg-neutral-100">
                           <img
-                            src={menu.img}
+                            src={menu.menuImg || "/fallback_vendor.webp"}
                             alt={menu.id}
                             className="size-full object-cover"
+                            onError={(e) =>
+                              fallbackImg(e, "/fallback_vendor.webp")
+                            }
                           />
                         </div>
                         <p className="ml-1 mt-1 font-medium text-neutral-600">
-                          x{menu.qty}
+                          x{menu.quantity}
                         </p>
                       </div>
                     ))}
@@ -306,7 +318,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
               )}
 
               <Button
-                className="mt-6 sm:mt-20 md:py-3.5 submit-btn"
+                className="mt-6 sm:mt-20 md:py-3.5 mb-4 submit-btn"
                 onClick={() => setShowDetails((prev) => !prev)}
                 // disabled={isPending}
               >
@@ -316,7 +328,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
           </div>
         )}
       </div>
-    </ScrollArea>
+    </div>
   );
 };
 
