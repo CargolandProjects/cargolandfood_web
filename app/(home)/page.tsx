@@ -4,9 +4,8 @@ import Banners from "@/components/home/Banners";
 
 export default function Homepage() {
   return (
-    <div className="">
+    <div className="h-full flex flex-col ">
       <Categories/>
-      {/* <p className="text-4xl font-bold">This is the Main Homepage</p> */}
       <Banners />
       <Selections />
     </div>

@@ -6,7 +6,12 @@ export interface Vendor {
   businessName: string;
   businessCategory: string | null;
   businessAddress: string | null;
-  preparationTime: string | null;
+  preparationTime?: string | null;
+  workingHours?: [
+    {
+      preparationTime: string;
+    }
+  ];
   isPreorder: boolean | null;
   isFavourite: boolean;
   golive: boolean | null;
@@ -119,9 +124,23 @@ export interface vendorById {
   };
 }
 export const vendors = {
-  async getAllVendors(zoneId: string, page: number = 1, limit: number = 10) {
+  async getAllVendors(zoneId: string, page: number = 1, limit: number) {
     const res = await apiClient.get<Vendors>(
       `${API_ROUTES.vendor.allVendors(zoneId)}?page=${page}&limit=${limit}`
+    );
+    return res.data;
+  },
+
+  async getVendorsByCategory(
+    zoneId: string,
+    query: string,
+    page: number = 1,
+    limit: number
+  ) {
+    const res = await apiClient.get(
+      `${API_ROUTES.vendor.getVendorsByCategory(
+        zoneId
+      )}?query=${query}&page=${page}&limit=${limit}`
     );
     return res.data;
   },

@@ -15,7 +15,7 @@ const Restaurants = () => {
     fetchNextPage, 
     hasNextPage, 
     isFetchingNextPage 
-  } = useVendors(zoneId || "", 10);
+  } = useVendors(zoneId || "");
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -31,7 +31,7 @@ const Restaurants = () => {
   const restaurants = useMemo(() => {
     const allVendors = data?.pages.flatMap((page) => page.vendors) ?? [];
     return allVendors.filter(
-      (vendor) => vendor.businessCategory === "Restaurant"
+      (vendor) => vendor.businessCategory 
     );
   }, [data?.pages]);
 

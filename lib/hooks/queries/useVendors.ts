@@ -11,6 +11,21 @@ export const useVendors = (zoneId: string, limit: number = 10) => {
   });
 };
 
+export const useVendorsByCategory = (
+  zoneId: string,
+  query: string,
+  limit: number = 10
+) => {
+  return useInfiniteQuery({
+    queryKey: ["vendorsByCategory", zoneId, query, limit],
+    queryFn: ({ pageParam }) =>
+      vendors.getVendorsByCategory(zoneId, query, pageParam, limit),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    enabled: !!zoneId.trim() && !!query,
+  });
+};
+
 export const useVendorById = (id: string) => {
   return useQuery({
     queryKey: ["vendorById", id],

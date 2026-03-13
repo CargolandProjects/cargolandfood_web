@@ -51,6 +51,7 @@ const VendorPageContent = ({ id }: { id: string }) => {
   const rating = data?.averageRating;
   const menus = data?.data.menus || [];
   const categories = data?.data.categories || [];
+  const preparationTime = data?.data.workingHours?.[0].preparationTime;
 
   // Check if cart has items from checkout preview
   // If error (e.g., 400 "No active cart"), treat as empty cart
@@ -206,7 +207,7 @@ const VendorPageContent = ({ id }: { id: string }) => {
             <VendorStats
               rating={rating?.bayesianRating || 0}
               deliveryFee={0}
-              deliveryTime="20 min"
+              deliveryTime={preparationTime || ""}
             />
           </div>
         </div>

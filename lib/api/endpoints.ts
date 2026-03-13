@@ -24,6 +24,8 @@ export const API_ROUTES = {
   vendor: {
     allVendors: (zoneId: string) => `/users/vendors/${zoneId}`,
     vendorById: (id: string) => `/users/menus/${id}`,
+    getVendorsByCategory: (zoneId: string) =>
+      `/users/vendor-by-category/${zoneId}`,
   },
 
   cart: {

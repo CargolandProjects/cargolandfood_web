@@ -1,41 +1,69 @@
 "use client";
 
-import { useState } from "react";
-import { usePromotions } from "@/lib/hooks/queries/usePromotions";
-import FilterBar from "../FilterBar";
+import { useEffect, useMemo } from "react";
+// import FilterBar from "../FilterBar";
 import VendorCard from "../vendor/VendorCard";
 import Loading from "../LoadingSkeleton";
-import { Swiper, SwiperSlide } from "swiper/react";
+// import { Swiper, SwiperSlide } from "swiper/react";
+import { useVendorsByCategory } from "@/lib/hooks/queries/useVendors";
+import { useInView } from "react-intersection-observer";
+import { useActiveZone } from "@/lib/hooks/useActiveZone";
+import { useCategory } from "@/contexts/CategoryContext";
 
-const GroceriesSelection = () => {
-  const [activeFilter, setActiveFilter] = useState("all");
-  const { data, isLoading } = usePromotions();
+const CategoriesSelection = () => {
+  // const [activeFilter, setActiveFilter] = useState("all");
+  // const { data, isLoading } = usePromotions();
+  const { activeCategory } = useCategory();
+  const { zoneId } = useActiveZone();
+  const {
+    data,
+    isLoading,
+    isSuccess,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useVendorsByCategory(zoneId ?? "", activeCategory ?? "");
 
-  const filters = [
-    { label: "All Shops", value: "all" },
-    { label: "Drinks", value: "drinks" },
-    { label: "Supermarkets", value: "supermarkets" },
-    { label: "Depots", value: "depots" },
-  ];
+  const { ref, inView } = useInView({
+    threshold: 0,
+    rootMargin: "100px",
+  });
+
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const vendors = useMemo(() => {
+    const allVendors = data?.pages.flatMap((page) => page.vendors) ?? [];
+    return allVendors;
+  }, [data?.pages]);
+
+  // const filters = [
+  //   { label: "All Vendors", value: "all" },
+  //   { label: "Fast Delivery", value: "fast" },
+  //   { label: "Best Prices", value: "prices" },
+  // ];
 
   if (isLoading) {
     return (
       <section className="my-6 sm:my-10">
-        <Loading count={3} title scroll />
+        <Loading count={3} title />
       </section>
     );
   }
 
   return (
-    <section className="my-6 sm:my-10">
-      <FilterBar
+    <section className="my-6 sm:my-10 h-full">
+      {/* <FilterBar
         filters={filters}
         activeFilter={activeFilter}
         onFilterChange={setActiveFilter}
-      />
-      
-      {/* <div className="grid grid-cols-2 md:grid-cols-3 gap-6 section-y"></div> */}
-      {activeFilter === "all" && (
+      /> */}
+
+      {/* {activeFilter === "all" && (
         <div className="space-y-4 sm:space-y-10 mt-4 sm:mt-10">
           <div>
             <h3>Featured</h3>
@@ -57,14 +85,14 @@ const GroceriesSelection = () => {
             >
               {data?.featured.map((item) => (
                 <SwiperSlide key={item.id}>
-                  <VendorCard menuItem={item} route="groceries" />
+                  <VendorCard menuItem={item} />
                 </SwiperSlide>
               ))}
             </Swiper>
           </div>
 
           <div>
-            <h3>Drinks</h3>
+            <h3>Fast Delivery</h3>
             <Swiper
               spaceBetween={16}
               slidesPerView={1.3}
@@ -83,14 +111,14 @@ const GroceriesSelection = () => {
             >
               {data?.featured.map((item) => (
                 <SwiperSlide key={item.id}>
-                  <VendorCard menuItem={item} route="groceries" />
+                  <VendorCard menuItem={item} />
                 </SwiperSlide>
               ))}
             </Swiper>
           </div>
 
           <div>
-            <h3>Supermarkets</h3>
+            <h3>Best Prices</h3>
             <Swiper
               spaceBetween={16}
               slidesPerView={1.3}
@@ -107,35 +135,9 @@ const GroceriesSelection = () => {
               }}
               className="section-y"
             >
-              {data?.featured.map((item) => (
+              {data?.discount.map((item) => (
                 <SwiperSlide key={item.id}>
-                  <VendorCard menuItem={item} route="groceries" />
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-
-          <div>
-            <h3>Depots</h3>
-            <Swiper
-              spaceBetween={16}
-              slidesPerView={1.3}
-              loop={true}
-              speed={600}
-              breakpoints={{
-                640: {
-                  slidesPerView: 2,
-                },
-                768: {
-                  slidesPerView: 3,
-                  spaceBetween: 24,
-                },
-              }}
-              className="section-y"
-            >
-              {data?.featured.map((item) => (
-                <SwiperSlide key={item.id}>
-                  <VendorCard menuItem={item} route="groceries" />
+                  <VendorCard menuItem={item} />
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -143,10 +145,10 @@ const GroceriesSelection = () => {
         </div>
       )}
 
-      {activeFilter === "drinks" && (
-        <div className="space-y-4 sm:space-y-10 mt-4 sm:mt-10">
+      {activeFilter === "fast" && (
+        <div className="space-y-4 sm:space-y-10 mt-4 sm:mt-10 ">
           <div>
-            <h3>Drinks</h3>
+            <h3>Fast Delivery</h3>
             <Swiper
               spaceBetween={16}
               slidesPerView={1.3}
@@ -165,7 +167,7 @@ const GroceriesSelection = () => {
             >
               {data?.featured.map((item) => (
                 <SwiperSlide key={item.id}>
-                  <VendorCard menuItem={item} route="groceries" />
+                  <VendorCard menuItem={item} />
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -173,10 +175,11 @@ const GroceriesSelection = () => {
         </div>
       )}
 
-      {activeFilter === "supermarkets" && (
-        <div className="space-y-4 sm:space-y-10 mt-4 sm:mt-10">
+      {activeFilter === "prices" && (
+        <div className="space-y-4 sm:space-y-10 mt-4 sm:mt-10 ">
+        
           <div>
-            <h3>Supermarkets</h3>
+            <h3>Best Prices</h3>
             <Swiper
               spaceBetween={16}
               slidesPerView={1.3}
@@ -193,42 +196,53 @@ const GroceriesSelection = () => {
               }}
               className="section-y"
             >
-              {data?.featured.map((item) => (
+              {data?.discount.map((item) => (
                 <SwiperSlide key={item.id}>
-                  <VendorCard menuItem={item} route="groceries" />
+                  <VendorCard menuItem={item} />
                 </SwiperSlide>
               ))}
             </Swiper>
           </div>
         </div>
+      )} */}
+
+      {isError && (
+        <p className="text-red-500 text-center">Error Fetching Vendors</p>
       )}
 
-      {activeFilter === "depots" && (
-        <div className="space-y-4 sm:space-y-10 mt-4 sm:mt-10">
-          <div>
-            <h3>Depots</h3>
-            <Swiper
-              spaceBetween={16}
-              slidesPerView={1.3}
-              loop={true}
-              speed={600}
-              breakpoints={{
-                640: {
-                  slidesPerView: 2,
-                },
-                768: {
-                  slidesPerView: 3,
-                  spaceBetween: 24,
-                },
-              }}
-              className="section-y"
-            >
-              {data?.featured.map((item) => (
-                <SwiperSlide key={item.id}>
-                  <VendorCard menuItem={item} route="groceries" />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+      {!zoneId && (
+        <p className="text-neutral-500 text-center">
+          Please select your location
+        </p>
+      )}
+
+      {isSuccess && vendors.length === 0 && (
+        <p className="text-neutral-500 text-left sm:text-center">
+          No vendors found for your current location
+        </p>
+      )}
+
+      {isSuccess && vendors.length > 0 && (
+        <div>
+          <h3>{activeCategory}</h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 xl:gap-12 mt-2 section-y">
+            {vendors.map((vendor) => (
+              <VendorCard
+                vendor={vendor}
+                key={vendor.id}
+                vendorId={vendor.id}
+                source="homepage"
+              />
+            ))}
+          </div>
+
+          {/* Intersection observer trigger */}
+          <div ref={ref} className=" flex items-center justify-center">
+            {isFetchingNextPage && (
+              <div className="text-neutral-500 h-20">
+                Loading more {activeCategory}...
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -236,4 +250,4 @@ const GroceriesSelection = () => {
   );
 };
 
-export default GroceriesSelection;
+export default CategoriesSelection;

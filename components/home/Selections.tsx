@@ -1,9 +1,6 @@
 "use client";
 
 import { useCategory } from "@/contexts/CategoryContext";
-import RestaurantsSelection from "./RestaurantsSelection";
-import GroceriesSelection from "./GroceriesSelection";
-import MarketsSelection from "./MarketsSelection";
 import HotPicks from "./HotPicks";
 import Promotions from "../Promotions";
 import Reastaurants from "./Restaurants";
@@ -13,6 +10,7 @@ import { Suspense } from "react";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
 import RestaurantItemCardSkeleton from "../vendor/VendorItemCardSkeleton";
 import VendorItemCardA from "../vendor/VendorItemCardA";
+import CategoriesSelection from "./CategoriesSelection";
 
 const SelectionsContent = () => {
   const { activeCategory } = useCategory();
@@ -81,10 +79,8 @@ const SelectionsContent = () => {
       )}
 
       {showCategoryView && (
-        <section className="mt-1">
-          {activeCategory === "Restaurants" && <RestaurantsSelection />}
-          {activeCategory === "Groceries" && <GroceriesSelection />}
-          {activeCategory === "Markets" && <MarketsSelection />}
+        <section className="mt-1 h-full">
+          {activeCategory && <CategoriesSelection />}
         </section>
       )}
     </>
