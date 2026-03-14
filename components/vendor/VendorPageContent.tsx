@@ -13,7 +13,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import OrderDetails from "../globalUi/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
 import ReviewsModal from "../ReviewModal";
-import { useVendorById } from "@/lib/hooks/queries/useVendors";
+import { useVendorMenuById } from "@/lib/hooks/queries/useVendors";
 import { useCheckoutPreview } from "@/lib/hooks/queries/useCheckoutFlow";
 import { Button } from "../ui/button";
 import { useToggleFavourite } from "@/lib/hooks/mutations/useToggleFavourite";
@@ -32,7 +32,7 @@ const VendorPageContent = ({ id }: { id: string }) => {
     "DELIVERY"
   );
 
-  const { data, isLoading, error, isSuccess } = useVendorById(id);
+  const { data, isLoading, error, isSuccess } = useVendorMenuById(id);
   const { mutate: toggleFavourite } = useToggleFavourite("vendorpage");
   const { user, isAuthenticated } = useSession();
 

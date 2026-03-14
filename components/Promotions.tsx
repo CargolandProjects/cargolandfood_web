@@ -10,11 +10,15 @@ import type { Swiper as SwiperType } from "swiper";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
-import { usePromotions } from "@/lib/hooks/queries/usePromotions";
 
 import Loading from "./LoadingSkeleton";
+import { useDiscountVendors } from "@/lib/hooks/queries/useVendors";
+import { useActiveZone } from "@/lib/hooks/useActiveZone";
 
 const Promotions = () => {
+  const { zoneId } = useActiveZone();
+  const { data, isLoading, isSuccess } = useDiscountVendors(zoneId ?? "");
+
   // Simple Swiper refs for both sections
   const discountsSwiperRef = useRef<SwiperType>(null);
   // const featureSwiperRef = useRef<SwiperType>(null);
@@ -26,9 +30,6 @@ const Promotions = () => {
   // Simple navigation functions for Feature
   // const goToPreviousFeature = () => featureSwiperRef.current?.slidePrev();
   // const goToNextFeature = () => featureSwiperRef.current?.slideNext();
-
-  const { data, isLoading } = usePromotions();
-
   if (isLoading) {
     return (
       <div>
@@ -44,7 +45,7 @@ const Promotions = () => {
 
   return (
     <div>
-      {!isLoading && data?.discount.length && (
+      {isSuccess && data.length && (
         <>
           {/* Discounts Section */}
           <section className="mt-6 sm:my-10">
@@ -76,7 +77,7 @@ const Promotions = () => {
                 modules={[Navigation]}
                 spaceBetween={16}
                 slidesPerView={1.3}
-                loop={true}
+                loop={data.length > 3}
                 speed={600}
                 breakpoints={{
                   640: {
@@ -88,9 +89,14 @@ const Promotions = () => {
                   },
                 }}
               >
-                {data?.discount.map((discount) => (
-                  <SwiperSlide key={discount.id}>
-                    <VendorCard vendor={discount} />
+                {data?.map((discount) => (
+                  <SwiperSlide key={discount.vendor.id}>
+                    <VendorCard
+                      vendorId={discount.vendor.id}
+                      vendor={discount.vendor}
+                      aggregateDiscount={discount.aggregateDiscount}
+                      source="homepage"
+                    />
                   </SwiperSlide>
                 ))}
               </Swiper>

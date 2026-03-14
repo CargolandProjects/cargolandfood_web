@@ -22,14 +22,23 @@ export const useVendorsByCategory = (
       vendors.getVendorsByCategory(zoneId, query, pageParam, limit),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    enabled: !!zoneId.trim() && !!query,
+    enabled: !!zoneId && !!query,
   });
 };
 
-export const useVendorById = (id: string) => {
+export const useDiscountVendors = (zoneId: string) => {
+  return useQuery({
+    queryKey: ["discountVendors", zoneId],
+    queryFn: () => vendors.getDiscountVendors(zoneId),
+    enabled: !!zoneId,
+    select: res => res.data
+  });
+};
+
+export const useVendorMenuById = (id: string) => {
   return useQuery({
     queryKey: ["vendorById", id],
-    queryFn: () => vendors.getVendorById(id),
+    queryFn: () => vendors.getVendorMenuById(id),
     enabled: !!id,
   });
 };

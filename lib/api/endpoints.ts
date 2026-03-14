@@ -23,9 +23,11 @@ export const API_ROUTES = {
 
   vendor: {
     allVendors: (zoneId: string) => `/users/vendors/${zoneId}`,
-    vendorById: (id: string) => `/users/menus/${id}`,
+    vendorMenuById: (id: string) => `/users/menus/${id}`,
     getVendorsByCategory: (zoneId: string) =>
       `/users/vendor-by-category/${zoneId}`,
+    getDiscountVendors: (zoneId: string) =>
+      `/users/get-all-dicount-menus/${zoneId}`,
   },
 
   cart: {

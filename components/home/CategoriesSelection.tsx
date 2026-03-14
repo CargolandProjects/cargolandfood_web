@@ -50,7 +50,7 @@ const CategoriesSelection = () => {
   if (isLoading) {
     return (
       <section className="my-6 sm:my-10">
-        <Loading count={3} title />
+        <Loading count={6} title />
       </section>
     );
   }

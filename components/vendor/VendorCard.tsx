@@ -17,13 +17,22 @@ import { toast } from "sonner";
 interface VendorCardProps {
   vendor: Vendor;
   vendorId: string;
+  aggregateDiscount?: number;
   source?: "homepage" | "vendorpage" | "general";
   asFavouriteCard?: boolean;
 }
 
 const VendorCard = ({
-  vendor: { businessName, ratings, profileImg, isFavourite, preparationTime },
+  vendor: {
+    businessName,
+    ratings,
+    profileImg,
+    isFavourite,
+    preparationTime,
+    workingHours,
+  },
   vendorId,
+  aggregateDiscount,
   asFavouriteCard = false,
   source,
 }: VendorCardProps) => {
@@ -35,6 +44,10 @@ const VendorCard = ({
     zoneId ?? ""
   );
   const router = useRouter();
+
+  const prepTime = preparationTime
+    ? preparationTime
+    : workingHours?.[0].preparationTime;
 
   const handleClick = () => {
     // There is id from the getAllVendors endpoint as "id" and from getFavourites as vendorId (both referencing the actual vendorId)
@@ -79,10 +92,10 @@ const VendorCard = ({
           loading="lazy"
           onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
         />
-        {!asFavouriteCard && (
+        {!asFavouriteCard && aggregateDiscount && (
           <div className="absolute top-3 left-3 rounded-full flex justify-center items-center gap-1 py-1 px-2 bg-primary-50 border-[0.5px] border-primary-900">
             <RiGiftLine className="size-3 text-primary" />
-            <p className="font-medium text-xs">{20}% Off</p>
+            <p className="font-medium text-xs">{aggregateDiscount}% Off</p>
           </div>
         )}
       </div>
@@ -115,12 +128,10 @@ const VendorCard = ({
               {!deliveryFee ? "Free" : deliveryFee}
             </span>
           </div>
-          {preparationTime && (
+          {prepTime && (
             <div className="flex justify-center items-center gap-1">
               <RiTimeLine className="size-5.5 text-primary" />
-              <span className="leading-5 text-neutral-600">
-                {preparationTime}
-              </span>
+              <span className="leading-5 text-neutral-600">{prepTime}</span>
             </div>
           )}
         </div>

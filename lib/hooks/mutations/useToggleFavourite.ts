@@ -1,6 +1,14 @@
 import { favourites } from "@/lib/services/favourites.service";
-import { vendorById, Vendors } from "@/lib/services/vendors.service";
-import { useMutation, useQueryClient, InfiniteData } from "@tanstack/react-query";
+import {
+  DiscountVendorsRes,
+  vendorById,
+  Vendors,
+} from "@/lib/services/vendors.service";
+import {
+  useMutation,
+  useQueryClient,
+  InfiniteData,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export const useToggleFavourite = (
@@ -41,6 +49,42 @@ export const useToggleFavourite = (
                 ...oldData.data,
                 isFavourite,
               },
+            };
+
+            // console.log("New Data: ", newData);
+            return newData;
+          }
+        );
+      }
+
+      if (source === "homepage" || source === "general") {
+        if (!zoneid) {
+          console.error(
+            "useToggleFavourite: zoneid is required for cache update when source is 'homepage'"
+          );
+          return;
+        }
+
+        queryClient.setQueryData(
+          ["discountVendors", zoneid],
+          (oldData: DiscountVendorsRes) => {
+            // console.log("Code execution reached here: ", vars);
+            if (!oldData) {
+              // console.log("Code terminated here: ", oldData);
+              console.warn(`No cached data found for ${source} update`, {
+                vendorId,
+              });
+              return;
+            }
+            console.log("Old Data: ", oldData);
+
+            const newData = {
+              ...oldData,
+              data: oldData.data.map((v) =>
+                v.vendor.id === vendorId
+                  ? { ...v, vendor: { ...v.vendor, isFavourite } }
+                  : v
+              ),
             };
 
             // console.log("New Data: ", newData);

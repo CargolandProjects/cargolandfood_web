@@ -1,5 +1,6 @@
 import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
+import { APIResponse } from "../types/cart.types";
 
 export interface Vendor {
   id: string;
@@ -123,6 +124,14 @@ export interface vendorById {
     bayesianRating: number;
   };
 }
+
+export interface DiscountVendor {
+  vendor: Vendor
+  aggregateDiscount: number;
+}
+
+export type DiscountVendorsRes = APIResponse<DiscountVendor[]>;
+
 export const vendors = {
   async getAllVendors(zoneId: string, page: number = 1, limit: number) {
     const res = await apiClient.get<Vendors>(
@@ -145,9 +154,16 @@ export const vendors = {
     return res.data;
   },
 
-  async getVendorById(id: string) {
+  async getDiscountVendors(zoneId: string) {
+    const res = await apiClient.get<DiscountVendorsRes>(
+      API_ROUTES.vendor.getDiscountVendors(zoneId)
+    );
+    return res.data;
+  },
+
+  async getVendorMenuById(id: string) {
     const res = await apiClient.get<vendorById>(
-      API_ROUTES.vendor.vendorById(id)
+      API_ROUTES.vendor.vendorMenuById(id)
     );
     return res.data;
   },
