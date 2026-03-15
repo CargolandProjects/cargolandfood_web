@@ -6,26 +6,37 @@ interface VendorJsonLdProps {
   reviewCount: number;
 }
 
-export default function VendorJsonLd({ vendor, rating, reviewCount }: VendorJsonLdProps) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cargolandfood.com";
-  
+export default function VendorJsonLd({
+  vendor,
+  rating,
+  reviewCount,
+}: VendorJsonLdProps) {
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://cargolandfood.com";
+
   // Map businessCategory to valid Schema.org types
   const getSchemaType = (category: string | null): string => {
     if (!category) return "LocalBusiness";
-    
+
     const categoryLower = category.toLowerCase();
-    
-    if (categoryLower.includes("restaurant") || categoryLower.includes("food")) {
+
+    if (
+      categoryLower.includes("restaurant") ||
+      categoryLower.includes("food")
+    ) {
       return "Restaurant";
-    } else if (categoryLower.includes("grocery") || categoryLower.includes("groceries")) {
+    } else if (
+      categoryLower.includes("grocery") ||
+      categoryLower.includes("groceries")
+    ) {
       return "GroceryStore";
     } else if (categoryLower.includes("market")) {
       return "Store";
     }
-    
+
     return "LocalBusiness"; // Fallback for unknown categories
   };
-  
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": getSchemaType(vendor.businessCategory),
@@ -37,13 +48,16 @@ export default function VendorJsonLd({ vendor, rating, reviewCount }: VendorJson
       streetAddress: vendor.businessAddress || "Nigeria",
       addressCountry: "NG",
     },
-    aggregateRating: rating > 0 ? {
-      "@type": "AggregateRating",
-      ratingValue: rating.toFixed(1),
-      reviewCount: reviewCount,
-      bestRating: "5",
-      worstRating: "1",
-    } : undefined,
+    aggregateRating:
+      rating > 0
+        ? {
+            "@type": "AggregateRating",
+            ratingValue: rating.toFixed(1),
+            reviewCount: reviewCount,
+            bestRating: "5",
+            worstRating: "1",
+          }
+        : undefined,
     servesCuisine: vendor.businessCategory || "Food",
     priceRange: "₦₦",
     telephone: "+234-XXX-XXX-XXXX", // TODO: Add vendor phone if available
@@ -65,8 +79,8 @@ export default function VendorJsonLd({ vendor, rating, reviewCount }: VendorJson
               "@type": "Offer",
               price: item.price,
               priceCurrency: "NGN",
-              availability: item.outOfStock 
-                ? "https://schema.org/OutOfStock" 
+              availability: item.outOfStock
+                ? "https://schema.org/OutOfStock"
                 : "https://schema.org/InStock",
             },
           })),

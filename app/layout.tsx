@@ -91,12 +91,16 @@ export const metadata: Metadata = {
     description:
       "Order food from top restaurants across Nigeria. Fast delivery to your doorstep.",
     images: ["/logo-full.webp"],
-    creator: "@cargolandfood", // TODO: Update with actual Twitter handle
+    creator: "@cargolandfoods",
+    site: "@cargolandfoods",
   },
   verification: {
-    // TODO: Add verification tokens when available
+    // TODO: Add verification tokens when available from Google Search Console
     // google: "your-google-verification-code",
-    // yandex: "your-yandex-verification-code",
+  },
+  other: {
+    "contact:email": "info@cargolandfood.com",
+    "contact:phone": "+234-817-908-1262",
   },
   alternates: {
     canonical: siteUrl,
