@@ -1,4 +1,4 @@
-import { vendors } from "@/lib/services/vendors.service";
+import { vendorById, vendors } from "@/lib/services/vendors.service";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 export const useVendors = (zoneId: string, limit: number = 10) => {
@@ -35,10 +35,13 @@ export const useDiscountVendors = (zoneId: string) => {
   });
 };
 
-export const useVendorMenuById = (id: string) => {
+export const useVendorMenuById = (id: string, initialData?: vendorById) => {
   return useQuery({
     queryKey: ["vendorById", id],
     queryFn: () => vendors.getVendorMenuById(id),
     enabled: !!id,
+    initialData,
+    staleTime: initialData ? 5 * 60 * 1000 : 0, // 5 minutes if we have initial data
+    refetchOnMount: !initialData, // Don't refetch immediately if we have initial data
   });
 };

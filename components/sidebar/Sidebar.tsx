@@ -135,7 +135,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
     <>
       {/* Large Screens */}
       {isDesktop && (
-        <aside className="max-sm:hidden h-full sticky inset-y-0 w-sidebar shrink-0 border-r border-gray-100">
+        <aside className="max-sm:hidden h-full sticky inset-y-0 w-sidebar shrink-0 border-r border-gray-100 bg-white">
           <div className="flex flex-col items-center ">
             {/* Logo */}
             <div className="py-4 fixed h-5 z-20 bg-white">

@@ -21,8 +21,15 @@ import { useSession } from "@/lib/hooks/useSession";
 import { fallbackImg } from "@/lib/utils";
 import NotFound from "../NotFound";
 import VendorItemCardB from "./VendorItemCardB";
+import { vendorById } from "@/lib/services/vendors.service";
+import VendorJsonLd from "./VendorJsonLd";
 
-const VendorPageContent = ({ id }: { id: string }) => {
+interface VendorPageContentProps {
+  id: string;
+  initialData?: vendorById;
+}
+
+const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
   const [activeCatId, setActiveCatId] = useState<string | null>(null);
   const [selectedId, setselectedId] = useState<string | null>(null);
   const [showFavourites, setShowFavourites] = useState(false);
@@ -32,7 +39,7 @@ const VendorPageContent = ({ id }: { id: string }) => {
     "DELIVERY"
   );
 
-  const { data, isLoading, error, isSuccess } = useVendorMenuById(id);
+  const { data, isLoading, error, isSuccess } = useVendorMenuById(id, initialData);
   const { mutate: toggleFavourite } = useToggleFavourite("vendorpage");
   const { user, isAuthenticated } = useSession();
 
@@ -120,29 +127,39 @@ const VendorPageContent = ({ id }: { id: string }) => {
   }
 
   return (
-    <div className="flex gap-6 xl:gap-10 h-full">
-      {/* Single SVG clip-path definition for all VendorItemCardB instances */}
-      {!isRestaurant && (
-        <svg width="0" height="0" style={{ position: "absolute" }}>
-          <defs>
-            <clipPath id="trapezium-rounded" clipPathUnits="objectBoundingBox">
-              <path
-                d="
-                M 0.05,0.144
-                Q 0.05,0 0.107,0
-                L 0.893,0
-                Q 0.95,0 0.95,0.144
-                L 1,0.856
-                Q 1,1 0.943,1
-                L 0.057,1
-                Q 0,1 0,0.856
-                Z
-              "
-              />
-            </clipPath>
-          </defs>
-        </svg>
+    <>
+      {/* JSON-LD Structured Data for SEO */}
+      {vendor && (
+        <VendorJsonLd
+          vendor={vendor}
+          rating={data?.averageRating?.simpleRating || 0}
+          reviewCount={vendor.review?.length || 0}
+        />
       )}
+      
+      <div className="flex gap-6 xl:gap-10 h-full">
+        {/* Single SVG clip-path definition for all VendorItemCardB instances */}
+        {!isRestaurant && (
+          <svg width="0" height="0" style={{ position: "absolute" }}>
+            <defs>
+              <clipPath id="trapezium-rounded" clipPathUnits="objectBoundingBox">
+                <path
+                  d="
+                  M 0.05,0.144
+                  Q 0.05,0 0.107,0
+                  L 0.893,0
+                  Q 0.95,0 0.95,0.144
+                  L 1,0.856
+                  Q 1,1 0.943,1
+                  L 0.057,1
+                  Q 0,1 0,0.856
+                  Z
+                "
+                />
+              </clipPath>
+            </defs>
+          </svg>
+        )}
 
       <motion.div
         className="w-full h-full flex-1 flex flex-col"
@@ -351,7 +368,8 @@ const VendorPageContent = ({ id }: { id: string }) => {
       <FavouritesModal open={showFavourites} onOpenChange={setShowFavourites} />
       <ReviewsModal open={showReviews} onClose={setShowReviews} />
       <OrderDetails />
-    </div>
+      </div>
+    </>
   );
 };
 
