@@ -45,7 +45,8 @@ interface UserData extends Omit<Message, "success"> {
   user: User;
 }
 
-interface SignInResponse extends AuthResponse {
+interface SignInResponse extends  Omit<Message, "staus"> {
+  user: User;
   token: Token;
 }
 

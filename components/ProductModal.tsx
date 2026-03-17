@@ -197,7 +197,7 @@ const ProductModal = ({
               {description}
             </p>
             <p className=" leading-5 mt-1.5 flex items-center gap-[3px]">
-              from <span className="text-base">₦{price}</span>
+              from <span className="text-base">₦{Number(price).toLocaleString()}</span>
             </p>
           </div>
 
@@ -216,7 +216,7 @@ const ProductModal = ({
                     <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
                       <p>{size.name}</p>
                       <p className="text-xs text-neutral-600">
-                        + ₦{size.price}
+                        + ₦{Number(size.price).toLocaleString()}
                       </p>
                     </div>
 
@@ -240,7 +240,7 @@ const ProductModal = ({
                       <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
                         <p>{addon.name}</p>
                         <p className="text-xs text-neutral-600">
-                          + ₦{addon.price}
+                          + ₦{Number(addon.price).toLocaleString()}
                         </p>
                       </div>
 

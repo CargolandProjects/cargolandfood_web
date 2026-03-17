@@ -4,7 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 // import { user1 } from "@/assets/images";
 import { RiStarFill, RiStarLine } from "react-icons/ri";
-import { ScrollArea } from "./ui/scroll-area";
 import { useReviews } from "@/lib/hooks/queries/useReviews";
 import ErrorStateUi from "./ErrorStateUi";
 import Loader from "./Loader";
@@ -69,6 +68,16 @@ const getRatingTitle = (rating: number): string => {
   }
 };
 
+const getInitials = (fullName: string) => {
+  const [firstName, lastName] = fullName.split(" ") || [];
+  const initials =
+    (firstName &&
+      lastName &&
+      `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()) ||
+    "";
+  return initials;
+};
+
 export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
   const { isAuthenticated } = useSession();
   const {
@@ -105,7 +114,7 @@ export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
           )}
 
           {isSuccess && (
-            <ScrollArea className="h-full">
+            <div className="h-full overflow-y-auto hide-scrollbar">
               {reviews.length === 0 && (
                 <p className="text-sm text-neutral-600 text-center">
                   No reviews yet. Order and be the first!
@@ -118,10 +127,10 @@ export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
                     <div key={review.id} className="flex gap-2.5">
                       <Avatar className="size-10 shrink-0">
                         <AvatarImage
-                          src={review.avatar || "/placeholder.svg"}
+                          src={review.reviewer.profileImg}
                           alt="User avatar"
                         />
-                        <AvatarFallback>U</AvatarFallback>
+                        <AvatarFallback>{getInitials(review.reviewer.name)}</AvatarFallback>
                       </Avatar>
 
                       <div className="flex-1 bg-neutral-100 rounded-button px-4 pt-2.5 pb-6">
@@ -138,7 +147,7 @@ export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
                   ))}
                 </div>
               )}
-            </ScrollArea>
+            </div>
           )}
         </div>
       </DialogContent>

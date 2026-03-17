@@ -26,51 +26,53 @@ const Favourites = ({ setActiveTab, isAuthenticated }: FavouritesProps) => {
   return (
     <div className="h-full">
       {/* Header */}
-      <div className="relative flex items-center justify-center">
+      <div className="relative flex items-center justify-center mb-2">
         <button onClick={() => setActiveTab(null)} className="absolute left-0">
           <RiArrowGoBackLine className="size-5" />
         </button>
         <h2 className="text-lg leading-6">Favourite</h2>
       </div>
 
-      {!isAuthenticated && (
-        <UnauthenticatedUi description="You need to sign in before performing any action on Cargoland Food." />
-      )}
+      <div className="h-full overflow-y-auto hide-scrollbar">
+        {!isAuthenticated && (
+          <UnauthenticatedUi description="You need to sign in before performing any action on Cargoland Food." />
+        )}
 
-      {isLoading && (
-        <div className="h-full flex justify-center items-center">
-          <Loader size={12} />
-        </div>
-      )}
+        {isLoading && (
+          <div className="h-full flex justify-center items-center">
+            <Loader size={12} />
+          </div>
+        )}
 
-      {isError && (
-        <div className="h-full flex justify-center items-center">
-          <ErrorStateUi message="Error Fetching favourites " />
-        </div>
-      )}
+        {isError && (
+          <div className="h-full flex justify-center items-center">
+            <ErrorStateUi message="Error Fetching favourites " />
+          </div>
+        )}
 
-      {isSuccess && favouriteVendors.length === 0 && (
-        <div className="mt-20.5 ">
-          <EmptyStateUi
-            message="No favourite yet"
-            description="You haven’t added any food to favourite"
-          />
-        </div>
-      )}
-
-      {isSuccess && favouriteVendors.length > 0 && (
-        <div className="mt-4 pb-6 space-y-4">
-          {favouriteVendors.map((vendor) => (
-            <VendorCard
-              key={vendor.id}
-              vendor={vendor}
-              vendorId={vendor.id}
-              source="general"
-              asFavouriteCard
+        {isSuccess && favouriteVendors.length === 0 && (
+          <div className="mt-20.5 ">
+            <EmptyStateUi
+              message="No favourite yet"
+              description="You haven’t added any food to favourite"
             />
-          ))}
-        </div>
-      )}
+          </div>
+        )}
+
+        {isSuccess && favouriteVendors.length > 0 && (
+          <div className="mt-2 pb-6 space-y-4">
+            {favouriteVendors.map((vendor) => (
+              <VendorCard
+                key={vendor.id}
+                vendor={vendor}
+                vendorId={vendor.id}
+                source="general"
+                asFavouriteCard
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

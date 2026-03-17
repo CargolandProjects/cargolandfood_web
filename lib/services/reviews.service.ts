@@ -25,13 +25,20 @@ interface Reviews {
     totalOrder: number;
     createdAt: string;
   };
+  reviewer: {
+    profileImg: string;
+    name: string;
+    country: string;
+  };
 }
 
 export type ReviewResponse = APIResponse<Reviews[]>;
 
 export const reviews = {
   async getReviews() {
-    const res = await apiClient.get<ReviewResponse>(API_ROUTES.reviews.getReviews);
+    const res = await apiClient.get<ReviewResponse>(
+      API_ROUTES.reviews.getReviews
+    );
     return res.data;
   },
 
