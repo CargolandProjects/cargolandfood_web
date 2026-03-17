@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { auth, User } from "@/lib/services/auth.service";
+import type { QueryClient } from "@tanstack/react-query";
 
 export type SessionStatus = "loading" | "authenticated" | "unauthenticated";
 
@@ -14,7 +15,7 @@ interface AuthSessionState {
   completeOtp: () => void;
   setUser: (user: User | null) => void;
   updateUser: (patch: Partial<User>) => Promise<void>;
-  signOut: () => void;
+  signOut: (queryClient?: QueryClient) => void;
 }
 
 const USER_KEY = "user";
@@ -47,7 +48,8 @@ export const useAuthSessionStore = create<AuthSessionState>((set, get) => ({
 
   hydrateFromStorage: async () => {
     // Determine status from storage
-    const access = typeof window !== "undefined" ? localStorage.getItem(ACCESS_KEY) : null;
+    const access =
+      typeof window !== "undefined" ? localStorage.getItem(ACCESS_KEY) : null;
     const storedUser = readJSON<User>(USER_KEY);
     const pending = readJSON<User>(USER_PENDING_KEY);
 
@@ -61,13 +63,18 @@ export const useAuthSessionStore = create<AuthSessionState>((set, get) => ({
       return;
     }
 
-    const userId = typeof window !== "undefined" ? localStorage.getItem(USER_ID_KEY) : null;
+    const userId =
+      typeof window !== "undefined" ? localStorage.getItem(USER_ID_KEY) : null;
     if (userId) {
       try {
         const res = await auth.getUserById(userId);
         if (res?.data) {
           writeJSON(USER_KEY, res.data);
-          set({ user: res.data, pendingUser: pending, status: "authenticated" });
+          set({
+            user: res.data,
+            pendingUser: pending,
+            status: "authenticated",
+          });
           return;
         }
       } catch {
@@ -109,21 +116,39 @@ export const useAuthSessionStore = create<AuthSessionState>((set, get) => ({
   updateUser: async (patch) => {
     const current = get().user;
     if (!current?.id) return;
-    const res = await auth.updateUserById(current.id, patch);
-    if (res?.data) {
-      writeJSON(USER_KEY, res.data);
-      set({ user: res.data, status: "authenticated" });
+    const res = await auth.updateUserById({ id: current.id, payload: patch });
+    if (res?.user) {
+      writeJSON(USER_KEY, res.user);
+      set({ user: res.user, status: "authenticated" });
     }
   },
 
-  signOut: () => {
+  signOut: (queryClient?: QueryClient) => {
     if (typeof window !== "undefined") {
       localStorage.removeItem(ACCESS_KEY);
       localStorage.removeItem(REFRESH_KEY);
       localStorage.removeItem(USER_KEY);
       localStorage.removeItem(USER_PENDING_KEY);
       // Don't remove USER_ID_KEY to allow future hydration if tokens come back
+      
+      // Clear persisted CartStore
+      localStorage.removeItem("cart_store_v1");
     }
+    
+    // Clear user-specific query cache
+    if (queryClient) {
+      queryClient.removeQueries({ queryKey: ["cart"] });
+      queryClient.removeQueries({ queryKey: ["orders"] });
+      queryClient.removeQueries({ queryKey: ["orderDetails"] });
+      queryClient.removeQueries({ queryKey: ["trackOrder"] });
+      queryClient.removeQueries({ queryKey: ["favourites"] });
+      queryClient.removeQueries({ queryKey: ["addresses"] });
+      queryClient.removeQueries({ queryKey: ["walletBalance"] });
+      queryClient.removeQueries({ queryKey: ["transactionRecords"] });
+      queryClient.removeQueries({ queryKey: ["checkoutPreview"] });
+      queryClient.removeQueries({ queryKey: ["reviews"] });
+    }
+    
     set({ user: null, pendingUser: null, status: "unauthenticated" });
   },
 }));

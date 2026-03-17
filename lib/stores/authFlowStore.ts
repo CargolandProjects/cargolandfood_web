@@ -78,7 +78,11 @@ const useAuthFlow = create<AuthFlowStore>()(
       attemptClose: () => {
         const state = get();
         // Allow direct close for sign-in, show confirmation for all other steps
-        if (state.currentStep === "signin" || state.currentStep === "idle" || state.currentStep === "address") {
+        if (
+          state.currentStep === "signin" ||
+          state.currentStep === "idle" ||
+          state.currentStep === "address"
+        ) {
           get().closeAuth();
         } else {
           set({ showExitConfirmation: true });

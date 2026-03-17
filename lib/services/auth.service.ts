@@ -3,6 +3,8 @@ import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
 import { VerifyOtp } from "@/components/auth/OTPModal";
 import { Signin } from "@/components/auth/SignInModal";
+import { GetAddress } from "./address.service";
+import { APIResponse } from "../types/cart.types";
 
 interface Message {
   status?: string;
@@ -15,24 +17,6 @@ interface Token {
   refreshToken: string;
 }
 
-interface Address {
-  id: string;
-  userId: string;
-  addressLine1: string;
-  addressLine2: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-  latitude: string;
-  longitude: string;
-  placeId: string;
-  provider: string;
-  instructions: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface User {
   id: string;
   country: string;
@@ -43,7 +27,7 @@ export interface User {
   avatarUrl: string;
   fullName: string;
   addressess: string;
-  address: Address[];
+  address: GetAddress[];
   others: string;
   labelAs: string;
   couponCode: string;
@@ -68,6 +52,36 @@ interface SignInResponse extends AuthResponse {
 interface VerifyOtpResponse extends Message {
   token: Token;
 }
+
+interface UpdateUserPayload {
+  id: string;
+  payload: Partial<User>;
+}
+
+interface UpdatePersonalInfo {
+  avatarUrl: string;
+  fullName?: string;
+}
+
+type UpdatePersonalInfoResponse = APIResponse<{
+  id: string;
+  country: string;
+  phoneNumber: string;
+  email: string;
+  referralCode: string;
+  refreshToken: string;
+  avatarUrl: string;
+  fullName: string;
+  addressess: string;
+  others: string;
+  labelAs: string;
+  couponCode: string;
+  setAddressDefault: boolean;
+  role: "USER";
+  verified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}>;
 
 export const auth = {
   async createUser(data: Omit<Signup, "confirmPassword">) {
@@ -101,20 +115,28 @@ export const auth = {
   },
 
   async getUserById(id: string) {
-    const res = await apiClient.get<AuthResponse>(API_ROUTES.user(id));
+    const res = await apiClient.get<AuthResponse>(API_ROUTES.user.user(id));
     return res.data;
   },
 
-  async updateUserById(id: string, payload: Partial<User>) {
+  async updateUserById({ id, payload }: UpdateUserPayload) {
     const res = await apiClient.patch<UserData>(
-      API_ROUTES.user(id),
+      API_ROUTES.user.user(id),
+      payload
+    );
+    return res.data;
+  },
+
+  async updatePersonalInfo(payload: UpdatePersonalInfo) {
+    const res = await apiClient.post<UpdatePersonalInfoResponse>(
+      API_ROUTES.user.updatePersonalInfo,
       payload
     );
     return res.data;
   },
 
   async deleteUser(id: string) {
-    const res = await apiClient.delete(API_ROUTES.user(id));
+    const res = await apiClient.delete(API_ROUTES.user.user(id));
     return res.data;
   },
 };

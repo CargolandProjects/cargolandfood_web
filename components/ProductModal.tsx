@@ -1,32 +1,37 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
-import { RiAddFill, RiSubtractFill } from "react-icons/ri";
+import { RiAddFill, RiLoader2Line, RiSubtractFill } from "react-icons/ri";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Separator } from "./ui/separator";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Button } from "./ui/button";
 import { X } from "lucide-react";
 import { Menu } from "@/lib/services/vendors.service";
-import { useAddToCart } from "@/lib/hooks/mutations/useCart";
+import { useAddToCart } from "@/lib/hooks/mutations/useMutateCart";
+import { fallbackImg } from "@/lib/utils";
+import { useSession } from "@/lib/hooks/useSession";
+import { toast } from "sonner";
+import useAuthFlow from "@/lib/stores/authFlowStore";
 
 interface ProductModalProps {
   menu: Menu;
   isSelected: boolean;
-  handleSelect: (id: string) => void;
+  vendorId: string;
+  handleSelect?: (id: string) => void;
 }
 
 const ProductModal = ({
+  vendorId,
   menu,
   isSelected,
   handleSelect,
 }: ProductModalProps) => {
   const { description, id, uploadImageUrl, name, price } = menu;
+  const { isAuthenticated } = useSession();
+  const openAuth = useAuthFlow((s) => s.openAuth);
 
-  const params = useParams();
-  const vendorId = params.id as string;
-  const addToCart = useAddToCart(vendorId);
+  const addToCart = useAddToCart();
 
   // State for main item quantity
   const [quantity, setQuantity] = useState(1);
@@ -83,7 +88,7 @@ const ProductModal = ({
 
     // Add size price if selected
     if (selectedSize) {
-      const size = menu.sizes.find((s) => s.id === selectedSize);
+      const size = menu.sizes?.find((s) => s.id === selectedSize);
       if (size) {
         total += parseFloat(size.price) * quantity;
       }
@@ -91,7 +96,7 @@ const ProductModal = ({
 
     // Add addons prices
     Object.entries(selectedAddons).forEach(([addonId, qty]) => {
-      const addon = menu.addons.find((a) => a.id === addonId);
+      const addon = menu.addons?.find((a) => a.id === addonId);
       if (addon && qty > 0) {
         total += parseFloat(addon.price) * qty;
       }
@@ -102,27 +107,52 @@ const ProductModal = ({
 
   // Handle add to cart
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast.error("Please signin to add item to cart");
+      openAuth();
+      return;
+    }
+
+    // Get selected size details
+    const selectedSizeData = selectedSize
+      ? menu.sizes?.find((s) => s.id === selectedSize)
+      : null;
+
     // Build addons payload (only include addons with quantity > 0)
     const addonsPayload = Object.entries(selectedAddons)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, qty]) => qty > 0)
       .map(([addonId, qty]) => {
-        const addon = menu.addons.find((a) => a.id === addonId);
+        const addon = menu.addons?.find((a) => a.id === addonId);
+        if (!addon) return null;
         return {
           menuAddonId: addonId,
-          name: addon!.name,
-          price: parseFloat(addon!.price),
+          name: addon.name,
+          addonImg: addon.addonImage,
+          price: parseFloat(addon.price),
           quantity: qty,
+          action: "SET" as const, // Add the required action field
         };
-      });
+      })
+      .filter((addon) => addon !== null); // Remove nulls and fix type
 
     addToCart.mutate(
       {
-        menuId: id!,
-        menuName: name!,
-        unitPrice: price,
-        quantity: quantity,
-        currency: "NGN",
-        addons: addonsPayload.length > 0 ? addonsPayload : undefined,
+        item: {
+          menuId: id!,
+          menuName: name!,
+          description,
+          unitPrice: price,
+          quantity: quantity,
+          menuImg: uploadImageUrl,
+          action: "SET",
+          currency: "NGN",
+          sizeName: selectedSizeData?.name || "",
+          sizeValue: selectedSizeData?.size || "",
+          sizePrice: selectedSizeData?.price,
+          addons: addonsPayload.length > 0 ? addonsPayload : undefined,
+        },
+        vendorId,
       },
       {
         onSuccess: () => {
@@ -130,26 +160,27 @@ const ProductModal = ({
           setQuantity(1);
           setSelectedAddons({});
           setSelectedSize(null);
-          handleSelect(id!); // Close modal
+          handleSelect?.(id!); // Close modal
         },
       }
     );
   };
 
   return (
-    <Dialog open={isSelected} onOpenChange={() => handleSelect(id!)}>
+    <Dialog open={isSelected} onOpenChange={() => handleSelect?.(id!)}>
       <DialogContent
         showCloseButton={false}
         className="dialog hide-scrollbar max-h-[90vh]! p-0! border-none! outline-none! gap-0"
       >
         <div className="w-full h-[177px] overflow-hidden rounded-t-lg relative">
           <img
-            src={uploadImageUrl}
+            src={uploadImageUrl || "/fallback_vendor.webp"}
             alt={name}
             className="size-full object-cover"
+            onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
           />
           <Button
-            onClick={() => handleSelect(id!)}
+            onClick={() => handleSelect?.(id!)}
             variant="link"
             className="size-10 rounded-full bg-white absolute right-4.5 top-4.5"
           >
@@ -177,7 +208,7 @@ const ProductModal = ({
               <h3 className="text-lg leading-6">{name} Size</h3>
               <RadioGroup
                 className="space-y-5 mt-5"
-                value={selectedSize || undefined}
+                value={selectedSize}
                 onValueChange={setSelectedSize}
               >
                 {menu.sizes.map((size) => (
@@ -222,9 +253,7 @@ const ProductModal = ({
                         >
                           <RiSubtractFill className="size-4" />
                         </button>
-                        <span className="text-center">
-                          {addonQty}
-                        </span>
+                        <span className="text-center">{addonQty}</span>
                         <button
                           type="button"
                           onClick={() => handleAddonIncrease(addon.id)}
@@ -265,10 +294,10 @@ const ProductModal = ({
           <Button
             onClick={handleAddToCart}
             disabled={addToCart.isPending}
-            className="uppercase py-3.5 px-5.5 h-10.5 sm:h-12 text-sm font-bold max-w-[184px] whitespace-normal disabled:opacity-50 disabled:cursor-not-allowed"
+            className="uppercase flex-1 py-3.5 px-5.5 h-10.5 sm:h-12 text-sm font-bold max-w-[184px] whitespace-normal disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {addToCart.isPending
-              ? "Adding..."
+              ? <RiLoader2Line className="size-5 animate-spin" />
               : `Order Item - ₦${calculateTotal().toLocaleString()}`}
           </Button>
         </div>

@@ -1,14 +1,12 @@
 "use client";
 
-import { Header } from "@/components/Header";
+import { Header } from "@/components/header/Header";
 import Footer from "@/components/home/Footer";
-import GlobalCheckout from "@/components/globalUi/GlobalCheckout";
 import Sidebar from "@/components/sidebar/Sidebar";
-import TrackOrder from "@/components/globalUi/TrackOrder";
 import ContextProviders from "@/contexts/ContextProviders";
 import { usePathname } from "next/navigation";
 import { ReactNode, useState } from "react";
-import OrderDetails from "@/components/globalUi/OrderDetails";
+import GlobalUI from "@/components/globalUi/GlobalUI";
 
 export default function HomeLayout({
   children,
@@ -25,22 +23,19 @@ export default function HomeLayout({
 
   return (
     <ContextProviders>
-      <main className="font-satoshi text-brand-black flex h-screen overflow-hidden">
+      <main className="font-satoshi text-brand-black flex min-h-dvh">
         <Sidebar open={open} setOpen={setOpen} />
         <div className="flex-1 flex flex-col min-w-0">
           <Header setSideBar={setOpen} />
           <div
             className={`${
               applyPadding && "max-sm:pt-3"
-            } flex-1 overflow-auto py-4 md:py-6 px-4 sm:px-6 md:px-13.5 min-w-0 hide-scrollbar`}
+            } flex-1 py-4 md:py-6 px-4 sm:px-6 min-w-0`}
           >
-            <div className="w-full mx-auto min-w-0">{children}</div>
+            <div className="w-full mx-auto min-w-0 h-full max-w-[1400px]">{children}</div>
           </div>
 
-          {/* Globally Triggered UI Components - Outside scroll area */}
-          <GlobalCheckout />
-          <TrackOrder />
-          <OrderDetails />
+          <GlobalUI />
         </div>
       </main>
       <Footer />

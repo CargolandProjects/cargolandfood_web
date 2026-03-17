@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { logo } from "@/assets/svgs";
 import { Button } from "../ui/button";
 import { AnimatePresence, motion } from "framer-motion";
@@ -22,8 +22,11 @@ import { X } from "lucide-react";
 import Cart from "./Cart";
 import Favourites from "./Favourites";
 import Orders from "./Orders";
+import { useCart } from "@/lib/hooks/queries/useCart";
+import { useGetOrders } from "@/lib/hooks/queries/useOrders";
+import { useSession } from "@/lib/hooks/useSession";
 
-interface SIdeBar {
+interface SideBar {
   open: boolean;
   setOpen: (v: boolean) => void;
 }
@@ -43,11 +46,14 @@ interface SidebarItem<P = any> {
   label: string;
   content?: React.ComponentType<P>;
   props?: P;
+  count?: number;
 }
 
 // Move sidebarItems outside component to prevent Fast Refresh issues
 const getSidebarItems = (
-  setActiveTab: (tab: ActiveTab) => void
+  setActiveTab: (tab: ActiveTab) => void,
+  isAuthenticated: boolean,
+  count: { cartCount: number; OrdersCount: number }
 ): SidebarItem[] => [
   { id: "Home", icon: RiHome3Fill, label: "Home" },
   {
@@ -55,47 +61,58 @@ const getSidebarItems = (
     icon: RiShoppingCartFill,
     label: "Cart",
     content: Cart,
-    props: { setActiveTab },
+    count: count.cartCount,
+    props: { setActiveTab, isAuthenticated },
   },
   {
     id: "Orders",
     icon: RiShoppingBagFill,
     label: "Orders",
     content: Orders,
-    props: { setActiveTab },
+    count: count.OrdersCount,
+    props: { setActiveTab, isAuthenticated },
   },
   {
     id: "Favourite",
     icon: RiHeartFill,
     label: "Favourite",
     content: Favourites,
-    props: { setActiveTab },
+    props: { setActiveTab, isAuthenticated },
   },
   {
     id: "Settings",
     icon: RiSettings3Fill,
     label: "Settings",
     content: SettingsMenu,
-    props: { setActiveTab },
+    props: { setActiveTab, isAuthenticated },
   },
 ];
 
-const Sidebar = ({ open, setOpen }: SIdeBar) => {
+const Sidebar = ({ open, setOpen }: SideBar) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("Home");
-  const [isMobile, setIsMoble] = useState(false);
   const { setActiveCategory } = useCategory();
+  const { isAuthenticated } = useSession();
   const router = useRouter();
 
+  const { data: cart } = useCart(isAuthenticated);
+  const { data: orders } = useGetOrders(isAuthenticated);
+  const cartItems = cart?.length || 0;
+  const currentOrders =
+    orders?.filter((o) => o.status !== "COMPLETED").length || 0;
+
+  // Detect if we're on desktop (only runs once on mount, then on resize)
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window === "undefined") return true; // SSR fallback to desktop
+    return window.matchMedia("(min-width: 640px)").matches;
+  });
+
   useEffect(() => {
-    const checkScreen = () => {
-      const mobile = window.innerWidth < 640;
-      setIsMoble(mobile);
-    };
+    const mediaQuery = window.matchMedia("(min-width: 640px)");
 
-    checkScreen();
-    window.addEventListener("resize", checkScreen);
+    const handleChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mediaQuery.addEventListener("change", handleChange);
 
-    return () => window.removeEventListener("resize", checkScreen);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
   const handleTabChange = (tabId: ActiveTab) => {
@@ -109,36 +126,39 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
     router.push("/");
   };
 
-  const sidebarItems = getSidebarItems(setActiveTab);
+  const sidebarItems = getSidebarItems(setActiveTab, isAuthenticated, {
+    cartCount: cartItems,
+    OrdersCount: currentOrders,
+  });
 
   return (
     <>
       {/* Large Screens */}
-      {!isMobile && (
-        <aside className=" sticky left-0 inset-y-0 w-sidebar shrink-0 bg-white border-r border-gray-100">
-          <div className="flex flex-col items-center py-4">
+      {isDesktop && (
+        <aside className="max-sm:hidden h-full sticky inset-y-0 w-sidebar shrink-0 border-r border-gray-100 bg-white">
+          <div className="flex flex-col items-center ">
             {/* Logo */}
-            <Link
-              href="/"
-              onClick={() => setActiveCategory(null)}
-              className="size-6 flex items-center justify-center rounded-sm bg-black overflow-hidden mb-8"
-            >
-              <img
-                src={logo.src}
-                alt="Cargoland Food"
-                className="object-cover"
-              />
-            </Link>
+            <div className="py-4 fixed h-5 z-20 bg-white">
+              <Link
+                href="/"
+                onClick={() => setActiveCategory(null)}
+                className=" size-6 flex items-center justify-center rounded-sm bg-black overflow-hidden mb-8"
+              >
+                <img
+                  src={logo.src}
+                  alt="Cargoland Food"
+                  className="object-cover"
+                />
+              </Link>
+            </div>
 
             {/* Navigation Items */}
-            <nav className="flex flex-col gap-7 flex-1">
+            <nav className="mt-[72px] flex flex-col gap-7 flex-1">
               {sidebarItems.map((item, idx) => {
                 const IconComponent = item.icon;
                 const isActive = activeTab === item.id;
-                // const Content = item.content;
-
                 return (
-                  <>
+                  <React.Fragment key={idx}>
                     {/* Separate home button */}
                     {idx === 0 && (
                       <Button
@@ -167,15 +187,24 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                           key={item.id}
                           // variant="ghost"
                           onClick={() => handleTabChange(item.id)}
-                          className={`relative size-6 rounded-sm transition-colors flex justify-center items-center ${
-                            isActive && "bg-gray-100"
-                          }`}
+                          className={`relative size-6 rounded-sm transition-colors flex justify-center items-center 
+                            ${isActive && "bg-gray-100"}
+                            ${
+                              sidebarItems.length - 1 === idx &&
+                              "mt-[238px] xl:mt-80 pb-6"
+                            }
+                          `}
                         >
                           <IconComponent
                             className={`w-5 h-5 transition-colors ${
                               isActive ? "text-primary" : "text-gray-300"
                             }`}
                           />
+                          {(item.count ?? 0) > 0 && (
+                            <div className="absolute -top-1.5 -right-4.5 px-1.5 bg-primary rounded-full text-xs text-white">
+                              {item.count}
+                            </div>
+                          )}
                           {isActive && (
                             <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
                               {item.label}
@@ -191,7 +220,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                         </PopoverContent>
                       </Popover>
                     )}
-                  </>
+                  </React.Fragment>
                 );
               })}
             </nav>
@@ -201,7 +230,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
 
       {/* Mobile Screens */}
       <AnimatePresence>
-        {isMobile && open && (
+        {!isDesktop && open && (
           <motion.aside
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
@@ -239,15 +268,23 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                           handleTabChange(item.id);
                         }
                       }}
-                      className="flex items-center gap-2 hover:cursor-pointer"
+                      className="flex items-center justify-between gap-2 hover:cursor-pointer"
                       key={idx}
                     >
-                      <div className="size-10 flex items-center justify-center bg-primary-50 rounded-full">
-                        <item.icon className="size-6 text-primary" />
+                      <div className="flex items-center gap-2">
+                        <div className="size-10 flex items-center justify-center bg-primary-50 rounded-full">
+                          <item.icon className="size-6 text-primary" />
+                        </div>
+                        <p className="text-xl font-medium leading-7">
+                          {item.label}
+                        </p>
                       </div>
-                      <p className="text-xl font-medium leading-7">
-                        {item.label}
-                      </p>
+
+                      {(item.count ?? 0) > 0 && (
+                        <div className="flex items-center gap-2 bg-primary-100 px-3 rounded-full">
+                          <span className="text-primary">{item.count}</span>
+                        </div>
+                      )}
                     </div>
                     <AnimatePresence>
                       {item.content && isActive && (
@@ -262,7 +299,7 @@ const Sidebar = ({ open, setOpen }: SIdeBar) => {
                           }}
                           className="md:hidden fixed inset-0 pt-10 px-6 bg-white z-35 "
                         >
-                          <div className="fixed inset-0 p-6 z-40 bg-white">
+                          <div className="fixed inset-0 h-dvh p-6 z-40 bg-white">
                             <item.content {...item.props} />
                           </div>
                         </motion.aside>

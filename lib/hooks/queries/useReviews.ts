@@ -1,12 +1,11 @@
 import { reviews } from "@/lib/services/reviews.service";
 import { useQuery } from "@tanstack/react-query";
 
-export const useReviews = () => {
+export const useReviews = (isAuthenticated: boolean) => {
   return useQuery({
     queryKey: ["reviews"],
     queryFn: reviews.getReviews,
-    // refetchOnWindowFocus: false,
-    // refetchOnReconnect: false,
-    // refetchOnMount: false,
+    select: (data) => data.data,
+    enabled: isAuthenticated,
   });
 };

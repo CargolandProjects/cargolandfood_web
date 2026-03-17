@@ -6,59 +6,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { RiStarFill, RiStarLine } from "react-icons/ri";
 import { ScrollArea } from "./ui/scroll-area";
 import { useReviews } from "@/lib/hooks/queries/useReviews";
-import { Loader2 } from "lucide-react";
 import ErrorStateUi from "./ErrorStateUi";
 import Loader from "./Loader";
-
-// interface Review {
-//   id: number;
-//   date: string;
-//   title: string;
-//   rating: number;
-//   content: string;
-//   avatar: string;
-// }
+import { formatDMY } from "@/lib/utils";
+import { useSession } from "@/lib/hooks/useSession";
+import UnauthenticatedUi from "./UnauthenticatedUi";
 
 interface ReviewsModalProps {
   open: boolean;
   onClose: (close: boolean) => void;
 }
-
-// const reviews: Review[] = [
-//   {
-//     id: 1,
-//     date: "29/08/2025",
-//     title: "Good food",
-//     rating: 5,
-//     content:
-//       "Their food is so tasty & delicious. My lunch was delivered to my place in no time. Thanks for your great service.",
-//     avatar: user1.src,
-//   },
-//   {
-//     id: 2,
-//     date: "29/08/2025",
-//     title: "Awesome and nice",
-//     rating: 4.5,
-//     content: "Food was so good. Breakfast was fasty delivered to my place.",
-//     avatar: user1.src,
-//   },
-//   {
-//     id: 3,
-//     date: "29/08/2025",
-//     title: "Great meal",
-//     rating: 4,
-//     content: "Food was so good. Breakfast was fasty delivered to my place.",
-//     avatar: user1.src,
-//   },
-//   {
-//     id: 4,
-//     date: "29/08/2025",
-//     title: "Awesome and nice",
-//     rating: 4.5,
-//     content: "Food was so good. Breakfast was fasty delivered to my place.",
-//     avatar: user1.src,
-//   },
-// ];
 
 function StarRating({ rating }: { rating: number }) {
   const fullStars = Math.floor(rating);
@@ -87,21 +44,56 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
+const getRatingTitle = (rating: number): string => {
+  switch (true) {
+    case rating < 1.0:
+      return "Very Poor";
+    case rating < 1.5:
+      return "Poor";
+    case rating < 2.0:
+      return "Below Average";
+    case rating < 2.5:
+      return "Fair";
+    case rating < 3.0:
+      return "Average";
+    case rating < 3.5:
+      return "Good";
+    case rating < 4.0:
+      return "Very Good";
+    case rating < 4.5:
+      return "Great Meal";
+    case rating < 5.0:
+      return "Excellent";
+    default:
+      return "Outstanding Food 🍽️";
+  }
+};
+
 export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
-  const { data: reviews = [], isLoading, isError, isSuccess } = useReviews();
+  const { isAuthenticated } = useSession();
+  const {
+    data: reviews = [],
+    isLoading,
+    isError,
+    isSuccess,
+  } = useReviews(isAuthenticated);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="dialog p-0!">
+      <DialogContent className="dialog flex flex-col">
         <DialogHeader className="mt-13.5 sm:mt-[74px]">
           <DialogTitle className="dialog-title max-sm:text-lg! max-sm:leading-6! ">
             Reviews
           </DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[486px] mt-4 sm:mt-7 px-7">
+        <div className={`h-[486px] ${isAuthenticated && "mt-4 sm:mt-7"}`}>
+          {!isAuthenticated && (
+            <UnauthenticatedUi description="You need to sign in before performing any action on Cargoland Food." />
+          )}
+
           {isLoading && (
-            <div className="h-full flex justify-center items-center pb-12">
+            <div className=" h-full flex justify-center items-center pb-12">
               <Loader size={12} />
             </div>
           )}
@@ -113,15 +105,15 @@ export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
           )}
 
           {isSuccess && (
-            <>
+            <ScrollArea className="h-full">
               {reviews.length === 0 && (
-                <p className="text-sm text-neutral-600">
+                <p className="text-sm text-neutral-600 text-center">
                   No reviews yet. Order and be the first!
                 </p>
               )}
 
               {reviews.length > 0 && (
-                <div className="space-y-4 sm:space-y-6 py-1">
+                <div className="space-y-4 sm:space-y-6 pt-1 mb-6">
                   {reviews.map((review) => (
                     <div key={review.id} className="flex gap-2.5">
                       <Avatar className="size-10 shrink-0">
@@ -132,23 +124,23 @@ export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
                         <AvatarFallback>U</AvatarFallback>
                       </Avatar>
 
-                      <div className="flex-1 bg-neutral-700 rounded-button px-4 pt-2.5 pb-6">
-                        <p className="text-xs">{review.date}</p>
-                        <h3 className="text-sm font-medium mb-0.5 leading-5 mt-0.5">
-                          {review.title}
+                      <div className="flex-1 bg-neutral-100 rounded-button px-4 pt-2.5 pb-6">
+                        <p className="text-xs">{formatDMY(review.createdAt)}</p>
+                        <h3 className="text-sm font-medium mb-0.5 leading-5 mt-0.5 line-clamp-1">
+                          {getRatingTitle(review.rating)}
                         </h3>
                         <StarRating rating={review.rating} />
                         <p className="text-xs text-neutral-600 mt-3">
-                          {review.content}
+                          {review.comment}
                         </p>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
-            </>
+            </ScrollArea>
           )}
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );

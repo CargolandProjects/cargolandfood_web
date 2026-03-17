@@ -1,32 +1,67 @@
 import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
-import type { 
-  AddToCartPayload, 
-  CartItem, 
-  CheckoutPreview, 
-  ApiResponse 
+import type {
+  AddToCart,
+  Cart,
+  CartItem,
+  CheckoutPreview,
+  APIResponse,
 } from "@/lib/types/cart.types";
+import { GetAddress } from "./address.service";
 
-export const cartService = {
+interface RemoveItemParams {
+  cartId: string;
+  cartItemId: string;
+}
 
-  async addOrUpdateItem(vendorId: string, payload: AddToCartPayload) {
-    const response = await apiClient.post<ApiResponse<CartItem[]>>(
-      API_ROUTES.cart.addOrUpdateItem(vendorId),
-      payload
+type CartItems = Cart & { addressSnapshot: GetAddress };
+
+interface CartResponse {
+  status: string;
+  message: string;
+  data: {
+    vendor: {
+      vendorId: string;
+      businessName: string;
+      profileImg: string;
+    };
+    carts: CartItems[];
+  }[];
+}
+
+interface AddToCartPayload {
+  item: AddToCart;
+  vendorId: string;
+}
+
+export const cart = {
+  async getCart() {
+    const res = await apiClient.get<CartResponse>(API_ROUTES.cart.getCart);
+    return res.data;
+  },
+
+  async addOrUpdateItem(payload: AddToCartPayload) {
+    const response = await apiClient.post<APIResponse<CartItem[]>>(
+      API_ROUTES.cart.addOrUpdateItem(payload.vendorId),
+      payload.item
     );
     return response.data;
   },
 
-
   async clearCart(cartId: string) {
-    const response = await apiClient.delete(
-      API_ROUTES.cart.clearCart(cartId)
-    );
+    const response = await apiClient.delete(API_ROUTES.cart.clearCart(cartId));
     return response.data;
+  },
+
+  async removeCartItem({ cartId, cartItemId }: RemoveItemParams) {
+    const res = await apiClient.delete(
+      API_ROUTES.cart.removeCartItem(cartId, cartItemId)
+    );
+    return res.data;
   },
 
   async checkoutPreview(
-    vendorId: string, 
+    vendorId: string,
     deliveryType: "DELIVERY" | "PICKUP" = "DELIVERY"
   ) {
     const response = await apiClient.post<CheckoutPreview>(
@@ -35,7 +70,7 @@ export const cartService = {
     );
     return response.data;
   },
-  
+
   // // Keep old methods for backward compatibility during transition
   // async useCart(vendorId: string, payload?: any) {
   //   const res = await apiClient.post(
@@ -44,6 +79,4 @@ export const cartService = {
   //   );
   //   return res.data;
   // },
-
 };
-

@@ -1,54 +1,27 @@
 import React from "react";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { ActiveTab } from "./Sidebar";
-import { riceDish, shawarma } from "@/assets/images";
-import VendorCard from "../VendorCard";
+import VendorCard from "../vendor/VendorCard";
 import Loader from "../Loader";
 import ErrorStateUi from "../ErrorStateUi";
 import EmptyStateUi from "../EmptyStateUi";
+import { useFavourites } from "@/lib/hooks/queries/useFavourites";
+import { useSession } from "@/lib/hooks/useSession";
+import UnauthenticatedUi from "../UnauthenticatedUi";
 
 interface FavouritesProps {
   setActiveTab: (tab: ActiveTab) => void;
+  isAuthenticated: boolean;
 }
 
-interface FavouriteVendor {
-  id: string;
-  businessName: string;
-  ratings: number;
-  profileImg: string;
-}
-
-const favouriteVendor: FavouriteVendor[] = [
-  {
-    id: "1",
-    businessName: "Shawarma Plus+",
-    ratings: 4.7,
-    profileImg: shawarma.src,
-  },
-  {
-    id: "2",
-    businessName: "Mavise Foods",
-    ratings: 4.7,
-    profileImg: riceDish.src,
-  },
-  {
-    id: "3",
-    businessName: "Shawarma Plus+",
-    ratings: 4.7,
-    profileImg: shawarma.src,
-  },
-  {
-    id: "3",
-    businessName: "Shawarma Plus+",
-    ratings: 4.7,
-    profileImg: shawarma.src,
-  },
-];
-
-const Favourites = ({ setActiveTab }: FavouritesProps) => {
-  const isLoading = false;
-  const isError = false;
-  const isSuccess = true;
+const Favourites = ({ setActiveTab, isAuthenticated }: FavouritesProps) => {
+  const { user } = useSession();
+  const {
+    data: favouriteVendors,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useFavourites(user?.id || "", isAuthenticated);
 
   return (
     <div className="h-full">
@@ -59,6 +32,10 @@ const Favourites = ({ setActiveTab }: FavouritesProps) => {
         </button>
         <h2 className="text-lg leading-6">Favourite</h2>
       </div>
+
+      {!isAuthenticated && (
+        <UnauthenticatedUi description="You need to sign in before performing any action on Cargoland Food." />
+      )}
 
       {isLoading && (
         <div className="h-full flex justify-center items-center">
@@ -72,7 +49,7 @@ const Favourites = ({ setActiveTab }: FavouritesProps) => {
         </div>
       )}
 
-      {favouriteVendor.length === 0 && (
+      {isSuccess && favouriteVendors.length === 0 && (
         <div className="mt-20.5 ">
           <EmptyStateUi
             message="No favourite yet"
@@ -81,13 +58,14 @@ const Favourites = ({ setActiveTab }: FavouritesProps) => {
         </div>
       )}
 
-      {isSuccess && favouriteVendor.length > 0 && (
-        <div className="mt-4 space-y-4">
-          {favouriteVendor.map((vendor) => (
+      {isSuccess && favouriteVendors.length > 0 && (
+        <div className="mt-4 pb-6 space-y-4">
+          {favouriteVendors.map((vendor) => (
             <VendorCard
               key={vendor.id}
               vendor={vendor}
-              isFavourite
+              vendorId={vendor.id}
+              source="general"
               asFavouriteCard
             />
           ))}

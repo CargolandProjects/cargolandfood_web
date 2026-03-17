@@ -1,7 +1,16 @@
 import { address } from "@/assets/svgs";
 import { Button } from "../ui/button";
+import { useUIStore } from "@/lib/stores/uiStore";
+import useAuthFlow from "@/lib/stores/authFlowStore";
 
 const SelectAddressModal = () => {
+  const openSetAddress = useUIStore((s) => s.openAddresses);
+  const close = useAuthFlow((s) => s.closeAuth);
+
+  const handleSetAddress = () => {
+    openSetAddress();
+    close();
+  };
   return (
     <div className="flex flex-col gap-8 items-center justify-center">
       <h3 className="form-title">Select address</h3>
@@ -16,14 +25,20 @@ const SelectAddressModal = () => {
         Set your location to start exploring restaurants around you
       </p>
 
-      <div className="space-y-3.5 sm:space-y-3">
+      <Button
+        onClick={handleSetAddress}
+        className="submit-btn font-bold! text-sm"
+      >
+        Set From Map
+      </Button>
+      {/* <div className="space-y-3.5 sm:space-y-3">
         <Button className="submit-btn font-bold! text-sm">
           Use Current Location
         </Button>
         <Button className="submit-btn bg-background border border-primary-800 text-primary-800 font-bold!">
           Set From Map
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -1,16 +1,39 @@
-import VendorCard from "../VendorCard";
-// import { useRestaurants } from "@/lib/hooks/queries/useRestaurants";
+import VendorCard from "../vendor/VendorCard";
 import Loading from "../LoadingSkeleton";
 import { useVendors } from "@/lib/hooks/queries/useVendors";
-// import { Vendor } from "@/lib/services/vendors.service";
-// import { useState } from "react";
+import { useActiveZone } from "@/lib/hooks/useActiveZone";
+import { useInView } from "react-intersection-observer";
+import { useEffect, useMemo } from "react";
+// import ErrorStateUi from "../ErrorStateUi";
 
 const Restaurants = () => {
-  const { data, isLoading } = useVendors();
-  // const [restaurants, setRestaurants] = useState<Vendor[]>([]);
-  const restaurants = (data?.vendors || []).filter(
-    (vendor) => vendor.businessCategory === "Restaurant"
-  );
+  const { zoneId } = useActiveZone();
+  const { 
+    data, 
+    isLoading, 
+    isSuccess, 
+    fetchNextPage, 
+    hasNextPage, 
+    isFetchingNextPage 
+  } = useVendors(zoneId || "");
+
+  const { ref, inView } = useInView({
+    threshold: 0,
+    rootMargin: "100px",
+  });
+
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const restaurants = useMemo(() => {
+    const allVendors = data?.pages.flatMap((page) => page.vendors) ?? [];
+    return allVendors.filter(
+      (vendor) => vendor.businessCategory 
+    );
+  }, [data?.pages]);
 
   if (isLoading) {
     return (
@@ -22,13 +45,41 @@ const Restaurants = () => {
 
   return (
     <section className="my-6 sm:my-10">
-      {!isLoading && restaurants.length > 0 && (
+      {/* {isError && (
+        <div className="h-full flex justify-center items-center">
+          <ErrorStateUi message="Error Getting Vendors " />
+        </div>
+      )} */}
+
+      {!zoneId && (
+        <p className="text-neutral-500 text-center">
+          Please select your location
+        </p>
+      )}
+      {isSuccess && restaurants.length === 0 && (
+        <p className="text-neutral-500 text-left sm:text-center">
+          No vendors found for your current location
+        </p>
+      )}
+      {isSuccess && restaurants.length > 0 && (
         <div>
           <h3>Restaurants</h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 xl:gap-12 mt-2 section-y">
             {restaurants.map((vendor) => (
-              <VendorCard vendor={vendor} key={vendor.id} />
+              <VendorCard
+                vendor={vendor}
+                key={vendor.id}
+                vendorId={vendor.id}
+                source="homepage"
+              />
             ))}
+          </div>
+          
+          {/* Intersection observer trigger */}
+          <div ref={ref} className=" flex items-center justify-center">
+            {isFetchingNextPage && (
+              <div className="text-neutral-500 h-20">Loading more restaurants...</div>
+            )}
           </div>
         </div>
       )}

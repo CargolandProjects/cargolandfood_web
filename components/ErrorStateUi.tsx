@@ -25,7 +25,7 @@ const ErrorStateUi = ({ message }: { message: string }) => {
         />
       </svg>
 
-      <h3 className="text-lg leading-6 text-neutral-500">{message}</h3>
+      <h3 className="text-lg leading-6 text-neutral-500 text-center max-w-sm ">{message}</h3>
     </div>
   );
 };

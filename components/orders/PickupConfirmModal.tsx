@@ -1,19 +1,29 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
+import { memo } from "react";
+import { RiLoader2Line } from "react-icons/ri";
 
 interface PickupConfirmProps {
   open: boolean;
   onOpenChange: (close: boolean) => void;
-  onConfirm: () => void;
+  onConfirm: (cartId: string, description: string) => void;
+  cartId: string;
+  description: string;
+  isChargingWallet: boolean;
+  isMakingPayment: boolean;
 }
 
 const PickupConfirmModal = ({
   open,
   onOpenChange,
   onConfirm,
+  cartId,
+  description,
+  isChargingWallet,
+  isMakingPayment,
 }: PickupConfirmProps) => {
   const handleClick = () => {
-    onConfirm();
+    onConfirm(cartId, description);
   };
 
   return (
@@ -30,13 +40,22 @@ const PickupConfirmModal = ({
 
         <div className="mt-6 flex gap-3 mb-10">
           <Button
+            onClick={() => onOpenChange(false)}
             variant="outline"
             className="submit-btn flex-1 hover:bg-gray-50 text-neutral-500 border-neutral-300"
           >
             No, Cancel
           </Button>
-          <Button onClick={handleClick} className="submit-btn flex-1">
-            Yes, Place Order
+          <Button
+            onClick={handleClick}
+            disabled={isChargingWallet || isMakingPayment}
+            className="submit-btn flex-1"
+          >
+            {isMakingPayment || isChargingWallet ? (
+              <RiLoader2Line className="size-5 animate-spin" />
+            ) : (
+              " Yes, Place Order"
+            )}
           </Button>
         </div>
       </DialogContent>
@@ -44,4 +63,4 @@ const PickupConfirmModal = ({
   );
 };
 
-export default PickupConfirmModal;
+export default memo(PickupConfirmModal);

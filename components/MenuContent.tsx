@@ -1,4 +1,4 @@
-import { logout, icon } from "@/assets/svgs";
+import { logout, userIcon1 } from "@/assets/svgs";
 import { formatDateWComma } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -14,7 +14,7 @@ import {
 } from "react-icons/ri";
 import BackButton from "./BackButton";
 import { User } from "@/lib/services/auth.service";
-import { MenuScreen } from "./Header";
+import { MenuScreen } from "./header/Header";
 import { useState } from "react";
 import EditProfile from "./profile/EditProfile";
 import DeleteProfile from "./profile/DeleteProfile";
@@ -69,6 +69,7 @@ const MenuContent = ({
                 <RiArrowRightSLine className="size-6" />
               </div>
             </DropdownMenuItem>
+            {/* Logout Seection */}
             <DropdownMenuItem
               className="text-red-600 text-base font-medium"
               onClick={(e) => {
@@ -115,7 +116,7 @@ const MenuContent = ({
                     <AvatarFallback>{initials}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col justify-center gap-0.5">
-                    <p className="font-medium text-base leading-6">
+                    <p className="font-medium text-base leading-6 line-clamp-2">
                       {session?.fullName}
                     </p>
                     <p className="leading-4">{formatDateWComma(new Date())}</p>
@@ -129,7 +130,7 @@ const MenuContent = ({
               <div className="flex gap-0.5  items-center">
                 <div className="size-10 rounded-full flex justify-center items-center">
                   <img
-                    src={icon.src}
+                    src={userIcon1.src}
                     alt="logout-button-icon"
                     className="size-4.5 md:size-6 object-contain"
                   />

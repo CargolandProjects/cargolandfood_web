@@ -7,11 +7,16 @@ type PanelState<TPayload = null> = {
 };
 
 // Order Details payload (expand as needed)
-export type OrderDetailsPayload = {
-  orderId: string;
-  // Where this was triggered from (analytics/behavior tweaks)
-  // source?: "cart" | "orders" | "restaurant" | "search" | string;
-} | null;
+export type OrderDetailsPayload =
+  | {
+      orderId: string;
+      source: "general";
+    }
+  | {
+      reference: string;
+      source: "paymentSuccessful";
+    }
+  | null;
 
 // Checkout payload (expand as needed)
 export type CheckoutPayload = {
@@ -21,26 +26,55 @@ export type CheckoutPayload = {
   // You can add: addressId, paymentMethodId, etc.
 } | null;
 
+export type ReviewOrderPayload = {
+  vendorId: string;
+} | null;
+
+export type TrackOrderPayload = {
+  orderId: string;
+} | null;
+
+export type OrderSuccessPayload = {
+  preparationTime: string;
+  orderId: string;
+} | null;
+
+// export type OrderSuccesPayload = {
+//   closeCheckout?: (v: boolean) => void;
+// } | null;
+
 // UI store shape
 export type UIStoreState = {
   // Panels
   orderDetails: PanelState<OrderDetailsPayload>;
   checkout: PanelState<CheckoutPayload>;
-  trackOrder: PanelState;
+  trackOrder: PanelState<TrackOrderPayload>;
+  addresses: PanelState;
+  orderSuccess: PanelState<OrderSuccessPayload>;
+  reviewOrder: PanelState<ReviewOrderPayload>;
+
+  openAddresses: () => void;
+  closeAddresses: () => void;
+
+  openOrderSuccess: (payload: OrderSuccessPayload) => void;
+  closeOrderSuccess: () => void;
 
   // Actions: Order Details
-  openOrderDetails: (payload?: OrderDetailsPayload) => void;
+  openOrderDetails: (payload: OrderDetailsPayload) => void;
   closeOrderDetails: () => void;
   // setOrderDetailsPayload: (patch: Partial<OrderDetailsPayload>) => void;
   // replaceOrderDetailsPayload: (payload: OrderDetailsPayload | null) => void;
 
   // Actions: Track Order
-  openTrackOrder: () => void;
+  openTrackOrder: (payload: TrackOrderPayload) => void;
   closeTrackOrder: () => void;
 
   // Actions: Checkout
-  openCheckout: (payload?: CheckoutPayload) => void;
+  openCheckout: (payload: CheckoutPayload) => void;
   closeCheckout: () => void;
+
+  openReviewOrder: (payload?: CheckoutPayload) => void;
+  closeReviewOrder: () => void;
   // setCheckoutPayload: (patch: Partial<CheckoutPayload>) => void;
   // replaceCheckoutPayload: (payload: CheckoutPayload | null) => void;
 };
@@ -50,15 +84,35 @@ export const useUIStore = create<UIStoreState>((set) => ({
   orderDetails: { open: false, payload: null },
   checkout: { open: false, payload: null },
   trackOrder: { open: false },
+  addresses: { open: false },
+  orderSuccess: { open: false, payload: null },
+  reviewOrder: { open: false, payload: null },
 
-  openTrackOrder: () => {
-    set({ trackOrder: { open: true } });
+  openReviewOrder: (payload = null) =>
+    set({ reviewOrder: { open: true, payload } }),
+  closeReviewOrder: () => set({ reviewOrder: { open: false, payload: null } }),
+
+  openOrderSuccess: (payload = null) =>
+    set({ orderSuccess: { open: true, payload } }),
+  closeOrderSuccess: () =>
+    set({ orderSuccess: { open: false, payload: null } }),
+
+  openTrackOrder: (payload: TrackOrderPayload) => {
+    set({ trackOrder: { open: true, payload } });
   },
 
   closeTrackOrder: () => {
     set({
       trackOrder: { open: false },
     });
+  },
+
+  openAddresses: () => {
+    set({ addresses: { open: true } });
+  },
+
+  closeAddresses: () => {
+    set({ addresses: { open: false } });
   },
 
   // Order Details actions

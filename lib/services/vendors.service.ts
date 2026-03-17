@@ -1,28 +1,42 @@
 import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
+import { APIResponse } from "../types/cart.types";
 
 export interface Vendor {
   id: string;
   businessName: string;
-  businessCategory: string;
-  businessAddress: string;
-  isPreorder: boolean;
-  golive: boolean;
-  totalOrders: number;
+  businessCategory: string | null;
+  businessAddress: string | null;
+  preparationTime?: string | null;
+  workingHours?: [
+    {
+      preparationTime: string;
+    }
+  ];
+  isPreorder: boolean | null;
+  isFavourite: boolean;
+  golive: boolean | null;
+  totalOrders: number | null;
   profileImg: string;
   createdAt: string;
   ratings: number;
 }
 
-interface Vendors {
+export interface Vendors {
   status: string;
   message: string;
   vendors: Vendor[];
+  totalVendors: number | null;
+  currentPage: number | null;
+  totalPages: number | null;
+  nextPage: number | null;
+  prevPage: number | null;
 }
 
 interface Addon {
   id: string;
   name: string;
+  addonImage: string;
   price: string;
   menuId: string;
   createdAt: string;
@@ -45,13 +59,14 @@ export interface Menu {
   description: string;
   price: string;
   uploadImageUrl: string;
+  imageUrl: string;
   categoryId: string;
   vendorId: string;
-  outOfStock: boolean;
-  addons: Addon[];
-  sizes: Size[];
+  outOfStock?: boolean;
+  addons?: Addon[];
+  sizes?: Size[];
   isMenuSet: boolean;
-  PromotionItem: {
+  PromotionItem?: {
     id: string;
     promotionId: string;
     menuItemId: string;
@@ -85,7 +100,7 @@ interface Promotions {
   updatedAt: string;
 }
 
-interface Categories {
+export interface Categories {
   id: string;
   name: string;
   publishNow: boolean;
@@ -93,14 +108,14 @@ interface Categories {
   createdAt: string;
 }
 
-interface VendorDetail extends Omit<Vendor, "ratings"> {
+export interface VendorDetail extends Omit<Vendor, "ratings"> {
   categories: Categories[];
   menus: Menu[];
   review: Review[];
   promotions: Promotions[];
 }
 
-interface vendorById {
+export interface vendorById {
   status: string;
   message: string;
   data: VendorDetail;
@@ -109,15 +124,46 @@ interface vendorById {
     bayesianRating: number;
   };
 }
+
+export interface DiscountVendor {
+  vendor: Vendor
+  aggregateDiscount: number;
+}
+
+export type DiscountVendorsRes = APIResponse<DiscountVendor[]>;
+
 export const vendors = {
-  async getAllVendors() {
-    const res = await apiClient.get<Vendors>(API_ROUTES.vendor.allVendors);
+  async getAllVendors(zoneId: string, page: number = 1, limit: number) {
+    const res = await apiClient.get<Vendors>(
+      `${API_ROUTES.vendor.allVendors(zoneId)}?page=${page}&limit=${limit}`
+    );
     return res.data;
   },
 
-  async getVendorById(id: string) {
+  async getVendorsByCategory(
+    zoneId: string,
+    query: string,
+    page: number = 1,
+    limit: number
+  ) {
+    const res = await apiClient.get(
+      `${API_ROUTES.vendor.getVendorsByCategory(
+        zoneId
+      )}?query=${query}&page=${page}&limit=${limit}`
+    );
+    return res.data;
+  },
+
+  async getDiscountVendors(zoneId: string) {
+    const res = await apiClient.get<DiscountVendorsRes>(
+      API_ROUTES.vendor.getDiscountVendors(zoneId)
+    );
+    return res.data;
+  },
+
+  async getVendorMenuById(id: string) {
     const res = await apiClient.get<vendorById>(
-      API_ROUTES.vendor.vendorById(id)
+      API_ROUTES.vendor.vendorMenuById(id)
     );
     return res.data;
   },

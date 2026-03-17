@@ -1,0 +1,71 @@
+import { memo } from "react";
+import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
+import success from "@/assets/gifs/success.gif";
+import { RiTimeLine } from "react-icons/ri";
+import { Button } from "../ui/button";
+import { useUIStore } from "@/lib/stores/uiStore";
+
+interface OrderSuccessfulProps {
+  closeCheckout?: (v: boolean) => void;
+}
+
+const OrderSuccessModal = ({ closeCheckout }: OrderSuccessfulProps) => {
+  const open = useUIStore((s) => s.orderSuccess.open);
+  const openOrderDetails = useUIStore((s) => s.openOrderDetails);
+  const preparationTime = useUIStore(
+    (s) => s.orderSuccess.payload?.preparationTime
+  );
+  const orderId = useUIStore((s) => s.orderSuccess.payload?.orderId);
+  const closeOrderSuccess = useUIStore((s) => s.closeOrderSuccess);
+
+  const handleopenDetails = () => {
+    if (!orderId) return;
+    openOrderDetails({ orderId, source: "general" });
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={() => {
+        closeOrderSuccess();
+        if (closeCheckout) closeCheckout(false);
+      }}
+    >
+      <DialogContent className="dialog px-6! sm:px-9!">
+        <div className="size-[124px] sm:size-[180px] self-center justify-self-center mt-8">
+          <img src={success.src} alt="coupon added" className="size-full " />
+        </div>
+
+        <div className="sm:mt-1 flex flex-col justify-center items-center gap-3">
+          <DialogTitle className="dialog-title font-bold! max-w-[200px]">
+            Yay! Your Order has been placed.
+          </DialogTitle>
+          <p className="max-w-[260px] text-base leading-5 text-center">
+            Your order would be ready in {preparationTime} mins at most
+          </p>
+          <div className="flex justify-between w-full max-w-[287px]">
+            <div className="flex gap-2 items-center">
+              <RiTimeLine className="size-5" />
+              <p className="leading-4.5">Estimated Time</p>
+            </div>
+            <p className="text-base font-medium ">{preparationTime}</p>
+          </div>
+        </div>
+
+        <div className="mt-13 flex gap-2 mb-6 sm:mb-8">
+          <Button
+            variant="outline"
+            className="submit-btn flex-1 hover:bg-gray-50 text-neutral-500 border-neutral-300"
+          >
+            Cancel Orders
+          </Button>
+          <Button onClick={handleopenDetails} className="submit-btn flex-1">
+            Order Details
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default memo(OrderSuccessModal);

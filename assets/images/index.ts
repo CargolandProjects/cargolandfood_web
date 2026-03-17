@@ -18,6 +18,7 @@ import user1 from "./user1.webp";
 import wallet from "./wallet.png";
 import pizza2 from "./pizza2.webp";
 import riceDish from "./rice_dish.jpg";
+import sadFace from "./sad_face.png";
 
 export {
   hamburgers,
@@ -39,5 +40,6 @@ export {
   user1,
   wallet,
   pizza2,
-  riceDish
+  riceDish,
+  sadFace,
 };

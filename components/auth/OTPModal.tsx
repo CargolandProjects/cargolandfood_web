@@ -64,13 +64,13 @@ const OTPModal = () => {
 
     if (otpType === "signup") {
       // After successful signup OTP, go to sign in
-      return goToStep("signin");
+      goToStep("signin");
     } else if (otpType === "forgot-password") {
       // After forgot password OTP, go to reset password
-      return goToStep("reset-password");
+      goToStep("reset-password");
     } else {
       // After sign in OTP, close modal (user is now authenticated)
-      return closeAuth();
+      closeAuth();
     }
   };
 
@@ -217,8 +217,12 @@ const OTPModal = () => {
           />
         </FieldGroup>
         <Button
-          disabled={otpData.length !== 4}
-          className="disabled:bg-gray-100 disabled:text-gray-300 mt-8 md:py-3.5 submit-btn"
+          disabled={otpData.length !== 4 || isPending}
+          className={` mt-8 md:py-3.5 submit-btn ${
+            isPending
+              ? "bg-primary"
+              : "disabled:bg-gray-100 disabled:text-gray-300"
+          }`}
         >
           {isPending || resendPending ? (
             <RiLoader2Line className="size-5 animate-spin" />

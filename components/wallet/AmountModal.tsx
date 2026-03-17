@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 import { TopUpStep } from "./TopUpModal";
 
 interface AmountModalProps {
-  balance: number;
+  balance: string | undefined;
   amount: string;
   setAmount: (amount: string) => void;
   nextStep: (step: TopUpStep) => void;
@@ -21,6 +21,7 @@ const AmountModal = ({
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // console.log("This is the value:", value);
+    // This line prevents inputting values other than numbers
     if (value === "" || /^\d+$/.test(value)) setAmount(value);
   };
 
@@ -32,7 +33,7 @@ const AmountModal = ({
       setMessage(`The least amount is ₦${minAmount}`);
       return;
     }
-    nextStep("paymentMthod");
+    nextStep("paymentMethod");
   };
 
   return (
@@ -42,7 +43,7 @@ const AmountModal = ({
           Top Up Wallet
         </DialogTitle>
         <DialogDescription className="text-base font-normal leading-5 text-center">
-          Wallet Balance: ₦{balance.toLocaleString()}
+          Wallet Balance: ₦{Number(balance || 0).toLocaleString()}
         </DialogDescription>
       </DialogHeader>
 
@@ -75,11 +76,8 @@ const AmountModal = ({
             onChange={handleChange}
             className="form-input h-full pl-12.5"
           />
-
         </div>
-          <p className="text-red-500 text-center text-sm  relative">
-            {message}
-          </p>
+        <p className="text-red-500 text-center text-sm  relative">{message}</p>
         <Button onClick={handleNextStep} className=" submit-btn mt-6">
           Confirm Amount
         </Button>

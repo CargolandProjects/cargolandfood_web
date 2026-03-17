@@ -40,12 +40,12 @@ apiClient.interceptors.response.use(
       | { statusCode?: number; code?: string; message?: string }
       | undefined;
     // Normalize Error Shape to Match Backend Standard
-    const normalized = new Error(
-      data?.message || error.message || "Something went wrong"
-    ) as Error & { statusCode?: number; code?: string };
-    normalized.statusCode = data?.statusCode ?? error.response?.status;
-    normalized.code = data?.code;
-    normalized.cause = error; // keep original │                                                                               │
+    const normalized = {
+      message: data?.message || error.message || "Something went wrong",
+      statusCode: data?.statusCode ?? error.response?.status,
+      code: data?.code,
+      cause: error, // keep original error for debugging
+    };
 
     if (status === 401 && !originalRequest._retry) {
       const refreshToken =

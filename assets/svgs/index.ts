@@ -3,7 +3,8 @@ import restaurant from "./restaurant.svg";
 import groceries from "./grocery.svg";
 import food from "./food.svg";
 import logout from "./logout.svg";
-import icon from "./icon.svg";
+import userIcon1 from "./guestIcon1.svg";
+import userIcon2 from "./guestIcon2.svg";
 import meter from "./meter.svg";
 import hamburger from "./hamburger.svg";
 import medal from "./medal.svg";
@@ -15,6 +16,8 @@ import apple from "./apple.svg";
 import address from "./address.svg";
 import emptyBox from "./empty_box.svg";
 import map from "./map.svg";
+import camera from "./camera.svg";
+import alert from "./alert.svg";
 
 export {
   logo,
@@ -22,7 +25,8 @@ export {
   groceries,
   food,
   logout,
-  icon,
+  userIcon1,
+  userIcon2,
   meter,
   medal,
   hamburger,
@@ -34,4 +38,6 @@ export {
   address,
   emptyBox,
   map,
+  camera,
+  alert,
 };

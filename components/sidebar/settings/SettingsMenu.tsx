@@ -16,7 +16,7 @@ import { Separator } from "../../ui/separator";
 import { useRouter } from "next/navigation";
 import ChatSupport from "./ChatSupport";
 import { ActiveTab } from "../Sidebar";
-import AddressModal from "./address/AddressModal";
+import { useUIStore } from "@/lib/stores/uiStore";
 
 interface SettingsProps {
   setActiveTab: (tab: ActiveTab) => void;
@@ -59,15 +59,13 @@ const SETTINGS_SECTIONS = [
 
 const SettingsMenu = ({ setActiveTab }: SettingsProps) => {
   const [showChatSupport, setShowChatSupport] = useState(false);
-  const [showAddress, setShowAddress] = useState(false);
+  const openAdresses = useUIStore((s) => s.openAddresses);
   const router = useRouter();
 
   const menuActions: { [key: string]: () => void } = useMemo(() => {
     return {
       Settings: () => {},
-      Addresses: () => {
-        setShowAddress(true);
-      },
+      Addresses: openAdresses,
       Security: () => {},
       Coupon: () => {},
       "My Wallet": () => {
@@ -78,7 +76,7 @@ const SettingsMenu = ({ setActiveTab }: SettingsProps) => {
       "Live Chat": () => setShowChatSupport(true),
       "Help & Support": () => {},
     };
-  }, [router]);
+  }, [router, openAdresses]);
 
   // const handleClose = (v: boolean) => {
   //   setOpenMenu(v);
@@ -129,7 +127,7 @@ const SettingsMenu = ({ setActiveTab }: SettingsProps) => {
           ))}
         </div>
       </div>
-      <AddressModal open={showAddress} onOpenChange={setShowAddress} />
+
       <ChatSupport
         open={showChatSupport}
         onOpenChange={useCallback((o: boolean) => {

@@ -2,15 +2,17 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { useAuthSessionStore } from "@/lib/stores/authSessionStore";
 import { auth } from "@/lib/services/auth.service";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function useSession() {
+  const queryClient = useQueryClient();
   const user = useAuthSessionStore((s) => s.user);
   const status = useAuthSessionStore((s) => s.status);
   const setPendingUser = useAuthSessionStore((s) => s.setPendingUser);
   const completeOtp = useAuthSessionStore((s) => s.completeOtp);
   const setUser = useAuthSessionStore((s) => s.setUser);
   const updateUser = useAuthSessionStore((s) => s.updateUser);
-  const signOut = useAuthSessionStore((s) => s.signOut);
+  const storeSignOut = useAuthSessionStore((s) => s.signOut);
   const hydrate = useAuthSessionStore((s) => s.hydrateFromStorage);
 
   useEffect(() => {
@@ -39,6 +41,7 @@ export function useSession() {
     try {
       const response = await auth.getUserById(userId);
       if (response?.data) {
+        // console.log("Refreshed session:", response.data);
         setUser(response.data);
       }
     } catch (error) {
@@ -47,6 +50,10 @@ export function useSession() {
   }, [user?.id, setUser]);
 
   const isAuthenticated = useMemo(() => status === "authenticated", [status]);
+
+  const signOut = useCallback(() => {
+    storeSignOut(queryClient);
+  }, [storeSignOut, queryClient]);
 
   return {
     user,
