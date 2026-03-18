@@ -31,17 +31,27 @@ export const useDiscountVendors = (zoneId: string) => {
     queryKey: ["discountVendors", zoneId],
     queryFn: () => vendors.getDiscountVendors(zoneId),
     enabled: !!zoneId,
-    select: res => res.data
+    select: (res) => res.data,
   });
 };
 
-export const useVendorMenuById = (id: string, initialData?: vendorById) => {
-  return useQuery({
-    queryKey: ["vendorById", id],
-    queryFn: () => vendors.getVendorMenuById(id),
+export const useVendorMenuById = (
+  id: string,
+  initialData?: vendorById,
+  limit: number = 10
+) => {
+  return useInfiniteQuery({
+    queryKey: ["vendorById", id, limit],
+    queryFn: ({ pageParam }) => vendors.getVendorMenuById(id, pageParam, limit),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
     enabled: !!id,
-    initialData,
-    staleTime: initialData ? 5 * 60 * 1000 : 0, // 5 minutes if we have initial data
-    refetchOnMount: !initialData, // Don't refetch immediately if we have initial data
+    initialData: initialData
+      ? {
+          pages: [initialData],
+          pageParams: [1],
+        }
+      : undefined,
+    staleTime: initialData ? 5 * 60 * 1000 : 0,
   });
 };
