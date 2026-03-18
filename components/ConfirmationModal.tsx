@@ -41,7 +41,7 @@ const ConfirmationModal = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-[400px]! p-0 m-0 gap-0 rounded-2xl px-10.5">
+      <AlertDialogContent className="max-w-[400px]! max-sm:w-[95vw]! p-0 m-0 gap-0 rounded-2xl px-10.5">
         <AlertDialogHeader className=" gap-0">
           <Button onClick={() => onOpenChange(false)} variant="ghost" className="size-10 absolute top-4.5 right-4.5">
             <RiCloseFill className="size-6" />

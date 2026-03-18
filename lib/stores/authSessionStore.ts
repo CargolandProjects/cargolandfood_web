@@ -18,11 +18,11 @@ interface AuthSessionState {
   signOut: (queryClient?: QueryClient) => void;
 }
 
-const USER_KEY = "user";
-const USER_PENDING_KEY = "user_pending";
-const USER_ID_KEY = "user_id";
-const ACCESS_KEY = "auth_token";
-const REFRESH_KEY = "refresh_token";
+const USER_KEY = `${process.env.NEXT_PUBLIC_USER_KEY}`;
+const USER_PENDING_KEY = `${process.env.NEXT_PUBLIC_USER_PENDING_KEY}`;
+const USER_ID_KEY = `${process.env.NEXT_PUBLIC_USER_ID_KEY}`;
+const ACCESS_KEY = `${process.env.NEXT_PUBLIC_ACCESS_KEY}`;
+const REFRESH_KEY = `${process.env.NEXT_PUBLIC_REFRESH_KEY}`;
 
 const readJSON = <T>(key: string): T | null => {
   if (typeof window === "undefined") return null;
@@ -130,11 +130,11 @@ export const useAuthSessionStore = create<AuthSessionState>((set, get) => ({
       localStorage.removeItem(USER_KEY);
       localStorage.removeItem(USER_PENDING_KEY);
       // Don't remove USER_ID_KEY to allow future hydration if tokens come back
-      
+
       // Clear persisted CartStore
       localStorage.removeItem("cart_store_v1");
     }
-    
+
     // Clear user-specific query cache
     if (queryClient) {
       queryClient.removeQueries({ queryKey: ["cart"] });
@@ -148,7 +148,7 @@ export const useAuthSessionStore = create<AuthSessionState>((set, get) => ({
       queryClient.removeQueries({ queryKey: ["checkoutPreview"] });
       queryClient.removeQueries({ queryKey: ["reviews"] });
     }
-    
+
     set({ user: null, pendingUser: null, status: "unauthenticated" });
   },
 }));

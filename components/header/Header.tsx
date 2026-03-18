@@ -21,7 +21,7 @@ import {
   RiArrowLeftLine,
 } from "react-icons/ri";
 import Notifications from "./Notifications";
-import MenuContent from "../MenuContent";
+import MenuContent from "./MenuContent";
 import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
 import Location from "./Location";
 import Wallet from "./Wallet";
@@ -75,7 +75,6 @@ export function Header({ setSideBar }: HeaderProps) {
   const showSearch = matchRoutes(SEARCH_ROUTES, path);
   const showBack = matchRoutes(BACK_ROUTES, path);
 
-  // session.signOut();
   return (
     <header className="sticky top-0 z-30 px-4 sm:px-6 py-2 max-sm:pb-1 bg-white sm:border-b border-gray-100">
       <div className="max-sm:flex justify-between gap-2">

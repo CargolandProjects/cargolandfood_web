@@ -29,8 +29,19 @@ const formSchema = z
   .object({
     phoneNumber: z
       .string()
-      .min(10, "Phone number must be at least 10 digits")
-      .regex(/^[\+]?[1-9][\d]{0,15}$/, "Enter a valid phone number"),
+      .min(11, "Phone number must be at least 11 digits")
+      .transform((val) => {
+        //Normalize to +234 format
+        const phone = val.replace(/[^\d+]/g, "");
+        if (phone.startsWith("+234")) return phone;
+        if (phone.startsWith("0")) return `+234${phone.slice(1)}`;
+        if (phone.startsWith("234")) return `+${phone}`;
+        return phone;
+      })
+      .refine(
+        (val) => /^\+234[789]\d{9}$/.test(val),
+        "Enter a valid phone number"
+      ),
     email: z.email("Enter a valid email address").min(1, "Email is required"),
     fullName: z
       .string()
@@ -128,6 +139,7 @@ const SignUpModal = () => {
                     {...field}
                     id={field.name}
                     aria-invalid={fieldState.invalid}
+                    inputMode="tel"
                     placeholder="+234 080000000000"
                     className="form-input"
                   />
