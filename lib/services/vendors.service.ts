@@ -123,10 +123,15 @@ export interface vendorById {
     simpleRating: number;
     bayesianRating: number;
   };
+  totalMenu: number;
+  currentPage: number;
+  totalPages: number;
+  nextPage: null;
+  prevPage: null;
 }
 
 export interface DiscountVendor {
-  vendor: Vendor
+  vendor: Vendor;
   aggregateDiscount: number;
 }
 
@@ -161,9 +166,9 @@ export const vendors = {
     return res.data;
   },
 
-  async getVendorMenuById(id: string) {
+  async getVendorMenuById(id: string, page: number = 1, limit: number) {
     const res = await apiClient.get<vendorById>(
-      API_ROUTES.vendor.vendorMenuById(id)
+      `${API_ROUTES.vendor.vendorMenuById(id)}?page=${page}&limit=${limit}`
     );
     return res.data;
   },

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CategoryTab from "@/components/home/CategoryTab";
+import { useInView } from "react-intersection-observer";
 import VendorStats from "@/components/vendor/VendorStats";
 import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
 import VendorItemCardA from "@/components/vendor/VendorItemCardA";
@@ -39,11 +40,51 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
     "DELIVERY"
   );
 
-  const { data, isLoading, error, isSuccess } = useVendorMenuById(id, initialData);
+  const {
+    data,
+    isLoading,
+    error,
+    isSuccess,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useVendorMenuById(id, initialData);
   const { mutate: toggleFavourite } = useToggleFavourite("vendorpage");
   const { user, isAuthenticated } = useSession();
 
   const router = useRouter();
+
+  // Detect large screen (lg breakpoint = 1024px)
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+  
+  //  Useffect to detect large screen for synchronizing left contennt width
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+
+    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      setIsLargeScreen(e.matches);
+    };
+
+    // Initial check
+    handleChange(mediaQuery);
+
+    // Listen for changes
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  // Intersection observer for infinite scroll
+  const { ref, inView } = useInView({
+    threshold: 0,
+    rootMargin: "20px",
+  });
+
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Fetch checkout preview to check if cart has items
   // Enable fetching on component mount to check cart status
@@ -54,11 +95,14 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
     isSuccess: checkoutSuccess,
   } = useCheckoutPreview(id, deliveryType, true, isAuthenticated);
 
-  const vendor = data?.data;
-  const rating = data?.averageRating;
-  const menus = data?.data.menus || [];
-  const categories = data?.data.categories || [];
-  const preparationTime = data?.data.workingHours?.[0].preparationTime;
+  // Flatten paginated menus from infinite query
+  const firstPage = data?.pages?.[0];
+  const vendor = firstPage?.data;
+  const rating = firstPage?.averageRating;
+  const allMenus = data?.pages?.flatMap((page) => page.data.menus) ?? [];
+  const menus = allMenus;
+  const categories = firstPage?.data.categories || [];
+  const preparationTime = firstPage?.data.workingHours?.[0].preparationTime;
 
   // Check if cart has items from checkout preview
   // If error (e.g., 400 "No active cart"), treat as empty cart
@@ -132,17 +176,27 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
       {vendor && (
         <VendorJsonLd
           vendor={vendor}
-          rating={data?.averageRating?.simpleRating || 0}
+          rating={rating?.simpleRating || 0}
           reviewCount={vendor.review?.length || 0}
         />
       )}
-      
-      <div className="flex gap-6 xl:gap-10 h-full">
+
+      <motion.div
+        className="grid gap-6 xl:gap-10 h-full"
+        animate={{
+          gridTemplateColumns:
+            isLargeScreen && hasItemsInCart ? "1fr 400px" : "1fr 0px",
+        }}
+        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+      >
         {/* Single SVG clip-path definition for all VendorItemCardB instances */}
         {!isRestaurant && (
           <svg width="0" height="0" style={{ position: "absolute" }}>
             <defs>
-              <clipPath id="trapezium-rounded" clipPathUnits="objectBoundingBox">
+              <clipPath
+                id="trapezium-rounded"
+                clipPathUnits="objectBoundingBox"
+              >
                 <path
                   d="
                   M 0.05,0.144
@@ -161,93 +215,86 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
           </svg>
         )}
 
-      <motion.div
-        className="w-full h-full flex-1 flex flex-col"
-        layout
-        transition={{
-          duration: 0.5,
-          ease: [0.4, 0, 0.2, 1],
-        }}
-      >
-        {/* Back button */}
-        <button
-          onClick={handleBack}
-          className="hidden sm:flex items-center gap-4 text-sm w-full pl-2 hover:cursor-pointer"
-        >
-          <RiArrowGoBackLine className="size-3.5 text-gray-500" />
-          <span className="text-xl font-medium">Restaurants</span>
-        </button>
+        <div className="min-w-0 h-full flex flex-col">
+          {/* Back button */}
+          <button
+            onClick={handleBack}
+            className="hidden sm:flex items-center gap-4 text-sm w-full pl-2 hover:cursor-pointer"
+          >
+            <RiArrowGoBackLine className="size-3.5 text-gray-500" />
+            <span className="text-xl font-medium">Restaurants</span>
+          </button>
 
-        {/* 1. Header Image and Info Section */}
-        <div>
-          <h3 className="sm:hidden">Restaurants</h3>
-          {/* Banner Image */}
-          <div className="relative h-25.5 sm:h-48 lg:h-[234px] xl:h-[284px] w-full overflow-hidden rounded-xl mt-2">
-            <img
-              src={vendor?.profileImg || "/fallback_vendor.webp"}
-              alt="Shawarma Plus banner"
-              className="w-full h-full object-cover rounded-xl bg-neutral-100"
-              loading="lazy"
-              onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
-            />
-            {/* Favourite and Comments */}
-            <div className="absolute top-3 sm:top-6 right-3 sm:right-6 flex gap-2.5">
-              <button
-                onClick={(e) =>
-                  handleToggleFavourite(vendor!.isFavourite, vendor!.id, e)
-                }
-                className="size-8 sm:size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
-              >
-                <RiHeartFill
-                  className={`${
-                    vendor?.isFavourite ? "text-primary" : "text-neutral-400"
-                  } size-6`}
-                />
-              </button>
-              <button
-                onClick={() => setShowReviews(true)}
-                className="size-8 sm:size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
-              >
-                <img
-                  src={info.src}
-                  alt="Shawarma Plus banner"
-                  className="size-6 rounded-full object-cover"
-                  loading="lazy"
-                />
-              </button>
+          {/* 1. Header Image and Info Section */}
+          <div>
+            <h3 className="sm:hidden">Restaurants</h3>
+            {/* Banner Image */}
+            <div className="relative h-25.5 sm:h-48 lg:h-[234px] xl:h-[284px] w-full overflow-hidden rounded-xl mt-2">
+              <img
+                src={vendor?.profileImg || "/fallback_vendor.webp"}
+                alt={vendor?.businessName}
+                className="w-full h-full object-cover rounded-xl bg-neutral-100"
+                onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
+              />
+              {/* Favourite and Comments */}
+              <div className="absolute top-3 sm:top-6 right-3 sm:right-6 flex gap-2.5">
+                <button
+                  onClick={(e) =>
+                    handleToggleFavourite(vendor!.isFavourite, vendor!.id, e)
+                  }
+                  className="size-8 sm:size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
+                >
+                  <RiHeartFill
+                    className={`${
+                      vendor?.isFavourite ? "text-primary" : "text-neutral-400"
+                    } size-6`}
+                  />
+                </button>
+                <button
+                  onClick={() => setShowReviews(true)}
+                  className="size-8 sm:size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
+                >
+                  <img
+                    src={info.src}
+                    alt="Shawarma Plus banner"
+                    className="size-6 rounded-full object-cover"
+                    loading="lazy"
+                  />
+                </button>
+              </div>
+            </div>
+
+            <div className="my-3 sm:my-10 max-sm:space-y-[3px]">
+              <h2>{vendor?.businessName}</h2>
+              {/* Stats Line (Rating, Delivery Fee, Time) */}
+              <VendorStats
+                rating={rating?.bayesianRating || 0}
+                deliveryFee={0}
+                deliveryTime={preparationTime || ""}
+              />
             </div>
           </div>
 
-          <div className="my-3 sm:my-10 max-sm:space-y-[3px]">
-            <h2>{vendor?.businessName}</h2>
-            {/* Stats Line (Rating, Delivery Fee, Time) */}
-            <VendorStats
-              rating={rating?.bayesianRating || 0}
-              deliveryFee={0}
-              deliveryTime={preparationTime || ""}
+          {/* 2. Category Tabs Section */}
+          <div className="sm:mb-10 sm:px-4">
+            <CategoryTab
+              categories={categories}
+              activeCatId={activeCatId}
+              selectCatId={setActiveCatId}
             />
           </div>
-        </div>
 
-        {/* 2. Category Tabs Section */}
-        <div className="sm:mb-10 sm:px-4">
-          <CategoryTab
-            categories={categories}
-            activeCatId={activeCatId}
-            selectCatId={setActiveCatId}
-          />
-        </div>
+          {/* 3. Product Listing Section */}
+          <div className="sm:px-4 max-sm:mt-3 flex-1">
+            {isSuccess && filteredMenu.length === 0 && (
+              <p className="text-center text-gray-500 py-8">
+                No items in this category
+              </p>
+            )}
 
-        {/* 3. Product Listing Section */}
-        <div className="sm:px-4 max-sm:mt-3 flex-1">
-          {isSuccess && filteredMenu.length === 0 && (
-            <p className="text-center text-gray-500 py-8">
-              No items in this category
-            </p>
-          )}
-
-          <div
-            className={`grid gap-3 sm:gap-4 lg:gap-10 
+            {/* Menu Items Grid */}
+            <div
+              className={`grid gap-3 sm:gap-4 lg:gap-10 
               ${
                 isRestaurant
                   ? "grid-cols-1 sm:grid-cols-2"
@@ -259,116 +306,130 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
                 "lg:grid-cols-2! xl:grid-cols-3!"
               }
               ${hasItemsInCart && "lg:grid-cols-1 xl:grid-cols-2"}`}
-          >
-            {isSuccess &&
-              filteredMenu.length > 0 &&
-              filteredMenu.map((item) =>
-                isRestaurant ? (
-                  <VendorItemCardA
-                    key={item.id}
-                    vendorId={id}
-                    menu={item}
-                    handleSelect={handleSelect}
-                    selectedId={selectedId}
-                  />
-                ) : (
-                  <VendorItemCardB
-                    key={item.id}
-                    vendorId={id}
-                    menu={item}
-                    handleSelect={handleSelect}
-                    selectedId={selectedId}
-                  />
-                )
-              )}
+            >
+              {isSuccess &&
+                filteredMenu.length > 0 &&
+                filteredMenu.map((item) =>
+                  isRestaurant ? (
+                    <VendorItemCardA
+                      key={item.id}
+                      vendorId={id}
+                      menu={item}
+                      handleSelect={handleSelect}
+                      selectedId={selectedId}
+                    />
+                  ) : (
+                    <VendorItemCardB
+                      key={item.id}
+                      vendorId={id}
+                      menu={item}
+                      handleSelect={handleSelect}
+                      selectedId={selectedId}
+                    />
+                  )
+                )}
+            </div>
+
+            {/* Infinite scroll trigger */}
+            {isSuccess && filteredMenu.length > 0 && (
+              <div ref={ref} className="py-8 flex items-center justify-center">
+                {isFetchingNextPage && (
+                  <div className="text-neutral-500 text-sm">
+                    Loading more items...
+                  </div>
+                )}
+              </div>
+            )}
           </div>
+
+          {/* Mobile Screen Checkout prompt */}
+          <AnimatePresence>
+            {hasItemsInCart && (
+              <motion.div
+                initial={{ y: 100 }}
+                animate={{ y: 0 }}
+                exit={{ y: 100 }}
+                transition={{ duration: 0.3 }}
+                className="sticky sm:hidden z-10 pt-5 pb-8 px-8 bottom-0 inset-x-0 flex gap-2 justify-between items-center bg-white"
+              >
+                <p className="text-xl font-medium ">
+                  ₦{calculateLocalTotal().toLocaleString()}
+                </p>
+                <Button
+                  onClick={() => setOpenCheckout(true)}
+                  className="uppercase py-3.5 px-5.5 h-12 text-sm font-bold w-[184px]"
+                >
+                  Checkout
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* Mobile Screen Checkout prompt */}
-        <AnimatePresence>
+        {/* Large Screens Checkout component */}
+        <AnimatePresence mode="popLayout">
           {hasItemsInCart && (
-            <motion.div
-              initial={{ y: 100 }}
-              animate={{ y: 0 }}
-              exit={{ y: 100 }}
-              transition={{ duration: 0.3 }}
-              className="sticky sm:hidden z-10 pt-5 pb-8 px-8 bottom-0 inset-x-0 flex gap-2 justify-between items-center bg-white"
+            <motion.aside
+              initial={{ x: "100%", opacity: 0 }}
+              animate={{
+                x: 0,
+                opacity: 1,
+              }}
+              exit={{
+                x: "100%",
+                opacity: 0,
+              }}
+              transition={{
+                duration: 0.3,
+                ease: [0.4, 0, 0.2, 1],
+              }}
+              className="max-lg:hidden mt-8 sticky top-[60px] sm:h-[calc(100dvh-100px)] w-[400px] min-w-[307px] shadow-2xl rounded-2xl border overflow-hidden border-gray-100"
             >
-              <p className="text-xl font-medium ">
-                ₦{calculateLocalTotal().toLocaleString()}
-              </p>
-              <Button
-                onClick={() => setOpenCheckout(true)}
-                className="uppercase py-3.5 px-5.5 h-12 text-sm font-bold w-[184px]"
-              >
-                Checkout
-              </Button>
+              <PageCheckOut
+                vendorId={id}
+                checkoutData={checkoutData}
+                isLoading={isCheckoutLoading}
+                isError={checkoutError}
+                isSuccess={checkoutSuccess}
+                deliveryType={deliveryType}
+                onDeliveryTypeChange={setDeliveryType}
+              />
+            </motion.aside>
+          )}
+        </AnimatePresence>
+
+        {/* Mobile Screens Checkout Component */}
+        <AnimatePresence mode="wait">
+          {hasItemsInCart && openCheckout && (
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
+              className="sm:hidden pt-10 px-6 bg-white z-35 "
+            >
+              <PageCheckOut
+                vendorId={id}
+                checkoutData={checkoutData}
+                isLoading={isCheckoutLoading}
+                isError={checkoutError}
+                isSuccess={checkoutSuccess}
+                deliveryType={deliveryType}
+                onDeliveryTypeChange={setDeliveryType}
+                closeCheckout={setOpenCheckout}
+              />
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Modals */}
+        <FavouritesModal
+          open={showFavourites}
+          onOpenChange={setShowFavourites}
+        />
+        <ReviewsModal open={showReviews} onClose={setShowReviews} />
+        <OrderDetails />
       </motion.div>
-
-      {/* Large Screens Checkout component */}
-      <AnimatePresence mode="popLayout">
-        {hasItemsInCart && (
-          <motion.aside
-            initial={{ x: "100%", opacity: 0 }}
-            animate={{
-              x: 0,
-              opacity: 1,
-            }}
-            exit={{
-              x: "100%",
-              opacity: 0,
-            }}
-            transition={{
-              duration: 0.5,
-              ease: [0.4, 0, 0.2, 1],
-            }}
-            className="max-lg:hidden mt-8 sticky top-[60px] sm:h-[calc(100dvh-100px)] w-[400px] min-w-[307px] shadow-2xl rounded-2xl border overflow-hidden border-gray-100"
-          >
-            <PageCheckOut
-              vendorId={id}
-              checkoutData={checkoutData}
-              isLoading={isCheckoutLoading}
-              isError={checkoutError}
-              isSuccess={checkoutSuccess}
-              deliveryType={deliveryType}
-              onDeliveryTypeChange={setDeliveryType}
-            />
-          </motion.aside>
-        )}
-      </AnimatePresence>
-
-      {/* Mobile Screens Checkout Component */}
-      <AnimatePresence mode="wait">
-        {hasItemsInCart && openCheckout && (
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
-            className="sm:hidden pt-10 px-6 bg-white z-35 "
-          >
-            <PageCheckOut
-              vendorId={id}
-              checkoutData={checkoutData}
-              isLoading={isCheckoutLoading}
-              isError={checkoutError}
-              isSuccess={checkoutSuccess}
-              deliveryType={deliveryType}
-              onDeliveryTypeChange={setDeliveryType}
-              closeCheckout={setOpenCheckout}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Modals */}
-      <FavouritesModal open={showFavourites} onOpenChange={setShowFavourites} />
-      <ReviewsModal open={showReviews} onClose={setShowReviews} />
-      <OrderDetails />
-      </div>
     </>
   );
 };
