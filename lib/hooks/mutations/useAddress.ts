@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanStack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { address } from "@/lib/services/address.service";
 import { toast } from "sonner";
 import { useSession } from "../useSession";

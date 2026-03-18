@@ -1,3 +1,5 @@
+"use client";
+
 import { emptyBox } from "@/assets/svgs";
 import { Button } from "./ui/button";
 import { RiArrowLeftLine } from "react-icons/ri";

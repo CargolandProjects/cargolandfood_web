@@ -194,7 +194,7 @@ const Cart = ({ setActiveTab, isAuthenticated }: SettingsProps) => {
                   <div className="flex items-center">
                     <div className="w-15 h-14 rounded-button overflow-hidden">
                       <img
-                        src={cart.vendor.profileImg}
+                        src={cart.vendor.profileImg || "/fallback_vendor.webp"}
                         alt={cart.vendor.businessName}
                         className="size-full object-cover"
                         onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}

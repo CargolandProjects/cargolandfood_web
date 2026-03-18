@@ -82,10 +82,19 @@ const Promotions = () => {
                 breakpoints={{
                   640: {
                     slidesPerView: 2,
+                    // spaceBetween: 16,
                   },
                   768: {
                     slidesPerView: 3,
+                    spaceBetween: 16,
+                  },
+                  1024: {
+                    slidesPerView: 3,
                     spaceBetween: 24,
+                  },
+                  1280: {
+                    slidesPerView: 3,
+                    spaceBetween: 48,
                   },
                 }}
               >

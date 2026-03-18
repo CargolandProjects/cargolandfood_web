@@ -78,7 +78,7 @@ const Restaurants = () => {
           {/* Intersection observer trigger */}
           <div ref={ref} className=" flex items-center justify-center">
             {isFetchingNextPage && (
-              <div className="text-neutral-500 h-20">Loading more restaurants...</div>
+              <div className="text-neutral-500 py-7">Loading more restaurants...</div>
             )}
           </div>
         </div>
