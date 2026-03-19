@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useCategory } from "@/contexts/CategoryContext";
-import { useCategories } from "@/lib/hooks/queries";
-import { Skeleton } from "../ui/skeleton";
+import { CategoryType, useCategory } from "@/contexts/CategoryContext";
+// import { useCategories } from "@/lib/hooks/queries";
+// import { Skeleton } from "../ui/skeleton";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { food, groceries, restaurant } from "@/assets/svgs";
 
 const styles: { [key: string]: { styles: string; activeStyle: string } } = {
   Restaurants: {
@@ -23,20 +24,47 @@ const styles: { [key: string]: { styles: string; activeStyle: string } } = {
   },
 };
 
-const Loading = () => (
-  <div className="space-y-3 sm:space-y-4">
-    <Skeleton className="w-25 sm:w-32 h-3 md:h-4" />
-    <div className="flex gap-3 sm:gap-6 overflow-x-auto hide-scrollbar">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <Skeleton className="w-[103px] h-[72px] sm:w-31 sm:h-29 shrink-0" key={i} />
-      ))}
-    </div>
-  </div>
-);
+interface Category {
+  id: CategoryType;
+  name: string;
+  icon: string;
+}
+
+const categories: Category[] = [
+  {
+    id: "Restaurants",
+    name: "Restaurants",
+    icon: restaurant,
+  },
+  {
+    id: "Groceries",
+    name: "Groceries & More",
+    icon: groceries,
+  },
+  {
+    id: "Markets",
+    name: "Markets",
+    icon: food,
+  },
+];
+
+// const Loading = () => (
+//   <div className="space-y-3 sm:space-y-4">
+//     <Skeleton className="w-25 sm:w-32 h-3 md:h-4" />
+//     <div className="flex gap-3 sm:gap-6 overflow-x-auto hide-scrollbar">
+//       {Array.from({ length: 4 }).map((_, i) => (
+//         <Skeleton
+//           className="w-[103px] h-[72px] sm:w-31 sm:h-29 shrink-0"
+//           key={i}
+//         />
+//       ))}
+//     </div>
+//   </div>
+// );
 
 const CategoryContent = () => {
   const { activeCategory, setActiveCategory } = useCategory();
-  const { data: categories = [], isPending } = useCategories();
+  // const { data: categories = [], isPending } = useCategories();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -48,9 +76,9 @@ const CategoryContent = () => {
     router.replace(`?${params.toString()}`);
   };
 
-  if (isPending) {
-    return <Loading />;
-  }
+  // if (isPending) {
+  //   return <Loading />;
+  // }
 
   return (
     <section>

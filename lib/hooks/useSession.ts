@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import { useAuthSessionStore } from "@/lib/stores/authSessionStore";
 import { auth } from "@/lib/services/auth.service";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export function useSession() {
   const queryClient = useQueryClient();
@@ -35,17 +36,22 @@ export function useSession() {
   }, [hydrate]);
 
   const refreshSession = useCallback(async () => {
-    const userId = user?.id || localStorage.getItem("user_id");
-    if (!userId) return;
+    const userId =
+      user?.id ||
+      localStorage.getItem(`${process.env.NEXT_PUBLIC_USER_ID_KEY}`);
+    if (!userId) return { success: false, error: "No user ID found" };
 
     try {
       const response = await auth.getUserById(userId);
       if (response?.data) {
-        // console.log("Refreshed session:", response.data);
         setUser(response.data);
+        return { success: true, data: response.data };
       }
+      return { success: false, error: "No data returned from server" };
     } catch (error) {
       console.error("Failed to refresh session:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to refresh session";
+      return { success: false, error: errorMessage };
     }
   }, [user?.id, setUser]);
 

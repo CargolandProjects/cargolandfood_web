@@ -4,7 +4,7 @@ import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
 } from "use-places-autocomplete";
-import { RiDeleteBin6Line, RiMapPin2Line } from "react-icons/ri";
+import { RiDeleteBin6Line, RiLoader2Line, RiMapPin2Line } from "react-icons/ri";
 import { useAddresses } from "@/lib/hooks/queries/useAddresses";
 import { Loader2 } from "lucide-react";
 import type { Suggestion } from "use-places-autocomplete";
@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { useGoogleMaps } from "@/lib/GoogleMapsProvider";
 import { useSession } from "@/lib/hooks/useSession";
 import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
+import { Button } from "../ui/button";
 // import { useSession } from "@/lib/hooks/useSession";
 
 const AddressModal = () => {
@@ -36,6 +37,8 @@ const AddressModal = () => {
     isLoading,
     isError,
     isSuccess,
+    refetch,
+    isFetching,
   } = useAddresses(isAuthenticated);
   const { mutate: addAddress, isPending } = useAddAddress();
   const { mutate: selectAddress, isPending: isSelecting } = useSelectAddress();
@@ -169,7 +172,7 @@ const AddressModal = () => {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="mt-6">
+        <div className="mt-6 h-full flex-1 flex flex-col">
           {/* Google Places Autocomplete */}
           <div className="mt-6">
             <div className="relative w-full h-10 flex items-center rounded-button border border-neutral-300 focus-within:bg-neutral-100">
@@ -221,15 +224,25 @@ const AddressModal = () => {
           </div>
 
           {/* Users Address List */}
-          <div className="mt-8">
+          <div className="mt-8 flex-1 flex flex-col">
             {isLoading && (
               <Loader2 className="size-8 transition duration-300 animate-spin text-primary mx-auto mt-4" />
             )}
 
             {isError && (
-              <p className="text-red-400 text-center">
-                Failed to fetch addresses
-              </p>
+              <div className="flex flex-col items-center justify-center gap-4 sm:gap-6 flex-1">
+                <p className="text-red-400 text-center">
+                  Failed to fetch addresses
+                </p>
+
+                <Button onClick={() => refetch()} className="w-20">
+                  {isFetching ? (
+                    <RiLoader2Line className="size-5 animate-spin" />
+                  ) : (
+                    "Refetch"
+                  )}
+                </Button>
+              </div>
             )}
 
             {isSuccess && addresses.length === 0 && (

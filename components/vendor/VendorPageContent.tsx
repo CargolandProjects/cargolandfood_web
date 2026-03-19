@@ -90,7 +90,7 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
   // Enable fetching on component mount to check cart status
   const {
     data: checkoutData,
-    isLoading: isCheckoutLoading,
+    isFetching: isCheckoutLoading,
     error: checkoutError,
     isSuccess: checkoutSuccess,
   } = useCheckoutPreview(id, deliveryType, true, isAuthenticated);

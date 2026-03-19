@@ -2,11 +2,18 @@
 
 import TransactionHistory from "@/components/wallet/TransactionHistory";
 import WalletCard from "@/components/wallet/WalletCard";
+import { useProtectedRoute } from "@/lib/hooks/useProtectedRoute";
 import { useRouter } from "next/navigation";
 import { RiArrowGoBackLine } from "react-icons/ri";
 
 const WalletPageContent = () => {
+  const { isChecking } = useProtectedRoute("/");
   const router = useRouter();
+
+  // Block render until initial check completes
+  if (isChecking) {
+    return null;
+  }
 
   const handleBack = () => {
     router.back();
