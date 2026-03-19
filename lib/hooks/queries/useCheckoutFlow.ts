@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { cart } from "@/lib/services/cart.service";
+import { keepPreviousData } from "@tanstack/react-query";
 
 export function useCheckoutPreview(
   vendorId: string,
@@ -10,6 +11,7 @@ export function useCheckoutPreview(
   return useQuery({
     queryKey: ["checkoutPreview", vendorId, deliveryType],
     queryFn: () => cart.checkoutPreview(vendorId, deliveryType),
+    placeholderData: keepPreviousData,
     enabled: enabled && !!vendorId && isAuthenticated, // Only fetch when enabled and vendorId exists
     staleTime: 0, // Always fetch fresh data when deliveryType changes
     // gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes

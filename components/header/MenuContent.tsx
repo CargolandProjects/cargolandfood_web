@@ -12,13 +12,13 @@ import {
   RiPhoneFill,
   RiDeleteBin6Fill,
 } from "react-icons/ri";
-import BackButton from "./BackButton";
+import BackButton from "../BackButton";
 import { User } from "@/lib/services/auth.service";
-import { MenuScreen } from "./header/Header";
+import { MenuScreen } from "./Header";
 import { useState } from "react";
-import EditProfile from "./profile/EditProfile";
-import DeleteProfile from "./profile/DeleteProfile";
-import ConfirmationModal from "./ConfirmationModal";
+import EditProfile from "../profile/EditProfile";
+import DeleteProfile from "../profile/DeleteProfile";
+import ConfirmationModal from "../ConfirmationModal";
 
 interface MenuContentProps {
   screen: string;

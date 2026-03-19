@@ -29,7 +29,7 @@ import { toast } from "sonner";
 const formSchema = z.object({
   phoneNumber: z
     .string()
-    .min(10, "Phone number must be at least 10 digits")
+    .min(11, "Phone number must be at least 11 digits")
     .transform((val) => {
       //Normalize to +234 format
       const phone = val.replace(/[^\d+]/g, "");
@@ -110,6 +110,7 @@ const SignInModal = () => {
                   <Input
                     {...field}
                     id={field.name}
+                    inputMode="tel"
                     aria-invalid={fieldState.invalid}
                     placeholder="+234 08000000000"
                     className="form-input"

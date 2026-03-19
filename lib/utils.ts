@@ -1,7 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { format } from "date-fns";
 import { twMerge } from "tailwind-merge";
-import apiClient from "./api/client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -184,13 +183,24 @@ export async function uploadImageToCloudinary(file: File): Promise<string> {
   formData.append("cloud_name", CLOUDINARY_CLOUD_NAME);
 
   try {
-    const res = await apiClient.post(
+    const response = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-      formData
+      {
+        method: "POST",
+        body: formData,
+        // No headers needed - fetch will set Content-Type automatically for FormData
+      }
     );
 
-    // Axios automatically handles non-2xx responses as errors
-    return res.data.secure_url; // Returns the Cloudinary URL
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(
+        errorData?.error?.message || `Upload failed with status ${response.status}`
+      );
+    }
+
+    const data = await response.json();
+    return data.secure_url; // Returns the Cloudinary URL
   } catch (error) {
     console.error("Cloudinary upload error:", error);
 

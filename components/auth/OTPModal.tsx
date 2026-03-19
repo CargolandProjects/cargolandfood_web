@@ -26,6 +26,7 @@ import { useSession } from "@/lib/hooks/useSession";
 import { RiLoader2Line } from "react-icons/ri";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { toast } from "sonner";
+import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
 
 const formSchema = z.object({
   otp: z.string().min(4, "OTP must be at least 4 digits"),
@@ -43,6 +44,7 @@ const OTPModal = () => {
     message: "",
     error: false,
   });
+  const { guestLocation, clearGuestLocation } = useGuestLocation();
   const [timer, setTimer] = useState(59);
 
   const { handleSubmit, control } = useForm<VerifyOtp>({
@@ -89,10 +91,20 @@ const OTPModal = () => {
         const access = res?.token?.accessToken;
         const refresh = res?.token?.refreshToken;
         if (typeof window !== "undefined") {
-          if (access) localStorage.setItem("auth_token", access);
-          if (refresh) localStorage.setItem("refresh_token", refresh);
+          if (access)
+            localStorage.setItem(
+              `${process.env.NEXT_PUBLIC_ACCESS_KEY}`,
+              access
+            );
+          if (refresh)
+            localStorage.setItem(
+              `${process.env.NEXT_PUBLIC_REFRESH_KEY}`,
+              refresh
+            );
         }
         toast.success(res.message);
+
+        if (guestLocation) clearGuestLocation();
 
         // Promote pending user to authenticated user
         completeOtp();

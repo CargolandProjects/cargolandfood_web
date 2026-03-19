@@ -10,11 +10,41 @@ export const useAddAddress = () => {
   return useMutation({
     mutationFn: address.createAddress,
 
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({
         queryKey: ["addresses"],
       });
-      refreshSession();
+
+      const result = await refreshSession();
+
+      if (result?.success) {
+        toast.success("Address added successfully");
+      } else {
+        const toastId = toast.error(
+          "Address added, but session update failed",
+          {
+            description: "Click retry to update your profile",
+            duration: Infinity,
+            action: {
+              label: "Retry",
+              onClick: async () => {
+                const retryResult = await refreshSession();
+                if (retryResult?.success) {
+                  toast.success("Session updated successfully");
+                } else {
+                  toast.error("Still failed. Please try adding address again.");
+                }
+              },
+            },
+            cancel: {
+              label: "close",
+              onClick: () => {
+                toast.dismiss(toastId);
+              },
+            },
+          }
+        );
+      }
     },
 
     onError: (error) => {
@@ -39,20 +69,48 @@ export const useSetGuestAddress = () => {
 };
 
 export const useSelectAddress = () => {
-  const queryClient = useQueryClient();
   const { refreshSession } = useSession();
 
   return useMutation({
     mutationFn: address.selectAddress,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["cart"],
-      });
-      refreshSession();
-      toast.success("address selected");
+    onSuccess: async () => {
+      // Refresh session to update the session with the latest address and data
+      const result = await refreshSession();
+
+      if (result?.success) {
+        toast.success("Address selected successfully");
+      } else {
+        // Address was selected on backend, but session update failed
+        const toastId = toast.error(
+          "Address selected, but session update failed",
+          {
+            description: "Click retry to update your profile",
+            duration: Infinity,
+            action: {
+              label: "Retry",
+              onClick: async () => {
+                const retryResult = await refreshSession();
+                if (retryResult?.success) {
+                  toast.success("Session updated successfully");
+                } else {
+                  toast.error(
+                    "Still failed. Please try selecting address again."
+                  );
+                }
+              },
+            },
+            cancel: {
+              label: "close",
+              onClick: () => {
+                toast.dismiss(toastId);
+              },
+            },
+          }
+        );
+      }
     },
     onError: () => {
-      toast.error("failed to select address");
+      toast.error("Failed to select address");
     },
   });
 };
@@ -64,12 +122,41 @@ export const useDeleteAddress = () => {
   return useMutation({
     mutationFn: address.deleteAddress,
 
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({
         queryKey: ["addresses"],
       });
-      refreshSession();
-      toast.success("address removed successfully");
+
+      const result = await refreshSession();
+
+      if (result?.success) {
+        toast.success("Address removed successfully");
+      } else {
+        const toastId = toast.error(
+          "Address removed, but session update failed",
+          {
+            description: "Click retry to update your profile",
+            duration: Infinity,
+            action: {
+              label: "Retry",
+              onClick: async () => {
+                const retryResult = await refreshSession();
+                if (retryResult?.success) {
+                  toast.success("Session updated successfully");
+                } else {
+                  toast.error("Still failed. Session may be out of sync.");
+                }
+              },
+            },
+            cancel: {
+              label: "close",
+              onClick: () => {
+                toast.dismiss(toastId);
+              },
+            },
+          }
+        );
+      }
     },
 
     onError: (error) => {

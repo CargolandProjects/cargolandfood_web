@@ -3,7 +3,7 @@ import { API_ROUTES } from "./endpoints";
 
 // Simple API client setup
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -14,7 +14,7 @@ const apiClient: AxiosInstance = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     const token =
-      typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
+      typeof window !== "undefined" ? localStorage.getItem(`${process.env.NEXT_PUBLIC_ACCESS_KEY}`) : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -50,7 +50,7 @@ apiClient.interceptors.response.use(
     if (status === 401 && !originalRequest._retry) {
       const refreshToken =
         typeof window !== "undefined"
-          ? localStorage.getItem("refresh_token")
+          ? localStorage.getItem(`${process.env.NEXT_PUBLIC_REFRESH_KEY}`)
           : null;
       if (!refreshToken) {
         // No refresh token; treat as logged out
@@ -69,8 +69,8 @@ apiClient.interceptors.response.use(
               const tokens = res?.data;
               const newAccess = tokens?.accessToken;
               const newRefresh = tokens?.refreshToken;
-              if (newAccess) localStorage.setItem("auth_token", newAccess);
-              if (newRefresh) localStorage.setItem("refresh_token", newRefresh);
+              if (newAccess) localStorage.setItem(`${process.env.NEXT_PUBLIC_ACCESS_KEY}`, newAccess);
+              if (newRefresh) localStorage.setItem(`${process.env.NEXT_PUBLIC_REFRESH_KEY}`, newRefresh);
               return newAccess as string;
             })
             .finally(() => {
@@ -91,8 +91,8 @@ apiClient.interceptors.response.use(
       } catch {
         // Refresh failed; clear tokens
         if (typeof window !== "undefined") {
-          localStorage.removeItem("auth_token");
-          localStorage.removeItem("refresh_token");
+          localStorage.removeItem(`${process.env.NEXT_PUBLIC_ACCESS_KEY}`);
+          localStorage.removeItem(`${process.env.NEXT_PUBLIC_REFRESH_KEY }`);
         }
         return Promise.reject(normalized);
       }
