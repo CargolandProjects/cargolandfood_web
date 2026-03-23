@@ -11,8 +11,15 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+export type FavouriteSource =
+  | "homepage"
+  | "homepage_discounts"
+  | "vendorpage"
+  | "general"
+  | undefined;
+
 export const useToggleFavourite = (
-  source: "homepage" | "vendorpage" | "general" | undefined,
+  source: FavouriteSource,
   zoneid?: string
 ) => {
   const queryClient = useQueryClient();
@@ -30,9 +37,9 @@ export const useToggleFavourite = (
       //  This updates the isFavourite flag of the cache for ui update
       //  And prevents refetching the vendor/vendors just to update a flag
       if (source === "vendorpage" || source === "general") {
-        queryClient.setQueryData(
-          ["vendorById", vendorId],
-          (oldData: vendorById) => {
+        queryClient.setQueriesData(
+          { queryKey: ["vendorById", vendorId] },
+          (oldData: InfiniteData<vendorById> | undefined) => {
             // console.log("Code execution reached here: ", vars);
             if (!oldData) {
               // console.log("Code terminated here: ", oldData);
@@ -41,14 +48,14 @@ export const useToggleFavourite = (
               });
               return;
             }
-            console.log("Old Data: ", oldData);
+            // console.log("Old Data: ", oldData);
 
             const newData = {
               ...oldData,
-              data: {
-                ...oldData.data,
-                isFavourite,
-              },
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                data: { ...page.data, isFavourite },
+              })),
             };
 
             // console.log("New Data: ", newData);
@@ -57,7 +64,7 @@ export const useToggleFavourite = (
         );
       }
 
-      if (source === "homepage" || source === "general") {
+      if (source === "homepage_discounts" || source === "general") {
         if (!zoneid) {
           console.error(
             "useToggleFavourite: zoneid is required for cache update when source is 'homepage'"
@@ -123,6 +130,12 @@ export const useToggleFavourite = (
           }
         );
       }
+
+      const message = isFavourite
+        ? "Vendor added to favourites"
+        : "Vendor removed from favourites";
+
+      toast.success(message);
     },
 
     onError: (error, vars) => {

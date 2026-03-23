@@ -1,5 +1,5 @@
 import VendorCard from "../vendor/VendorCard";
-import Loading from "../LoadingSkeleton";
+import Loading from "../vendor/LoadingSkeleton";
 import { useVendors } from "@/lib/hooks/queries/useVendors";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
 import { useInView } from "react-intersection-observer";
@@ -8,13 +8,14 @@ import { useEffect, useMemo } from "react";
 
 const Restaurants = () => {
   const { zoneId } = useActiveZone();
-  const { 
-    data, 
-    isLoading, 
-    isSuccess, 
-    fetchNextPage, 
-    hasNextPage, 
-    isFetchingNextPage 
+  const {
+    data,
+    isLoading,
+    isError,
+    isSuccess,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
   } = useVendors(zoneId || "");
 
   const { ref, inView } = useInView({
@@ -30,9 +31,7 @@ const Restaurants = () => {
 
   const restaurants = useMemo(() => {
     const allVendors = data?.pages.flatMap((page) => page.vendors) ?? [];
-    return allVendors.filter(
-      (vendor) => vendor.businessCategory 
-    );
+    return allVendors.filter((vendor) => vendor.businessCategory);
   }, [data?.pages]);
 
   if (isLoading) {
@@ -56,8 +55,14 @@ const Restaurants = () => {
           Please select your location
         </p>
       )}
+      {isError && (
+        <p className="text-red-400 text-center pt-4">
+          <span className="font-semibold">We couldn’t find vendors for your location.</span>
+          <br /> Check your internet connection or refresh to try again.
+        </p>
+      )}
       {isSuccess && restaurants.length === 0 && (
-        <p className="text-neutral-500 text-left sm:text-center">
+        <p className="text-neutral-500 text-center">
           No vendors found for your current location
         </p>
       )}
@@ -74,11 +79,13 @@ const Restaurants = () => {
               />
             ))}
           </div>
-          
+
           {/* Intersection observer trigger */}
           <div ref={ref} className=" flex items-center justify-center">
             {isFetchingNextPage && (
-              <div className="text-neutral-500 py-7">Loading more restaurants...</div>
+              <div className="text-neutral-500 py-7">
+                Loading more restaurants...
+              </div>
             )}
           </div>
         </div>

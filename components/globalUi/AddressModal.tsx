@@ -112,6 +112,7 @@ const AddressModal = () => {
           provider: "string",
           instructions: "string",
         };
+        
         addAddress(payload, {
           onSuccess: (res) => {
             selectAddress(res.data.id);

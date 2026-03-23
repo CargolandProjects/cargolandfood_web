@@ -33,6 +33,13 @@ const satoshi = localFont({
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cargolandfood.com";
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // maximumScale: 5, // Allow zoom for accessibility
+  // userScalable: true, // Don't disable user zoom (bad for accessibility)
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {

@@ -1,7 +1,7 @@
 "use client";
 
-import VendorCard from "./vendor/VendorCard";
-import { Button } from "./ui/button";
+import VendorCard from "../vendor/VendorCard";
+import { Button } from "../ui/button";
 import { RiArrowLeftLine, RiArrowRightLine } from "react-icons/ri";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
@@ -11,7 +11,7 @@ import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 import "swiper/css/navigation";
 
-import Loading from "./LoadingSkeleton";
+import Loading from "../vendor/LoadingSkeleton";
 import { useDiscountVendors } from "@/lib/hooks/queries/useVendors";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
 
@@ -104,7 +104,7 @@ const Promotions = () => {
                       vendorId={discount.vendor.id}
                       vendor={discount.vendor}
                       aggregateDiscount={discount.aggregateDiscount}
-                      source="homepage"
+                      source="homepage_discounts"
                     />
                   </SwiperSlide>
                 ))}

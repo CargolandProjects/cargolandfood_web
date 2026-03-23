@@ -1,4 +1,4 @@
-import { useToggleFavourite } from "@/lib/hooks/mutations/useToggleFavourite";
+import { FavouriteSource, useToggleFavourite } from "@/lib/hooks/mutations/useToggleFavourite";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
 import { useSession } from "@/lib/hooks/useSession";
 import { Vendor } from "@/lib/services/vendors.service";
@@ -18,11 +18,11 @@ interface VendorCardProps {
   vendor: Vendor;
   vendorId: string;
   aggregateDiscount?: number;
-  source?: "homepage" | "vendorpage" | "general";
+  source?: FavouriteSource,
   asFavouriteCard?: boolean;
 }
 
-const VendorCard = ({
+const VendorCardA = ({
   vendor: {
     businessName,
     ratings,
@@ -140,4 +140,4 @@ const VendorCard = ({
   );
 };
 
-export default VendorCard;
+export default VendorCardA;

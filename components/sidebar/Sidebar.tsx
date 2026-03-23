@@ -14,7 +14,7 @@ import {
 import { IconType } from "react-icons";
 import { useCategory } from "@/contexts/CategoryContext";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import SettingsMenu from "./settings/SettingsMenu";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { logoFull } from "@/assets/images";
@@ -89,10 +89,11 @@ const getSidebarItems = (
 ];
 
 const Sidebar = ({ open, setOpen }: SideBar) => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("Home");
+  const [activeTab, setActiveTab] = useState<ActiveTab>(null);
   const { setActiveCategory } = useCategory();
   const { isAuthenticated } = useSession();
   const router = useRouter();
+  const path = usePathname();
 
   const { data: cart } = useCart(isAuthenticated);
   const { data: orders } = useGetOrders(isAuthenticated);
@@ -121,7 +122,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
   };
 
   const handleClick = () => {
-    setActiveTab("Home");
+    setActiveTab(null);
     setActiveCategory(null);
     router.push("/");
   };
@@ -138,11 +139,11 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
         <aside className="max-sm:hidden h-full sticky inset-y-0 w-sidebar shrink-0 border-r border-gray-100 bg-white">
           <div className="flex flex-col items-center ">
             {/* Logo */}
-            <div className="py-4 fixed h-5 z-20 bg-white">
+            <div className="py-4 w-full flex justify-center">
               <Link
                 href="/"
                 onClick={() => setActiveCategory(null)}
-                className=" size-6 flex items-center justify-center rounded-sm bg-black overflow-hidden mb-8"
+                className=" size-6 flex items-center justify-center rounded-sm bg-black overflow-hidden"
               >
                 <img
                   src={logo.src}
@@ -153,10 +154,13 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
             </div>
 
             {/* Navigation Items */}
-            <nav className="mt-[72px] flex flex-col gap-7 flex-1">
+            <nav className="mt-3 pt-3 pb-2 flex flex-col items-center gap-6.5 flex-1 w-full">
               {sidebarItems.map((item, idx) => {
                 const IconComponent = item.icon;
-                const isActive = activeTab === item.id;
+                const isActive =
+                  item.id === "Home"
+                    ? path === "/" && activeTab === null
+                    : activeTab === item.id;
                 return (
                   <React.Fragment key={idx}>
                     {/* Separate home button */}
@@ -177,7 +181,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                     )}
 
                     {/* Rest of the buttons with popups */}
-                    {idx > 0 && (
+                    {idx > 0 && item.id !== "Settings" && (
                       <Popover
                         open={isActive}
                         onOpenChange={() => handleTabChange(item.id)}
@@ -188,12 +192,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                           // variant="ghost"
                           onClick={() => handleTabChange(item.id)}
                           className={`relative size-6 rounded-sm transition-colors flex justify-center items-center 
-                            ${isActive && "bg-gray-100"}
-                            ${
-                              sidebarItems.length - 1 === idx &&
-                              "mt-[238px] xl:mt-80 pb-6"
-                            }
-                          `}
+                            ${isActive && "bg-gray-100"}`}
                         >
                           <IconComponent
                             className={`w-5 h-5 transition-colors ${
@@ -219,6 +218,47 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                           {item.content && <item.content {...item.props} />}
                         </PopoverContent>
                       </Popover>
+                    )}
+
+                    {item.id === "Settings" && (
+                      <div className="w-full border-t border-gray-100 py-3 flex justify-center">
+                        <Popover
+                          open={isActive}
+                          onOpenChange={() => handleTabChange(item.id)}
+                          key={idx}
+                        >
+                          <PopoverTrigger
+                            key={item.id}
+                            // variant="ghost"
+                            onClick={() => handleTabChange(item.id)}
+                            className={`relative size-6 rounded-sm transition-colors flex justify-center items-center 
+                            ${isActive && "bg-gray-100"}`}
+                          >
+                            <IconComponent
+                              className={`w-5 h-5 transition-colors ${
+                                isActive ? "text-primary" : "text-gray-300"
+                              }`}
+                            />
+                            {(item.count ?? 0) > 0 && (
+                              <div className="absolute -top-1.5 -right-4.5 px-1.5 bg-primary rounded-full text-xs text-white">
+                                {item.count}
+                              </div>
+                            )}
+                            {isActive && (
+                              <span className="absolute left-8 transform top-1/2 -translate-y-1/2 z-30 text-white py-1 px-3 bg-primary rounded-xl text-xs whitespace-nowrap pointer-events-none">
+                                {item.label}
+                              </span>
+                            )}
+                          </PopoverTrigger>
+                          <PopoverContent
+                            side="right"
+                            sideOffset={8}
+                            className="w-[374px] mt-10 rounded-xl h-[713px] overflow-auto hide-scrollbar py-6 px-4 shadow"
+                          >
+                            {item.content && <item.content {...item.props} />}
+                          </PopoverContent>
+                        </Popover>
+                      </div>
                     )}
                   </React.Fragment>
                 );

@@ -2,7 +2,7 @@
 
 import { useCategory } from "@/contexts/CategoryContext";
 import HotPicks from "./HotPicks";
-import Promotions from "../Promotions";
+import Promotions from "./Promotions";
 import Reastaurants from "./Restaurants";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSearchVendorMenu } from "@/lib/hooks/queries/useSearch";

@@ -1,5 +1,5 @@
-import VendorCardSkeleton from "./VendorCardSkeleton";
-import { Skeleton } from "./ui/skeleton";
+import VendorCardSkeleton from "../VendorCardSkeleton";
+import { Skeleton } from "../ui/skeleton";
 
 interface LoadingProps {
   count?: number;
