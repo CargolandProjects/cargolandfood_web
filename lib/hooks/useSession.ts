@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo } from "react";
 import { useAuthSessionStore } from "@/lib/stores/authSessionStore";
 import { auth } from "@/lib/services/auth.service";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 export function useSession() {
   const queryClient = useQueryClient();

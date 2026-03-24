@@ -158,15 +158,15 @@ const SignInModal = () => {
       </form>
 
       <div className="space-y-4">
-        <p className="relative text-gray-500 text-center">
+        <div className="relative text-gray-500 text-center">
           <Separator
             decorative={true}
-            className="absolute  top-1/2 transform translate-y-1/2"
+            className="absolute top-1/2 transform translate-y-1/2"
           />
-          <span className="relative bg-background px-2 z-10">
+          <p className="relative bg-background px-2 z-10">
             Or continue with
-          </span>
-        </p>
+          </p>
+        </div>
 
         <div className="flex w-full justify-center gap-4">
           <button className="size-10 flex justify-center items-center shadow-cargo-sm rounded-full border border-gray-200">

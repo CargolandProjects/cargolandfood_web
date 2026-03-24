@@ -28,7 +28,7 @@ const PickupConfirmModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-100! gap-0 m-0 p-0 px-7 pt-[70px] overflow-auto max-h-[95vh] hide-scrollbar">
+      <DialogContent className="max-w-100! w-[95vw] gap-0 m-0 p-0 px-7 pt-[70px] overflow-auto max-h-[95vh] hide-scrollbar">
         <DialogHeader>
           <DialogTitle className="dialog-title ">Confirm Order?</DialogTitle>
         </DialogHeader>

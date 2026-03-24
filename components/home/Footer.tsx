@@ -35,9 +35,9 @@ interface DownloadLinks {
 
 const Footer = () => {
   const socialIcons: SocialIcons[] = [
-    { title: "Facebook", icon: RiFacebookCircleFill, link: "" },
-    { title: "Twitter", icon: RiTwitterFill, link: "" },
-    { title: "Instagram", icon: RiInstagramLine, link: "" },
+    { title: "Facebook", icon: RiFacebookCircleFill, link: "https://web.facebook.com/cargolandfoods/" },
+    { title: "Twitter", icon: RiTwitterFill, link: "https://x.com/cargolandfoods" },
+    { title: "Instagram", icon: RiInstagramLine, link: "https://www.instagram.com/officialcargolandfood/" },
     { title: "LinkedIn", icon: RiLinkedinFill, link: "" },
   ];
 

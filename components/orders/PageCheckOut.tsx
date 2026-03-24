@@ -49,7 +49,7 @@ type PaymentMethod = "wallet" | "digitalTransfer";
 interface CheckoutProps {
   vendorId: string;
   checkoutData: CheckoutPreview;
-  isLoading: boolean;
+  isFetching: boolean;
   isError: boolean;
   isSuccess: boolean;
   deliveryType: "DELIVERY" | "PICKUP";
@@ -61,7 +61,7 @@ const PageCheckOut = ({
   vendorId,
   checkoutData,
   isError,
-  isLoading,
+  isFetching,
   isSuccess,
   deliveryType,
   onDeliveryTypeChange,
@@ -79,7 +79,7 @@ const PageCheckOut = ({
   );
   const [isRemovingItemId, setIsRemovingItemId] = useState<string | null>(null);
   const [quantityChangeId, setQuantityChangeId] = useState<string | null>(null);
-  const openAddresses = useUIStore((s) => s.openAddresses);
+  // const openAddresses = useUIStore((s) => s.openAddresses);
   // const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
   const { user, isAuthenticated } = useSession();
 
@@ -90,31 +90,8 @@ const PageCheckOut = ({
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
   const { mutate: chargeWallet, isPending: isChargingWallet } =
     useChargeWallet();
-  const { data: balance, isLoading: isBalanceLoading } = useWalletBalance(isAuthenticated);
-
-  // const queryClient = useQueryClient();
-
-  // Hook to listen to successful payment event
-  // useNotificationEvent((data) => {
-  //   try {
-  //     console.log("Notification Event: ", data);
-
-  //     // console.log("Payment Success Event: ", data);
-  //     // openOrderSuccess();
-  //     // queryClient.invalidateQueries({
-  //     //   queryKey: ["cart"],
-  //     // });
-
-  //     // const vendorId = data.payload?.data?.vendorId;
-  //     // if (vendorId)
-  //     //   queryClient.invalidateQueries({
-  //     //     queryKey: ["checkoutPreview"],
-  //     //   });0
-  //   } catch (error) {
-  //     console.error("Error handling successful payment:", error);
-  //     toast.error("Payment successful, but UI update failed. Please refresh.");
-  //   }
-  // });
+  const { data: balance, isLoading: isBalanceLoading } =
+    useWalletBalance(isAuthenticated);
 
   // Format currency
   const currency = (n: number) => `₦${n.toLocaleString()}`;
@@ -326,7 +303,7 @@ const PageCheckOut = ({
 
   return (
     <>
-      <div className="h-full max-sm:fixed max-sm:inset-0  overflow-auto hide-scrollbar p-4 bg-white">
+      <div className="h-full overflow-auto hide-scrollbar p-4 bg-white">
         {/* Header */}
         <div className="relative max-sm:flex items-center justify-center">
           {closeCheckout && (
@@ -343,7 +320,7 @@ const PageCheckOut = ({
         </div>
         <Separator className={`mt-3 ${isSuccess && "mb-6"} max-sm:hidden`} />
 
-        {isLoading && (
+        {isFetching && (
           <div className="h-full flex justify-center items-center">
             <Loader size={12} />
           </div>
@@ -355,7 +332,7 @@ const PageCheckOut = ({
           </div>
         )}
 
-        {isSuccess && cartItems.length === 0 && (
+        {!isFetching && isSuccess && cartItems.length === 0 && (
           <div className="h-full flex justify-center items-center">
             <EmptyStateUi
               message="No pending Orders"
@@ -364,7 +341,7 @@ const PageCheckOut = ({
           </div>
         )}
 
-        {isSuccess && cartItems.length > 0 && (
+        {!isFetching && isSuccess && cartItems.length > 0 && (
           <div>
             {/* Pack Items */}
             <div className="space-y-4 sm:space-y-6 max-sm:mt-5">
@@ -535,8 +512,8 @@ const PageCheckOut = ({
                 </h3>
                 <div className="space-y-2 mt-4">
                   <button
-                    onClick={openAddresses}
-                    className="w-full flex items-center justify-between"
+                    // onClick={openAddresses}
+                    className="w-full flex items-center justify-between cursor-default"
                   >
                     <p className="flex items-center gap-2 ">
                       <RiMapPinFill className="size-5 text-primary" />

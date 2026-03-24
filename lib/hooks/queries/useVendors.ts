@@ -52,6 +52,6 @@ export const useVendorMenuById = (
           pageParams: [1],
         }
       : undefined,
-    staleTime: initialData ? 5 * 60 * 1000 : 0,
+    staleTime: initialData ? 10 * 60 * 1000 : 0,
   });
 };

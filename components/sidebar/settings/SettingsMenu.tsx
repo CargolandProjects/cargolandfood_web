@@ -70,13 +70,14 @@ const SettingsMenu = ({ setActiveTab }: SettingsProps) => {
       Coupon: () => {},
       "My Wallet": () => {
         router.push("/wallet");
+        setActiveTab(null);
       },
       "Refer & Earn": () => {},
       "Join as a Delivery Man": () => {},
       "Live Chat": () => setShowChatSupport(true),
       "Help & Support": () => {},
     };
-  }, [router, openAdresses]);
+  }, [router, openAdresses, setActiveTab]);
 
   // const handleClose = (v: boolean) => {
   //   setOpenMenu(v);

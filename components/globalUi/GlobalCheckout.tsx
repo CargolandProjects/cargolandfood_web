@@ -75,7 +75,7 @@ const GlobalCheckoutCOntent = ({
 
   const {
     data: checkoutData,
-    isLoading,
+    isFetching,
     isError,
     isSuccess,
   } = useCheckoutPreview(vendorId!, deliveryValue, true, isAuthenticated);
@@ -316,7 +316,7 @@ const GlobalCheckoutCOntent = ({
           </div>
         )}
 
-        {isLoading && (
+        {isFetching && (
           <div className="h-full flex justify-center items-center">
             <Loader size={12} />
           </div>
@@ -328,7 +328,7 @@ const GlobalCheckoutCOntent = ({
           </div>
         )}
 
-        {isSuccess && cartItems.length === 0 && (
+        {!isFetching && isSuccess && cartItems.length === 0 && (
           <div className="h-full flex justify-center items-center">
             <EmptyStateUi
               message="No pending Orders"
@@ -336,7 +336,8 @@ const GlobalCheckoutCOntent = ({
             />
           </div>
         )}
-        {isSuccess && cartItems.length > 0 && (
+        
+        {!isFetching && isSuccess && cartItems.length > 0 && (
           <div>
             {isDesktop && <Separator className="mt-3 mb-6" />}
 

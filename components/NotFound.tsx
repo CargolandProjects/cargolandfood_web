@@ -25,7 +25,7 @@ const NotFound = ({
   };
 
   return (
-    <section className="flex flex-col items-center justify-center mt-25 sm:mt-[107px] bg-amber-10">
+    <section className="flex flex-col items-center justify-center bg-amber-10 h-full">
       <div className="size-40 sm:size-50">
         <img
           src={emptyBox.src}

@@ -24,6 +24,7 @@ import NotFound from "../NotFound";
 import VendorItemCardB from "./VendorItemCardB";
 import { vendorById } from "@/lib/services/vendors.service";
 import VendorJsonLd from "./VendorJsonLd";
+import { toast } from "sonner";
 
 interface VendorPageContentProps {
   id: string;
@@ -56,7 +57,7 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
 
   // Detect large screen (lg breakpoint = 1024px)
   const [isLargeScreen, setIsLargeScreen] = useState(false);
-  
+
   //  Useffect to detect large screen for synchronizing left contennt width
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 1024px)");
@@ -90,7 +91,7 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
   // Enable fetching on component mount to check cart status
   const {
     data: checkoutData,
-    isFetching: isCheckoutLoading,
+    isFetching: isCheckoutFetching,
     error: checkoutError,
     isSuccess: checkoutSuccess,
   } = useCheckoutPreview(id, deliveryType, true, isAuthenticated);
@@ -142,7 +143,17 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
   ) => {
     e.stopPropagation();
     // console.log(user, vendorId, isFavourite);
-    if (!user || !vendorId) return;
+
+    if (!user || !isAuthenticated) {
+      toast.error("You have to sIgn in to perform this action");
+      return;
+    }
+
+    if (!vendorId) {
+      toast.error("VendorId required");
+      return;
+    }
+
     const payload = {
       isFavourite: !isFavourite,
       vendorId: vendorId,
@@ -182,7 +193,9 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
       )}
 
       <motion.div
-        className="grid gap-6 xl:gap-10 h-full"
+        className={`${
+          isLargeScreen && hasItemsInCart && "gap-6 xl:gap-10"
+        } grid h-full`}
         animate={{
           gridTemplateColumns:
             isLargeScreen && hasItemsInCart ? "1fr 400px" : "1fr 0px",
@@ -229,7 +242,11 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
           <div>
             <h3 className="sm:hidden">Restaurants</h3>
             {/* Banner Image */}
-            <div className="relative h-25.5 sm:h-48 lg:h-[234px] xl:h-[284px] w-full overflow-hidden rounded-xl mt-2">
+            <div
+              className={`relative h-25.5 sm:h-48 lg:h-[234px] ${
+                hasItemsInCart ? "xl:h-[244px]" : "xl:h-[284px]"
+              }  w-full overflow-hidden rounded-xl mt-2`}
+            >
               <img
                 src={vendor?.profileImg || "/fallback_vendor.webp"}
                 alt={vendor?.businessName}
@@ -388,7 +405,7 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
               <PageCheckOut
                 vendorId={id}
                 checkoutData={checkoutData}
-                isLoading={isCheckoutLoading}
+                isFetching={isCheckoutFetching}
                 isError={checkoutError}
                 isSuccess={checkoutSuccess}
                 deliveryType={deliveryType}
@@ -406,12 +423,12 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
-              className="sm:hidden pt-10 px-6 bg-white z-35 "
+              className="sm:hidden max-sm:fixed max-sm:inset-0 bg-white z-35 "
             >
               <PageCheckOut
                 vendorId={id}
                 checkoutData={checkoutData}
-                isLoading={isCheckoutLoading}
+                isFetching={isCheckoutFetching}
                 isError={checkoutError}
                 isSuccess={checkoutSuccess}
                 deliveryType={deliveryType}

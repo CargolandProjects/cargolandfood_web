@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from "react";
 // import FilterBar from "../FilterBar";
 import VendorCard from "../vendor/VendorCard";
-import Loading from "../LoadingSkeleton";
+import Loading from "../vendor/LoadingSkeleton";
 // import { Swiper, SwiperSlide } from "swiper/react";
 import { useVendorsByCategory } from "@/lib/hooks/queries/useVendors";
 import { useInView } from "react-intersection-observer";

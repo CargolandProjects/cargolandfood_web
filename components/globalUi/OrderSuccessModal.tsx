@@ -21,6 +21,7 @@ const OrderSuccessModal = ({ closeCheckout }: OrderSuccessfulProps) => {
   const handleopenDetails = () => {
     if (!orderId) return;
     openOrderDetails({ orderId, source: "general" });
+    closeOrderSuccess();
   };
 
   return (
@@ -53,12 +54,12 @@ const OrderSuccessModal = ({ closeCheckout }: OrderSuccessfulProps) => {
         </div>
 
         <div className="mt-13 flex gap-2 mb-6 sm:mb-8">
-          <Button
+          {/* <Button
             variant="outline"
             className="submit-btn flex-1 hover:bg-gray-50 text-neutral-500 border-neutral-300"
           >
             Cancel Orders
-          </Button>
+          </Button> */}
           <Button onClick={handleopenDetails} className="submit-btn flex-1">
             Order Details
           </Button>
