@@ -15,7 +15,17 @@ export const useTransactionRecords = (isAuthenticated: boolean) => {
   return useQuery({
     queryKey: ["transactionRecords"],
     queryFn: wallet.transactionRecords,
-    select: (res) => groupTransactionsByMonth(res.data),
+    select: (res) => {
+      // Handle inconsistent API response formats:
+      // - Empty transactions: API returns [] directly
+      // - With transactions: API returns { status, message, data: [...] }
+      const records = res?.data ?? res ?? [];
+      
+      // Ensure we always pass an array to groupTransactionsByMonth
+      const safeRecords = Array.isArray(records) ? records : [];
+      
+      return groupTransactionsByMonth(safeRecords);
+    },
     enabled: isAuthenticated,
   });
 };
