@@ -50,25 +50,31 @@ const Restaurants = () => {
         </div>
       )} */}
 
+      <h3>Restaurants</h3>
+
       {!zoneId && (
-        <p className="text-neutral-500 text-center">
+        <p className="text-neutral-500 text-center mt-3 sm:mt-4">
           Please select your location
         </p>
       )}
+
       {isError && (
-        <p className="text-red-400 text-center pt-4">
-          <span className="font-semibold">We couldn’t find vendors for your location.</span>
+        <p className="text-red-400 text-center mt-3 sm:mt-4">
+          <span className="font-semibold">
+            couldn’t find Restaurants for your location.
+          </span>
           <br /> Check your internet connection or refresh to try again.
         </p>
       )}
+
       {isSuccess && restaurants.length === 0 && (
-        <p className="text-neutral-500 text-center">
-          No vendors found for your current location
+        <p className="text-neutral-500 text-center mt-3 sm:mt-4">
+          No restaurants found for your current location
         </p>
       )}
+
       {isSuccess && restaurants.length > 0 && (
         <div>
-          <h3>Restaurants</h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 xl:gap-12 mt-2 section-y">
             {restaurants.map((vendor) => (
               <VendorCard

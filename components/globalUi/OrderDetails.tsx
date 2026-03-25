@@ -56,7 +56,7 @@ const OrderDetailsContent = ({
     openTrackOrder({ orderId });
   };
   return (
-    <div className="h-dvh px-4 sm:px-6 overflow-auto hide-scrollbar">
+    <div className="h-dvh px-4 sm:px-6">
       {isDesktop ? (
         // Desktop Header
         <SheetHeader className="p-0 flex-row justify-between items-center mt-6 ">
@@ -94,7 +94,7 @@ const OrderDetailsContent = ({
       )}
 
       {isSuccess && (
-        <div className="max-sm:mt-1">
+        <div className="max-sm:mt-1 h-full overflow-auto hide-scrollbar">
           {/* General Info */}
           <div className="space-y-2 ">
             <h3 className="text-base font-medium leading-6">General Info</h3>

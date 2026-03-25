@@ -35,9 +35,21 @@ interface DownloadLinks {
 
 const Footer = () => {
   const socialIcons: SocialIcons[] = [
-    { title: "Facebook", icon: RiFacebookCircleFill, link: "https://web.facebook.com/cargolandfoods/" },
-    { title: "Twitter", icon: RiTwitterFill, link: "https://x.com/cargolandfoods" },
-    { title: "Instagram", icon: RiInstagramLine, link: "https://www.instagram.com/officialcargolandfood/" },
+    {
+      title: "Facebook",
+      icon: RiFacebookCircleFill,
+      link: "https://web.facebook.com/cargolandfoods/",
+    },
+    {
+      title: "Twitter",
+      icon: RiTwitterFill,
+      link: "https://x.com/cargolandfoods",
+    },
+    {
+      title: "Instagram",
+      icon: RiInstagramLine,
+      link: "https://www.instagram.com/officialcargolandfood/",
+    },
     { title: "LinkedIn", icon: RiLinkedinFill, link: "" },
   ];
 
@@ -91,12 +103,15 @@ const Footer = () => {
               {socialIcons.map((social, index) => {
                 const IconComponent = social.icon;
                 return (
-                  <div
-                    className="size-10 rounded-full bg-primary flex justify-center items-center"
+                  <Link
+                    href={social.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="size-10 rounded-full bg-primary flex justify-center items-center hover:cursor-pointer"
                     key={index}
                   >
                     <IconComponent className="text-white size-5" />
-                  </div>
+                  </Link>
                 );
               })}
             </div>
@@ -159,12 +174,15 @@ const Footer = () => {
                 {socialIcons.map((social, index) => {
                   const IconComponent = social.icon;
                   return (
-                    <div
+                    <Link
+                      href={social.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="size-6 sm:size-10 rounded-full bg-primary flex justify-center items-center"
                       key={index}
                     >
                       <IconComponent className="text-white size-3 sm:size-5" />
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -176,8 +194,12 @@ const Footer = () => {
 
         <div className="md:mt-20 pb-10 md:pb-[66px] flex max-md:flex-col max-md:gap-4 justify-between">
           <div className="flex gap-8 ">
-            <p className="text-neutral-500 text-xs sm:text-base">Terms of Service</p>
-            <p className="text-neutral-500 text-xs sm:text-base">Privacy Policy</p>
+            <p className="text-neutral-500 text-xs sm:text-base">
+              Terms of Service
+            </p>
+            <p className="text-neutral-500 text-xs sm:text-base">
+              Privacy Policy
+            </p>
             <p className="text-neutral-500 text-xs sm:text-base">Security</p>
           </div>
           <p className=" text-neutral-500 text-xs sm:text-base">

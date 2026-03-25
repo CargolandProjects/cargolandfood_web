@@ -53,6 +53,7 @@ interface SidebarItem<P = any> {
 const getSidebarItems = (
   setActiveTab: (tab: ActiveTab) => void,
   isAuthenticated: boolean,
+  setOpen: (v: boolean) => void,
   count: { cartCount: number; OrdersCount: number }
 ): SidebarItem[] => [
   { id: "Home", icon: RiHome3Fill, label: "Home" },
@@ -84,7 +85,7 @@ const getSidebarItems = (
     icon: RiSettings3Fill,
     label: "Settings",
     content: SettingsMenu,
-    props: { setActiveTab, isAuthenticated },
+    props: { setActiveTab, isAuthenticated, setOpen },
   },
 ];
 
@@ -122,12 +123,13 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
   };
 
   const handleClick = () => {
+    setOpen(false);
     setActiveTab(null);
     setActiveCategory(null);
     router.push("/");
   };
 
-  const sidebarItems = getSidebarItems(setActiveTab, isAuthenticated, {
+  const sidebarItems = getSidebarItems(setActiveTab, isAuthenticated, setOpen, {
     cartCount: cartItems,
     OrdersCount: currentOrders,
   });
@@ -180,7 +182,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                       </Button>
                     )}
 
-                    {/* Rest of the buttons with popups */}
+                    {/* Rest of the buttons with popups except settings */}
                     {idx > 0 && item.id !== "Settings" && (
                       <Popover
                         open={isActive}
@@ -220,6 +222,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                       </Popover>
                     )}
 
+                    {/* Settings Popup */}
                     {item.id === "Settings" && (
                       <div className="w-full border-t border-gray-100 py-3 flex justify-center">
                         <Popover

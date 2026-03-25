@@ -51,7 +51,7 @@ const Favourites = ({ setActiveTab, isAuthenticated }: FavouritesProps) => {
         )}
 
         {isSuccess && favouriteVendors.length === 0 && (
-          <div className="mt-20.5 ">
+          <div className="h-full flex justify-center items-center">
             <EmptyStateUi
               message="No favourite yet"
               description="You haven’t added any food to favourite"

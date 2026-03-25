@@ -291,10 +291,10 @@ const GlobalCheckoutCOntent = ({
 
   return (
     <>
-      <div className="h-full bg-white p-4 sm:p-6 overflow-auto hide-scrollbar ">
+      <div className="h-full bg-white p-4 sm:p-6">
         {/* Header */}
         {isDesktop ? (
-          <SheetHeader className="p-0 flex flex-row items-center justify-start gap-2">
+          <SheetHeader className="p-0 pb-1 flex flex-row items-center justify-start gap-2">
             {closeCheckout && (
               <button onClick={closeCheckout} className="">
                 <RiArrowGoBackLine className="size-5" />
@@ -306,7 +306,7 @@ const GlobalCheckoutCOntent = ({
           </SheetHeader>
         ) : (
           // Mobile Header
-          <div className="relative flex items-center justify-center max-sm:mx-2">
+          <div className="relative pb-1 flex items-center justify-center max-sm:mx-2">
             <button onClick={closeCheckout} className="absolute left-0">
               <RiArrowLeftLine className="size-5" />
             </button>
@@ -338,8 +338,8 @@ const GlobalCheckoutCOntent = ({
         )}
         
         {!isFetching && isSuccess && cartItems.length > 0 && (
-          <div>
-            {isDesktop && <Separator className="mt-3 mb-6" />}
+          <div className="h-full overflow-y-auto hide-scrollbar">
+            {isDesktop && <Separator className="mt-2 mb-6" />}
 
             {/* Pack Items */}
             <div className="space-y-4 sm:space-y-6 max-sm:mt-5">
