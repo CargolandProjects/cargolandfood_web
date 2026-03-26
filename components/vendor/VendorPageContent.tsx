@@ -94,7 +94,7 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
     isFetching: isCheckoutFetching,
     error: checkoutError,
     isSuccess: checkoutSuccess,
-  } = useCheckoutPreview(id, deliveryType, true, isAuthenticated);
+  } = useCheckoutPreview(id, deliveryType, isAuthenticated);
 
   // Flatten paginated menus from infinite query
   const firstPage = data?.pages?.[0];

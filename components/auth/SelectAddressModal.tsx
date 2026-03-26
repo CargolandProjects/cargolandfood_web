@@ -8,7 +8,7 @@ const SelectAddressModal = () => {
   const close = useAuthFlow((s) => s.closeAuth);
 
   const handleSetAddress = () => {
-    openSetAddress();
+    openSetAddress({ source: "general" });
     close();
   };
   return (

@@ -45,7 +45,7 @@ const Location = ({
             ? defaultAddress?.addressLine1
             : guestLocation?.addressLine1) || "No location selected"}
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={openAddress}>
+        <DropdownMenuItem onSelect={() => openAddress({ source: "general" })}>
           Add new location
         </DropdownMenuItem>
       </DropdownMenuContent>

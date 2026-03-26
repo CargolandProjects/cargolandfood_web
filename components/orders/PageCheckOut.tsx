@@ -39,6 +39,8 @@ import { useSession } from "@/lib/hooks/useSession";
 import { toast } from "sonner";
 import { useWalletBalance } from "@/lib/hooks/queries/useWallet";
 import { useChargeWallet } from "@/lib/hooks/mutations/useChargeWallet";
+import { DeliveryType } from "@/lib/services/cart.service";
+import RestaurantNoteModal from "./RestaurantNoteModal";
 // import { useNotificationEvent } from "@/lib/hooks/useSocket";
 // import { useSuccessfulPaymentEvent } from "@/lib/hooks/useSocket";
 // import { useQueryClient } from "@tanstack/react-query";
@@ -52,8 +54,8 @@ interface CheckoutProps {
   isFetching: boolean;
   isError: boolean;
   isSuccess: boolean;
-  deliveryType: "DELIVERY" | "PICKUP";
-  onDeliveryTypeChange: (type: "DELIVERY" | "PICKUP") => void;
+  deliveryType: DeliveryType;
+  onDeliveryTypeChange: (type: Delivery) => void;
   closeCheckout?: (v: boolean) => void;
 }
 
@@ -68,8 +70,10 @@ const PageCheckOut = ({
   closeCheckout,
 }: CheckoutProps) => {
   const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
+  const openAddress = useUIStore((s) => s.openAddresses);
   const [showAlert, setShowAlert] = useState(false);
   const [showRiderNote, setShowRiderNote] = useState(false);
+  const [showRestaurantNote, setShowRestaurantNote] = useState(false);
   const [showCoupon, setShowCoupon] = useState(false);
   const [showGift, setShowGift] = useState(false);
   const [showConfirmPickup, setShowConfirmPickup] = useState(false);
@@ -104,7 +108,7 @@ const PageCheckOut = ({
   };
 
   // Handle delivery type change - convert UI lowercase to API uppercase
-  const handleDeliveryTypeChange = (type: "DELIVERY" | "PICKUP") => {
+  const handleDeliveryTypeChange = (type: DeliveryType) => {
     onDeliveryTypeChange(type);
   };
 
@@ -218,6 +222,13 @@ const PageCheckOut = ({
     );
   };
 
+  const handleOpenAddress = () =>
+    openAddress({
+      deliveryType,
+      source: "checkout",
+      vendorId,
+    });
+
   // Extract data from API response
   const {
     subtotal = "0",
@@ -255,6 +266,14 @@ const PageCheckOut = ({
       riderNote: {
         open: showRiderNote,
         onOpenChange: setShowRiderNote,
+        vendorId,
+        deliveryType,
+      },
+      restaurantNote: {
+        open: showRestaurantNote,
+        onOpenChange: setShowRestaurantNote,
+        vendorId,
+        deliveryType,
       },
       coupon: {
         open: showCoupon,
@@ -284,6 +303,9 @@ const PageCheckOut = ({
     }),
     [
       showRiderNote,
+      vendorId,
+      deliveryType,
+      showRestaurantNote,
       showCoupon,
       showGift,
       showConfirmPickup,
@@ -456,7 +478,7 @@ const PageCheckOut = ({
               </button>
 
               <button
-                onClick={() => setShowSuccess(true)}
+                onClick={() => setShowRestaurantNote(true)}
                 className="w-full flex items-center justify-between hover:underline cursor-pointer"
               >
                 <span className="flex items-center gap-2 text-base leading-5">
@@ -512,8 +534,8 @@ const PageCheckOut = ({
                 </h3>
                 <div className="space-y-2 mt-4">
                   <button
-                    // onClick={openAddresses}
-                    className="w-full flex items-center justify-between cursor-default"
+                    onClick={handleOpenAddress}
+                    className="w-full flex items-center justify-between"
                   >
                     <p className="flex items-center gap-2 ">
                       <RiMapPinFill className="size-5 text-primary" />
@@ -653,6 +675,7 @@ const PageCheckOut = ({
 
       {/* Activity Modals */}
       <RiderNote {...modalProps.riderNote} />
+      <RestaurantNoteModal {...modalProps.restaurantNote} />
       <CouponSuccess {...modalProps.couponSuccess} />
       <CouponModal {...modalProps.coupon} />
       <GiftModal {...modalProps.gift} />

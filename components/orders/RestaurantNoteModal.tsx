@@ -14,7 +14,7 @@ interface RiderNoteProps {
   onOpenChange: (close: boolean) => void;
 }
 
-const RiderNoteModal = ({
+const RestaurantNoteModal = ({
   open,
   onOpenChange,
   vendorId,
@@ -26,13 +26,16 @@ const RiderNoteModal = ({
 
   const handleMessage = () => {
     if (!msg.trim()) {
-      toast.error("Please enter your delivery instructions.");
+      toast.error("You didn't add a note");
       return;
     }
-    if (!vendorId) return;
+    // if (!vendorId) return;
 
     mutate(
-      { vendorId, payload: { deliveryType, noteToRider: msg } },
+      {
+        vendorId,
+        payload: { deliveryType, noteToRestaurant: msg },
+      },
       {
         onError: (error) => {
           toast.error(error.message || "Failed to send note");
@@ -46,7 +49,7 @@ const RiderNoteModal = ({
       <DialogContent className="dialog pt-6! pb-5! sm:pt-[74px]! px-4! sm:px-7!">
         <DialogHeader>
           <DialogTitle className="text-base sm:text-2xl font-medium leading-6 sm:leading-8 text-left sm:text-center">
-            Note for rider
+            Note for restaurant
           </DialogTitle>
         </DialogHeader>
 
@@ -55,7 +58,7 @@ const RiderNoteModal = ({
             value={msg}
             onChange={(e) => setMsg(e.target.value)}
             className="p-3 w-full rounded-xl border border-neutral-300 h-[136px] sm:h-[167px] max-h-[136px] sm:max-h-[167px] hide-scrollbar"
-            placeholder="Please enter any special delivery instructions here."
+            placeholder="Add a note for the restaurant"
             maxLength={maxLength}
           ></textarea>
 
@@ -75,4 +78,4 @@ const RiderNoteModal = ({
   );
 };
 
-export default memo(RiderNoteModal);
+export default memo(RestaurantNoteModal);

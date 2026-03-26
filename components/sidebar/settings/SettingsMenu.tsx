@@ -66,7 +66,7 @@ const SettingsMenu = ({ setActiveTab, setOpen }: SettingsProps) => {
   const menuActions: { [key: string]: () => void } = useMemo(() => {
     return {
       Settings: () => {},
-      Addresses: openAdresses,
+      Addresses: () => openAdresses({ source: "general" }),
       Security: () => {},
       Coupon: () => {},
       "My Wallet": () => {
