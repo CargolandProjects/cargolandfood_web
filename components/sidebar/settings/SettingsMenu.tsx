@@ -20,6 +20,7 @@ import { useUIStore } from "@/lib/stores/uiStore";
 
 interface SettingsProps {
   setActiveTab: (tab: ActiveTab) => void;
+  setOpen: (v: boolean) => void;
 }
 
 const SETTINGS_SECTIONS = [
@@ -57,7 +58,7 @@ const SETTINGS_SECTIONS = [
   },
 ];
 
-const SettingsMenu = ({ setActiveTab }: SettingsProps) => {
+const SettingsMenu = ({ setActiveTab, setOpen }: SettingsProps) => {
   const [showChatSupport, setShowChatSupport] = useState(false);
   const openAdresses = useUIStore((s) => s.openAddresses);
   const router = useRouter();
@@ -65,19 +66,20 @@ const SettingsMenu = ({ setActiveTab }: SettingsProps) => {
   const menuActions: { [key: string]: () => void } = useMemo(() => {
     return {
       Settings: () => {},
-      Addresses: openAdresses,
+      Addresses: () => openAdresses({ source: "general" }),
       Security: () => {},
       Coupon: () => {},
       "My Wallet": () => {
         router.push("/wallet");
         setActiveTab(null);
+        setOpen(false);
       },
       "Refer & Earn": () => {},
       "Join as a Delivery Man": () => {},
       "Live Chat": () => setShowChatSupport(true),
       "Help & Support": () => {},
     };
-  }, [router, openAdresses, setActiveTab]);
+  }, [router, openAdresses, setActiveTab, setOpen]);
 
   // const handleClose = (v: boolean) => {
   //   setOpenMenu(v);
@@ -86,7 +88,7 @@ const SettingsMenu = ({ setActiveTab }: SettingsProps) => {
 
   return (
     <>
-      <div>
+      <div className="h-full pb-3">
         {/* Header */}
         <div className="relative flex items-center justify-center">
           <button
@@ -99,7 +101,8 @@ const SettingsMenu = ({ setActiveTab }: SettingsProps) => {
         </div>
 
         {/* Content */}
-        <div className="space-y-4 mt-4">
+
+        <div className="space-y-4 mt-4 h-full overflow-y-auto hide-scrollbar">
           {SETTINGS_SECTIONS.map((section) => (
             <div key={section.title}>
               <h2 className="text-base leading-6">{section.title}</h2>

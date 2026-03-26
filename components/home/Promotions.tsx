@@ -17,7 +17,12 @@ import { useActiveZone } from "@/lib/hooks/useActiveZone";
 
 const Promotions = () => {
   const { zoneId } = useActiveZone();
-  const { data, isLoading, isSuccess } = useDiscountVendors(zoneId ?? "");
+  const {
+    data: discounts,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useDiscountVendors(zoneId ?? "");
 
   // Simple Swiper refs for both sections
   const discountsSwiperRef = useRef<SwiperType>(null);
@@ -45,75 +50,91 @@ const Promotions = () => {
 
   return (
     <div>
-      {isSuccess && data.length && (
-        <>
-          {/* Discounts Section */}
-          <section className="mt-6 sm:my-10">
-            <div className="flex justify-between">
-              <h3>Discounts</h3>
-              <div className="flex gap-4 max-sm:hidden">
-                <Button
-                  onClick={goToPreviousDiscounts}
-                  className="size-10 rounded-full bg-white hover:bg-white shadow-cargo-sm"
-                >
-                  <RiArrowLeftLine className="text-black" />
-                </Button>
-                <Button
-                  onClick={goToNextDiscounts}
-                  className="size-10 rounded-full bg-white hover:bg-white shadow-cargo-sm"
-                >
-                  <RiArrowRightLine className="text-black" />
-                </Button>
-              </div>
-              <p className="sm:hidden text-primary hover:underline active:underline underline-offset-2 hover:cursor-pointer">
-                See all
-              </p>
-            </div>
-            <div className="w-full section-y ">
-              <Swiper
-                onBeforeInit={(swiper) => {
-                  discountsSwiperRef.current = swiper;
-                }}
-                modules={[Navigation]}
-                spaceBetween={16}
-                slidesPerView={1.3}
-                loop={data.length > 3}
-                speed={600}
-                breakpoints={{
-                  640: {
-                    slidesPerView: 2,
-                    // spaceBetween: 16,
-                  },
-                  768: {
-                    slidesPerView: 3,
-                    spaceBetween: 16,
-                  },
-                  1024: {
-                    slidesPerView: 3,
-                    spaceBetween: 24,
-                  },
-                  1280: {
-                    slidesPerView: 3,
-                    spaceBetween: 48,
-                  },
-                }}
-              >
-                {data?.map((discount) => (
-                  <SwiperSlide key={discount.vendor.id}>
-                    <VendorCard
-                      vendorId={discount.vendor.id}
-                      vendor={discount.vendor}
-                      aggregateDiscount={discount.aggregateDiscount}
-                      source="homepage_discounts"
-                    />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
-          </section>
+      {/* Discounts Section */}
+      <section className="mt-6 sm:my-10">
+        <div className="flex justify-between">
+          <h3>Discounts</h3>
+          <div className="flex gap-4 max-sm:hidden">
+            <Button
+              onClick={goToPreviousDiscounts}
+              className="size-10 rounded-full bg-white hover:bg-white shadow-cargo-sm"
+            >
+              <RiArrowLeftLine className="text-black" />
+            </Button>
+            <Button
+              onClick={goToNextDiscounts}
+              className="size-10 rounded-full bg-white hover:bg-white shadow-cargo-sm"
+            >
+              <RiArrowRightLine className="text-black" />
+            </Button>
+          </div>
+          <p className="sm:hidden text-primary hover:underline active:underline underline-offset-2 hover:cursor-pointer">
+            See all
+          </p>
+        </div>
 
-          {/* Featured Section */}
-          {/* <section className="my-4 sm:my-10">
+        {isError && (
+          <p className="text-red-400 text-center mt-3 sm:mt-4">
+            <span className="font-semibold">
+              Couldn’t get Discounts for your location.
+            </span>
+            <br /> Check your internet connection or refresh to try again.
+          </p>
+        )}
+
+        {isSuccess && discounts.length === 0 && (
+          <p className="text-neutral-500 text-center mt-3 sm:mt-4">
+            No discount vendors found for your current location
+          </p>
+        )}
+
+        {isSuccess && discounts.length > 0 && (
+          <div className="w-full section-y ">
+            <Swiper
+              onBeforeInit={(swiper) => {
+                discountsSwiperRef.current = swiper;
+              }}
+              modules={[Navigation]}
+              spaceBetween={16}
+              slidesPerView={1.3}
+              loop={discounts.length > 3}
+              speed={600}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                  // spaceBetween: 16,
+                },
+                768: {
+                  slidesPerView: 3,
+                  spaceBetween: 16,
+                },
+                1024: {
+                  slidesPerView: 3,
+                  spaceBetween: 24,
+                },
+                1280: {
+                  slidesPerView: 3,
+                  spaceBetween: 48,
+                },
+              }}
+            >
+              {discounts?.map((discount) => (
+                <SwiperSlide key={discount.vendor.id}>
+                  <VendorCard
+                    vendorId={discount.vendor.id}
+                    vendor={discount.vendor}
+                    aggregateDiscount={discount.aggregateDiscount}
+                    source="homepage_discounts"
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+        )}
+      </section>
+
+      {/* Featured Section */}
+      {/* <section className="my-4 sm:my-10">
             <div className="flex justify-between">
               <h3>Featured</h3>
               <div className="flex gap-4 max-sm:hidden">
@@ -164,8 +185,6 @@ const Promotions = () => {
               </Swiper>
             </div>
           </section> */}
-        </>
-      )}
     </div>
   );
 };

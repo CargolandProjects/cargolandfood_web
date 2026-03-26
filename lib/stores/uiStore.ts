@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { DeliveryType } from "../services/cart.service";
 
 // Generic panel state
 type PanelState<TPayload = null> = {
@@ -39,6 +40,12 @@ export type OrderSuccessPayload = {
   orderId: string;
 } | null;
 
+export type AddressesPayload = {
+  source: "general" | "checkout";
+  vendorId?: string;
+  deliveryType?: DeliveryType;
+} | null;
+
 // export type OrderSuccesPayload = {
 //   closeCheckout?: (v: boolean) => void;
 // } | null;
@@ -49,11 +56,11 @@ export type UIStoreState = {
   orderDetails: PanelState<OrderDetailsPayload>;
   checkout: PanelState<CheckoutPayload>;
   trackOrder: PanelState<TrackOrderPayload>;
-  addresses: PanelState;
+  addresses: PanelState<AddressesPayload>;
   orderSuccess: PanelState<OrderSuccessPayload>;
   reviewOrder: PanelState<ReviewOrderPayload>;
 
-  openAddresses: () => void;
+  openAddresses: (payload: AddressesPayload) => void;
   closeAddresses: () => void;
 
   openOrderSuccess: (payload: OrderSuccessPayload) => void;
@@ -97,7 +104,7 @@ export const useUIStore = create<UIStoreState>((set) => ({
   closeOrderSuccess: () =>
     set({ orderSuccess: { open: false, payload: null } }),
 
-  openTrackOrder: (payload: TrackOrderPayload) => {
+  openTrackOrder: (payload) => {
     set({ trackOrder: { open: true, payload } });
   },
 
@@ -107,8 +114,8 @@ export const useUIStore = create<UIStoreState>((set) => ({
     });
   },
 
-  openAddresses: () => {
-    set({ addresses: { open: true } });
+  openAddresses: (payload = null) => {
+    set({ addresses: { open: true, payload } });
   },
 
   closeAddresses: () => {

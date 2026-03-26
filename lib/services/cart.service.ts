@@ -6,8 +6,11 @@ import type {
   CartItem,
   CheckoutPreview,
   APIResponse,
+  AddressSnapshot,
 } from "@/lib/types/cart.types";
 import { GetAddress } from "./address.service";
+
+export type DeliveryType = "DELIVERY" | "PICKUP";
 
 interface RemoveItemParams {
   cartId: string;
@@ -32,6 +35,18 @@ interface CartResponse {
 interface AddToCartPayload {
   item: AddToCart;
   vendorId: string;
+}
+
+interface checkoutPreview {
+  deliveryType: "DELIVERY" | "PICKUP";
+  addressSnapShot?: Omit<AddressSnapshot, "setAddressDefault">;
+  noteToRider?: string;
+  noteToRestaurant?: string;
+}
+
+interface CheckoutPreviewPayload {
+  vendorId: string;
+  payload: checkoutPreview;
 }
 
 export const cart = {
@@ -60,15 +75,20 @@ export const cart = {
     return res.data;
   },
 
-  async checkoutPreview(
-    vendorId: string,
-    deliveryType: "DELIVERY" | "PICKUP" = "DELIVERY"
-  ) {
+  async checkoutPreview(vendorId: string, deliveryType: DeliveryType = "DELIVERY") {
     const response = await apiClient.post<CheckoutPreview>(
       API_ROUTES.order.checkoutPreview(vendorId),
       { deliveryType }
     );
     return response.data;
+  },
+
+  async updateCheckoutPreview(payload: CheckoutPreviewPayload) {
+    const res = await apiClient.post<CheckoutPreview>(
+      API_ROUTES.order.checkoutPreview(payload.vendorId),
+      payload.payload
+    );
+    return res.data;
   },
 
   // // Keep old methods for backward compatibility during transition

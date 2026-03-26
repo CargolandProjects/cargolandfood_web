@@ -94,6 +94,11 @@ export function groupTransactionsByMonth(
     createdAt: string;
   }>;
 }> {
+  // Guard clause: Handle empty, null, undefined, or non-array inputs
+  if (!records || !Array.isArray(records) || records.length === 0) {
+    return [];
+  }
+
   // 1. Sort by date (newest first)
   const sorted = [...records].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()

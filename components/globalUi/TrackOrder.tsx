@@ -88,11 +88,11 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
   };
 
   return (
-    <div className="h-full overflow-y-auto hide-scrollbar">
+    <div className="h-full">
       <div className="h-full py-4 sm:p-6">
         {isDesktop ? (
           // Desktop Header
-          <SheetHeader className="p-0 flex flex-row items-center justify-start gap-2">
+          <SheetHeader className="p-0 pb-1 flex flex-row items-center justify-start gap-2">
             <button onClick={close}>
               <RiArrowGoBackLine className="size-5" />
             </button>
@@ -103,7 +103,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
           </SheetHeader>
         ) : (
           // Mobile Header
-          <div className="relative flex items-center justify-center max-sm:mx-6">
+          <div className="relative pb-1 flex items-center justify-center max-sm:mx-6">
             <button onClick={close} className="absolute left-0">
               <RiArrowLeftLine className="size-5" />
             </button>
@@ -125,10 +125,10 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
           </div>
         )}
 
-        {isDesktop && <Separator className="mt-3 mb-6" />}
+        {isDesktop && <Separator className="mt-2 mb-6" />}
 
         {isSuccess && (
-          <div>
+          <div className="overflow-y-auto hide-scrollbar">
             {/* Delivery Tracking Map */}
             <div className="h-[432px] sm:h-[416px] w-full overflow-hidden rounded-xl max-sm:mt-4">
               <img src={map.src} alt="map" className="size-full object-cover" />

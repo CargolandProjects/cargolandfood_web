@@ -75,7 +75,7 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
       )}
 
       {isSuccess && orders.length === 0 && (
-        <div className="mt-20.5 ">
+        <div className="h-full flex justify-center items-center">
           <EmptyStateUi
             message="No Orders yet"
             description="You haven’t added any food to favourite"
@@ -110,6 +110,9 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
             value="current"
             className="space-y-6 pt-3 pb-8 sm:pb-4 overflow-auto h-full hide-scrollbar"
           >
+            {filteredOrders.length === 0 && (
+              <p className="text-center text-sm">No current orders</p>
+            )}
             {filteredOrders.map((order, idx) => {
               const orderSummary = order.items
                 .map((item) => {
@@ -212,6 +215,10 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
             value="previous"
             className="space-y-6 pt-3 pb-8 sm:pb-4 overflow-auto h-full hide-scrollbar"
           >
+            {filteredOrders.length === 0 && (
+              <p className="text-center text-sm">No previous orders</p>
+            )}
+
             {filteredOrders.map((order, idx) => {
               const orderSummary = order.items
                 .map((item) => {

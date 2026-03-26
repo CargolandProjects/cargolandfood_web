@@ -42,8 +42,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import { useWalletBalance } from "@/lib/hooks/queries/useWallet";
 import { useChargeWallet } from "@/lib/hooks/mutations/useChargeWallet";
+import { DeliveryType } from "@/lib/services/cart.service";
+import RestaurantNoteModal from "../orders/RestaurantNoteModal";
 
-type Delivery = "delivery" | "pickup";
 type PaymentMethod = "wallet" | "digitalTransfer";
 
 interface GlobalCheckoutProps {
@@ -55,10 +56,12 @@ const GlobalCheckoutCOntent = ({
   closeCheckout,
 }: GlobalCheckoutProps) => {
   const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
-  const vendorId = useUIStore((s) => s.checkout.payload)?.vendorId || "";
-  const [deliveryType, setDeliveryType] = useState<Delivery>("delivery");
+  const openAddress = useUIStore((s) => s.openAddresses);
+  const vendorId = useUIStore((s) => s.checkout.payload?.vendorId) || "";
+  const [deliveryType, setDeliveryType] = useState<DeliveryType>("DELIVERY");
   const [showAlert, setShowAlert] = useState(false);
   const [showRiderNote, setShowRiderNote] = useState(false);
+  const [showRestaurantNote, setShowRestaurantNote] = useState(false);
   const [showCoupon, setShowCoupon] = useState(false);
   const [showGift, setShowGift] = useState(false);
   const [showConfirmPickup, setShowConfirmPickup] = useState(false);
@@ -68,17 +71,14 @@ const GlobalCheckoutCOntent = ({
   );
   const [isRemovingItemId, setIsRemovingItemId] = useState<string | null>(null);
   const [quantityChangeId, setQuantityChangeId] = useState<string | null>(null);
-  const openAddresses = useUIStore((s) => s.openAddresses);
   const { user, isAuthenticated } = useSession();
-
-  const deliveryValue = deliveryType === "delivery" ? "DELIVERY" : "PICKUP";
 
   const {
     data: checkoutData,
     isFetching,
     isError,
     isSuccess,
-  } = useCheckoutPreview(vendorId!, deliveryValue, true, isAuthenticated);
+  } = useCheckoutPreview(vendorId, deliveryType, isAuthenticated);
   const { mutate: clearCart, isPending: isClearingCart } = useClearCart();
   const { mutate } = useAddToCart();
   const { mutate: removeItem } = useRemoveCartItem(vendorId);
@@ -137,7 +137,7 @@ const GlobalCheckoutCOntent = ({
 
   // Handle place order
   const handlePlaceOrder = (cartId: string, description: string) => {
-    if (deliveryType === "pickup") {
+    if (deliveryType === "PICKUP") {
       setShowConfirmPickup(true);
       return;
     }
@@ -205,6 +205,13 @@ const GlobalCheckoutCOntent = ({
     );
   };
 
+  const handleOpenAddress = () =>
+    openAddress({
+      deliveryType,
+      source: "checkout",
+      vendorId,
+    });
+
   // Extract data from API response
   const {
     subtotal = "0",
@@ -242,6 +249,14 @@ const GlobalCheckoutCOntent = ({
       riderNote: {
         open: showRiderNote,
         onOpenChange: setShowRiderNote,
+        vendorId,
+        deliveryType,
+      },
+      restaurantNote: {
+        open: showRestaurantNote,
+        onOpenChange: setShowRestaurantNote,
+        vendorId,
+        deliveryType,
       },
       coupon: {
         open: showCoupon,
@@ -271,6 +286,9 @@ const GlobalCheckoutCOntent = ({
     }),
     [
       showRiderNote,
+      showRestaurantNote,
+      vendorId,
+      deliveryType,
       showCoupon,
       showGift,
       showConfirmPickup,
@@ -291,10 +309,10 @@ const GlobalCheckoutCOntent = ({
 
   return (
     <>
-      <div className="h-full bg-white p-4 sm:p-6 overflow-auto hide-scrollbar ">
+      <div className="h-full bg-white p-4 sm:p-6">
         {/* Header */}
         {isDesktop ? (
-          <SheetHeader className="p-0 flex flex-row items-center justify-start gap-2">
+          <SheetHeader className="p-0 pb-1 flex flex-row items-center justify-start gap-2">
             {closeCheckout && (
               <button onClick={closeCheckout} className="">
                 <RiArrowGoBackLine className="size-5" />
@@ -306,7 +324,7 @@ const GlobalCheckoutCOntent = ({
           </SheetHeader>
         ) : (
           // Mobile Header
-          <div className="relative flex items-center justify-center max-sm:mx-2">
+          <div className="relative pb-1 flex items-center justify-center max-sm:mx-2">
             <button onClick={closeCheckout} className="absolute left-0">
               <RiArrowLeftLine className="size-5" />
             </button>
@@ -336,10 +354,10 @@ const GlobalCheckoutCOntent = ({
             />
           </div>
         )}
-        
+
         {!isFetching && isSuccess && cartItems.length > 0 && (
-          <div>
-            {isDesktop && <Separator className="mt-3 mb-6" />}
+          <div className="h-full overflow-y-auto hide-scrollbar">
+            {isDesktop && <Separator className="mt-2 mb-6" />}
 
             {/* Pack Items */}
             <div className="space-y-4 sm:space-y-6 max-sm:mt-5">
@@ -452,7 +470,7 @@ const GlobalCheckoutCOntent = ({
               </button>
 
               <button
-                onClick={() => setShowSuccess(true)}
+                onClick={() => setShowRestaurantNote(true)}
                 className="w-full flex items-center justify-between hover:underline cursor-pointer"
               >
                 <span className="flex items-center gap-2 text-base leading-5">
@@ -480,20 +498,20 @@ const GlobalCheckoutCOntent = ({
                 <span className="text-base leading-5">Delivery</span>
                 <RadioGroup
                   value={deliveryType}
-                  onValueChange={(v: Delivery) => setDeliveryType(v)}
+                  onValueChange={(v: DeliveryType) => setDeliveryType(v)}
                   className="contents"
                 >
-                  <RadioGroupItem value="delivery" />
+                  <RadioGroupItem value="DELIVERY" />
                 </RadioGroup>
               </label>
               <label className="flex items-center justify-between cursor-pointer">
                 <span className="text-base leading-5">Pickup</span>
                 <RadioGroup
                   value={deliveryType}
-                  onValueChange={(v: Delivery) => setDeliveryType(v)}
+                  onValueChange={(v: DeliveryType) => setDeliveryType(v)}
                   className="contents"
                 >
-                  <RadioGroupItem value="pickup" />
+                  <RadioGroupItem value="PICKUP" />
                 </RadioGroup>
               </label>
             </div>
@@ -501,14 +519,14 @@ const GlobalCheckoutCOntent = ({
             <Separator className="my-4 sm:my-6" />
 
             {/* Delivery details */}
-            {deliveryType === "delivery" && (
+            {deliveryType === "DELIVERY" && (
               <div className="mb-6">
                 <h3 className="text-base font-medium leading-6">
                   Delivery Details
                 </h3>
                 <div className="space-y-2 mt-4">
                   <button
-                    onClick={openAddresses}
+                    onClick={handleOpenAddress}
                     className="w-full flex items-center justify-between"
                   >
                     <p className="flex items-center gap-2 ">
@@ -649,6 +667,7 @@ const GlobalCheckoutCOntent = ({
 
       {/* Activity Modals */}
       <RiderNoteModal {...modalProps.riderNote} />
+      <RestaurantNoteModal {...modalProps.restaurantNote} />
       <CouponSuccessModal {...modalProps.couponSuccess} />
       <CouponModal {...modalProps.coupon} />
       <GiftModal {...modalProps.gift} />

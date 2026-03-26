@@ -19,16 +19,19 @@ import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useUIStore } from "@/lib/stores/uiStore";
 import { toast } from "sonner";
-// import { GetAddress } from "@/lib/services/address.service";
 import { useGoogleMaps } from "@/lib/GoogleMapsProvider";
 import { useSession } from "@/lib/hooks/useSession";
 import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
 import { Button } from "../ui/button";
-// import { useSession } from "@/lib/hooks/useSession";
+import { useUpdateCheckout } from "@/lib/hooks/mutations/useUpdateCheckout";
+import { GetAddress } from "@/lib/services/address.service";
 
 const AddressModal = () => {
   const open = useUIStore((s) => s.addresses.open);
   const close = useUIStore((s) => s.closeAddresses);
+  const source = useUIStore((s) => s.addresses.payload?.source) || "general";
+  const vendorId = useUIStore((s) => s.addresses.payload?.vendorId);
+  const deliveryType = useUIStore((s) => s.addresses.payload?.deliveryType);
   const { isAuthenticated } = useSession();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [settingId, setSettingId] = useState<string | null>(null);
@@ -47,6 +50,7 @@ const AddressModal = () => {
     useSetGuestAddress();
   const { isLoaded: mapsLoaded } = useGoogleMaps();
   const { setGuestLocation } = useGuestLocation();
+  const { mutate: updateCartAddress } = useUpdateCheckout();
 
   // Only initialize usePlacesAutocomplete AFTER Google Maps is loaded
   const {
@@ -82,6 +86,10 @@ const AddressModal = () => {
 
   // console.log("Suggestions:", data);
 
+  //   const handleCartAddress = () => {
+  // )
+  //   }
+
   const handleCreate = async (address: Suggestion) => {
     const { description, place_id } = address;
     setValue(description, false);
@@ -97,6 +105,21 @@ const AddressModal = () => {
       // console.log("Place Details:", placeDetails);
 
       if (isAuthenticated) {
+        //Only Test address that works
+        // const payload = {
+        //   addressLine1: "Tipper Garage",
+        //   addressLine2: "",
+        //   city: "Ibadan",
+        //   country: "Nigeria",
+        //   instructions: "",
+        //   latitude: "6.52",
+        //   longitude: "3.36",
+        //   placeId: "fsgfgf33432dgwggsgwerwekjkjkjg778778ytt23ssag343636g",
+        //   postalCode: "23242",
+        //   provider: "Google",
+        //   state: "Oyo",
+        // };
+
         const payload = {
           addressLine1: placeDetails.formatted_address,
           addressLine2: "string",
@@ -112,7 +135,7 @@ const AddressModal = () => {
           provider: "string",
           instructions: "string",
         };
-        
+
         addAddress(payload, {
           onSuccess: (res) => {
             selectAddress(res.data.id);
@@ -154,12 +177,34 @@ const AddressModal = () => {
     });
   };
 
-  const handleSelect = (addressId: string) => {
-    if (isSelecting) return;
-    if (!addressId) return;
-    setSettingId(addressId);
+  const handleSelect = (address: GetAddress) => {
+    if (isSelecting || !address || !vendorId || !deliveryType) return;
 
-    selectAddress(addressId, {
+    // if (!deliveryType) return;
+    setSettingId(address.id);
+
+    // For setting address from the checkout
+    if (source === "checkout") {
+      updateCartAddress(
+        {
+          vendorId,
+          payload: {
+            deliveryType: deliveryType,
+            addressSnapShot: address,
+          },
+        },
+        {
+          onSuccess: () => {
+            toast.success("Delivery Address successfully selected");
+            close();
+          },
+          onSettled: () => [setSettingId(null)],
+        }
+      );
+      return;
+    }
+
+    selectAddress(address.id, {
       onSettled: () => setSettingId(null),
     });
   };
@@ -256,7 +301,7 @@ const AddressModal = () => {
               <div className="space-y-4 mb-2">
                 {addresses.map((address) => (
                   <div
-                    onClick={() => handleSelect(address.id)}
+                    onClick={() => handleSelect(address)}
                     key={address.id}
                     className="flex items-center justify-between w-full py-2.5 hover:cursor-pointer"
                   >
