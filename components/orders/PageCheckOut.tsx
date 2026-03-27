@@ -325,9 +325,9 @@ const PageCheckOut = ({
 
   return (
     <>
-      <div className="h-full overflow-auto hide-scrollbar p-4 bg-white">
+      <div className="h-full overflow-auto hide-scrollbar px-4 pb-4 bg-white">
         {/* Header */}
-        <div className="relative max-sm:flex items-center justify-center">
+        <div className="py-4 sticky top-0 z-20 max-sm:flex items-center justify-center bg-white">
           {closeCheckout && (
             <button
               onClick={() => closeCheckout(false)}
@@ -366,7 +366,7 @@ const PageCheckOut = ({
         {!isFetching && isSuccess && cartItems.length > 0 && (
           <div>
             {/* Pack Items */}
-            <div className="space-y-4 sm:space-y-6 max-sm:mt-5">
+            <div className="space-y-4 sm:space-y-6 max-sm:mt-1">
               {cartItems.map((item, index) => {
                 const addonsSummary = item.addons
                   .map((addon) => addon.name)

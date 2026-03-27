@@ -113,6 +113,5 @@ export default async function RestaurantDetailsPage({
     />;
   }
 
-  // Return JSX outside try/catch
   return <VendorPageContent id={id} initialData={initialData} />;
 }
