@@ -1,7 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { useUIStore } from "@/lib/stores/uiStore";
 import RiderNoteModal from "../orders/RiderNoteModal";
 import CouponSuccessModal from "../orders/CouponSuccessModal";
@@ -22,6 +28,7 @@ import {
   RiArrowLeftLine,
   RiArrowRightSLine,
   RiBankFill,
+  RiCloseFill,
   RiCoupon2Fill,
   RiDeleteBin6Line,
   RiEBike2Line,
@@ -309,23 +316,30 @@ const GlobalCheckoutCOntent = ({
 
   return (
     <>
-      <div className="h-full bg-white p-4 sm:p-6">
+      <div className="h-full overflow-y-auto hide-scrollbar bg-white pb-4 sm:pb-6">
         {/* Header */}
         {isDesktop ? (
-          <SheetHeader className="p-0 pb-1 flex flex-row items-center justify-start gap-2">
-            {closeCheckout && (
-              <button onClick={closeCheckout} className="">
-                <RiArrowGoBackLine className="size-5" />
+          <SheetHeader className="p-0 sm:pt-6 pb-1 sticky top-0 z-20 px-6 bg-white flex flex-row items-center justify-between gap-2">
+            <div className="flex gap-2">
+              {closeCheckout && (
+                <button onClick={closeCheckout} className="">
+                  <RiArrowGoBackLine className="size-5" />
+                </button>
+              )}
+              <SheetTitle className="text-xl font-medium max-sm:text-center leading-7">
+                Checkout
+              </SheetTitle>
+            </div>
+            <SheetClose asChild>
+              <button className="size-10 flex justify-center items-center rounded-full bg-neutral-100">
+                <RiCloseFill className="size-6" />
               </button>
-            )}
-            <h2 className="text-xl font-medium max-sm:text-center leading-7">
-              Checkout
-            </h2>
+            </SheetClose>
           </SheetHeader>
         ) : (
           // Mobile Header
-          <div className="relative pb-1 flex items-center justify-center max-sm:mx-2">
-            <button onClick={closeCheckout} className="absolute left-0">
+          <div className="py-4 sticky top-0 z-20 flex items-center justify-center bg-white">
+            <button onClick={closeCheckout} className="absolute left-6.5">
               <RiArrowLeftLine className="size-5" />
             </button>
             <h2 className="text-lg sm:text-xl font-medium leading-6 sm:leading-7">
@@ -335,19 +349,19 @@ const GlobalCheckoutCOntent = ({
         )}
 
         {isFetching && (
-          <div className="h-full flex justify-center items-center">
+          <div className="h-full flex justify-center items-center px-4 sm:px-6">
             <Loader size={12} />
           </div>
         )}
 
         {isError && (
-          <div className="h-full flex justify-center items-center">
+          <div className="h-full flex justify-center items-center px-4 sm:px-6">
             <ErrorStateUi message="Error Getting Orders " />
           </div>
         )}
 
         {!isFetching && isSuccess && cartItems.length === 0 && (
-          <div className="h-full flex justify-center items-center">
+          <div className="h-full flex justify-center items-center px-4 sm:px-6">
             <EmptyStateUi
               message="No pending Orders"
               description="Order to proceed to checkout"
@@ -356,11 +370,11 @@ const GlobalCheckoutCOntent = ({
         )}
 
         {!isFetching && isSuccess && cartItems.length > 0 && (
-          <div className="h-full overflow-y-auto hide-scrollbar">
+          <div className="px-4 sm:px-6">
             {isDesktop && <Separator className="mt-2 mb-6" />}
 
             {/* Pack Items */}
-            <div className="space-y-4 sm:space-y-6 max-sm:mt-5">
+            <div className="space-y-4 sm:space-y-6 max-sm:mt-1.25">
               {cartItems.map((item, index) => {
                 const addonsSummary = item.addons
                   .map((addon) => addon.name)
@@ -711,7 +725,7 @@ const GlobalCheckout = () => {
     <>
       {isDesktop && (
         <Sheet open={open} onOpenChange={closeCheckout}>
-          <SheetContent className="min-w-[464px]!">
+          <SheetContent className="min-w-[464px]! [&>button]:hidden">
             <GlobalCheckoutCOntent
               isDesktop={isDesktop}
               closeCheckout={closeCheckout}

@@ -1,9 +1,16 @@
 import { useEffect, useState, useMemo } from "react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "../ui/sheet";
 import {
   RiArrowGoBackLine,
   RiArrowLeftLine,
   RiBankCardFill,
+  RiCloseFill,
   RiMapPin2Fill,
   RiMessage2Fill,
   RiPhoneFill,
@@ -88,23 +95,31 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
   };
 
   return (
-    <div className="h-full">
-      <div className="h-full py-4 sm:p-6">
+    <div className="h-full overflow-y-auto hide-scrollbar">
+      <div className="h-full pb-4 sm:px-6 sm:pb-6">
         {isDesktop ? (
           // Desktop Header
-          <SheetHeader className="p-0 pb-1 flex flex-row items-center justify-start gap-2">
-            <button onClick={close}>
-              <RiArrowGoBackLine className="size-5" />
-            </button>
+          <SheetHeader className="p-0 pb-1 pt-4 sm:pt-6 sticky  top-0 z-20 bg-white flex flex-row items-center justify-between">
+            <div className="flex gap-2">
+              <button onClick={close}>
+                <RiArrowGoBackLine className="size-5" />
+              </button>
 
-            <SheetTitle className="text-xl font-medium max-sm:text-center leading-7">
-              Track Orders
-            </SheetTitle>
+              <SheetTitle className="text-xl font-medium max-sm:text-center leading-7">
+                Track Orders
+              </SheetTitle>
+            </div>
+
+            <SheetClose asChild>
+              <button className="size-10 flex justify-center items-center rounded-full bg-neutral-100">
+                <RiCloseFill className="size-6" />
+              </button>
+            </SheetClose>
           </SheetHeader>
         ) : (
           // Mobile Header
-          <div className="relative pb-1 flex items-center justify-center max-sm:mx-6">
-            <button onClick={close} className="absolute left-0">
+          <div className="pb-3 pt-4 sticky top-0 z-20 flex items-center justify-center max-sm:px-6 bg-white">
+            <button onClick={close} className="absolute left-0 ml-6">
               <RiArrowLeftLine className="size-5" />
             </button>
             <h2 className="text-lg sm:text-xl font-medium leading-6 sm:leading-7">
@@ -128,9 +143,9 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
         {isDesktop && <Separator className="mt-2 mb-6" />}
 
         {isSuccess && (
-          <div className="overflow-y-auto hide-scrollbar">
+          <div>
             {/* Delivery Tracking Map */}
-            <div className="h-[432px] sm:h-[416px] w-full overflow-hidden rounded-xl max-sm:mt-4">
+            <div className="h-[432px] sm:h-[416px] w-full overflow-hidden rounded-xl max-sm:mt-2">
               <img src={map.src} alt="map" className="size-full object-cover" />
             </div>
 
@@ -356,7 +371,7 @@ const TrackOrder = () => {
     <>
       {isDesktop && (
         <Sheet open={open} onOpenChange={close}>
-          <SheetContent className="p-0 gap-0 min-w-[464px]">
+          <SheetContent className="p-0 gap-0 min-w-[464px] [&>button]:hidden">
             <TrackOrderContent isDesktop={isDesktop} />
           </SheetContent>
         </Sheet>
