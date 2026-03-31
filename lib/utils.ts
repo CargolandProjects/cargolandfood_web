@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { format } from "date-fns";
 import { twMerge } from "tailwind-merge";
+import { TransactionStatus } from "./services/wallet.service";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -78,7 +79,7 @@ export function groupTransactionsByMonth(
     amount: string;
     reference: string;
     description: string | null;
-    status: "SUCCESS" | "FAILED" | "PENDING";
+    status: TransactionStatus;
     createdAt: string;
   }>
 ): Array<{
@@ -90,7 +91,7 @@ export function groupTransactionsByMonth(
     amount: string;
     reference: string;
     description: string | null;
-    status: "SUCCESS" | "FAILED";
+    status: TransactionStatus;
     createdAt: string;
   }>;
 }> {
@@ -136,7 +137,7 @@ export function groupTransactionsByMonth(
         amount: string;
         reference: string;
         description: string | null;
-        status: "SUCCESS" | "FAILED";
+        status: TransactionStatus;
         createdAt: string;
       }>
     >
