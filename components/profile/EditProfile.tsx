@@ -19,9 +19,10 @@ import {
 } from "@/lib/hooks/mutations/useAuth";
 import { RiLoader2Line } from "react-icons/ri";
 import { camera } from "@/assets/svgs";
-import { uploadImageToCloudinary } from "@/lib/utils";
+import { uploadImageToCloudinary } from "@/lib/utils/cloudinary";
 import { toast } from "sonner";
 import { useState } from "react";
+import Image from "next/image";
 
 interface EditProfileProps {
   open: boolean;
@@ -131,10 +132,12 @@ const EditProfile = ({
               {isUploadingImage ? (
                 <RiLoader2Line className="size-5 animate-spin text-primary-600" />
               ) : (
-                <img
+                <Image
                   src={camera.src}
                   alt="camera icon"
-                  className="h-[17px] w-5  object-cover"
+                  className="object-cover"
+                  width={20}
+                  height={17}
                 />
               )}
             </label>

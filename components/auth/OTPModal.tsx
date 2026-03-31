@@ -27,6 +27,7 @@ import { RiLoader2Line } from "react-icons/ri";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { toast } from "sonner";
 import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
+import Image from "next/image";
 
 const formSchema = z.object({
   otp: z.string().min(4, "OTP must be at least 4 digits"),
@@ -38,7 +39,7 @@ export type VerifyOtp = z.infer<typeof formSchema>;
 const OTPModal = () => {
   const { goToStep, formData, closeAuth } = useAuthFlow();
   const { mutate: verifyOtp, isPending } = useVerifyOtp();
-  const { completeOtp, user } = useSession();
+  const { completeOtp } = useSession();
   const { mutate: resendOtp, isPending: resendPending } = useResendOtp();
   const [otpMessage, setOtpMessage] = useState({
     message: "",
@@ -58,8 +59,8 @@ const OTPModal = () => {
   const otpType = formData.otpType || "signup";
   const otpData = useWatch({ control, name: "otp" });
 
-  const routeModal = (addressess: string | undefined) => {
-    if (!addressess) {
+  const routeModal = (isLocationSet: boolean = false) => {
+    if (!isLocationSet) {
       goToStep("address");
       return;
     }
@@ -106,9 +107,14 @@ const OTPModal = () => {
 
         if (guestLocation) clearGuestLocation();
 
+        const pendingUser = localStorage.getItem(
+          `${process.env.NEXT_PUBLIC_USER_PENDING_KEY}`
+        );
+        const parsedPendingUser = pendingUser ? JSON.parse(pendingUser) : null;
+
         // Promote pending user to authenticated user
         completeOtp();
-        routeModal(user?.addressess);
+        routeModal(parsedPendingUser?.isLocationSet);
       },
       onError: (error) => {
         toast.error(error.message);
@@ -135,7 +141,6 @@ const OTPModal = () => {
             message: "New otp sent!",
           });
           setTimer(59);
-          console.log("You can now proceed with the API Call");
         },
       }
     );
@@ -166,11 +171,12 @@ const OTPModal = () => {
   return (
     <ModalTransition>
       <DialogHeader className="items-center gap-0">
-        <div className="size-[50px] bg-black flex justify-center items-center rounded-lg">
-          <img
+        <div className="relative size-[50px] bg-black flex justify-center items-center rounded-lg ">
+          <Image
             src={logo.src}
             alt="CargoLand Food Logo"
             className="h-[33.4px] w-7 object-cover"
+            fill
           />
         </div>
         <DialogTitle className="form-title mt-4">

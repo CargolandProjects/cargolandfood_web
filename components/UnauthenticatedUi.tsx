@@ -1,6 +1,7 @@
 import { alert } from "@/assets/svgs";
 import { Button } from "./ui/button";
 import useAuthFlow from "@/lib/stores/authFlowStore";
+import Image from "next/image";
 
 interface UnauthenticatedUiProps {
   //   title: string;
@@ -11,10 +12,10 @@ const UnauthenticatedUi = ({ description }: UnauthenticatedUiProps) => {
   const { openAuth } = useAuthFlow();
   return (
     <div className="h-full flex flex-col justify-center items-center">
-      <div className="rounded-2xl pb-6.5">
-        <img src={alert.src} alt="alert icon" />
+      <div className="rounded-2xl">
+        <Image src={alert.src} alt="alert icon" width={48} height={49} />
       </div>
-      <div className="mt-6">
+      <div className="mt-[50px]">
         <h3 className="text-lg text-neutral-600 leading-6 text-center">
           Sign In Required
         </h3>

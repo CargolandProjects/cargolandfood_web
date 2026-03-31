@@ -15,7 +15,7 @@ const eslintConfig = defineConfig([
   ]),
   {
     rules: {
-      "@next/next/no-img-element": "off", // Disable img tag warning
+      // "@next/next/no-img-element": "off", // Disable img tag warning
     },
   },
 ]);

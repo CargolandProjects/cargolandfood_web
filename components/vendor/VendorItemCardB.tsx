@@ -9,6 +9,8 @@ import useAuthFlow from "@/lib/stores/authFlowStore";
 import { useSession } from "@/lib/hooks/useSession";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
+import { cld } from "@/lib/utils/cloudinary";
 
 interface VendorItemCard {
   menu: Menu;
@@ -69,10 +71,11 @@ const VendorItemCardB = ({
         className="w-full max-w-[280px] h-[162px] flex flex-col justify-end rounded-2xl cursor-pointer relative"
       >
         <div className="w-[134px] sm:w-[139px] h-21 sm:h-[93px] mx-auto rounded-lg overflow-hidden absolute top-px z-1 right-1/2 transform translate-x-1/2">
-          <img
-            src={uploadImageUrl}
+          <Image
+            src={cld(uploadImageUrl, "menu") || "/fallback_vendor.webp"}
             alt={name}
             className="size-full object-cover"
+            fill
             onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
           />
 

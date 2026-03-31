@@ -13,6 +13,8 @@ import { fallbackImg } from "@/lib/utils";
 import { useSession } from "@/lib/hooks/useSession";
 import { toast } from "sonner";
 import useAuthFlow from "@/lib/stores/authFlowStore";
+import Image from "next/image";
+import { cld } from "@/lib/utils/cloudinary";
 
 interface ProductModalProps {
   menu: Menu;
@@ -173,10 +175,11 @@ const ProductModal = ({
         className="dialog hide-scrollbar max-h-[90vh]! p-0! border-none! outline-none! gap-0 overflow-y-auto!"
       >
         <div className="w-full h-[177px] overflow-hidden rounded-t-lg relative">
-          <img
-            src={uploadImageUrl || "/fallback_vendor.webp"}
+          <Image
+            src={cld(uploadImageUrl, "productModal") || "/fallback_vendor.webp"}
             alt={name}
             className="size-full object-cover"
+            fill
             onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
           />
           <Button

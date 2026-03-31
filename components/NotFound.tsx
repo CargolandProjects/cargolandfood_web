@@ -4,6 +4,7 @@ import { emptyBox } from "@/assets/svgs";
 import { Button } from "./ui/button";
 import { RiArrowLeftLine } from "react-icons/ri";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface NotFoundProps {
   title: string;
@@ -26,11 +27,12 @@ const NotFound = ({
 
   return (
     <section className="flex flex-col items-center justify-center bg-amber-10 h-full">
-      <div className="size-40 sm:size-50">
-        <img
+      <div className="size-40 sm:size-50 relative">
+        <Image
           src={emptyBox.src}
           alt="empty box"
           className="size-full object-cover"
+          fill
         />
       </div>
 

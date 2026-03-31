@@ -2,6 +2,7 @@
 import success from "@/assets/gifs/success.gif";
 import { Button } from "@/components/ui/button";
 import { useUIStore } from "@/lib/stores/uiStore";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -19,11 +20,12 @@ function PaymentSuccessfulPageContent() {
   return (
     <div className="h-full flex justify-center items-center">
       <div className="w-[328px] flex flex-col items-center">
-        <div className="size-[124px] sm:size-[180px]">
-          <img
+        <div className="relative size-[124px] sm:size-[180px]">
+          <Image
             src={success.src}
             alt="payment success gif"
             className="size-full"
+            fill
           />
         </div>
         <h1 className="text-xl sm:text-2xl font-medium sm:font-bold leading-7 sm:leading-8 mt-3 sm:mt-1">

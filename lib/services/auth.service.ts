@@ -34,6 +34,7 @@ export interface User {
   setAddressDefault: boolean;
   role: "USER";
   verified: boolean;
+  isLocationSet: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -45,7 +46,7 @@ interface UserData extends Omit<Message, "success"> {
   user: User;
 }
 
-interface SignInResponse extends  Omit<Message, "staus"> {
+interface SignInResponse extends  Omit<Message, "status"> {
   user: User;
   token: Token;
 }

@@ -16,6 +16,8 @@ import {
 import { fallbackImg } from "@/lib/utils";
 import { useUIStore } from "@/lib/stores/uiStore";
 import UnauthenticatedUi from "../UnauthenticatedUi";
+import Image from "next/image";
+import { cld } from "@/lib/utils/cloudinary";
 
 interface OrdersProps {
   setActiveTab: (tab: ActiveTab) => void;
@@ -131,13 +133,17 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
                     {/* Order images */}
                     <div className="flex flex-col gap-1">
                       {/* Menu image */}
-                      <div className="size-[68px] min-h-[68px] flex-1 rounded-md overflow-hidden bg-neutral-100">
-                        <img
+                      <div className="relative size-[68px] min-h-[68px] flex-1 rounded-md overflow-hidden bg-neutral-100">
+                        <Image
                           src={
-                            order.items[0].menuImg || "/fallback_vendor.webp"
+                            cld(order.items[0].menuImg, {
+                              width: 350,
+                              height: 350,
+                            }) || "/fallback_vendor.webp"
                           }
                           alt="menu item"
                           className="size-full object-cover"
+                          fill
                           onError={(e) =>
                             fallbackImg(e, "/fallback_vendor.webp")
                           }
@@ -146,14 +152,17 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
                       {/* additional items section */}
                       {order.items.length > 1 && (
                         <div className="flex gap-1">
-                          <div className="size-8 rounded-md overflow-hidden bg-neutral-100">
-                            <img
+                          <div className="size-8 rounded-md overflow-hidden bg-neutral-100 relative">
+                            <Image
                               src={
-                                order?.items[1]?.menuImg ||
-                                "/fallback_vendor.webp"
+                                cld(order?.items[1]?.menuImg, {
+                                  width: 200,
+                                  height: 200,
+                                }) || "/fallback_vendor.webp"
                               }
                               alt="menu item"
                               className="size-full object-cover"
+                              fill
                               onError={(e) =>
                                 fallbackImg(e, "/fallback_vendor.webp")
                               }
@@ -237,13 +246,17 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
                     {/* Order images */}
                     <div className="flex flex-col gap-1">
                       {/* Menu image */}
-                      <div className="size-[68px] min-h-[68px] flex-1 rounded-md overflow-hidden bg-neutral-100">
-                        <img
+                      <div className="size-[68px] min-h-[68px] flex-1 rounded-md overflow-hidden bg-neutral-100 relative">
+                        <Image
                           src={
-                            order.items[0].menuImg || "/fallback_vendor.webp"
+                            cld(order.items[0].menuImg, {
+                              width: 350,
+                              height: 350,
+                            }) || "/fallback_vendor.webp"
                           }
                           alt="menu item"
                           className="size-full object-cover"
+                          fill
                           onError={(e) =>
                             fallbackImg(e, "/fallback_vendor.webp")
                           }
@@ -252,14 +265,17 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
                       {/* additional items section */}
                       {order.items.length > 1 && (
                         <div className="flex gap-1">
-                          <div className="size-8 rounded-md overflow-hidden bg-neutral-100">
-                            <img
+                          <div className="size-8 rounded-md overflow-hidden bg-neutral-100 relative">
+                            <Image
                               src={
-                                order?.items[1]?.menuImg ||
-                                "/fallback_vendor.webp"
+                                cld(order?.items[1]?.menuImg, {
+                                  width: 200,
+                                  height: 200,
+                                }) || "/fallback_vendor.webp"
                               }
                               alt="menu item"
                               className="size-full object-cover"
+                              fill
                               onError={(e) =>
                                 fallbackImg(e, "/fallback_vendor.webp")
                               }

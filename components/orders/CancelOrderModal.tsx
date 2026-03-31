@@ -9,6 +9,7 @@ import {
 import { Button } from "../ui/button";
 import { sadFace } from "@/assets/images";
 import { RiErrorWarningFill } from "react-icons/ri";
+import Image from "next/image";
 
 interface CancelOrderModalProps {
   open: boolean;
@@ -24,11 +25,12 @@ const CancelOrderModal = ({ open, onOpenChange }: CancelOrderModalProps) => {
         <DialogHeader className="gap-7.5">
           <DialogTitle className="dialog-title mt-[74px] flex items-center justify-center">
             We are sorry to hear this{" "}
-            <span className="size-5 inline-block ml-1.5">
-              <img
+            <span className="relative size-5 inline-block ml-1.5">
+              <Image
                 src={sadFace.src}
                 alt="sad face icon"
                 className="size-full object-cover"
+                fill
               />
             </span>
           </DialogTitle>

@@ -25,6 +25,8 @@ import VendorItemCardB from "./VendorItemCardB";
 import { vendorById } from "@/lib/services/vendors.service";
 import VendorJsonLd from "./VendorJsonLd";
 import { toast } from "sonner";
+import Image from "next/image";
+import { cld } from "@/lib/utils/cloudinary";
 
 interface VendorPageContentProps {
   id: string;
@@ -247,10 +249,11 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
                 hasItemsInCart ? "xl:h-[244px]" : "xl:h-[284px]"
               }  w-full overflow-hidden rounded-xl mt-2`}
             >
-              <img
-                src={vendor?.profileImg || "/fallback_vendor.webp"}
+              <Image
+                src={cld(vendor?.profileImg, "hero") || "/fallback_vendor.webp"}
                 alt={vendor?.businessName}
                 className="w-full h-full object-cover rounded-xl bg-neutral-100"
+                fill
                 onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
               />
               {/* Favourite and Comments */}
@@ -269,13 +272,13 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
                 </button>
                 <button
                   onClick={() => setShowReviews(true)}
-                  className="size-8 sm:size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
+                  className="relative size-8 sm:size-10 rounded-full bg-white flex justify-center items-center cursor-pointer"
                 >
-                  <img
+                  <Image
                     src={info.src}
                     alt="Shawarma Plus banner"
                     className="size-6 rounded-full object-cover"
-                    loading="lazy"
+                    fill
                   />
                 </button>
               </div>

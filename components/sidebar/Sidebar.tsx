@@ -25,6 +25,7 @@ import Orders from "./Orders";
 import { useCart } from "@/lib/hooks/queries/useCart";
 import { useGetOrders } from "@/lib/hooks/queries/useOrders";
 import { useSession } from "@/lib/hooks/useSession";
+import Image from "next/image";
 
 interface SideBar {
   open: boolean;
@@ -145,12 +146,13 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
               <Link
                 href="/"
                 onClick={() => setActiveCategory(null)}
-                className=" size-6 flex items-center justify-center rounded-sm bg-black overflow-hidden"
+                className="relative size-6 flex items-center justify-center rounded-sm bg-black overflow-hidden"
               >
-                <img
+                <Image
                   src={logo.src}
                   alt="Cargoland Food"
                   className="object-cover"
+                  fill
                 />
               </Link>
             </div>
@@ -285,12 +287,13 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
               <Link
                 href="/"
                 onClick={() => setActiveCategory(null)}
-                className="h-10 w-[140px] block overflow-hidden mb-8"
+                className="relative h-10 w-[140px] block overflow-hidden mb-8"
               >
-                <img
+                <Image
                   src={logoFull.src}
                   alt="Cargoland Food"
                   className="object-cover"
+                  fill
                 />
               </Link>
               <button onClick={() => setOpen(false)}>

@@ -2,6 +2,7 @@ import { address } from "@/assets/svgs";
 import { Button } from "../ui/button";
 import { useUIStore } from "@/lib/stores/uiStore";
 import useAuthFlow from "@/lib/stores/authFlowStore";
+import Image from "next/image";
 
 const SelectAddressModal = () => {
   const openSetAddress = useUIStore((s) => s.openAddresses);
@@ -14,11 +15,12 @@ const SelectAddressModal = () => {
   return (
     <div className="flex flex-col gap-8 items-center justify-center">
       <h3 className="form-title">Select address</h3>
-      <div className="">
-        <img
+      <div >
+        <Image
           src={address.src}
           alt="select_location_illustration"
-          className=""
+          width={224}
+          height={224}
         />
       </div>
       <p className="max-sm:-mt-2 text-lg leading-6 text-gray-500 text-center">
