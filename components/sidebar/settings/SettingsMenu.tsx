@@ -1,5 +1,6 @@
 import {
   RiArrowGoBackLine,
+  RiArrowLeftLine,
   RiArrowRightSLine,
   RiCoupon2Fill,
   RiEBike2Fill,
@@ -93,9 +94,15 @@ const SettingsMenu = ({ setActiveTab, setOpen }: SettingsProps) => {
         <div className="relative flex items-center justify-center">
           <button
             onClick={() => setActiveTab(null)}
-            className="absolute left-0"
+            className="absolute left-0 max-sm:hidden"
           >
             <RiArrowGoBackLine className="size-5" />
+          </button>
+          <button
+            onClick={() => setActiveTab(null)}
+            className="absolute left-2.5 sm:hidden"
+          >
+            <RiArrowLeftLine className="size-5" />
           </button>
           <h2 className="text-lg leading-6">Settings</h2>
         </div>

@@ -1,6 +1,6 @@
 import { Separator } from "@radix-ui/react-separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import {  formatDateWCommaB, formatTime } from "@/lib/utils";
+import { formatDateWCommaB, formatTime } from "@/lib/utils";
 import { TransactionRecord } from "@/lib/services/wallet.service";
 
 interface TxDetailModalProps {
@@ -8,6 +8,23 @@ interface TxDetailModalProps {
   onOpenChange: (id: string | null) => void;
   tx: TransactionRecord;
 }
+
+export const statusStyles = {
+  SUCCESS: {
+    styles: "border-[#027A48] text-[#054825] bg-[#E5F8EE]",
+    message: "Successful",
+  },
+
+  FAILED: {
+    styles: "border-red-600 text-red-800 bg-cargo-error/10",
+    message: "Failed",
+  },
+
+  PENDING: {
+    styles: "border-yellow-600 text-yellow-800 bg-yellow-100",
+    message: "Pending",
+  },
+};
 
 const TxDetailModal = ({ open, onOpenChange, tx }: TxDetailModalProps) => {
   return (
@@ -22,7 +39,9 @@ const TxDetailModal = ({ open, onOpenChange, tx }: TxDetailModalProps) => {
         <div className="mt-3">
           <div className="space-y-3">
             <p className="text-neutral-600 text-base leading-5">Description</p>
-            <p className="text-base font-medium ">{tx.description || tx.type}</p>
+            <p className="text-base font-medium ">
+              {tx.description || tx.type}
+            </p>
           </div>
 
           <Separator className="mt-3 mb-6" />
@@ -38,17 +57,16 @@ const TxDetailModal = ({ open, onOpenChange, tx }: TxDetailModalProps) => {
                       : "text-cargo-success"
                   }`}
                 >
-                  {tx.type === "DEBIT" ? "-" : ""}₦{Number(tx.amount).toLocaleString()}
+                  {tx.type === "DEBIT" ? "-" : ""}₦
+                  {Number(tx.amount).toLocaleString()}
                 </span>
               </div>
               <span
                 className={`${
-                  tx.status === "SUCCESS"
-                    ? "border-[#027A48] text-[#054825] bg-[#E5F8EE]"
-                    : "border-red-600 text-red-800 bg-cargo-error/10"
+                  statusStyles[tx.status].styles
                 } px-3 py-1.25 h-fit border rounded-xl text-xxs font-medium leading-3`}
               >
-                {tx.status === "SUCCESS" ? "Successful" : "Failed"}
+                {statusStyles[tx.status].message}
               </span>
             </div>
             <div className="mt-6 flex justify-between">
