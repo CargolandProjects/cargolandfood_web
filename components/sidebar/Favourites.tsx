@@ -1,5 +1,5 @@
 import React from "react";
-import { RiArrowGoBackLine } from "react-icons/ri";
+import { RiArrowGoBackLine, RiArrowLeftLine } from "react-icons/ri";
 import { ActiveTab } from "./Sidebar";
 import VendorCard from "../vendor/VendorCard";
 import Loader from "../Loader";
@@ -27,8 +27,17 @@ const Favourites = ({ setActiveTab, isAuthenticated }: FavouritesProps) => {
     <div className="h-full">
       {/* Header */}
       <div className="relative flex items-center justify-center mb-2">
-        <button onClick={() => setActiveTab(null)} className="absolute left-0">
+        <button
+          onClick={() => setActiveTab(null)}
+          className="absolute left-0 max-sm:hidden"
+        >
           <RiArrowGoBackLine className="size-5" />
+        </button>
+        <button
+          onClick={() => setActiveTab(null)}
+          className="absolute left-2.5 sm:hidden"
+        >
+          <RiArrowLeftLine className="size-5" />
         </button>
         <h2 className="text-lg leading-6">Favourite</h2>
       </div>

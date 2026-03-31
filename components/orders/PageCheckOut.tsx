@@ -331,13 +331,13 @@ const PageCheckOut = ({
           {closeCheckout && (
             <button
               onClick={() => closeCheckout(false)}
-              className="absolute left-0"
+              className="absolute left-2.5"
             >
               <RiArrowLeftLine className="size-5" />
             </button>
           )}
           <h2 className="text-xl font-medium max-sm:text-center leading-7">
-            Your Order Summary
+            Checkout
           </h2>
         </div>
         <Separator className={`mt-3 ${isSuccess && "mb-6"} max-sm:hidden`} />

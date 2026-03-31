@@ -1,4 +1,8 @@
-import { RiArrowGoBackLine, RiMore2Fill } from "react-icons/ri";
+import {
+  RiArrowGoBackLine,
+  RiArrowLeftLine,
+  RiMore2Fill,
+} from "react-icons/ri";
 import { ActiveTab } from "./Sidebar";
 import Loader from "../Loader";
 import ErrorStateUi from "../ErrorStateUi";
@@ -54,8 +58,17 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="relative flex items-center justify-center">
-        <button onClick={() => setActiveTab(null)} className="absolute left-0">
+        <button
+          onClick={() => setActiveTab(null)}
+          className="absolute left-0 max-sm:hidden"
+        >
           <RiArrowGoBackLine className="size-5" />
+        </button>
+        <button
+          onClick={() => setActiveTab(null)}
+          className="absolute left-2.5 sm:hidden"
+        >
+          <RiArrowLeftLine className="size-5" />
         </button>
         <h2 className="text-lg leading-6">Orders</h2>
       </div>

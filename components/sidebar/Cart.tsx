@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   RiArrowGoBackLine,
+  RiArrowLeftLine,
   RiLoader2Line,
   RiTakeawayFill,
 } from "react-icons/ri";
@@ -132,8 +133,11 @@ const Cart = ({ setActiveTab, isAuthenticated }: SettingsProps) => {
     <div className="h-full">
       {/* Header */}
       <div className="relative flex items-center justify-center max-sm:pb-3">
-        <button onClick={() => setActiveTab(null)} className="absolute left-0">
+        <button onClick={() => setActiveTab(null)} className="absolute left-0 max-sm:hidden">
           <RiArrowGoBackLine className="size-5" />
+        </button>
+        <button onClick={() => setActiveTab(null)} className="absolute left-2.5 sm:hidden">
+          <RiArrowLeftLine className="size-5" />
         </button>
         <h2 className="text-lg leading-6">Cart</h2>
       </div>

@@ -78,7 +78,7 @@ export function groupTransactionsByMonth(
     amount: string;
     reference: string;
     description: string | null;
-    status: "SUCCESS" | "FAILED";
+    status: "SUCCESS" | "FAILED" | "PENDING";
     createdAt: string;
   }>
 ): Array<{
