@@ -39,7 +39,7 @@ export type VerifyOtp = z.infer<typeof formSchema>;
 const OTPModal = () => {
   const { goToStep, formData, closeAuth } = useAuthFlow();
   const { mutate: verifyOtp, isPending } = useVerifyOtp();
-  const { completeOtp, user } = useSession();
+  const { completeOtp } = useSession();
   const { mutate: resendOtp, isPending: resendPending } = useResendOtp();
   const [otpMessage, setOtpMessage] = useState({
     message: "",
@@ -59,8 +59,8 @@ const OTPModal = () => {
   const otpType = formData.otpType || "signup";
   const otpData = useWatch({ control, name: "otp" });
 
-  const routeModal = (addressess: string | undefined) => {
-    if (!addressess) {
+  const routeModal = (isLocationSet: boolean = false) => {
+    if (!isLocationSet) {
       goToStep("address");
       return;
     }
@@ -107,9 +107,14 @@ const OTPModal = () => {
 
         if (guestLocation) clearGuestLocation();
 
+        const pendingUser = localStorage.getItem(
+          `${process.env.NEXT_PUBLIC_USER_PENDING_KEY}`
+        );
+        const parsedPendingUser = pendingUser ? JSON.parse(pendingUser) : null;
+
         // Promote pending user to authenticated user
         completeOtp();
-        routeModal(user?.addressess);
+        routeModal(parsedPendingUser?.isLocationSet);
       },
       onError: (error) => {
         toast.error(error.message);
@@ -136,7 +141,6 @@ const OTPModal = () => {
             message: "New otp sent!",
           });
           setTimer(59);
-          console.log("You can now proceed with the API Call");
         },
       }
     );
