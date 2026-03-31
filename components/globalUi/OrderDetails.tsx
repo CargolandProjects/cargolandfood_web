@@ -25,6 +25,8 @@ import {
 import Loader from "../Loader";
 import ErrorStateUi from "../ErrorStateUi";
 import { fallbackImg, formatDateWComma, formatTime } from "@/lib/utils";
+import Image from "next/image";
+import { cld } from "@/lib/utils/cloudinary";
 
 interface OrderDetailsContentProps {
   isDesktop: boolean;
@@ -137,11 +139,12 @@ const OrderDetailsContent = ({
             <h3 className="text-base font-medium leading-6">Item Info</h3>
             {data.items.map((item, index) => (
               <div className="flex gap-1.5 p-1" key={index}>
-                <div className="w-[78px] h-[74px] bg-neutral-100 overflow-hidden rounded-l-md rounded-r-[2.5px]">
-                  <img
-                    src={item.menuImg || "/fallback_menu.webp"}
+                <div className="relative w-[78px] h-[74px] bg-neutral-100 overflow-hidden rounded-l-md rounded-r-[2.5px]">
+                  <Image
+                    src={cld(item.menuImg, "thumb") || "/fallback_menu.webp"}
                     alt="Pepperoni Pizza"
                     className="size-full object-cover"
+                    fill
                     onError={(e) => fallbackImg(e, "/fallback_menu.webp")}
                   />
                 </div>
@@ -169,155 +172,12 @@ const OrderDetailsContent = ({
             </h2>
 
             <div className="flex gap-3 items-center">
-              <div className="size-5 rounded-full bg-red-50 flex items-center justify-center shrink-0 mt-1">
-                <img
+              <div className="relative size-5 rounded-full bg-red-50 flex items-center justify-center shrink-0 mt-1">
+                <Image
                   src={restaurant.src}
                   alt="Restaurant svg icon"
                   className="size-full object-cover"
-                />
-              </div>
-              <div className="flex-1 text-sm">
-                <p className="font-medium ">From Restaurant</p>
-                <p className="text-neutral-600 line-clamp-1">
-                  Cargo Terminal: 2nd Floor SAHCO Business Com...
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <RiMapPinFill className="size-4.5 text-orange-600 fill-orange-600" />
-
-              <div className="flex-1">
-                <p className="font-medium mb-1">To</p>
-                <p className="text-gray-600 text-sm line-clamp-1">
-                  {data.addressSnapshot?.addressLine1}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <Separator className="my-3" />
-
-          {/* Payment Summary */}
-          <div className="space-y-2.5">
-            <h2 className="text-base font-medium leading-6">Payment Summary</h2>
-
-            <div className=" space-y-1.5">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-sm leading-4.5">Orders</span>
-                <span>{currency(data.subtotal)}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-sm leading-4.5">Delivery Fee</span>
-                <span>{currency(data.deliveryFee)}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-sm leading-4.5">Service Fee</span>
-                <span>{currency(data.serviceFee)}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-sm leading-4.5">Discounts</span>
-                <span>{currency(data.discountTotal)}</span>
-              </div>
-
-              <div className="flex items-center justify-between text-sm font-medium mt-4">
-                <span className="text-base font-medium ">Total</span>
-                <span className="text-base font-medium ">
-                  {currency(data.total)}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Track Order Button */}
-          <Button
-            onClick={() => handlOpenTrackOrder(data.id)}
-            className="submit-btn my-10"
-          >
-            TRACK ORDER
-          </Button>
-        </div>
-      )}
-      {isSuccess && (
-        <div className="max-sm:mt-1">
-          {/* General Info */}
-          <div className="space-y-2 ">
-            <h3 className="text-base font-medium leading-6">General Info</h3>
-
-            <div className="flex items-center justify-between gap-1">
-              <div className="flex items-center gap-2 text-sm">
-                <span>Order ID:</span>
-                <span className="font-bold line-clamp-1">{data.id}</span>
-              </div>
-              <div className="flex items-center gap-0.5 text-sm font-normal shrink-0">
-                <RiTimeLine className="size-4.5 text-neutral-600" />
-
-                <span>
-                  {formatDateWComma(data.createdAt, false)}{" "}
-                  {formatTime(data.createdAt)}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between text-sm">
-              <span>Delivery Verification Code:</span>
-              <span className="font-bold">
-                {data.VerificationCode?.code ?? "no code"}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between text-sm">
-              <span>Delivery:</span>
-              <span className="bg-primary-50 text-primary p-1.5 rounded-[5px] text-xxs font-medium">
-                {data.deliveryType}
-              </span>
-            </div>
-          </div>
-
-          <Separator className="my-3" />
-
-          {/* Item Info */}
-          <div className="space-y-2">
-            <h3 className="text-base font-medium leading-6">Item Info</h3>
-            {data.items.map((item, index) => (
-              <div className="flex gap-1.5 p-1" key={index}>
-                <div className="w-[78px] h-[74px] bg-neutral-100 overflow-hidden rounded-l-md rounded-r-[2.5px]">
-                  <img
-                    src={item.menuImg || "/fallback_menu.webp"}
-                    alt="Pepperoni Pizza"
-                    className="size-full object-cover"
-                    onError={(e) => fallbackImg(e, "/fallback_menu.webp")}
-                  />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-sm font-medium leading-5">
-                    {item.menuName}
-                  </h3>
-                  <p className="text-neutral-600 text-sm line-clamp-2 mt-0.5 ">
-                    {item.description ?? "-"}
-                  </p>
-                  <p className="text-sm font-medium leading-3 mt-1">
-                    {currency(item.unitPrice)}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <Separator className="my-3" />
-
-          {/* Delivery Details */}
-          <div className="space-y-2">
-            <h2 className="text-base font-medium leading-6">
-              Delivery Details
-            </h2>
-
-            <div className="flex gap-3 items-center">
-              <div className="size-5 rounded-full bg-red-50 flex items-center justify-center shrink-0 mt-1">
-                <img
-                  src={restaurant.src}
-                  alt="Restaurant svg icon"
-                  className="size-full object-cover"
+                  fill
                 />
               </div>
               <div className="flex-1 text-sm">

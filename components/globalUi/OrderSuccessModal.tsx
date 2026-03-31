@@ -4,6 +4,7 @@ import success from "@/assets/gifs/success.gif";
 import { RiTimeLine } from "react-icons/ri";
 import { Button } from "../ui/button";
 import { useUIStore } from "@/lib/stores/uiStore";
+import Image from "next/image";
 
 interface OrderSuccessfulProps {
   closeCheckout?: (v: boolean) => void;
@@ -33,8 +34,13 @@ const OrderSuccessModal = ({ closeCheckout }: OrderSuccessfulProps) => {
       }}
     >
       <DialogContent className="dialog px-6! sm:px-9!">
-        <div className="size-[124px] sm:size-[180px] self-center justify-self-center mt-8">
-          <img src={success.src} alt="coupon added" className="size-full " />
+        <div className="relative size-[124px] sm:size-[180px] self-center justify-self-center mt-8">
+          <Image
+            src={success.src}
+            alt="coupon added"
+            className="size-full"
+            fill
+          />
         </div>
 
         <div className="sm:mt-1 flex flex-col justify-center items-center gap-3">

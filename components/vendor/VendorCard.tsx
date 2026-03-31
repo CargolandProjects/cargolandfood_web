@@ -1,9 +1,14 @@
-import { FavouriteSource, useToggleFavourite } from "@/lib/hooks/mutations/useToggleFavourite";
+import {
+  FavouriteSource,
+  useToggleFavourite,
+} from "@/lib/hooks/mutations/useToggleFavourite";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
 import { useSession } from "@/lib/hooks/useSession";
 import { Vendor } from "@/lib/services/vendors.service";
 import useAuthFlow from "@/lib/stores/authFlowStore";
 import { fallbackImg } from "@/lib/utils";
+import { cld } from "@/lib/utils/cloudinary";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   RiEBike2Line,
@@ -18,11 +23,11 @@ interface VendorCardProps {
   vendor: Vendor;
   vendorId: string;
   aggregateDiscount?: number;
-  source?: FavouriteSource,
+  source?: FavouriteSource;
   asFavouriteCard?: boolean;
 }
 
-const VendorCardA = ({
+const VendorCard = ({
   vendor: {
     businessName,
     ratings,
@@ -85,11 +90,11 @@ const VendorCardA = ({
           asFavouriteCard ? "h-[114px]" : "h-[114px] xl:h-36 "
         } overflow-hidden rounded-md`}
       >
-        <img
-          src={profileImg || "/fallback_vendor.webp"}
+        <Image
+          src={cld(profileImg, "VCard") || "/fallback_vendor.webp"}
           alt={businessName}
           className="size-full object-cover"
-          loading="lazy"
+          fill
           onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
         />
         {!asFavouriteCard && aggregateDiscount && (
@@ -140,4 +145,4 @@ const VendorCardA = ({
   );
 };
 
-export default VendorCardA;
+export default VendorCard;

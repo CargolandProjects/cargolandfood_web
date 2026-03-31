@@ -79,12 +79,15 @@ interface TrackOrder {
   discountTotal: string | null;
   deliveryFee: string | null;
   total: string | null;
-  orderStatus: OrderStatus | {
-    status: OrderStatus;
-    createdAt: string;
-  };
-  VerificationCode: null;
+  orderStatus: OrderStatus;
+  VerificationCode: string | null;
   vendorAddress: VendorAddress;
+  acceptedAt: string | null;
+  preparedAt: string | null;
+  readyAt: string | null;
+  assignedToRiderAt: string | null;
+  completedAt: string | null;
+  cancelledAt: string | null;
 }
 
 export type TrackOrderResponse = APIResponse<TrackOrder>;

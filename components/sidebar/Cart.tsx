@@ -15,6 +15,8 @@ import { useClearCart } from "@/lib/hooks/mutations/useMutateCart";
 import { fallbackImg } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import UnauthenticatedUi from "../UnauthenticatedUi";
+import Image from "next/image";
+import { cld } from "@/lib/utils/cloudinary";
 
 interface SettingsProps {
   setActiveTab: (tab: ActiveTab) => void;
@@ -192,11 +194,12 @@ const Cart = ({ setActiveTab, isAuthenticated }: SettingsProps) => {
                   className="space-y-4 px-3 py-4 rounded-md border border-neutral-300"
                 >
                   <div className="flex items-center">
-                    <div className="w-15 h-14 rounded-button overflow-hidden">
-                      <img
-                        src={cart.vendor.profileImg || "/fallback_vendor.webp"}
+                    <div className="relative w-15 h-14 rounded-button overflow-hidden">
+                      <Image
+                        src={cld(cart.vendor.profileImg, {width: 250, height: 250}) || "/fallback_vendor.webp"}
                         alt={cart.vendor.businessName}
                         className="size-full object-cover"
+                        fill
                         onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
                       />
                     </div>

@@ -27,6 +27,7 @@ import { RiLoader2Line } from "react-icons/ri";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { toast } from "sonner";
 import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
+import Image from "next/image";
 
 const formSchema = z.object({
   otp: z.string().min(4, "OTP must be at least 4 digits"),
@@ -166,11 +167,12 @@ const OTPModal = () => {
   return (
     <ModalTransition>
       <DialogHeader className="items-center gap-0">
-        <div className="size-[50px] bg-black flex justify-center items-center rounded-lg">
-          <img
+        <div className="relative size-[50px] bg-black flex justify-center items-center rounded-lg ">
+          <Image
             src={logo.src}
             alt="CargoLand Food Logo"
             className="h-[33.4px] w-7 object-cover"
+            fill
           />
         </div>
         <DialogTitle className="form-title mt-4">

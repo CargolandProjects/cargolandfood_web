@@ -11,19 +11,21 @@ interface OrderState {
  * Maps backend OrderStatus to UI timeline states
  * Timeline progression: ACCEPTED → PREPARING → READY → ASSIGN_TO_RIDER → DELIVERED
  */
-export function mapOrderStatusToTimeline(
-  orderStatusData: OrderStatus | { status: OrderStatus; createdAt: string }
-): OrderState[] {
+export function mapOrderStatusToTimeline(orderStatusData: {
+  OrderStatus: OrderStatus;
+  acceptedAt?: string | null;
+  preparedAt?: string | null;
+  readyAt?: string | null;
+  assignedToRiderAt?: string | null;
+  completedAt?: string | null;
+}): OrderState[] {
   // Extract status and timestamp from either format
-  const currentStatus =
-    typeof orderStatusData === "string"
-      ? orderStatusData
-      : orderStatusData.status;
+  const currentStatus = orderStatusData.OrderStatus;
 
-  const timestamp =
-    typeof orderStatusData === "object" && "createdAt" in orderStatusData
-      ? orderStatusData.createdAt
-      : undefined;
+  // const timestamp =
+  //   typeof orderStatusData === "object" && "createdAt" in orderStatusData
+  //     ? orderStatusData.createdAt
+  //     : undefined;
 
   // Define the order of statuses
   const statusOrder: OrderStatus[] = [
@@ -42,30 +44,31 @@ export function mapOrderStatusToTimeline(
     {
       title: "Order Accepted",
       description: "Your order has been confirmed by the vendor",
-      time: timestamp,
+      time: orderStatusData.acceptedAt || undefined,
       status: "idle",
     },
     {
       title: "Preparing your order",
       description: "Vendor is preparing your order",
-      time: timestamp,
+      time: orderStatusData.preparedAt || undefined,
       status: "idle",
     },
     {
       title: "Order ready to go out",
       description: "Vendor is ready to give out your order",
-      time: timestamp,
+      time: orderStatusData.readyAt || undefined,
       status: "idle",
     },
     {
       title: "Assign to rider",
       description: "Order has been assigned to a rider",
-      time: timestamp,
+      time: orderStatusData.assignedToRiderAt || undefined,
       status: "idle",
     },
     {
       title: "Completed",
       description: "Your order has been delivered",
+      time: orderStatusData.completedAt || undefined,
       status: "idle",
     },
   ];

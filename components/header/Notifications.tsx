@@ -7,11 +7,12 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { bell } from "@/assets/svgs";
-import {  RiEBike2Line, RiNotification2Fill } from "react-icons/ri";
+import { RiEBike2Line, RiNotification2Fill } from "react-icons/ri";
 import { formatDistanceToNow } from "date-fns";
-import { hamburger, medal, meter } from "@/assets/svgs";
+import { hamburger } from "@/assets/svgs";
 import { useNotificationEvent } from "@/lib/hooks/useSocket";
 import { NotificationEvent } from "@/lib/socket/socketEvents";
+import Image from "next/image";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState<NotificationEvent[]>([]);
@@ -46,10 +47,12 @@ const Notifications = () => {
       <DropdownMenuTrigger asChild>
         <button className="rounded-full size-7 sm:size-10 max-sm:bg-neutral-300 flex justify-center items-center">
           <RiNotification2Fill className="size-6 text-gray-300 max-sm:hidden" />
-          <img
+          <Image
             src={bell.src}
             alt="notification icon"
             className=" sm:hidden text-neutral-600"
+            width={14}
+            height={14}
           />
         </button>
       </DropdownMenuTrigger>
@@ -68,11 +71,12 @@ const Notifications = () => {
               } flex gap-2 items-start`}
               key={notification.id}
             >
-              <div className="size-10 shrink-0 bg-primary-50 flex justify-center items-center rounded-full">
-                <img
+              <div className="relative size-10 shrink-0 bg-primary-50 flex justify-center items-center rounded-full">
+                <Image
                   src={getIcon(notification.type)}
                   alt={notification.id}
                   className="size-4.5"
+                  fill
                 />
               </div>
               <div className="max-w-[191px]">

@@ -10,7 +10,7 @@ import {
 } from "react-icons/ri";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { StaticImageData } from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { Separator } from "../ui/separator";
 
 interface SocialIcons {
@@ -92,11 +92,12 @@ const Footer = () => {
         <div className="flex gap-6 md:gap-10 max-md:flex-col justify-between pt-15 md:pt-16">
           <div className="flex flex-col gap-6 sm:gap-10">
             {/* logo image */}
-            <div className="w-50 md:w-[187px] h-[57px] md:h-[54px]">
-              <img
+            <div className="relative w-50 md:w-[187px] h-[57px] md:h-[54px]">
+              <Image
                 src={logoFull.src}
                 alt="CargoLand Logo"
                 className="size-full object-contain"
+                fill
               />
             </div>
             <div className="flex gap-2 max-md:hidden">
@@ -149,11 +150,12 @@ const Footer = () => {
                         <Link href={link.url} key={index}>
                           <Button className="bg-black w-full gap-2.5 text-white rounded-full p-6">
                             {link.image && (
-                              <div className="size-4">
-                                <img
+                              <div className="relative size-4">
+                                <Image
                                   src={link.image.src}
                                   alt={link.label}
                                   className="size-full object-cover"
+                                  fill
                                 />
                               </div>
                             )}

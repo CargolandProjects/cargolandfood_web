@@ -25,6 +25,7 @@ import { useSignIn } from "@/lib/hooks/mutations/useAuth";
 import { useSession } from "@/lib/hooks/useSession";
 import { RiLoader2Line } from "react-icons/ri";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const formSchema = z.object({
   phoneNumber: z
@@ -70,7 +71,7 @@ const SignInModal = () => {
           const pendingUser = res.data.user;
           if (pendingUser) setPendingUser(pendingUser);
         } catch {}
-        console.log("Submitted Successfully:", data);
+        // console.log("Submitted Successfully:", data);
         goToStep("otp-verification", {
           phone: data.phoneNumber,
           otpType: "signin",
@@ -85,11 +86,12 @@ const SignInModal = () => {
   return (
     <ModalTransition>
       <DialogHeader className="items-center gap-0">
-        <div className="size-[50px] bg-black flex justify-center items-center rounded-lg">
-          <img
+        <div className="relative size-[50px] bg-black flex justify-center items-center rounded-lg">
+          <Image
             src={logo.src}
             alt="CargoLand Food Logo"
             className="h-[33.4px] w-7 object-cover"
+            fill
           />
         </div>
         <DialogTitle className="form-title mt-4">Welcome Back</DialogTitle>
@@ -163,20 +165,18 @@ const SignInModal = () => {
             decorative={true}
             className="absolute top-1/2 transform translate-y-1/2"
           />
-          <p className="relative bg-background px-2 z-10">
-            Or continue with
-          </p>
+          <p className="relative bg-background px-2 z-10">Or continue with</p>
         </div>
 
         <div className="flex w-full justify-center gap-4">
-          <button className="size-10 flex justify-center items-center shadow-cargo-sm rounded-full border border-gray-200">
-            <img src={google.src} alt="google_icon" />
+          <button className="relative size-10 flex justify-center items-center shadow-cargo-sm rounded-full border border-gray-200">
+            <Image src={google.src} alt="google_icon" fill />
           </button>
-          <button className="size-10 flex justify-center items-center shadow-cargo-sm rounded-full border border-gray-200">
-            <img src={facebook.src} alt="google_icon" />
+          <button className="relative size-10 flex justify-center items-center shadow-cargo-sm rounded-full border border-gray-200">
+            <Image src={facebook.src} alt="google_icon" fill />
           </button>
-          <button className="size-10 flex justify-center items-center shadow-cargo-sm rounded-full border border-gray-200">
-            <img src={apple.src} alt="google_icon" />
+          <button className="relative size-10 flex justify-center items-center shadow-cargo-sm rounded-full border border-gray-200">
+            <Image src={apple.src} alt="google_icon" fill />
           </button>
         </div>
       </div>

@@ -2,6 +2,7 @@ import ModalTransition from "./ModalTransition";
 import useAuthFlow from "@/lib/stores/authFlowStore";
 import successGif from "@/assets/gifs/success.gif";
 import { Button } from "../ui/button";
+import Image from "next/image";
 
 const SuccessModal = () => {
   const goTo = useAuthFlow((s) => s.goToStep);
@@ -13,11 +14,12 @@ const SuccessModal = () => {
   return (
     <ModalTransition>
       <div className="flex flex-col items-center justify-center sm:max-w-[312px] mx-auto">
-        <div className="h-[142px] w-[180px]">
-          <img
+        <div className="relative h-[142px] w-[180px]">
+          <Image
             src={successGif.src}
             alt="success_gif"
             className="size-full object-cover"
+            fill
           />
         </div>
         <div className="mt-2 space-y-2 text-center">

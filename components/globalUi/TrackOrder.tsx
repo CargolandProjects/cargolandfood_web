@@ -31,11 +31,28 @@ import { useNotificationEvent } from "@/lib/hooks/useSocket";
 import { useQueryClient } from "@tanstack/react-query";
 import { TrackOrderResponse } from "@/lib/services/order.service";
 import { formatTime } from "@/lib/utils";
+import { OrderStatus } from "@/lib/types/cart.types";
+import Image from "next/image";
+import { cld } from "@/lib/utils/cloudinary";
 
 interface TrackOrderDetailsProps {
   isDesktop: boolean;
   close?: () => void;
 }
+
+type UIOrderStatus = Exclude<OrderStatus, "NEW">;
+
+//  Maps OrderStatus to the corresponding timestamp field name
+const getTimestampFieldForStatus = (status: OrderStatus): string => {
+  const statusToFieldMap: Record<UIOrderStatus, string> = {
+    ACCEPTED: "acceptedAt",
+    PREPARING: "preparedAt",
+    READY: "readyAt",
+    ASSIGN_TO_RIDER: "assignedToRiderAt",
+    DELIVERED: "completedAt",
+  };
+  return statusToFieldMap[status as UIOrderStatus];
+};
 
 const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
   const queryClient = useQueryClient();
@@ -49,7 +66,14 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
   // Map backend orderStatus to UI timeline
   const orderTimeline = useMemo(() => {
     if (!data?.orderStatus) return [];
-    const status = mapOrderStatusToTimeline(data.orderStatus);
+    const status = mapOrderStatusToTimeline({
+      OrderStatus: data.orderStatus,
+      acceptedAt: data.acceptedAt,
+      preparedAt: data.preparedAt,
+      readyAt: data.readyAt,
+      assignedToRiderAt: data.assignedToRiderAt,
+      completedAt: data.completedAt,
+    });
     // console.log("Result: ", status);
     return status;
   }, [data]);
@@ -57,7 +81,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
   // Listen to WebSocket notifications for order status updates
   useNotificationEvent((notification) => {
     if (notification.payload?.orderId === orderId) {
-      console.log("Order status update received:", notification.type);
+      console.log("Order status update received:", notification);
 
       // Optimistically update the UI immediately with the new status from notification
       queryClient.setQueryData(
@@ -65,27 +89,27 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
         (oldData: TrackOrderResponse) => {
           if (!oldData) return oldData;
 
-          // Handle both formats: string or object with status
-          const newOrderStatus =
-            typeof oldData.data.orderStatus === "string"
-              ? notification.type
-              : {
-                  status: notification.type,
-                  createdAt: notification.createdAt,
-                };
+          const newOrderStatus = notification.type as OrderStatus;
+          console.log("Updating order status to:", newOrderStatus);
 
+          // Get the appropriate timestamp field for this status
+          const timestampField = getTimestampFieldForStatus(newOrderStatus);
+          console.log(`Setting ${timestampField} to:`, notification.createdAt);
+
+          // Update the cache with new status AND its timestamp
           return {
             ...oldData,
             data: {
               ...oldData.data,
               orderStatus: newOrderStatus,
+              [timestampField]: notification.createdAt,
             },
           };
         }
       );
 
-      // Refetch in background to ensure data consistency
-      refetch();
+      // Refetch in background to ensure data consistency (optional)
+      if (notification.type === "ASSIGN_TO_RIDER") refetch();
     }
   });
 
@@ -99,7 +123,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
       <div className="h-full pb-4 sm:px-6 sm:pb-6">
         {isDesktop ? (
           // Desktop Header
-          <SheetHeader className="p-0 pb-1 pt-4 sm:pt-6 sticky  top-0 z-20 bg-white flex flex-row items-center justify-between">
+          <SheetHeader className="p-0 pb-1 pt-4 sm:pt-6 sticky top-0 z-20 bg-white flex flex-row items-center justify-between">
             <div className="flex gap-2">
               <button onClick={close}>
                 <RiArrowGoBackLine className="size-5" />
@@ -145,19 +169,25 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
         {isSuccess && (
           <div>
             {/* Delivery Tracking Map */}
-            <div className="h-[432px] sm:h-[416px] w-full overflow-hidden rounded-xl max-sm:mt-2">
-              <img src={map.src} alt="map" className="size-full object-cover" />
+            <div className="relative h-[432px] sm:h-[416px] w-full overflow-hidden rounded-xl max-sm:mt-2">
+              <Image
+                src={map.src}
+                alt="map"
+                className="size-full object-cover"
+                fill
+              />
             </div>
 
             <div className="mt-6 sm:mt-3 max-sm:px-5">
               {/* Delivery Rider details */}
               <div className="flex justify-between items-center">
                 <div className="flex gap-3 items-center">
-                  <div className="size-12 rounded-full overflow-hidden">
-                    <img
+                  <div className="relative size-12 rounded-full overflow-hidden">
+                    <Image
                       src={data.profileImg || userIcon2.src}
                       alt="map"
                       className="size-full object-cover"
+                      fill
                       onError={(e) => fallbackImg(e, userIcon2.src)}
                     />
                   </div>
@@ -247,7 +277,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                           </p>
                           {item.title !== "Completed" ? (
                             <p className="text-xs text-neutral-500 font-medium mt-1">
-                              {formatTime(item.time || "") || "10:32am"}
+                              {formatTime(item.time || "") || "pending"}
                             </p>
                           ) : (
                             <Button
@@ -313,11 +343,12 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                   <div className="flex gap-4 mt-3">
                     {data.items.map((menu) => (
                       <div key={menu.id}>
-                        <div className="size-16 rounded-lg overflow-hidden bg-neutral-100">
-                          <img
-                            src={menu.menuImg || "/fallback_vendor.webp"}
+                        <div className="relative size-16 rounded-lg overflow-hidden bg-neutral-100">
+                          <Image
+                            src={cld(menu.menuImg, "thumb") || "/fallback_vendor.webp"}
                             alt={menu.id}
                             className="size-full object-cover"
+                            fill
                             onError={(e) =>
                               fallbackImg(e, "/fallback_vendor.webp")
                             }

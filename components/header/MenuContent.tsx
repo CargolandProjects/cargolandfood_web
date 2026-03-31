@@ -19,6 +19,7 @@ import { useState } from "react";
 import EditProfile from "../profile/EditProfile";
 import DeleteProfile from "../profile/DeleteProfile";
 import ConfirmationModal from "../ConfirmationModal";
+import Image from "next/image";
 
 interface MenuContentProps {
   screen: string;
@@ -77,11 +78,12 @@ const MenuContent = ({
                 setShowAlert(true);
               }}
             >
-              <div className="size-5">
-                <img
+              <div className="relative size-5">
+                <Image
                   src={logout.src}
                   alt="logout-button-icon"
                   className="size-full object-contain"
+                  fill
                 />
               </div>
               <span>Log out</span>
@@ -128,11 +130,12 @@ const MenuContent = ({
             </DropdownMenuItem>
             <DropdownMenuItem>
               <div className="flex gap-0.5  items-center">
-                <div className="size-10 rounded-full flex justify-center items-center">
-                  <img
+                <div className="relative size-10 rounded-full flex justify-center items-center">
+                  <Image
                     src={userIcon1.src}
                     alt="logout-button-icon"
                     className="size-4.5 md:size-6 object-contain"
+                    fill
                   />
                 </div>
                 <div className="">
