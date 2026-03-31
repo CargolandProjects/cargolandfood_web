@@ -18,6 +18,8 @@ interface FundWallet {
   reference: string;
 }
 
+export type TransactionStatus = "SUCCESS" | "FAILED" | "PENDING";
+
 export interface TransactionRecord {
   id: string;
   walletId: string;
@@ -25,7 +27,7 @@ export interface TransactionRecord {
   amount: string;
   reference: string;
   description: string | null;
-  status: "SUCCESS" | "FAILED";
+  status: TransactionStatus;
   createdAt: string;
 }
 
