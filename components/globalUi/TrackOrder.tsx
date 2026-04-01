@@ -29,7 +29,10 @@ import { fallbackImg } from "@/lib/utils";
 import { mapOrderStatusToTimeline } from "@/lib/utils/orderStatusMapper";
 import { useNotificationEvent } from "@/lib/hooks/useSocket";
 import { useQueryClient } from "@tanstack/react-query";
-import { TrackOrderResponse } from "@/lib/services/order.service";
+import {
+  GetOrdersResponse,
+  TrackOrderResponse,
+} from "@/lib/services/order.service";
 import { formatTime } from "@/lib/utils";
 import { OrderStatus } from "@/lib/types/cart.types";
 import Image from "next/image";
@@ -40,7 +43,10 @@ interface TrackOrderDetailsProps {
   close?: () => void;
 }
 
-type UIOrderStatus = Exclude<OrderStatus, "NEW">;
+type UIOrderStatus = Exclude<
+  OrderStatus,
+  "NEW" | "RIDER_ACCEPTED" | "PICKUP_ORDER"
+>;
 
 //  Maps OrderStatus to the corresponding timestamp field name
 const getTimestampFieldForStatus = (status: OrderStatus): string => {
@@ -48,7 +54,7 @@ const getTimestampFieldForStatus = (status: OrderStatus): string => {
     ACCEPTED: "acceptedAt",
     PREPARING: "preparedAt",
     READY: "readyAt",
-    ASSIGN_TO_RIDER: "assignedToRiderAt",
+    ASSIGN_TO_RIDER: "assignedAt",
     DELIVERED: "completedAt",
   };
   return statusToFieldMap[status as UIOrderStatus];
@@ -63,6 +69,8 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
     orderId || ""
   );
 
+  // const isLoading = true;
+
   // Map backend orderStatus to UI timeline
   const orderTimeline = useMemo(() => {
     if (!data?.orderStatus) return [];
@@ -71,10 +79,10 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
       acceptedAt: data.acceptedAt,
       preparedAt: data.preparedAt,
       readyAt: data.readyAt,
-      assignedToRiderAt: data.assignedToRiderAt,
+      assignedAt: data.assignedAt,
       completedAt: data.completedAt,
     });
-    // console.log("Result: ", status);
+    console.log("Result: ", status);
     return status;
   }, [data]);
 
@@ -119,261 +127,262 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
   };
 
   return (
-    <div className="h-full overflow-y-auto hide-scrollbar">
-      <div className="pb-4 sm:px-6 sm:pb-6">
-        {isDesktop ? (
-          // Desktop Header
-          <SheetHeader className="p-0 pb-1 pt-4 sm:pt-6 sticky top-0 z-20 bg-white flex flex-row items-center justify-between">
-            <div className="flex gap-2">
-              <button onClick={close}>
-                <RiArrowGoBackLine className="size-5" />
-              </button>
-
-              <SheetTitle className="text-xl font-medium max-sm:text-center leading-7">
-                Track Orders
-              </SheetTitle>
-            </div>
-
-            <SheetClose asChild>
-              <button className="size-10 flex justify-center items-center rounded-full bg-neutral-100">
-                <RiCloseFill className="size-6" />
-              </button>
-            </SheetClose>
-          </SheetHeader>
-        ) : (
-          // Mobile Header
-          <div className="pb-3 pt-4 sticky top-0 z-20 flex items-center justify-center max-sm:px-6 bg-white">
-            <button onClick={close} className="absolute left-0 ml-6">
-              <RiArrowLeftLine className="size-5" />
+    <div className="h-dvh pb-4 sm:px-6 sm:pb-6 overflow-y-auto hide-scrollbar">
+      {isDesktop ? (
+        // Desktop Header
+        <SheetHeader className="p-0 pb-1 pt-4 sm:pt-6 sticky top-0 z-20 bg-white flex flex-row items-center justify-between">
+          <div className="flex gap-2">
+            <button onClick={close}>
+              <RiArrowGoBackLine className="size-5" />
             </button>
-            <h2 className="text-lg sm:text-xl font-medium leading-6 sm:leading-7">
+
+            <SheetTitle className="text-xl font-medium max-sm:text-center leading-7">
               Track Orders
-            </h2>
+            </SheetTitle>
           </div>
-        )}
 
-        {isLoading && (
-          <div className="h-full flex justify-center items-center">
-            <Loader size={12} />
+          <SheetClose asChild>
+            <button className="size-10 flex justify-center items-center rounded-full bg-neutral-100">
+              <RiCloseFill className="size-6" />
+            </button>
+          </SheetClose>
+        </SheetHeader>
+      ) : (
+        // Mobile Header
+        <div className="pb-3 pt-4 sticky top-0 z-20 flex items-center justify-center max-sm:px-6 bg-white">
+          <button onClick={close} className="absolute left-0 ml-6">
+            <RiArrowLeftLine className="size-5" />
+          </button>
+          <h2 className="text-lg sm:text-xl font-medium leading-6 sm:leading-7">
+            Track Orders
+          </h2>
+        </div>
+      )}
+
+      {isLoading && (
+        <div className="h-full flex justify-center items-center">
+          <Loader size={12} />
+        </div>
+      )}
+
+      {isError && (
+        <div className="h-full flex justify-center items-center">
+          <ErrorStateUi message="Error Fetching Orders " />
+        </div>
+      )}
+
+      {isDesktop && <Separator className="mt-2 mb-6" />}
+
+      {isSuccess && (
+        <div>
+          {/* Delivery Tracking Map */}
+          <div className="relative h-[432px] sm:h-[416px] w-full overflow-hidden rounded-xl max-sm:mt-2">
+            <Image
+              src={map.src}
+              alt="map"
+              className="size-full object-cover"
+              fill
+            />
           </div>
-        )}
 
-        {isError && (
-          <div className="h-full flex justify-center items-center">
-            <ErrorStateUi message="Error Fetching Orders " />
-          </div>
-        )}
-
-        {isDesktop && <Separator className="mt-2 mb-6" />}
-
-        {isSuccess && (
-          <div>
-            {/* Delivery Tracking Map */}
-            <div className="relative h-[432px] sm:h-[416px] w-full overflow-hidden rounded-xl max-sm:mt-2">
-              <Image
-                src={map.src}
-                alt="map"
-                className="size-full object-cover"
-                fill
-              />
+          <div className="mt-6 sm:mt-3 max-sm:px-5">
+            {/* Delivery Rider details */}
+            <div className="flex justify-between items-center">
+              <div className="flex gap-3 items-center">
+                <div className="relative size-12 rounded-full overflow-hidden">
+                  <Image
+                    src={data.profileImg || userIcon2.src}
+                    alt="map"
+                    className="size-full object-cover"
+                    fill
+                    onError={(e) => fallbackImg(e, userIcon2.src)}
+                  />
+                </div>
+                {data.fullName ? (
+                  <div>
+                    <p className="text-base font-medium ">{data.fullName}</p>
+                    <p className="text-xs text-neutral-600">Delivery man</p>
+                  </div>
+                ) : (
+                  <p className="">In Progress....</p>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" className="size-10 rounded-button">
+                  <RiMessage2Fill className="size-5 text-neutral-600" />
+                </Button>
+                <Button variant="outline" className="size-10 rounded-button">
+                  <RiPhoneFill className="size-5 text-neutral-600" />
+                </Button>
+              </div>
             </div>
 
-            <div className="mt-6 sm:mt-3 max-sm:px-5">
-              {/* Delivery Rider details */}
-              <div className="flex justify-between items-center">
-                <div className="flex gap-3 items-center">
-                  <div className="relative size-12 rounded-full overflow-hidden">
-                    <Image
-                      src={data.profileImg || userIcon2.src}
-                      alt="map"
-                      className="size-full object-cover"
-                      fill
-                      onError={(e) => fallbackImg(e, userIcon2.src)}
-                    />
-                  </div>
-                  {data.fullname ? (
-                    <div>
-                      <p className="text-base font-medium ">{data.fullname}</p>
-                      <p className="text-xs text-neutral-600">Delivery man</p>
-                    </div>
-                  ) : (
-                    <p className="">In Progress....</p>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" className="size-10 rounded-button">
-                    <RiMessage2Fill className="size-5 text-neutral-600" />
-                  </Button>
-                  <Button variant="outline" className="size-10 rounded-button">
-                    <RiPhoneFill className="size-5 text-neutral-600" />
-                  </Button>
-                </div>
-              </div>
+            <Separator className="my-5" />
 
-              <Separator className="my-5" />
-
-              <div className="space-y-5">
-                <div className="flex justify-between">
-                  <div className="flex gap-2 items-center">
-                    <RiTimeFill className="size-5 text-neutral-500" />
-                    <span className="text-base leading-5 text-neutral-600">
-                      Estimated time
-                    </span>
-                  </div>
-                  <span className="text-base leading-5">20 mins</span>
-                </div>
-
-                {/* Order Delivery State */}
-                {showDetails && (
-                  <div className="border rounded-xl px-6 py-4 space-y-6">
-                    {orderTimeline.map((item, idx) => (
-                      <div className="flex gap-4 items-center" key={idx}>
-                        {/* Left-Hand Side Progress Indicators */}
-                        <div className="relative">
-                          {item.status === "success" ? (
-                            <div className="size-7 bg-primary rounded-full" />
-                          ) : item.status === "pending" ? (
-                            <RiMapPin2Fill className="size-7 text-primary" />
-                          ) : (
-                            // Relative and right-0.5 here is tto aligh it with the bar when idle, there was a slightly noticesable offset
-                            <div
-                              className={`relative right-0.5 size-8 bg-neutral-100 rounded-full`}
-                            />
-                          )}
-
-                          {/**
-                           * Okay to sync this progress bar appropriately, I had to push up the the bars to the top using -top-15
-                           * and then only render those with index greater than zero. The reason for this is because when the state is idle,
-                           * it's gray else it's primary {PENDING, SUCCESS}, and this made the bar beneath light up when the first step was sill pending
-                           * which is against the design as the step/icon beneath it is still gray. Hence the earlier stated fix for proper syncing
-                           */}
-
-                          {/* Status Bar */}
-                          {idx > 0 && (
-                            <div
-                              // left-[calc(50%-2px)] here is tto aligh the bar with the indicator below when idle, there was a slightly noticesable offset
-                              className={` ${
-                                item.status === "idle"
-                                  ? "bg-neutral-100 left-[calc(50%-2px)] "
-                                  : "bg-primary left-1/2"
-                              } w-1 h-[260%] absolute -top-17 -z-1 transform -translate-x-1/2 `}
-                            />
-                          )}
-                        </div>
-
-                        {/* State Description */}
-                        <div className="w-full sm:max-w-[250px]">
-                          <h3
-                            className={`${
-                              item.status === "idle"
-                                ? "leading-5 font-normal text-[#31353F]"
-                                : "leading-6 font-medium"
-                            } text-base `}
-                          >
-                            {item.title}
-                          </h3>
-                          <p className="text-xs text-neutral-600">
-                            {item.description}
-                          </p>
-                          {item.title !== "Completed" ? (
-                            <p className="text-xs text-neutral-500 font-medium mt-1">
-                              {formatTime(item.time || "") || "pending"}
-                            </p>
-                          ) : (
-                            <Button
-                              onClick={handleOpenReview}
-                              disabled={item.status !== "pending"}
-                              variant="outline"
-                              className="uppercase text-xs leading-5 text-neutral-500 w-full mt-1"
-                            >
-                              <RiStarSFill className="size-5 text-neutral-400 " />
-                              Rate The Food
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Order Details Summary */}
-                <div className="flex justify-between gap-4">
-                  <div className="flex gap-2 items-center shrink-0">
-                    <RiMapPin2Fill className="size-5 text-neutral-500" />
-                    <span className="text-base leading-5 text-neutral-600">
-                      Deliver to
-                    </span>
-                  </div>
-                  <span className="text-base leading-5 line-clamp-1">
-                    {data.addressSnapshot.addressLine1}
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
+            <div className="space-y-5">
+              <div className="flex justify-between">
+                <div className="flex gap-2 items-center">
+                  <RiTimeFill className="size-5 text-neutral-500" />
                   <span className="text-base leading-5 text-neutral-600">
-                    Delivery Verification Code:
-                  </span>
-
-                  <span className="text-2xl font-bold leading-5">
-                    {data.VerificationCode ?? "no code"}
+                    Estimated time
                   </span>
                 </div>
-
-                {showDetails && (
-                  <div className="flex justify-between">
-                    <div className="flex gap-2 items-center">
-                      <RiBankCardFill className="size-5 text-neutral-500" />
-                      <span className="text-base leading-5 text-neutral-600">
-                        Amount Paid
-                      </span>
-                    </div>
-                    <span className="text-base leading-5">
-                      ₦{Number(data.total).toLocaleString()}
-                    </span>
-                  </div>
-                )}
+                <span className="text-base leading-5">20 mins</span>
               </div>
 
+              {/* Order Delivery State */}
               {showDetails && (
-                <div className="mt-6">
-                  <h3 className="text-sm font-medium leading-5 text-neutral-600">
-                    Food to be delivered
-                  </h3>
-
-                  <div className="flex gap-4 mt-3">
-                    {data.items.map((menu) => (
-                      <div key={menu.id}>
-                        <div className="relative size-16 rounded-lg overflow-hidden bg-neutral-100">
-                          <Image
-                            src={cld(menu.menuImg, "thumb") || "/fallback_vendor.webp"}
-                            alt={menu.id}
-                            className="size-full object-cover"
-                            fill
-                            onError={(e) =>
-                              fallbackImg(e, "/fallback_vendor.webp")
-                            }
+                <div className="border rounded-xl px-6 py-4 space-y-6">
+                  {orderTimeline.map((item, idx) => (
+                    <div className="flex gap-4 items-center" key={idx}>
+                      {/* Left-Hand Side Progress Indicators */}
+                      <div className="relative">
+                        {item.status === "success" ? (
+                          <div className="size-7 bg-primary rounded-full" />
+                        ) : item.status === "pending" ? (
+                          <RiMapPin2Fill className="size-7 text-primary" />
+                        ) : (
+                          // Relative and right-0.5 here is tto aligh it with the bar when idle, there was a slightly noticesable offset
+                          <div
+                            className={`relative right-0.5 size-8 bg-neutral-100 rounded-full`}
                           />
-                        </div>
-                        <p className="ml-1 mt-1 font-medium text-neutral-600">
-                          x{menu.quantity}
-                        </p>
+                        )}
+
+                        {/**
+                         * Okay to sync this progress bar appropriately, I had to push up the the bars to the top using -top-15
+                         * and then only render those with index greater than zero. The reason for this is because when the state is idle,
+                         * it's gray else it's primary {PENDING, SUCCESS}, and this made the bar beneath light up when the first step was sill pending
+                         * which is against the design as the step/icon beneath it is still gray. Hence the earlier stated fix for proper syncing
+                         */}
+
+                        {/* Status Bar */}
+                        {idx > 0 && (
+                          <div
+                            // left-[calc(50%-2px)] here is tto aligh the bar with the indicator below when idle, there was a slightly noticesable offset
+                            className={` ${
+                              item.status === "idle"
+                                ? "bg-neutral-100 left-[calc(50%-2px)] "
+                                : "bg-primary left-1/2"
+                            } w-1 h-[260%] absolute -top-17 -z-1 transform -translate-x-1/2 `}
+                          />
+                        )}
                       </div>
-                    ))}
-                  </div>
+
+                      {/* State Description */}
+                      <div className="w-full sm:max-w-[250px]">
+                        <h3
+                          className={`${
+                            item.status === "idle"
+                              ? "leading-5 font-normal text-[#31353F]"
+                              : "leading-6 font-medium"
+                          } text-base `}
+                        >
+                          {item.title}
+                        </h3>
+                        <p className="text-xs text-neutral-600">
+                          {item.description}
+                        </p>
+                        {item.title !== "Completed" ? (
+                          <p className="text-xs text-neutral-500 font-medium mt-1">
+                            {formatTime(item.time || "") || "pending"}
+                          </p>
+                        ) : (
+                          <Button
+                            onClick={handleOpenReview}
+                            disabled={item.status !== "pending"}
+                            variant="outline"
+                            className="uppercase text-xs leading-5 text-neutral-500 w-full mt-1"
+                          >
+                            <RiStarSFill className="size-5 text-neutral-400 " />
+                            Rate The Food
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
 
-              <Button
-                className="mt-6 sm:mt-20 md:py-3.5 mb-4 submit-btn"
-                onClick={() => setShowDetails((prev) => !prev)}
-                // disabled={isPending}
-              >
-                {showDetails ? "Hide Details" : "More Details"}
-              </Button>
+              {/* Order Details Summary */}
+              <div className="flex justify-between gap-4">
+                <div className="flex gap-2 items-center shrink-0">
+                  <RiMapPin2Fill className="size-5 text-neutral-500" />
+                  <span className="text-base leading-5 text-neutral-600">
+                    Deliver to
+                  </span>
+                </div>
+                <span className="text-base leading-5 line-clamp-1">
+                  {data.addressSnapshot.addressLine1}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-base leading-5 text-neutral-600">
+                  Delivery Verification Code:
+                </span>
+
+                <span className="text-2xl font-bold leading-5">
+                  {data.VerificationCode?.code ?? "no code"}
+                </span>
+              </div>
+
+              {showDetails && (
+                <div className="flex justify-between">
+                  <div className="flex gap-2 items-center">
+                    <RiBankCardFill className="size-5 text-neutral-500" />
+                    <span className="text-base leading-5 text-neutral-600">
+                      Amount Paid
+                    </span>
+                  </div>
+                  <span className="text-base leading-5">
+                    ₦{Number(data.total).toLocaleString()}
+                  </span>
+                </div>
+              )}
             </div>
+
+            {showDetails && (
+              <div className="mt-6">
+                <h3 className="text-sm font-medium leading-5 text-neutral-600">
+                  Food to be delivered
+                </h3>
+
+                <div className="flex gap-4 mt-3">
+                  {data.items.map((menu) => (
+                    <div key={menu.id}>
+                      <div className="relative size-16 rounded-lg overflow-hidden bg-neutral-100">
+                        <Image
+                          src={
+                            cld(menu.menuImg, "thumb") ||
+                            "/fallback_vendor.webp"
+                          }
+                          alt={menu.id}
+                          className="size-full object-cover"
+                          fill
+                          onError={(e) =>
+                            fallbackImg(e, "/fallback_vendor.webp")
+                          }
+                        />
+                      </div>
+                      <p className="ml-1 mt-1 font-medium text-neutral-600">
+                        x{menu.quantity}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <Button
+              className="mt-6 sm:mt-20 md:py-3.5 mb-4 submit-btn"
+              onClick={() => setShowDetails((prev) => !prev)}
+              // disabled={isPending}
+            >
+              {showDetails ? "Hide Details" : "More Details"}
+            </Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

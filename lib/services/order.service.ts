@@ -36,7 +36,7 @@ interface Items {
   addonItem: AddonItem[];
 }
 
-interface GetOrdersResponse {
+export interface GetOrdersResponse {
   id: string;
   orderNumber: string;
   userId: string;
@@ -69,8 +69,8 @@ interface GetOrdersResponse {
 
 type VendorAddress = GetAddress & { vendorId: string };
 
-interface TrackOrder {
-  fullname: string | null;
+export interface TrackOrder {
+  fullName: string | null;
   phoneNumber: string | null;
   profileImg: string | null;
   addressSnapshot: GetAddress;
@@ -80,12 +80,12 @@ interface TrackOrder {
   deliveryFee: string | null;
   total: string | null;
   orderStatus: OrderStatus;
-  VerificationCode: string | null;
+  VerificationCode: VerificationCode | null;
   vendorAddress: VendorAddress;
   acceptedAt: string | null;
   preparedAt: string | null;
   readyAt: string | null;
-  assignedToRiderAt: string | null;
+  assignedAt: string | null;
   completedAt: string | null;
   cancelledAt: string | null;
 }
