@@ -6,7 +6,6 @@ export const useGetOrders = (isAuthenticatedd: boolean) => {
     queryKey: ["orders"],
     queryFn: orderService.getOrders,
     staleTime: 0,
-    gcTime: 0,
     refetchOnMount: true,
     enabled: isAuthenticatedd,
     select: (res) => res.data,
@@ -37,6 +36,7 @@ export const useTrackOrder = (orderId: string) => {
     queryKey: ["trackOrder", orderId],
     queryFn: () => orderService.trackOrder(orderId),
     enabled: !!orderId,
+    // No need for select transformation - normalization happens in mapOrderStatusToTimeline
     select: (res) => res.data,
   });
 };

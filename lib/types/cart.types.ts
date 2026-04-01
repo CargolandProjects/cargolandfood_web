@@ -152,6 +152,8 @@ export type OrderStatus =
   | "PREPARING"
   | "READY"
   | "ASSIGN_TO_RIDER"
+  | "RIDER_ACCEPTED"
+  | "PICKUP_ORDER"
   | "DELIVERED";
 
 export type PaymentStatus =
