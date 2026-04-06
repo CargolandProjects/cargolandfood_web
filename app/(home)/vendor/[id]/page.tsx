@@ -104,6 +104,7 @@ export default async function RestaurantDetailsPage({
   try {
     // Fetch on server (cached by Next.js, SEO-friendly) - Page 1 only
     initialData = await vendors.getVendorMenuById(id, 1, 10);
+    // console.log("Initial data fetched for vendor page:", initialData);
   } catch (error) {
     console.error(`Failed to fetch vendor ${id}:`, error);
     // Handle 404

@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { RiAddFill, RiLoader2Line, RiSubtractFill } from "react-icons/ri";
-import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
-import { Separator } from "./ui/separator";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
+import { Separator } from "../ui/separator";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { Button } from "../ui/button";
 import { X } from "lucide-react";
 import { Menu } from "@/lib/services/vendors.service";
 import { useAddToCart } from "@/lib/hooks/mutations/useMutateCart";
@@ -86,15 +86,17 @@ const ProductModal = ({
 
   // Calculate total price for display
   const calculateTotal = () => {
-    let total = parseFloat(price) * quantity;
+    let basePrice = parseFloat(price);
 
     // Add size price if selected
     if (selectedSize) {
       const size = menu.sizes?.find((s) => s.id === selectedSize);
       if (size) {
-        total += parseFloat(size.price) * quantity;
+        basePrice = parseFloat(size.price);
       }
     }
+
+    let total = basePrice * quantity;
 
     // Add addons prices
     Object.entries(selectedAddons).forEach(([addonId, qty]) => {
@@ -120,6 +122,10 @@ const ProductModal = ({
       ? menu.sizes?.find((s) => s.id === selectedSize)
       : null;
 
+    const basePrice = selectedSizeData
+      ? parseFloat(selectedSizeData.price)
+      : parseFloat(price);
+
     // Build addons payload (only include addons with quantity > 0)
     const addonsPayload = Object.entries(selectedAddons)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -144,7 +150,7 @@ const ProductModal = ({
           menuId: id!,
           menuName: name!,
           description,
-          unitPrice: price,
+          unitPrice: basePrice.toString(),
           quantity: quantity,
           menuImg: uploadImageUrl,
           action: "SET",
@@ -200,76 +206,82 @@ const ProductModal = ({
               {description}
             </p>
             <p className=" leading-5 mt-1.5 flex items-center gap-[3px]">
-              from <span className="text-base">₦{Number(price).toLocaleString()}</span>
+              from{" "}
+              <span className="text-base">
+                ₦{Number(price).toLocaleString()}
+              </span>
             </p>
           </div>
 
-          <Separator className="my-4" />
-
           {menu.sizes && menu.sizes.length > 0 && (
-            <div className="mb-4">
-              <h3 className="text-lg leading-6">{name} Size</h3>
-              <RadioGroup
-                className="space-y-5 mt-5"
-                value={selectedSize}
-                onValueChange={setSelectedSize}
-              >
-                {menu.sizes.map((size) => (
-                  <div key={size.id} className="flex justify-between">
-                    <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
-                      <p>{size.name}</p>
-                      <p className="text-xs text-neutral-600">
-                        + ₦{Number(size.price).toLocaleString()}
-                      </p>
-                    </div>
-
-                    <RadioGroupItem value={size.id} id={size.id} />
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-          )}
-
-          <Separator className="my-4" />
-
-          {menu.addons && menu.addons.length > 0 && (
-            <div className="mt-4 mb-4">
-              <h3 className="text-lg leading-6">Extras</h3>
-              <div className="space-y-5 mt-5">
-                {menu.addons.map((addon) => {
-                  const addonQty = getAddonQuantity(addon.id);
-                  return (
-                    <div key={addon.id} className="flex justify-between">
+            <>
+              <Separator className="my-4" />
+              <div className="mb-4">
+                <h3 className="text-lg leading-6">{name} Size</h3>
+                <RadioGroup
+                  className="space-y-5 mt-5"
+                  value={selectedSize}
+                  onValueChange={setSelectedSize}
+                >
+                  {menu.sizes.map((size) => (
+                    <div key={size.id} className="flex justify-between">
                       <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
-                        <p>{addon.name}</p>
+                        <p>{size.name}</p>
                         <p className="text-xs text-neutral-600">
-                          + ₦{Number(addon.price).toLocaleString()}
+                          + ₦{Number(size.price).toLocaleString()}
                         </p>
                       </div>
 
-                      <div className="flex gap-2.5 items-center">
-                        <button
-                          type="button"
-                          onClick={() => handleAddonDecrease(addon.id)}
-                          disabled={addonQty === 0}
-                          className="size-5 rounded-full bg-gray-200 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"
-                        >
-                          <RiSubtractFill className="size-4" />
-                        </button>
-                        <span className="text-center">{addonQty}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleAddonIncrease(addon.id)}
-                          className="size-5 rounded-full bg-gray-200 flex justify-center items-center"
-                        >
-                          <RiAddFill className="size-4" />
-                        </button>
-                      </div>
+                      <RadioGroupItem value={size.id} id={size.id} />
                     </div>
-                  );
-                })}
+                  ))}
+                </RadioGroup>
               </div>
-            </div>
+            </>
+          )}
+
+          {menu.addons && menu.addons.length > 0 && (
+            <>
+              <Separator className="my-4" />
+
+              <div className="mt-4 mb-4">
+                <h3 className="text-lg leading-6">Extras</h3>
+                <div className="space-y-5 mt-5">
+                  {menu.addons.map((addon) => {
+                    const addonQty = getAddonQuantity(addon.id);
+                    return (
+                      <div key={addon.id} className="flex justify-between">
+                        <div className="flex-1 grid grid-cols-[2fr_1fr] 200 max-w-[180px]">
+                          <p>{addon.name}</p>
+                          <p className="text-xs text-neutral-600">
+                            + ₦{Number(addon.price).toLocaleString()}
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2.5 items-center">
+                          <button
+                            type="button"
+                            onClick={() => handleAddonDecrease(addon.id)}
+                            disabled={addonQty === 0}
+                            className="size-5 rounded-full bg-gray-200 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"
+                          >
+                            <RiSubtractFill className="size-4" />
+                          </button>
+                          <span className="text-center">{addonQty}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleAddonIncrease(addon.id)}
+                            className="size-5 rounded-full bg-gray-200 flex justify-center items-center"
+                          >
+                            <RiAddFill className="size-4" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
           )}
         </div>
 
@@ -299,9 +311,11 @@ const ProductModal = ({
             disabled={addToCart.isPending}
             className="uppercase flex-1 py-3.5 px-5.5 h-10.5 sm:h-12 text-sm font-bold max-w-[184px] whitespace-normal disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {addToCart.isPending
-              ? <RiLoader2Line className="size-5 animate-spin" />
-              : `Order Item - ₦${calculateTotal().toLocaleString()}`}
+            {addToCart.isPending ? (
+              <RiLoader2Line className="size-5 animate-spin" />
+            ) : (
+              `Order Item - ₦${calculateTotal().toLocaleString()}`
+            )}
           </Button>
         </div>
       </DialogContent>

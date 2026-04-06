@@ -85,6 +85,7 @@ const GlobalCheckoutCOntent = ({
     isFetching,
     isError,
     isSuccess,
+    error,
   } = useCheckoutPreview(vendorId, deliveryType, isAuthenticated);
   const { mutate: clearCart, isPending: isClearingCart } = useClearCart();
   const { mutate } = useAddToCart();
@@ -356,7 +357,7 @@ const GlobalCheckoutCOntent = ({
 
         {isError && (
           <div className="h-full flex justify-center items-center px-4 sm:px-6">
-            <ErrorStateUi message="Error Getting Orders " />
+            <ErrorStateUi message={error?.message || "Error Getting Orders"} />
           </div>
         )}
 

@@ -14,6 +14,7 @@ import {
   RiEBike2Line,
   RiGiftLine,
   RiHeartFill,
+  RiLock2Fill,
   RiStarLine,
   RiTimeLine,
 } from "react-icons/ri";
@@ -35,6 +36,7 @@ const VendorCard = ({
     isFavourite,
     preparationTime,
     workingHours,
+    isOpenNow,
   },
   vendorId,
   aggregateDiscount,
@@ -103,7 +105,20 @@ const VendorCard = ({
             <p className="font-medium text-xs">{aggregateDiscount}% Off</p>
           </div>
         )}
+
+        {!asFavouriteCard && !isOpenNow && (
+          <div className="absolute inset-0 flex justify-center items-center">
+            <div className="absolute inset-0 bg-black/40" />
+            <div className="relative flex flex-col justify-center items-center">
+              <div className="size-6 rounded-full bg-white flex justify-center items-center">
+                <RiLock2Fill className="size-3.5 text-primary" />
+              </div>
+              <h3 className="text-white text-xs font-bold leading-5">Closed</h3>
+            </div>
+          </div>
+        )}
       </div>
+
       <div className="mt-2.5">
         <div className="flex justify-between">
           <p className="text-base leading-5">{businessName}</p>

@@ -10,7 +10,7 @@ interface OrderState {
 /**
  * UI-only order statuses (subset of backend OrderStatus)
  */
-type UIOrderStatus = "ACCEPTED" | "PREPARING" | "READY" | "ASSIGN_TO_RIDER" | "DELIVERED";
+export type UIOrderStatus = "NEW" | "ACCEPTED" | "PREPARING" | "READY" | "ASSIGN_TO_RIDER" | "DELIVERED";
 
 /**
  * Normalizes backend OrderStatus to UI-compatible status
@@ -41,7 +41,7 @@ export function normalizeOrderStatus(
   switch (backendStatus) {
     case "NEW":
       // NEW orders should show as ACCEPTED once accepted
-      return "ACCEPTED";
+      return "NEW";
       
     case "RIDER_ACCEPTED":
     case "PICKUP_ORDER":

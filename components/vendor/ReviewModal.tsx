@@ -1,15 +1,16 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 // import { user1 } from "@/assets/images";
 import { RiStarFill, RiStarLine } from "react-icons/ri";
 import { useReviews } from "@/lib/hooks/queries/useReviews";
-import ErrorStateUi from "./ErrorStateUi";
-import Loader from "./Loader";
+import ErrorStateUi from "../ErrorStateUi";
+import Loader from "../Loader";
 import { formatDMY } from "@/lib/utils";
 import { useSession } from "@/lib/hooks/useSession";
-import UnauthenticatedUi from "./UnauthenticatedUi";
+import UnauthenticatedUi from "../UnauthenticatedUi";
+import { cld } from "@/lib/utils/cloudinary";
 
 interface ReviewsModalProps {
   open: boolean;
@@ -127,7 +128,7 @@ export default function ReviewsModal({ open, onClose }: ReviewsModalProps) {
                     <div key={review.id} className="flex gap-2.5">
                       <Avatar className="size-10 shrink-0">
                         <AvatarImage
-                          src={review.reviewer.profileImg}
+                          src={cld(review.reviewer.profileImg, "thumb")}
                           alt="User avatar"
                         />
                         <AvatarFallback>{getInitials(review.reviewer.name)}</AvatarFallback>

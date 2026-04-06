@@ -50,6 +50,7 @@ type PaymentMethod = "wallet" | "digitalTransfer";
 
 interface CheckoutProps {
   vendorId: string;
+  estTime: string;
   checkoutData: CheckoutPreview;
   isFetching: boolean;
   isError: boolean;
@@ -61,6 +62,7 @@ interface CheckoutProps {
 
 const PageCheckOut = ({
   vendorId,
+  estTime,
   checkoutData,
   isError,
   isFetching,
@@ -140,7 +142,7 @@ const PageCheckOut = ({
             onSuccess: (res) => {
               const orderId = res.orderData.data.id;
               openOrderSuccess({
-                preparationTime: "soon",
+                preparationTime: estTime,
                 orderId,
               });
               setShowConfirmPickup(false);
@@ -148,7 +150,7 @@ const PageCheckOut = ({
           }
         );
     },
-    [paymentMethod, makePayment, chargeWallet, openOrderSuccess]
+    [paymentMethod, makePayment, chargeWallet, openOrderSuccess, estTime]
   );
 
   // Handle place order

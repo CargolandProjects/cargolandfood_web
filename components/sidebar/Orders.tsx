@@ -17,11 +17,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { fallbackImg } from "@/lib/utils";
+import { fallbackImg, formatDateWComma } from "@/lib/utils";
 import { useUIStore } from "@/lib/stores/uiStore";
 import UnauthenticatedUi from "../UnauthenticatedUi";
 import Image from "next/image";
 import { cld } from "@/lib/utils/cloudinary";
+import { GetOrders } from "@/lib/services/order.service";
+import { OrderStatus } from "@/lib/types/cart.types";
 
 interface OrdersProps {
   setActiveTab: (tab: ActiveTab) => void;
@@ -29,6 +31,50 @@ interface OrdersProps {
 }
 
 type Tabs = "current" | "previous";
+
+// const statusMessage = {
+//   ACCEPTED: "Accepted",
+//   PREPARING: "Preparing",
+//   READY: "Ready",
+//   ASSIGN_TO_RIDER: "Assign to Rider",
+//   DELIVERED: "Delivered",
+// };
+
+function normalizeOrderStatus(backendStatus: OrderStatus, order: GetOrders) {
+  // Handle unwanted statuses by mapping to appropriate UI status
+  switch (backendStatus) {
+    case "NEW":
+      return "New";
+    case "ACCEPTED":
+      return "Accepted";
+    case "PREPARING":
+      return "Preparing";
+    case "READY":
+      return "Ready";
+    case "ASSIGN_TO_RIDER":
+      return "Assign to Rider";
+    case "DELIVERED":
+      return "Delivered";
+
+    case "RIDER_ACCEPTED":
+    case "PICKUP_ORDER":
+      // These intermediate statuses map to ASSIGN_TO_RIDER
+      // But we should check timestamps to avoid going backwards
+      // If the order hasn't been assigned yet, use the most recent valid status
+      if (order.assignedAt) return "Assign to Rider";
+      if (order.readyAt) return "Ready";
+      if (order.preparedAt) return "Preparing";
+      return "Accepted";
+
+    default:
+      // Fallback: use most recent timestamp to determine current status
+      if (order.deliveredAt) return "DELIVERED";
+      if (order.assignedAt) return "ASSIGN_TO_RIDER";
+      if (order.readyAt) return "READY";
+      if (order.preparedAt) return "PREPARING";
+      return "ACCEPTED";
+  }
+}
 
 const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
   const {
@@ -44,9 +90,9 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
 
   const filteredOrders =
     orders?.filter((order) => {
-      if (currentTab === "previous") return order.status === "COMPLETED";
+      if (currentTab === "previous") return order.status === "DELIVERED";
 
-      return order.status !== "COMPLETED";
+      return order.status !== "DELIVERED";
     }) || [];
 
   const handleOpenTrackOrder = (orderId: string) => {
@@ -128,6 +174,7 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
             {filteredOrders.length === 0 && (
               <p className="text-center text-sm">No current orders</p>
             )}
+
             {filteredOrders.map((order, idx) => {
               const orderSummary = order.items
                 .map((item) => {
@@ -191,17 +238,17 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
 
                     {/* Order detials */}
                     <div className="flex-1">
-                      <h3 className="text-base leading-6 text-alt-black">
-                        {order.status}
+                      <h3 className="text-base leading-6 text-alt-black capitalize">
+                        {normalizeOrderStatus(order.status, order)}
                       </h3>
                       <div className="mt-1.5">
                         <div className=" grid grid-cols-[87px_1fr] gap-x-3 gap-y-1.5">
-                          <p className="text-xs leading-4 text-neutral-600">
+                          {/* <p className="text-xs leading-4 text-neutral-600">
                             Delivered on:
                           </p>
                           <p className="text-xs leading-4 font-medium text-neutral-600">
                             14th August
-                          </p>
+                          </p> */}
                           <p className="text-xs leading-4 text-neutral-600">
                             Order summary:
                           </p>
@@ -209,7 +256,7 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
                             {orderSummary}
                           </p>
                           <p className="text-xs leading-4 text-neutral-600">
-                            Total price paid:
+                            Total price:
                           </p>
                           <p className="text-xs leading-4 font-medium text-neutral-600">
                             ₦{Number(order.total).toLocaleString()}
@@ -304,7 +351,7 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
 
                     {/* Order detials */}
                     <div className="flex-1">
-                      <h3 className="text-base leading-6 text-alt-black">
+                      <h3 className="text-base leading-6 text-alt-black capitalize">
                         {order.status}
                       </h3>
                       <div className="mt-1.5">
@@ -313,7 +360,7 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
                             Delivered on:
                           </p>
                           <p className="text-xs leading-4 font-medium text-neutral-600">
-                            14th August
+                            {formatDateWComma(order.deliveredAt ?? "", true)}
                           </p>
                           <p className="text-xs leading-4 text-neutral-600">
                             Order summary:
@@ -322,7 +369,7 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
                             {orderSummary}
                           </p>
                           <p className="text-xs leading-4 text-neutral-600">
-                            Total price paid:
+                            Total price:
                           </p>
                           <p className="text-xs leading-4 font-medium text-neutral-600">
                             ₦{Number(order.total).toLocaleString()}

@@ -141,7 +141,8 @@ const AddressModal = () => {
             selectAddress(res.data.id);
             setValue("");
             clearSuggestions();
-            toast.success("address added");
+            if (res.message.includes("no vendors available"))
+              toast.warning(res.message);
           },
         });
       } else {
@@ -178,13 +179,17 @@ const AddressModal = () => {
   };
 
   const handleSelect = (address: GetAddress) => {
-    if (isSelecting || !address || !vendorId || !deliveryType) return;
+    if (isSelecting) return;
 
     // if (!deliveryType) return;
     setSettingId(address.id);
 
     // For setting address from the checkout
     if (source === "checkout") {
+      if (!deliveryType || !address || !vendorId) {
+        toast.error("Delivery type & address is required");
+        return;
+      }
       updateCartAddress(
         {
           vendorId,

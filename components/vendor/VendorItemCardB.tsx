@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu } from "@/lib/services/vendors.service";
-import ProductModal from "../ProductModal";
+import ProductModal from "./ProductModal";
 import { useAddToCart } from "@/lib/hooks/mutations/useMutateCart";
 import { RiAddFill, RiGiftLine } from "react-icons/ri";
 import { fallbackImg } from "@/lib/utils";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { cld } from "@/lib/utils/cloudinary";
+import { clipboard } from "@/assets/svgs";
 
 interface VendorItemCard {
   menu: Menu;
@@ -27,7 +28,7 @@ const VendorItemCardB = ({
   vendorId,
   selectedId,
 }: VendorItemCard) => {
-  const { id, uploadImageUrl, name, price, PromotionItem, description } = menu;
+  const { id, uploadImageUrl, name, price, PromotionItem, description, outOfStock } = menu;
   const isSelected = id === selectedId;
   const { isAuthenticated } = useSession();
   const openAuth = useAuthFlow((s) => s.openAuth);
@@ -70,7 +71,7 @@ const VendorItemCardB = ({
         onClick={handleClick}
         className="w-full max-w-[280px] h-[162px] flex flex-col justify-end rounded-2xl cursor-pointer relative"
       >
-        <div className="w-[134px] sm:w-[139px] h-21 sm:h-[93px] mx-auto rounded-lg overflow-hidden absolute top-px z-1 right-1/2 transform translate-x-1/2">
+        <div className="w-[134px] sm:w-[139px] h-21 sm:h-[93px] mx-auto rounded-lg overflow-hidden absolute top-px z-1 right-1/2 transform translate-x-1/2 bg-neutral-100">
           <Image
             src={cld(uploadImageUrl, "menu") || "/fallback_vendor.webp"}
             alt={name}
@@ -86,6 +87,22 @@ const VendorItemCardB = ({
                 <p className="font-medium text-xs text-primary">
                   {PromotionItem?.[0]?.promotion.percentageValue}% Off
                 </p>
+              </div>
+            </div>
+          )}
+
+          {outOfStock && (
+            <div className="absolute inset-0">
+              {/* Dark overlay */}
+              <div className="absolute bg-black/30 size-full" />
+              <div className="relative flex justify-center gap-1 bg-primary-300 py-1">
+                <Image
+                  src={clipboard.src}
+                  alt="out of stock icon"
+                  width={14}
+                  height={14}
+                />
+                <p className="text-xxs font-medium leading-4.5">Out Of Stock</p>
               </div>
             </div>
           )}
