@@ -20,7 +20,7 @@ export interface Vendor {
   profileImg: string;
   createdAt: string;
   ratings: number;
-  isOpenNow: boolean;
+  isOpenNow?: boolean;
 }
 
 export interface Vendors {
