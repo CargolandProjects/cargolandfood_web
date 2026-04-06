@@ -4,10 +4,13 @@ import { useVendors } from "@/lib/hooks/queries/useVendors";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useMemo } from "react";
+import { useSession } from "@/lib/hooks/useSession";
 // import ErrorStateUi from "../ErrorStateUi";
 
 const Restaurants = () => {
   const { zoneId } = useActiveZone();
+  const { isAuthenticated, user } = useSession();
+
   const {
     data,
     isLoading,
@@ -42,6 +45,11 @@ const Restaurants = () => {
     );
   }
 
+  const isDefaultAddress =
+    user?.address.some((a) => a.setAddressDefault) ?? false;
+
+  const hasLocation = isAuthenticated ? isDefaultAddress : !!zoneId;
+
   return (
     <section className="my-6 sm:my-10">
       {/* {isError && (
@@ -52,9 +60,15 @@ const Restaurants = () => {
 
       <h3>Restaurants</h3>
 
-      {!zoneId && (
+      {!hasLocation && (
         <p className="text-neutral-500 text-center mt-3 sm:mt-4">
           Please select your location
+        </p>
+      )}
+
+      {hasLocation && !zoneId && (
+        <p className="text-neutral-500 text-center mt-3 sm:mt-4">
+          No vendors available in your area yet
         </p>
       )}
 

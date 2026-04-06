@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu } from "@/lib/services/vendors.service";
-import ProductModal from "../ProductModal";
+import ProductModal from "./ProductModal";
 import { useAddToCart } from "@/lib/hooks/mutations/useMutateCart";
 import { RiAddFill, RiGiftLine } from "react-icons/ri";
 import { fallbackImg } from "@/lib/utils";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { cld } from "@/lib/utils/cloudinary";
+import { clipboard } from "@/assets/svgs";
 
 interface VendorItemCardA {
   menu: Menu;
@@ -29,7 +30,15 @@ const VendorItemCardA = ({
   selectedId,
   isSearch = false,
 }: VendorItemCardA) => {
-  const { description, id, uploadImageUrl, name, price, PromotionItem } = menu;
+  const {
+    description,
+    id,
+    uploadImageUrl,
+    name,
+    price,
+    PromotionItem,
+    outOfStock,
+  } = menu;
   const isSelected = id === selectedId;
   const { isAuthenticated } = useSession();
   const openAuth = useAuthFlow((s) => s.openAuth);
@@ -90,6 +99,22 @@ const VendorItemCardA = ({
               <p className="font-medium text-xs text-primary">
                 {PromotionItem?.[0]?.promotion.percentageValue}% Off
               </p>
+            </div>
+          )}
+
+          {outOfStock && (
+            <div className="absolute inset-0">
+              {/* Dark overlay */}
+              <div className="absolute bg-black/30 size-full" />
+              <div className="relative flex justify-center gap-1 bg-primary-300 py-1">
+                <Image
+                  src={clipboard.src}
+                  alt="out of stock icon"
+                  width={14}
+                  height={14}
+                />
+                <p className="text-xxs font-medium leading-4.5">Out Of Stock</p>
+              </div>
             </div>
           )}
         </div>

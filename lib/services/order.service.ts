@@ -36,7 +36,7 @@ interface Items {
   addonItem: AddonItem[];
 }
 
-export interface GetOrdersResponse {
+export interface GetOrders {
   id: string;
   orderNumber: string;
   userId: string;
@@ -48,7 +48,7 @@ export interface GetOrdersResponse {
   paymentReference: string | null;
   couponCode: string | null;
   isCoupon: boolean;
-  status: string;
+  status: OrderStatus;
   paymentStatus: string;
   checkoutSessionId: string;
   subtotal: string;
@@ -60,7 +60,9 @@ export interface GetOrdersResponse {
   acceptedAt: string | null;
   preparedAt: string | null;
   readyAt: string | null;
-  completedAt: string | null;
+  assignedAt: string | null;
+  pickedupAt: string | null;
+  deliveredAt: string | null;
   cancelledAt: string | null;
   createdAt: string;
   items: Items[];
@@ -91,6 +93,7 @@ export interface TrackOrder {
 }
 
 export type TrackOrderResponse = APIResponse<TrackOrder>;
+export type GetOrdersResponse = APIResponse<GetOrders[]>;
 
 export const orderService = {
   async makePayment(cartId: string) {
@@ -101,21 +104,21 @@ export const orderService = {
   },
 
   async getOrders() {
-    const res = await apiClient.get<APIResponse<GetOrdersResponse[]>>(
+    const res = await apiClient.get<GetOrdersResponse>(
       API_ROUTES.order.getOrders
     );
     return res.data;
   },
 
   async orderDetails(orderId: string) {
-    const res = await apiClient.get<APIResponse<GetOrdersResponse>>(
+    const res = await apiClient.get<APIResponse<GetOrders>>(
       API_ROUTES.order.orderDetails(orderId)
     );
     return res.data;
   },
 
   async getOrderByReference(reference: string) {
-    const res = await apiClient.get<APIResponse<GetOrdersResponse>>(
+    const res = await apiClient.get<APIResponse<GetOrders>>(
       API_ROUTES.order.getOrderByReference(reference)
     );
     return res.data;

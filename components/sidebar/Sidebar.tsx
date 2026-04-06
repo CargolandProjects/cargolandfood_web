@@ -101,7 +101,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
   const { data: orders } = useGetOrders(isAuthenticated);
   const cartItems = cart?.length || 0;
   const currentOrders =
-    orders?.filter((o) => o.status !== "COMPLETED").length || 0;
+    orders?.filter((o) => o.status !== "DELIVERED").length || 0;
 
   // Detect if we're on desktop (only runs once on mount, then on resize)
   const [isDesktop, setIsDesktop] = useState(() => {
@@ -286,7 +286,10 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
             <div className="flex items-start justify-between">
               <Link
                 href="/"
-                onClick={() => setActiveCategory(null)}
+                onClick={() => {
+                  setActiveCategory(null);
+                  setOpen(false);
+                }}
                 className="relative h-10 w-[140px] block overflow-hidden mb-8"
               >
                 <Image

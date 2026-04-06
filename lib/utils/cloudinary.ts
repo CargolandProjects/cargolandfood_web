@@ -83,9 +83,11 @@ type CustomSize = {
 };
 
 export function cld(
-  url: string,
+  url: string | null,
   sizeOrOptions: ImageSizeKey | CustomSize
 ): string {
+  if (!url) return "";
+  
   if (!url.includes("/upload/")) return url;
 
   let width: number | undefined;

@@ -20,6 +20,7 @@ export interface Vendor {
   profileImg: string;
   createdAt: string;
   ratings: number;
+  isOpenNow: boolean;
 }
 
 export interface Vendors {
@@ -124,6 +125,7 @@ export interface vendorById {
     bayesianRating: number;
   };
   totalMenu: number;
+  isOpenNow: boolean;
   currentPage: number;
   totalPages: number;
   nextPage: null;

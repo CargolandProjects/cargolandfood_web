@@ -10,7 +10,7 @@ export const useAddAddress = () => {
   return useMutation({
     mutationFn: address.createAddress,
 
-    onSuccess: async () => {
+    onSuccess: async (res) => {
       queryClient.invalidateQueries({
         queryKey: ["addresses"],
       });
@@ -18,7 +18,9 @@ export const useAddAddress = () => {
       const result = await refreshSession();
 
       if (result?.success) {
-        toast.success("Address added successfully");
+        if (res.message.includes("Address already exists"))
+          toast.success(res.message);
+        else toast.success("Address added successfully");
       } else {
         const toastId = toast.error(
           "Address added, but session update failed",

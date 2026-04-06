@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import CategoryTab from "@/components/home/CategoryTab";
 import { useInView } from "react-intersection-observer";
 import VendorStats from "@/components/vendor/VendorStats";
-import { RiArrowGoBackLine, RiHeartFill } from "react-icons/ri";
+import { RiArrowGoBackLine, RiHeartFill, RiLock2Fill } from "react-icons/ri";
 import VendorItemCardA from "@/components/vendor/VendorItemCardA";
 import VendorPageSkeleton from "@/components/vendor/VendorPageSkeleton";
 import { useRouter } from "next/navigation";
@@ -13,7 +13,7 @@ import PageCheckOut from "../orders/PageCheckOut";
 import { AnimatePresence, motion } from "framer-motion";
 import OrderDetails from "../globalUi/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
-import ReviewsModal from "../ReviewModal";
+import ReviewsModal from "./ReviewModal";
 import { useVendorMenuById } from "@/lib/hooks/queries/useVendors";
 import { useCheckoutPreview } from "@/lib/hooks/queries/useCheckoutFlow";
 import { Button } from "../ui/button";
@@ -97,6 +97,15 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
     error: checkoutError,
     isSuccess: checkoutSuccess,
   } = useCheckoutPreview(id, deliveryType, isAuthenticated);
+
+  useEffect(() => {
+    if (checkoutError?.message.includes("Vendor cannot deliver")) {
+      toast.warning(
+        checkoutError?.message ||
+          "Vendor cannot deliver to the selected address"
+      );
+    }
+  }, [checkoutError]);
 
   // Flatten paginated menus from infinite query
   const firstPage = data?.pages?.[0];
@@ -194,6 +203,7 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
         />
       )}
 
+      {/* For a smooth resizing animation when the pageCheckout is mounted */}
       <motion.div
         className={`${
           isLargeScreen && hasItemsInCart && "gap-6 xl:gap-10"
@@ -282,6 +292,20 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
                   />
                 </button>
               </div>
+
+              {!firstPage.isOpenNow && (
+                <div className="absolute inset-0 flex justify-center items-center">
+                  <div className="absolute inset-0 bg-black/40" />
+                  <div className="relative flex flex-col justify-center items-center">
+                    <div className="size-6 sm:size-8 lg:size-12 rounded-full bg-white flex justify-center items-center">
+                      <RiLock2Fill className="size-3.5 sm:size-4.5 lg:size-6  text-primary" />
+                    </div>
+                    <h3 className="text-white text-xs sm:text-sm lg:text-base font-bold leading-5 sm:mt-1 lg:mt-1.5">
+                      Closed
+                    </h3>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="my-3 sm:my-10 max-sm:space-y-[3px]">
@@ -413,6 +437,7 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
                 isSuccess={checkoutSuccess}
                 deliveryType={deliveryType}
                 onDeliveryTypeChange={setDeliveryType}
+                estTime={preparationTime ?? "soon"}
               />
             </motion.aside>
           )}
@@ -437,6 +462,7 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
                 deliveryType={deliveryType}
                 onDeliveryTypeChange={setDeliveryType}
                 closeCheckout={setOpenCheckout}
+                estTime={preparationTime ?? "soon"}
               />
             </motion.div>
           )}

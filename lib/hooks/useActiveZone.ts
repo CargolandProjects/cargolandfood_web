@@ -20,7 +20,7 @@ export const useActiveZone = () => {
   const authZoneId = isAuthenticated && getDefaultAddress?.zoneId;
 
   return {
-    zoneId: authZoneId || guestZoneId || "1", //change "1" back to null once the backend starts returning actual zoneId
+    zoneId: authZoneId || guestZoneId || null,
     isLoading: !guestHydrated, // You might also check auth loading state
     isGuest: !isAuthenticated,
     isAuthenticated,
