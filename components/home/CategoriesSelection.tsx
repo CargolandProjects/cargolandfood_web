@@ -14,7 +14,7 @@ const CategoriesSelection = () => {
   // const [activeFilter, setActiveFilter] = useState("all");
   // const { data, isLoading } = usePromotions();
   const { activeCategory } = useCategory();
-  const { zoneId } = useActiveZone();
+  const { zoneId, lat, lng } = useActiveZone();
   const {
     data,
     isLoading,
@@ -23,7 +23,7 @@ const CategoriesSelection = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useVendorsByCategory(zoneId ?? "", activeCategory ?? "");
+  } = useVendorsByCategory(zoneId ?? "", activeCategory ?? "", lat, lng);
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -209,7 +209,9 @@ const CategoriesSelection = () => {
       <h3>{activeCategory}</h3>
 
       {isError && (
-        <p className="text-red-500 text-center mt-2 sm:mt-4">Error Fetching Vendors</p>
+        <p className="text-red-500 text-center mt-2 sm:mt-4">
+          Error Fetching Vendors
+        </p>
       )}
 
       {!zoneId && (

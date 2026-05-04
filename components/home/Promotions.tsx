@@ -14,15 +14,17 @@ import "swiper/css/navigation";
 import Loading from "../vendor/LoadingSkeleton";
 import { useDiscountVendors } from "@/lib/hooks/queries/useVendors";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
+import { useSession } from "@/lib/hooks/useSession";
 
 const Promotions = () => {
-  const { zoneId } = useActiveZone();
+  const { zoneId, lat, lng } = useActiveZone();
+  const { isAuthenticated, user } = useSession();
   const {
     data: discounts,
     isLoading,
     isError,
     isSuccess,
-  } = useDiscountVendors(zoneId ?? "");
+  } = useDiscountVendors(zoneId ?? "", lat, lng);
 
   // Simple Swiper refs for both sections
   const discountsSwiperRef = useRef<SwiperType>(null);
@@ -48,6 +50,10 @@ const Promotions = () => {
     );
   }
 
+  const isDefaultAddress =
+    user?.address.some((a) => a.setAddressDefault) ?? false;
+  const hasLocation = isAuthenticated ? isDefaultAddress : !!zoneId;
+
   return (
     <div>
       {/* Discounts Section */}
@@ -72,6 +78,18 @@ const Promotions = () => {
             See all
           </p>
         </div>
+
+        {!hasLocation && (
+          <p className="text-neutral-500 text-center mt-3 sm:mt-4">
+            Please select your location
+          </p>
+        )}
+
+        {hasLocation && !zoneId && (
+          <p className="text-neutral-500 text-center mt-3 sm:mt-4">
+            No vendors available in your area yet
+          </p>
+        )}
 
         {isError && (
           <p className="text-red-400 text-center mt-3 sm:mt-4">

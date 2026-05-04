@@ -8,6 +8,7 @@ export interface Vendor {
   businessCategory: string | null;
   businessAddress: string | null;
   preparationTime?: string | null;
+  estimationTimeArrival?: string | null;
   workingHours?: [
     {
       preparationTime: string;
@@ -21,6 +22,8 @@ export interface Vendor {
   createdAt: string;
   ratings: number;
   isOpenNow?: boolean;
+  distanceKm?: string | null;
+  deliveryFee?: string | null;
 }
 
 export interface Vendors {
@@ -140,9 +143,17 @@ export interface DiscountVendor {
 export type DiscountVendorsRes = APIResponse<DiscountVendor[]>;
 
 export const vendors = {
-  async getAllVendors(zoneId: string, page: number = 1, limit: number) {
+  async getAllVendors(
+    zoneId: string,
+    lat: string,
+    lng: string,
+    page: number = 1,
+    limit: number
+  ) {
     const res = await apiClient.get<Vendors>(
-      `${API_ROUTES.vendor.allVendors(zoneId)}?page=${page}&limit=${limit}`
+      `${API_ROUTES.vendor.allVendors(
+        zoneId
+      )}?page=${page}&limit=${limit}&userLat=${lat}&userLng=${lng}`
     );
     return res.data;
   },
@@ -150,20 +161,24 @@ export const vendors = {
   async getVendorsByCategory(
     zoneId: string,
     query: string,
+    lat: string,
+    lng: string,
     page: number = 1,
     limit: number
   ) {
     const res = await apiClient.get(
       `${API_ROUTES.vendor.getVendorsByCategory(
         zoneId
-      )}?query=${query}&page=${page}&limit=${limit}`
+      )}?query=${query}&page=${page}&limit=${limit}&userLat=${lat}&userLng=${lng}`
     );
     return res.data;
   },
 
-  async getDiscountVendors(zoneId: string) {
+  async getDiscountVendors(zoneId: string, lat: string, lng: string) {
     const res = await apiClient.get<DiscountVendorsRes>(
-      API_ROUTES.vendor.getDiscountVendors(zoneId)
+      `${API_ROUTES.vendor.getDiscountVendors(
+        zoneId
+      )}?userLat=${lat}&userLng=${lng}`
     );
     return res.data;
   },

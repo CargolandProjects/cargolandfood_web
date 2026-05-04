@@ -18,11 +18,15 @@ export const useActiveZone = () => {
   // TODO: Adjust based on which address you want to use (first, default, selected, etc.)
   const getDefaultAddress = user?.address?.find((a) => a.setAddressDefault);
   const authZoneId = isAuthenticated && getDefaultAddress?.zoneId;
+  const lat = getDefaultAddress?.latitude;
+  const lng = getDefaultAddress?.longitude;
 
   return {
     zoneId: authZoneId || guestZoneId || null,
     isLoading: !guestHydrated, // You might also check auth loading state
     isGuest: !isAuthenticated,
     isAuthenticated,
+    lat,
+    lng,
   };
 };

@@ -13,7 +13,7 @@ export const useFavourites = (userId: string, isAuthenticated: boolean) => {
         businessName: r.vendor.businessName,
         businessCategory: null,
         businessAddress: null,
-        preparationTime: null,
+        preparationTime: r.vendor.preparationTime,
         isPreorder: null,
         isFavourite: r.favourite.isFavourite,
         golive: null,

@@ -8,7 +8,7 @@ import { useSession } from "@/lib/hooks/useSession";
 // import ErrorStateUi from "../ErrorStateUi";
 
 const Restaurants = () => {
-  const { zoneId } = useActiveZone();
+  const { zoneId, lat, lng } = useActiveZone();
   const { isAuthenticated, user } = useSession();
 
   const {
@@ -19,7 +19,7 @@ const Restaurants = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useVendors(zoneId || "");
+  } = useVendors(zoneId ?? "", lat, lng);
 
   const { ref, inView } = useInView({
     threshold: 0,
