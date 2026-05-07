@@ -127,6 +127,8 @@ export interface vendorById {
     simpleRating: number;
     bayesianRating: number;
   };
+  estimationTimeArrival: string;
+  deliveryFee: string;
   totalMenu: number;
   isOpenNow: boolean;
   currentPage: number;
@@ -145,10 +147,10 @@ export type DiscountVendorsRes = APIResponse<DiscountVendor[]>;
 export const vendors = {
   async getAllVendors(
     zoneId: string,
-    lat: string,
-    lng: string,
     page: number = 1,
-    limit: number
+    limit: number,
+    lat?: string,
+    lng?: string
   ) {
     const res = await apiClient.get<Vendors>(
       `${API_ROUTES.vendor.allVendors(
@@ -183,9 +185,17 @@ export const vendors = {
     return res.data;
   },
 
-  async getVendorMenuById(id: string, page: number = 1, limit: number) {
+  async getVendorMenuById(
+    id: string,
+    page: number = 1,
+    limit: number,
+    lat?: string,
+    lng?: string
+  ) {
     const res = await apiClient.get<vendorById>(
-      `${API_ROUTES.vendor.vendorMenuById(id)}?page=${page}&limit=${limit}`
+      `${API_ROUTES.vendor.vendorMenuById(
+        id
+      )}?page=${page}&limit=${limit}&userLat=${lat}&userLng=${lng}`
     );
     return res.data;
   },

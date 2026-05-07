@@ -23,7 +23,7 @@ const VendorStats = ({
       <div className="flex items-center gap-1">
         <RiEBike2Line className="size-5 text-primary" />
         <span className="font-normal text-sm text-neutral-600 ">
-          {deliveryFee !== 0 ? `₦${deliveryFee}` : "Free"}
+          ₦{deliveryFee}
         </span>
       </div>
 

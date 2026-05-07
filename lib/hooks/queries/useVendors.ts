@@ -10,7 +10,7 @@ export const useVendors = (
   return useInfiniteQuery({
     queryKey: ["vendors", zoneId, lat, lng, limit],
     queryFn: ({ pageParam }) =>
-      vendors.getAllVendors(zoneId, lat, lng, pageParam, limit),
+      vendors.getAllVendors(zoneId, pageParam, limit, lat, lng),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,
     enabled: !!zoneId.trim(),
@@ -49,12 +49,15 @@ export const useDiscountVendors = (
 
 export const useVendorMenuById = (
   id: string,
-  initialData?: vendorById,
-  limit: number = 10
+  lat: string = "",
+  lng: string = "",
+  limit: number = 10,
+  initialData?: vendorById
 ) => {
   return useInfiniteQuery({
     queryKey: ["vendorById", id, limit],
-    queryFn: ({ pageParam }) => vendors.getVendorMenuById(id, pageParam, limit),
+    queryFn: ({ pageParam }) =>
+      vendors.getVendorMenuById(id, pageParam, limit, lat, lng),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,
     enabled: !!id,

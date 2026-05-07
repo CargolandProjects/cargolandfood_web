@@ -138,7 +138,7 @@ const VendorCard = ({
           <div className="flex justify-center items-center gap-1">
             <RiStarLine className="size-5.5 text-primary" />
             <span className="leading-5 text-neutral-600">
-              {ratings?.toFixed(2)}
+              {ratings?.toFixed(1)}
             </span>
           </div>
           <div className="flex justify-center items-center gap-1">
