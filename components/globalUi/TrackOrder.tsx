@@ -20,7 +20,7 @@ import {
 import { Separator } from "../ui/separator";
 import ErrorStateUi from "../ErrorStateUi";
 import Loader from "../Loader";
-import { map, userIcon2 } from "@/assets/svgs";
+import { map, ridingFill, userIcon2 } from "@/assets/svgs";
 import { Button } from "../ui/button";
 import { useUIStore } from "@/lib/stores/uiStore";
 import { AnimatePresence, motion } from "framer-motion";
@@ -178,36 +178,33 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
         open={statusMsg?.open}
         onOpenChange={() => setStatusMsg((prev) => ({ ...prev, open: false }))}
       >
-        <DialogContent className="dialog px-6! sm:px-9! min-h-[400px]!">
-          {/* <div className="relative size-[124px] sm:size-[180px] self-center justify-self-center mt-8">
-          <Image
-            src={success.src}
-            alt="coupon added"
-            className="size-full"
-            fill
-          />
-        </div> */}
-
-          <div className="sm:mt-1 flex flex-col justify-center items-center gap-3">
-            <DialogTitle className="dialog-title font-bold! max-w-[200px]">
-            {statusMsg.status}
-          </DialogTitle>
-            <p className="max-w-[260px] text-base leading-5 text-center">{statusMsg.message}</p>
+        <DialogContent className="dialog min-h-[307px]! gap-0! flex flex-col px-9! pt-8! pb-8.5! ">
+          <div className="self-center justify-self-center flex items-center justify-center size-[72px] rounded-full bg-primary/10">
+            <div className="relative size-[40px] ">
+              <Image
+                src={ridingFill.src}
+                alt="rider icon svg"
+                className="size-full"
+                fill
+              />
+            </div>
           </div>
 
-          <div className="mt-13 flex gap-2 mb-6 sm:mb-8">
-            {/* <Button
-            variant="outline"
-            className="submit-btn flex-1 hover:bg-gray-50 text-neutral-500 border-neutral-300"
-          >
-            Cancel Orders
-          </Button> */}
-            {/* <Button className="submit-btn flex-1">
-            Order Details
-          </Button> */}
+          <div className="mt-1 flex flex-col justify-center items-center gap-3">
+            <DialogTitle className="dialog-title font-bold! max-w-[200px]">
+              {statusMsg.title}
+            </DialogTitle>
+            <p className="max-w-[287px] text-base leading-5 text-center">
+              {statusMsg.message}
+            </p>
+          </div>
+
+          <div className="mt-8 ">
+            <Button className="submit-btn flex-1">Okay</Button>
           </div>
         </DialogContent>
       </Dialog>
+
       <div className="h-dvh pb-4 sm:px-6 sm:pb-6 overflow-y-auto hide-scrollbar">
         {isDesktop ? (
           // Desktop Header
@@ -308,7 +305,9 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                       Estimated time
                     </span>
                   </div>
-                  <span className="text-base leading-5">20 mins</span>
+                  <span className="text-base leading-5">
+                    {data.estimationTime}
+                  </span>
                 </div>
 
                 {/* Order Delivery State */}
