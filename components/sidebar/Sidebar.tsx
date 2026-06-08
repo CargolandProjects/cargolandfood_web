@@ -337,7 +337,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                     </div>
                     <AnimatePresence>
                       {item.content && isActive && (
-                        <motion.aside
+                        <motion.div
                           initial={{ x: "-100%" }}
                           animate={{ x: 0 }}
                           exit={{ x: "-100%" }}
@@ -351,7 +351,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                           <div className="fixed inset-0 h-dvh p-4 z-40 bg-white">
                             <item.content {...item.props} />
                           </div>
-                        </motion.aside>
+                        </motion.div>
                       )}
                     </AnimatePresence>
                   </>

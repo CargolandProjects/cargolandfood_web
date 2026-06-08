@@ -152,12 +152,14 @@ const VendorItemCardA = ({
         </div>
       </div>
 
-      <ProductModal
-        vendorId={vendorId}
-        handleSelect={handleSelect}
-        isSelected={isSelected}
-        menu={menu}
-      />
+      {isSelected && (
+        <ProductModal
+          vendorId={vendorId}
+          handleSelect={handleSelect}
+          isSelected={isSelected}
+          menu={menu}
+        />
+      )}
     </>
   );
 };

@@ -138,7 +138,32 @@ const AddressModal = () => {
 
         addAddress(payload, {
           onSuccess: (res) => {
-            selectAddress(res.data.id);
+            if (source === "checkout") {
+              if (!deliveryType || !payload || !vendorId) {
+                toast.error("Delivery type & address is required");
+                return;
+              }
+              updateCartAddress(
+                {
+                  vendorId,
+                  payload: {
+                    deliveryType: deliveryType,
+                    addressSnapShot: res.data,
+                  },
+                },
+                {
+                  onSuccess: () => {
+                    toast.success("Delivery Address updated successfully");
+                    close();
+                  },
+                  onError: (res) => {
+                    toast.error(res.message);
+                  },
+                  onSettled: () => [setSettingId(null)],
+                }
+              );
+            }
+
             setValue("");
             clearSuggestions();
             if (res.message.includes("no vendors available"))
@@ -202,6 +227,9 @@ const AddressModal = () => {
           onSuccess: () => {
             toast.success("Delivery Address successfully selected");
             close();
+          },
+          onError: (res) => {
+            toast.error(res.message);
           },
           onSettled: () => [setSettingId(null)],
         }

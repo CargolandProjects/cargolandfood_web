@@ -41,7 +41,7 @@ export const address = {
   },
 
   async createAddress(payload: Address) {
-    const res = await apiClient.post(API_ROUTES.address.createAddress, payload);
+    const res = await apiClient.post<APIResponse<GetAddress>>(API_ROUTES.address.createAddress, payload);
     return res.data;
   },
 

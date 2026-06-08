@@ -9,10 +9,12 @@ import { useVendorsByCategory } from "@/lib/hooks/queries/useVendors";
 import { useInView } from "react-intersection-observer";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
 import { useCategory } from "@/contexts/CategoryContext";
+import { useSession } from "@/lib/hooks/useSession";
 
 const CategoriesSelection = () => {
   // const [activeFilter, setActiveFilter] = useState("all");
   // const { data, isLoading } = usePromotions();
+  const { user , isAuthenticated} = useSession();
   const { activeCategory } = useCategory();
   const { zoneId, lat, lng } = useActiveZone();
   const {
@@ -46,6 +48,10 @@ const CategoriesSelection = () => {
   //   { label: "Fast Delivery", value: "fast" },
   //   { label: "Best Prices", value: "prices" },
   // ];
+
+  const isDefaultAddress =
+    user?.address.some((a) => a.setAddressDefault) ?? false;
+  const hasLocation = isAuthenticated ? isDefaultAddress : !!zoneId;
 
   if (isLoading) {
     return (
@@ -214,9 +220,15 @@ const CategoriesSelection = () => {
         </p>
       )}
 
-      {!zoneId && (
-        <p className="text-neutral-500 text-center mt-2 sm:mt-4">
+      {!hasLocation && (
+        <p className="text-neutral-500 text-center mt-3 sm:mt-4">
           Please select your location
+        </p>
+      )}
+
+      {hasLocation && !zoneId && (
+        <p className="text-neutral-500 text-center mt-3 sm:mt-4">
+          No vendors available in your area yet
         </p>
       )}
 

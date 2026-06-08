@@ -5,9 +5,11 @@ export const useUpdateCheckout = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: cart.updateCheckoutPreview,
-    onSuccess: (res, { vendorId }) => {
-      queryClient.setQueryData(["checkoutPreview", vendorId], res);
+    onSuccess: (res, { vendorId, payload }) => {
+      queryClient.setQueryData(
+        ["checkoutPreview", vendorId, payload.deliveryType],
+        res
+      );
     },
-
   });
 };
