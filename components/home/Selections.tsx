@@ -38,7 +38,7 @@ const SelectionsContent = () => {
     <>
       {/* Search results section if search query is present */}
       {searchTerm && (
-        <section className="">
+        <section>
           <h3 className="mb-4 sm:mb-6.5">Results for {searchTerm}</h3>
           {isLoading && (
             <div className="sm:px-4">

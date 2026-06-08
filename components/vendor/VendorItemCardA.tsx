@@ -125,7 +125,7 @@ const VendorItemCardA = ({
             <h3 className="text-sm sm:text-lg leading-5 sm:leading-6 line-clamp-1">
               {name}
             </h3>
-            <p className="text-xs leading-4 text-neutral-600 line-clamp-2 max-w-[70%]">
+            <p className="text-xs leading-4 text-neutral-600 line-clamp-2">
               {description}
             </p>
             <span className="text-base sm:text-xl font-medium mt-[13px] sm:mt-6">
@@ -152,12 +152,14 @@ const VendorItemCardA = ({
         </div>
       </div>
 
-      <ProductModal
-        vendorId={vendorId}
-        handleSelect={handleSelect}
-        isSelected={isSelected}
-        menu={menu}
-      />
+      {isSelected && (
+        <ProductModal
+          vendorId={vendorId}
+          handleSelect={handleSelect}
+          isSelected={isSelected}
+          menu={menu}
+        />
+      )}
     </>
   );
 };

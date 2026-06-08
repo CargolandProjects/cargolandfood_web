@@ -78,7 +78,7 @@ const GlobalCheckoutCOntent = ({
   );
   const [isRemovingItemId, setIsRemovingItemId] = useState<string | null>(null);
   const [quantityChangeId, setQuantityChangeId] = useState<string | null>(null);
-  const { user, isAuthenticated } = useSession();
+  const { isAuthenticated } = useSession();
 
   const {
     data: checkoutData,
@@ -229,6 +229,7 @@ const GlobalCheckoutCOntent = ({
     total = "0",
   } = checkoutData || {};
   const cartItems = checkoutData?.cart.items || [];
+  const cartAddress = checkoutData?.cart.addressSnapshot;
 
   const orderSummary = cartItems
     .map((item) => {
@@ -313,7 +314,6 @@ const GlobalCheckoutCOntent = ({
     isMakingPayment
   );
 
-  const defaultAdresses = user?.address.find((addr) => addr.setAddressDefault);
 
   return (
     <>
@@ -547,7 +547,7 @@ const GlobalCheckoutCOntent = ({
                     <p className="flex items-center gap-2 ">
                       <RiMapPinFill className="size-5 text-primary" />
                       <span className="text-base leading-5 line-clamp-1">
-                        {defaultAdresses?.addressLine1 || "Add an address"}
+                        {cartAddress?.addressLine1}
                       </span>
                     </p>
                     <RiArrowRightSLine className="size-5 text-neutral-500" />
@@ -726,7 +726,7 @@ const GlobalCheckout = () => {
     <>
       {isDesktop && (
         <Sheet open={open} onOpenChange={closeCheckout}>
-          <SheetContent className="min-w-[464px]! [&>button]:hidden">
+          <SheetContent className="min-w-116! [&>button]:hidden">
             <GlobalCheckoutCOntent
               isDesktop={isDesktop}
               closeCheckout={closeCheckout}

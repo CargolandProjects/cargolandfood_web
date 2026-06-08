@@ -23,7 +23,7 @@ export default function HomeLayout({
 
   return (
     <ContextProviders>
-      <main className="font-satoshi text-brand-black flex min-h-dvh">
+      <main className="font-satoshi text-brand-black flex min-h-screen">
         <Sidebar open={open} setOpen={setOpen} />
         <div className="flex-1 flex flex-col min-w-0">
           <Header setSideBar={setOpen} />

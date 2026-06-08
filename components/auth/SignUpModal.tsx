@@ -63,13 +63,17 @@ const formSchema = z
         /(?=.*[A-Z])/,
         "Password must contain at least one uppercase letter"
       )
-      .regex(/(?=.*\d)/, "Password must contain at least one number"),
+      .regex(/(?=.*\d)/, "Password must contain at least one number")
+      .regex(
+        /(?=.*[!@#$%^&*])/,
+        "Password must contain at least one special character"
+      ),
     confirmPassword: z.string(),
     referralCode: z.string().optional(),
     country: z.string().min(1, "Please select your country"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+    error: "Passwords do not match",
     path: ["confirmPassword"],
   });
 

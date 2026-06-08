@@ -38,10 +38,18 @@ export interface CartItem {
 export interface Cart {
   id: string; // This is the cartId
   userId: string;
+  userName: string;
+  userImg: string;
   vendorId: string;
+  vendorName: string;
+  vendorAddress: null;
+  vendorAddress2: string;
+  noteToRider: null;
+  noteToRestaurant: null;
   status: "ACTIVE" | "LOCKED";
   currency: "NGN";
   deliveryType: "DELIVERY" | "PICKUP";
+  addressSnapshot: AddressSnapshot; 
   createdAt: string;
   updatedAt: string;
   items: CartItem[];

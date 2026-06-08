@@ -18,7 +18,8 @@ import emptyBox from "./empty_box.svg";
 import map from "./map.svg";
 import camera from "./camera.svg";
 import alert from "./alert.svg";
-import clipboard from "./clipboard.svg"
+import clipboard from "./clipboard.svg";
+import ridingFill from "./riding-fill.svg";
 
 export {
   logo,
@@ -41,5 +42,6 @@ export {
   map,
   camera,
   alert,
-  clipboard
+  clipboard,
+  ridingFill,
 };

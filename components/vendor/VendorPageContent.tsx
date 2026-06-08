@@ -27,13 +27,14 @@ import VendorJsonLd from "./VendorJsonLd";
 import { toast } from "sonner";
 import Image from "next/image";
 import { cld } from "@/lib/utils/cloudinary";
+import { useActiveZone } from "@/lib/hooks/useActiveZone";
 
 interface VendorPageContentProps {
   id: string;
   initialData?: vendorById;
 }
 
-const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
+const VendorPageContent = ({ id }: VendorPageContentProps) => {
   const [activeCatId, setActiveCatId] = useState<string | null>(null);
   const [selectedId, setselectedId] = useState<string | null>(null);
   const [showFavourites, setShowFavourites] = useState(false);
@@ -42,6 +43,7 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
   const [deliveryType, setDeliveryType] = useState<"DELIVERY" | "PICKUP">(
     "DELIVERY"
   );
+  const { lat, lng } = useActiveZone();
 
   const {
     data,
@@ -51,10 +53,10 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useVendorMenuById(id, initialData);
+  } = useVendorMenuById(id, lat, lng);
   const { mutate: toggleFavourite } = useToggleFavourite("vendorpage");
   const { user, isAuthenticated } = useSession();
-
+  // console.log("Vendor Page Data:", data);
   const router = useRouter();
 
   // Detect large screen (lg breakpoint = 1024px)
@@ -114,7 +116,9 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
   const allMenus = data?.pages?.flatMap((page) => page.data.menus) ?? [];
   const menus = allMenus;
   const categories = firstPage?.data.categories || [];
-  const preparationTime = firstPage?.data.workingHours?.[0].preparationTime;
+  // const preparationTime = firstPage?.data.workingHours?.[0].preparationTime;
+  const eta = firstPage?.estimationTimeArrival;
+  const deliveryFee = firstPage?.deliveryFee;
 
   // Check if cart has items from checkout preview
   // If error (e.g., 400 "No active cart"), treat as empty cart
@@ -267,7 +271,7 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
                 onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
               />
               {/* Favourite and Comments */}
-              <div className="absolute top-3 sm:top-6 right-3 sm:right-6 flex gap-2.5">
+              <div className="absolute top-3 sm:top-6 right-3 sm:right-6 flex gap-2.5 z-1">
                 <button
                   onClick={(e) =>
                     handleToggleFavourite(vendor!.isFavourite, vendor!.id, e)
@@ -313,8 +317,8 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
               {/* Stats Line (Rating, Delivery Fee, Time) */}
               <VendorStats
                 rating={rating?.bayesianRating || 0}
-                deliveryFee={0}
-                deliveryTime={preparationTime || ""}
+                deliveryFee={deliveryFee ?? 0}
+                deliveryTime={eta ?? "soon"}
               />
             </div>
           </div>
@@ -437,7 +441,7 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
                 isSuccess={checkoutSuccess}
                 deliveryType={deliveryType}
                 onDeliveryTypeChange={setDeliveryType}
-                estTime={preparationTime ?? "soon"}
+                estTime={eta ?? "soon"}
               />
             </motion.aside>
           )}
@@ -462,7 +466,7 @@ const VendorPageContent = ({ id, initialData }: VendorPageContentProps) => {
                 deliveryType={deliveryType}
                 onDeliveryTypeChange={setDeliveryType}
                 closeCheckout={setOpenCheckout}
-                estTime={preparationTime ?? "soon"}
+                estTime={eta ?? "soon"}
               />
             </motion.div>
           )}

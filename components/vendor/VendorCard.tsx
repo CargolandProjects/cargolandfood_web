@@ -35,7 +35,8 @@ const VendorCard = ({
     profileImg,
     isFavourite,
     preparationTime,
-    workingHours,
+    deliveryFee,
+    estimationTimeArrival,
     isOpenNow,
   },
   vendorId,
@@ -52,9 +53,9 @@ const VendorCard = ({
   );
   const router = useRouter();
 
-  const prepTime = preparationTime
-    ? preparationTime
-    : workingHours?.[0].preparationTime;
+  const estTime = estimationTimeArrival
+    ? estimationTimeArrival
+    : preparationTime;
 
   const handleClick = () => {
     // There is id from the getAllVendors endpoint as "id" and from getFavourites as vendorId (both referencing the actual vendorId)
@@ -82,8 +83,6 @@ const VendorCard = ({
 
     toggleFavourite(payload);
   };
-
-  const deliveryFee = 20;
 
   return (
     <div onClick={handleClick} className="w-full cursor-pointer">
@@ -139,19 +138,19 @@ const VendorCard = ({
           <div className="flex justify-center items-center gap-1">
             <RiStarLine className="size-5.5 text-primary" />
             <span className="leading-5 text-neutral-600">
-              {ratings?.toFixed(2)}
+              {ratings?.toFixed(1)}
             </span>
           </div>
           <div className="flex justify-center items-center gap-1">
             <RiEBike2Line className="size-5.5 text-primary" />
             <span className="leading-5 text-neutral-600">
-              {!deliveryFee ? "Free" : deliveryFee}
+              {deliveryFee ?? "0"}
             </span>
           </div>
-          {prepTime && (
+          {estTime && (
             <div className="flex justify-center items-center gap-1">
               <RiTimeLine className="size-5.5 text-primary" />
-              <span className="leading-5 text-neutral-600">{prepTime}</span>
+              <span className="leading-5 text-neutral-600">{estTime}</span>
             </div>
           )}
         </div>

@@ -53,13 +53,13 @@ export const useAuthSessionStore = create<AuthSessionState>((set, get) => ({
     const storedUser = readJSON<User>(USER_KEY);
     const pending = readJSON<User>(USER_PENDING_KEY);
 
-    if (!access) {
+    if (!access || !storedUser) {
       set({ user: null, pendingUser: pending, status: "unauthenticated" });
       return;
     }
 
     if (storedUser && access) {
-      set({ user: storedUser, pendingUser: pending, status: "authenticated" });
+      set({ user: storedUser, pendingUser: null, status: "authenticated" });
       return;
     }
 

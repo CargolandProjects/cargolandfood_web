@@ -84,6 +84,7 @@ export interface TrackOrder {
   orderStatus: OrderStatus;
   VerificationCode: VerificationCode | null;
   vendorAddress: VendorAddress;
+  estimationTime: string;
   acceptedAt: string | null;
   preparedAt: string | null;
   readyAt: string | null;

@@ -146,28 +146,6 @@ const OTPModal = () => {
     );
   };
 
-  // useEffect(() => {
-  //   if (otpData.length === 4) {
-  //     console.log("OTP Data: ", otpData);
-  //     const payload = {
-  //       otp: getValues("otp"),
-  //       phoneNumber: getValues("phoneNumber"),
-  //     };
-
-  //     handleOTPVerify(payload);
-  //   }
-  // }, [handleOTPVerify, otpData, getValues]);
-
-  // const handleBack = () => {
-  //   if (otpType === "signup") {
-  //     goToStep("signup");
-  //   } else if (otpType === "forgot-password") {
-  //     goToStep("forgot-password");
-  //   } else {
-  //     goToStep("signin");
-  //   }
-  // };
-
   return (
     <ModalTransition>
       <DialogHeader className="items-center gap-0">

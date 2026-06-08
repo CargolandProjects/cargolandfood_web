@@ -13,6 +13,7 @@ export interface Favourite {
     vendorId: string;
     businessName: string;
     profileImg: string;
+    preparationTime: string;
     ratings: number;
   };
   favourite: {

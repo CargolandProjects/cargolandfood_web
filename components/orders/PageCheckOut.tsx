@@ -87,7 +87,7 @@ const PageCheckOut = ({
   const [quantityChangeId, setQuantityChangeId] = useState<string | null>(null);
   // const openAddresses = useUIStore((s) => s.openAddresses);
   // const openOrderSuccess = useUIStore((s) => s.openOrderSuccess);
-  const { user, isAuthenticated } = useSession();
+  const { isAuthenticated } = useSession();
 
   // API mutations
   const { mutate: clearCart, isPending: isClearingCart } = useClearCart();
@@ -240,6 +240,7 @@ const PageCheckOut = ({
     total = "0",
   } = checkoutData || {};
   const cartItems = checkoutData.cart.items;
+  const CartAddress = checkoutData.cart.addressSnapshot;
 
   const orderSummary = cartItems
     .map((item) => {
@@ -322,8 +323,6 @@ const PageCheckOut = ({
     isChargingWallet,
     isMakingPayment
   );
-
-  const defaultAdresses = user?.address.find((addr) => addr.setAddressDefault);
 
   return (
     <>
@@ -542,7 +541,7 @@ const PageCheckOut = ({
                     <p className="flex items-center gap-2 ">
                       <RiMapPinFill className="size-5 text-primary" />
                       <span className="text-base leading-5 line-clamp-1">
-                        {defaultAdresses?.addressLine1 || "Add an address"}
+                        {CartAddress.addressLine1}
                       </span>
                     </p>
                     <RiArrowRightSLine className="size-5 text-neutral-500" />

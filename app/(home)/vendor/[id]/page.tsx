@@ -99,20 +99,25 @@ export default async function RestaurantDetailsPage({
 }) {
   const { id } = await params;
 
-  let initialData;
+  // let initialData;
 
-  try {
-    // Fetch on server (cached by Next.js, SEO-friendly) - Page 1 only
-    initialData = await vendors.getVendorMenuById(id, 1, 10);
-    // console.log("Initial data fetched for vendor page:", initialData);
-  } catch (error) {
-    console.error(`Failed to fetch vendor ${id}:`, error);
-    // Handle 404
-    <NotFound
-      title="Vendor not found"
-      description="Sorry, the vendor you are looking for doesn't exist. Here are some helpful links:"
-    />;
-  }
+  // try {
+  //   // Fetch on server (cached by Next.js, SEO-friendly) - Page 1 only
+  //   initialData = await vendors.getVendorMenuById(id, 1, 10);
+  //   console.log("Initial data fetched for vendor page:", initialData);
+  // } catch (error) {
+  //   console.error(`Failed to fetch vendor ${id}:`, error);
+  //   // Handle 404
+  //   <NotFound
+  //     title="Vendor not found"
+  //     description="Sorry, the vendor you are looking for doesn't exist. Here are some helpful links:"
+  //   />;
+  // }
 
-  return <VendorPageContent id={id} initialData={initialData} />;
+  return (
+    <VendorPageContent
+      id={id}
+      // initialData={initialData}
+    />
+  );
 }
