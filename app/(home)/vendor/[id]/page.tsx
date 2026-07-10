@@ -1,33 +1,32 @@
-import NotFound from "@/components/NotFound";
 import VendorPageContent from "@/components/vendor/VendorPageContent";
 import { vendors } from "@/lib/services/vendors.service";
 import { Metadata } from "next";
-// import { notFound } from "next/navigation";
 
-// Pre-generate top vendors at build time
-export async function generateStaticParams() {
-  try {
-    // TODO: Update with your actual main zone ID or fetch from config
-    const mainZoneId =
-      process.env.NEXT_PUBLIC_DEFAULT_ZONE_ID || "default-zone";
-    const topVendors = await vendors.getAllVendors(mainZoneId, 1, 50);
+// // Pre-generate top vendors at build time
+// export async function generateStaticParams() {
+//   try {
+//     // TODO: Update with your actual main zone ID or fetch from config
+//     const mainZoneId =
+//       process.env.NEXT_PUBLIC_DEFAULT_ZONE_ID || "default-zone";
+//     const topVendors = await vendors.getAllVendors(mainZoneId, 1, 50);
 
-    return topVendors.vendors.map((vendor) => ({
-      id: vendor.id,
-    }));
-  } catch (error) {
-    console.error("Failed to generate static params for vendors:", error);
-    return []; // Fallback to empty array
-  }
-}
+//     return topVendors.vendors.map((vendor) => ({
+//       id: vendor.id,
+//     }));
+//   } catch (error) {
+//     console.error("Failed to generate static params for vendors:", error);
+//     return []; // Fallback to empty array
+//   }
+// }
 
-// Allow non-prerendered vendor IDs to be rendered on-demand
-export const dynamicParams = true;
+// // Allow non-prerendered vendor IDs to be rendered on-demand
+// export const dynamicParams = true;
 
-// ISR: Revalidate every 5 minutes
-export const revalidate = 300;
+// // ISR: Revalidate every 5 minutes
+// export const revalidate = 300;
 
 // Generate SEO metadata for each vendor page
+
 export async function generateMetadata({
   params,
 }: {

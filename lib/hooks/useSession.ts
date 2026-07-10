@@ -34,6 +34,19 @@ export function useSession() {
     return () => window.removeEventListener("storage", onStorage);
   }, [hydrate]);
 
+  // Listen for auth logout events from API layer  (token refresh failure)
+  useEffect(() => {
+    const onLogout = () => {
+      storeSignOut(queryClient);
+    };
+
+    window.addEventListener("auth:logout", onLogout);
+
+    return () => {
+      window.removeEventListener("auth:logout", onLogout);
+    };
+  }, [storeSignOut, queryClient]);
+
   const refreshSession = useCallback(async () => {
     const userId =
       user?.id ||
@@ -49,7 +62,8 @@ export function useSession() {
       return { success: false, error: "No data returned from server" };
     } catch (error) {
       console.error("Failed to refresh session:", error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to refresh session";
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to refresh session";
       return { success: false, error: errorMessage };
     }
   }, [user?.id, setUser]);
