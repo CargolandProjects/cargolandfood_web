@@ -1,14 +1,8 @@
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
-import usePlacesAutocomplete, {
-  getGeocode,
-  getLatLng,
-} from "use-places-autocomplete";
 import { RiDeleteBin6Line, RiLoader2Line, RiMapPin2Line } from "react-icons/ri";
 import { useAddresses } from "@/lib/hooks/queries/useAddresses";
 import { Loader2 } from "lucide-react";
-import type { Suggestion } from "use-places-autocomplete";
-import { Input } from "@/components/ui/input";
 import {
   useAddAddress,
   useDeleteAddress,
@@ -16,15 +10,21 @@ import {
   useSetGuestAddress,
 } from "@/lib/hooks/mutations/useAddress";
 import React, { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { useUIStore } from "@/lib/stores/uiStore";
 import { toast } from "sonner";
-import { useGoogleMaps } from "@/lib/GoogleMapsProvider";
 import { useSession } from "@/lib/hooks/useSession";
 import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
 import { Button } from "../ui/button";
 import { useUpdateCheckout } from "@/lib/hooks/mutations/useUpdateCheckout";
-import { GetAddress } from "@/lib/services/address.service";
+import {
+  address,
+  AddressComponent,
+  GetAddress,
+} from "@/lib/services/address.service";
+import {
+  LocationAutocomplete,
+  SelectedPlace,
+} from "react-google-places-autocomplete-modern";
 
 const AddressModal = () => {
   const open = useUIStore((s) => s.addresses.open);
@@ -43,45 +43,18 @@ const AddressModal = () => {
     refetch,
     isFetching,
   } = useAddresses(isAuthenticated);
-  const { mutate: addAddress, isPending } = useAddAddress();
+  const { mutate: addAddress } = useAddAddress();
   const { mutate: selectAddress, isPending: isSelecting } = useSelectAddress();
   const { mutate: deleteAddress } = useDeleteAddress();
-  const { mutate: setGuestaddress, isPending: isGuestPending } =
-    useSetGuestAddress();
-  const { isLoaded: mapsLoaded } = useGoogleMaps();
+  const { mutate: setGuestaddress } = useSetGuestAddress();
+
   const { setGuestLocation } = useGuestLocation();
   const { mutate: updateCartAddress } = useUpdateCheckout();
 
-  // Only initialize usePlacesAutocomplete AFTER Google Maps is loaded
-  const {
-    value,
-    suggestions: { data, loading },
-    setValue,
-    clearSuggestions,
-  } = usePlacesAutocomplete({
-    requestOptions: {
-      types: ["address"],
-      componentRestrictions: { country: "NG" },
-    },
-    debounce: 400,
-    initOnMount: mapsLoaded, // Only init when Maps is loaded
-  });
+  const [inputValue, setInputValue] = useState("");
 
-  // console.log("Session Data", user)
-
-  // refreshSession();
-  // console.log("The addresses debugging log:", {
-  //   isLoading,
-  //   isError,
-  //   isSuccess,
-  //   addresses,
-  // });
-
-  function getAddressComponent(
-    components: google.maps.GeocoderAddressComponent[],
-    type: string
-  ) {
-    return components.find((c) => c.types.includes(type))?.long_name || "";
+  function getAddressComponent(components: AddressComponent[], type: string) {
+    return components.find((c) => c.types.includes(type))?.longText || "";
   }
 
   // console.log("Suggestions:", data);
@@ -90,108 +63,95 @@ const AddressModal = () => {
   // )
   //   }
 
-  const handleCreate = async (address: Suggestion) => {
-    const { description, place_id } = address;
-    setValue(description, false);
+  const handleCreate = async (selectedPlace: SelectedPlace) => {
+    // Validate the selected place has geometry
+    const placeId = selectedPlace.placeId;
 
-    try {
-      const results = await getGeocode({ placeId: place_id });
-      // console.log(" GeoCode Results:", results);
-      const { lat, lng } = await getLatLng(results[0]);
+    const placeDetails = await address.getPlaceDetails(placeId);
+    console.log("PLACES COMPONENT:", placeDetails);
 
-      const placeDetails = results[0];
-      const components = placeDetails.address_components;
+    // Extract coordinates
+    const lat = placeDetails.location.latitude;
+    const lng = placeDetails.location.longitude;
+    const components = placeDetails.addressComponents || [];
 
-      // console.log("Place Details:", placeDetails);
+    if (!lat || !lng) {
+      toast.error("Selected place does not have valid coordinates.");
+      return;
+    }
+    // Build the payload exactly as before
+    const payload = {
+      addressLine1: placeDetails.formattedAddress || "",
+      addressLine2: "",
+      city:
+        getAddressComponent(components, "locality") ||
+        getAddressComponent(components, "administrative_area_level_2"),
+      state: getAddressComponent(components, "administrative_area_level_1"),
+      postalCode: getAddressComponent(components, "postal_code"),
+      country: getAddressComponent(components, "country"),
+      latitude: lat.toLocaleString(),
+      longitude: lng.toLocaleString(),
+      placeId: placeDetails.id || "",
+      provider: "",
+      instructions: "",
+    };
 
-      if (isAuthenticated) {
-        //Only Test address that works
-        // const payload = {
-        //   addressLine1: "Tipper Garage",
-        //   addressLine2: "",
-        //   city: "Ibadan",
-        //   country: "Nigeria",
-        //   instructions: "",
-        //   latitude: "6.52",
-        //   longitude: "3.36",
-        //   placeId: "fsgfgf33432dgwggsgwerwekjkjkjg778778ytt23ssag343636g",
-        //   postalCode: "23242",
-        //   provider: "Google",
-        //   state: "Oyo",
-        // };
+    console.log("Payload is ready:", payload);
 
-        const payload = {
-          addressLine1: placeDetails.formatted_address,
-          addressLine2: "string",
-          city:
-            getAddressComponent(components, "locality") ||
-            getAddressComponent(components, "administrative_area_level_2"),
-          state: getAddressComponent(components, "administrative_area_level_1"),
-          postalCode: getAddressComponent(components, "postal_code"),
-          country: getAddressComponent(components, "country"),
-          latitude: lat.toLocaleString(),
-          longitude: lng.toLocaleString(),
-          placeId: placeDetails.place_id,
-          provider: "string",
-          instructions: "string",
-        };
-
-        addAddress(payload, {
-          onSuccess: (res) => {
-            if (source === "checkout") {
-              if (!deliveryType || !payload || !vendorId) {
-                toast.error("Delivery type & address is required");
-                return;
-              }
-              updateCartAddress(
-                {
-                  vendorId,
-                  payload: {
-                    deliveryType: deliveryType,
-                    addressSnapShot: res.data,
-                  },
-                },
-                {
-                  onSuccess: () => {
-                    toast.success("Delivery Address updated successfully");
-                    close();
-                  },
-                  onError: (res) => {
-                    toast.error(res.message);
-                  },
-                  onSettled: () => [setSettingId(null)],
-                }
-              );
+    // Now use the exact same logic as before
+    if (isAuthenticated) {
+      addAddress(payload, {
+        onSuccess: (res) => {
+          if (source === "checkout") {
+            if (!deliveryType || !payload || !vendorId) {
+              toast.error("Delivery type & address is required");
+              return;
             }
+            updateCartAddress(
+              {
+                vendorId,
+                payload: {
+                  deliveryType: deliveryType,
+                  addressSnapShot: res.data,
+                },
+              },
+              {
+                onSuccess: () => {
+                  toast.success("Delivery Address updated successfully");
+                  close();
+                },
+                onError: (res) => {
+                  toast.error(res.message);
+                },
+                onSettled: () => setSettingId(null),
+              },
+            );
+          }
 
-            setValue("");
-            clearSuggestions();
-            if (res.message.includes("no vendors available"))
-              toast.warning(res.message);
-          },
-        });
-      } else {
-        const guestPayload = {
-          latitude: lat.toLocaleString(),
-          longitude: lng.toLocaleString(),
-        };
-        setGuestaddress(guestPayload, {
-          onSuccess: (data) => {
-            setValue("");
-            clearSuggestions();
-            toast.success("Guest location set");
-            setGuestLocation({
-              zoneId: data.zoneId,
-              addressLine1: placeDetails.formatted_address,
-            });
-            close();
-          },
-        });
-      }
+          if (res.message.includes("no vendors available")) {
+            toast.warning(res.message);
+          }
 
-      // setValue("");
-    } catch (error) {
-      console.error("Error getting geocode:", error);
+          setInputValue("");
+        },
+      });
+    } else {
+      const guestPayload = {
+        latitude: lat.toLocaleString(),
+        longitude: lng.toLocaleString(),
+      };
+      setGuestaddress(guestPayload, {
+        onSuccess: (data) => {
+          toast.success("Guest location set");
+          setGuestLocation({
+            zoneId: data.zoneId,
+            addressLine1: placeDetails.formattedAddress || "",
+          });
+
+          setInputValue("");
+          close();
+        },
+      });
     }
   };
 
@@ -232,7 +192,7 @@ const AddressModal = () => {
             toast.error(res.message);
           },
           onSettled: () => [setSettingId(null)],
-        }
+        },
       );
       return;
     }
@@ -254,52 +214,29 @@ const AddressModal = () => {
         <div className="mt-6 h-full flex-1 flex flex-col">
           {/* Google Places Autocomplete */}
           <div className="mt-6">
-            <div className="relative w-full h-10 flex items-center rounded-button border border-neutral-300 focus-within:bg-neutral-100">
-              <RiMapPin2Line className="size-5 text-neutral-500 shrink-0 ml-3 mr-2" />
-              <Input
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                disabled={!mapsLoaded}
-                placeholder={
-                  !mapsLoaded ? "Loading maps..." : "Add new address"
-                }
-                className=" flex-1 h-full px-3 pr-9 py-2.5 text-sm font-medium rounded-button placeholder:text-[#8A8F98] border-none ring-0 focus-visible:ring-0"
-              />
-              {(isPending || loading || isGuestPending) && (
-                <Loader2 className="absolute right-2 transform text-primary top-1/2 -translate-y-1/2 size-4 animate-spin duration-300" />
-              )}
-            </div>
-
-            {/* Google Places Suggestions */}
-            <AnimatePresence mode="wait">
-              {value && !loading && (
-                <motion.div
-                  key="addresses-loader"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="border border-neutral-400 rounded-xl p-1  mt-1"
-                >
-                  {!loading && data.length === 0 && (
-                    <p className="text-center mt-0.5">No addresses found.</p>
-                  )}
-                  <div className="space-y-1">
-                    {!loading &&
-                      data.length > 0 &&
-                      data.map((address) => (
-                        <div
-                          onClick={() => handleCreate(address)}
-                          className="hover:cursor-pointer hover:bg-gray-100 p-1"
-                          key={address.place_id}
-                        >
-                          <p className="text-sm">{address.description}</p>
-                        </div>
-                      ))}
+            <div className="relative w-full flex items-center rounded-button border border-neutral-300 focus-within:bg-neutral-100">
+              <RiMapPin2Line className="size-5 text-neutral-500 shrink-0 ml-3 mr-2 self-start my-2.5" />
+              <LocationAutocomplete
+                apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+                value={inputValue}
+                onChange={setInputValue}
+                onSelect={handleCreate} // Your new handler
+                countries={["NG"]}
+                debounceMs={400}
+                minLength={2}
+                placeholder="Add new address"
+                error={false}
+                suggestionsClassName="absolute left-0 w-full border border-neutral-400 rounded-xl mt-1 bg-white m-0!"
+                className="w-full"
+                inputClassName="relative flex-1 w-full h-full px-3 pr-9 py-2.5 text-sm font-medium rounded-button placeholder:text-[#8A8F98] border-none focus-visible:outline-none"
+                // dropdownClassName="border border-neutral-400 rounded-xl p-1 mt-1 max-h-60 overflow-auto"
+                renderSuggestion={(suggestion) => (
+                  <div className="hover:cursor-pointer hover:bg-gray-100 p-1 rounded-md">
+                    <p className="text-sm">{suggestion.description}</p>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                )}
+              />
+            </div>
           </div>
 
           {/* Users Address List */}
