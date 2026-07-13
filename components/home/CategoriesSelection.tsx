@@ -50,7 +50,7 @@ const CategoriesSelection = () => {
   // ];
 
   const isDefaultAddress =
-    user?.address.some((a) => a.setAddressDefault) ?? false;
+    user?.address?.some((a) => a.setAddressDefault) ?? false;
   const hasLocation = isAuthenticated ? isDefaultAddress : !!zoneId;
 
   if (isLoading) {

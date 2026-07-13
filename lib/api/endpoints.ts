@@ -55,6 +55,10 @@ export const API_ROUTES = {
   },
 
   address: {
+    getPlaceDetails: (placeId: string) =>
+      `https://places.googleapis.com/v1/places/${placeId}`,
+    // `api/places/details?placeId=${placeId}`,
+
     getAddresses: "/users/addresses",
     createAddress: "/users/create-address",
     setGuestAddress: "/users/set-guest-user-address",

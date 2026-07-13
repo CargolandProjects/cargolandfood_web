@@ -51,7 +51,7 @@ const SelectionsContent = () => {
           )}
 
           {isSuccess && products.length === 0 && (
-            <p className="">No Results Found for {searchTerm}</p>
+            <p>No Results Found for {searchTerm}</p>
           )}
 
           {isSuccess && products.length > 0 && (

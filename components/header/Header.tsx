@@ -43,7 +43,7 @@ export function Header({ setSideBar }: HeaderProps) {
   console.log("Session Data:", session);
   const defaultAddress = session?.address?.find((a) => a.setAddressDefault);
 
-  const [firstName, lastName] = session?.fullName.split(" ") || [];
+  const [firstName, lastName] = session?.fullName?.split(" ") || [];
   const initials =
     (firstName &&
       lastName &&

@@ -33,56 +33,6 @@ interface Cart {
   qty: number;
 }
 
-// const cart: Cart[] = [
-//   {
-//     id: "08503157-05af-4d34-a5e5-fe9bf061dcf0",
-//     title: "Pepperoni pizza",
-//     price: "9650",
-//     image: pizza.src,
-//     address: "45 Denkede Street, Shomolu",
-//     qty: 2,
-//   },
-//   {
-//     id: "2",
-//     title: "Hamburger",
-//     price: "9650",
-//     image: burger.src,
-//     address: "45 Denkede Street, Shomolu",
-//     qty: 1,
-//   },
-//   {
-//     id: "3",
-//     title: "Shawarma",
-//     price: "9650",
-//     image: shawarma.src,
-//     address: "45 Denkede Street, Shomolu",
-//     qty: 3,
-//   },
-//   {
-//     id: "4",
-//     title: "Pepperoni pizza",
-//     price: "9650",
-//     image: pizza.src,
-//     address: "45 Denkede Street, Shomolu",
-//     qty: 2,
-//   },
-//   {
-//     id: "5",
-//     title: "Hamburger",
-//     price: "9650",
-//     image: burger.src,
-//     address: "45 Denkede Street, Shomolu",
-//     qty: 1,
-//   },
-//   {
-//     id: "6",
-//     title: "Shawarma",
-//     price: "9650",
-//     image: shawarma.src,
-//     address: "45 Denkede Street, Shomolu",
-//     qty: 3,
-//   },
-// ];
 
 const Cart = ({ setActiveTab, isAuthenticated }: SettingsProps) => {
   const openCheckout = useUIStore((s) => s.openCheckout);

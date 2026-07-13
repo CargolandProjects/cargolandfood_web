@@ -18,11 +18,11 @@ interface AuthSessionState {
   signOut: (queryClient?: QueryClient) => void;
 }
 
-const USER_KEY = `${process.env.NEXT_PUBLIC_USER_KEY}`;
-const USER_PENDING_KEY = `${process.env.NEXT_PUBLIC_USER_PENDING_KEY}`;
-const USER_ID_KEY = `${process.env.NEXT_PUBLIC_USER_ID_KEY}`;
-const ACCESS_KEY = `${process.env.NEXT_PUBLIC_ACCESS_KEY}`;
-const REFRESH_KEY = `${process.env.NEXT_PUBLIC_REFRESH_KEY}`;
+const USER_KEY = process.env.NEXT_PUBLIC_USER_KEY || "";
+const USER_PENDING_KEY = process.env.NEXT_PUBLIC_USER_PENDING_KEY || "";
+const USER_ID_KEY = process.env.NEXT_PUBLIC_USER_ID_KEY || "";
+const ACCESS_KEY = process.env.NEXT_PUBLIC_ACCESS_KEY || "";
+const REFRESH_KEY = process.env.NEXT_PUBLIC_REFRESH_KEY || "";
 
 const readJSON = <T>(key: string): T | null => {
   if (typeof window === "undefined") return null;
