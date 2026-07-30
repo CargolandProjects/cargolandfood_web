@@ -79,7 +79,11 @@ const AmountModal = ({
             />
           </div>
         </div>
-        <p className="text-red-500 text-center text-sm  relative">{message}</p>
+        {message && (
+          <p className="text-red-500 text-center text-sm  relative">
+            {message}
+          </p>
+        )}
         <Button onClick={handleNextStep} className=" submit-btn mt-6">
           Confirm Amount
         </Button>

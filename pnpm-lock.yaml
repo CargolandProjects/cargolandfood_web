@@ -44,6 +44,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.90.11
         version: 5.100.9(react@19.2.3)
+      '@types/google.maps':
+        specifier: ^3.65.3
+        version: 3.65.3
       '@vis.gl/react-google-maps':
         specifier: ^1.9.0
         version: 1.9.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -83,9 +86,6 @@ importers:
       react-dom:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
-      react-google-places-autocomplete-modern:
-        specifier: ^0.1.4
-        version: 0.1.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-hook-form:
         specifier: ^7.68.0
         version: 7.75.0(react@19.2.3)
@@ -1456,8 +1456,8 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
-  '@types/google.maps@3.65.2':
-    resolution: {integrity: sha512-e52bmOhGCQSNabFpL48iQlwJybq6rfns8NUVJ20MR7CdPlHQ2RmSCnPbJfrUYJfogrE4OiHQTZ4LXpop+eer1w==}
+  '@types/google.maps@3.65.3':
+    resolution: {integrity: sha512-tqbbx7MUtoDk+RwpZMymPDj6Skez0FhqDZNhLhS5UDmCx4D1dgP+BJOHTebiO/rhjJLa1f8te2p6mJJeFKVFOQ==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -2727,12 +2727,6 @@ packages:
     peerDependencies:
       react: ^19.2.3
 
-  react-google-places-autocomplete-modern@0.1.4:
-    resolution: {integrity: sha512-coL0dkflLLRcQnV47ECafNbADb9HPFdNr7+YkUKq08cbGO1CdHs3EoY52Xl8heiehYRlA0qCboqJMIZ20f3UJA==}
-    peerDependencies:
-      react: '>=17'
-      react-dom: '>=17'
-
   react-hook-form@7.75.0:
     resolution: {integrity: sha512-Ovv94H+0p3sJ7B9B5QxPuCP1u8V/cHuVGyH55cSwodYDtoJwK+fqk3vjfIgSX59I2U/bU4z0nRJ9HMLpNiWEmw==}
     engines: {node: '>=18.0.0'}
@@ -3331,7 +3325,7 @@ snapshots:
 
   '@googlemaps/js-api-loader@2.1.1':
     dependencies:
-      '@types/google.maps': 3.65.2
+      '@types/google.maps': 3.65.3
 
   '@hookform/resolvers@5.2.2(react-hook-form@7.75.0(react@19.2.3))':
     dependencies:
@@ -4431,7 +4425,7 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
-  '@types/google.maps@3.65.2': {}
+  '@types/google.maps@3.65.3': {}
 
   '@types/json-schema@7.0.15': {}
 
@@ -4602,7 +4596,7 @@ snapshots:
   '@vis.gl/react-google-maps@1.9.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@googlemaps/js-api-loader': 2.1.1
-      '@types/google.maps': 3.65.2
+      '@types/google.maps': 3.65.3
       fast-equals: 6.0.2
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
@@ -5882,11 +5876,6 @@ snapshots:
     dependencies:
       react: 19.2.3
       scheduler: 0.27.0
-
-  react-google-places-autocomplete-modern@0.1.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
-    dependencies:
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
 
   react-hook-form@7.75.0(react@19.2.3):
     dependencies:

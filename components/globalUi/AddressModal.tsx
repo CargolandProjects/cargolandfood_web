@@ -1,5 +1,6 @@
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
+
 import { RiDeleteBin6Line, RiLoader2Line, RiMapPin2Line } from "react-icons/ri";
 import { useAddresses } from "@/lib/hooks/queries/useAddresses";
 import { Loader2 } from "lucide-react";
@@ -16,15 +17,29 @@ import { useSession } from "@/lib/hooks/useSession";
 import { useGuestLocation } from "@/lib/hooks/useGuestLocation";
 import { Button } from "../ui/button";
 import { useUpdateCheckout } from "@/lib/hooks/mutations/useUpdateCheckout";
+import { GetAddress } from "@/lib/services/address.service";
 import {
-  address,
-  AddressComponent,
-  GetAddress,
-} from "@/lib/services/address.service";
-import {
-  LocationAutocomplete,
-  SelectedPlace,
-} from "react-google-places-autocomplete-modern";
+  useApiLoadingStatus,
+  APILoadingStatus,
+} from "@vis.gl/react-google-maps";
+import { AddressAutocomplete } from "../googlePlaces/AddressAutocomplete";
+
+function getAddressComponent(
+  components: google.maps.places.AddressComponent[] | undefined,
+  type: string,
+) {
+  if (!components) return "";
+  const comp = components.find((c) => c.types.includes(type));
+  return comp?.longText || comp?.shortText || "";
+}
+
+const statusMessages: Record<APILoadingStatus, string> = {
+  NOT_LOADED: "Add new address",
+  LOADING: "Loading maps...",
+  LOADED: "Add new address",
+  FAILED: "Initialization failed",
+  AUTH_FAILURE: "API key error – please contact support",
+};
 
 const AddressModal = () => {
   const open = useUIStore((s) => s.addresses.open);
@@ -43,115 +58,105 @@ const AddressModal = () => {
     refetch,
     isFetching,
   } = useAddresses(isAuthenticated);
-  const { mutate: addAddress } = useAddAddress();
+  const { mutate: addAddress, isPending } = useAddAddress();
   const { mutate: selectAddress, isPending: isSelecting } = useSelectAddress();
   const { mutate: deleteAddress } = useDeleteAddress();
-  const { mutate: setGuestaddress } = useSetGuestAddress();
+  const { mutate: setGuestaddress, isPending: isGuestPending } =
+    useSetGuestAddress();
 
   const { setGuestLocation } = useGuestLocation();
   const { mutate: updateCartAddress } = useUpdateCheckout();
 
+  // We need to know when places library is ready to disable the input
+  const apiLoadingStatus = useApiLoadingStatus();
+  const isMapsLoaded = apiLoadingStatus === "LOADED";
+
+  const apiStatusMsg = statusMessages[apiLoadingStatus];
+
   const [inputValue, setInputValue] = useState("");
 
-  function getAddressComponent(components: AddressComponent[], type: string) {
-    return components.find((c) => c.types.includes(type))?.longText || "";
-  }
+  console.log("Suggestions:", apiStatusMsg);
 
-  // console.log("Suggestions:", data);
+  const handleCreateAddress = async (place: google.maps.places.Place) => {
+    try {
+      // The place already has the fields we requested in AddressAutocomplete
+      const lat = place.location?.lat() || 0;
+      const lng = place.location?.lng?.() || 0;
+      const components = place.addressComponents || [];
 
-  //   const handleCartAddress = () => {
-  // )
-  //   }
+      if (isAuthenticated) {
+        const payload = {
+          addressLine1: place.formattedAddress || "",
+          addressLine2: "",
+          city:
+            getAddressComponent(components, "locality") ||
+            getAddressComponent(components, "administrative_area_level_2"),
+          state: getAddressComponent(components, "administrative_area_level_1"),
+          postalCode: getAddressComponent(components, "postal_code"),
+          country: getAddressComponent(components, "country"),
+          latitude: lat.toLocaleString(),
+          longitude: lng.toLocaleString(),
+          placeId: place.id,
+          provider: "",
+          instructions: "",
+        };
 
-  const handleCreate = async (selectedPlace: SelectedPlace) => {
-    // Validate the selected place has geometry
-    const placeId = selectedPlace.placeId;
-
-    const placeDetails = await address.getPlaceDetails(placeId);
-    console.log("PLACES COMPONENT:", placeDetails);
-
-    // Extract coordinates
-    const lat = placeDetails.location.latitude;
-    const lng = placeDetails.location.longitude;
-    const components = placeDetails.addressComponents || [];
-
-    if (!lat || !lng) {
-      toast.error("Selected place does not have valid coordinates.");
-      return;
-    }
-    // Build the payload exactly as before
-    const payload = {
-      addressLine1: placeDetails.formattedAddress || "",
-      addressLine2: "",
-      city:
-        getAddressComponent(components, "locality") ||
-        getAddressComponent(components, "administrative_area_level_2"),
-      state: getAddressComponent(components, "administrative_area_level_1"),
-      postalCode: getAddressComponent(components, "postal_code"),
-      country: getAddressComponent(components, "country"),
-      latitude: lat.toLocaleString(),
-      longitude: lng.toLocaleString(),
-      placeId: placeDetails.id || "",
-      provider: "",
-      instructions: "",
-    };
-
-    console.log("Payload is ready:", payload);
-
-    // Now use the exact same logic as before
-    if (isAuthenticated) {
-      addAddress(payload, {
-        onSuccess: (res) => {
-          if (source === "checkout") {
-            if (!deliveryType || !payload || !vendorId) {
-              toast.error("Delivery type & address is required");
-              return;
+        addAddress(payload, {
+          onSuccess: (res) => {
+            if (source === "checkout") {
+              if (!deliveryType || !payload || !vendorId) {
+                toast.error("Delivery type & address is required");
+                return;
+              }
+              // For updating address from checkout
+              updateCartAddress(
+                {
+                  vendorId,
+                  payload: {
+                    deliveryType: deliveryType,
+                    addressSnapShot: res.data,
+                  },
+                },
+                {
+                  onSuccess: () => {
+                    toast.success("Delivery Address updated successfully");
+                    close();
+                  },
+                  onError: (res) => {
+                    toast.error(res.message);
+                  },
+                  onSettled: () => [setSettingId(null)],
+                },
+              );
             }
-            updateCartAddress(
-              {
-                vendorId,
-                payload: {
-                  deliveryType: deliveryType,
-                  addressSnapShot: res.data,
-                },
-              },
-              {
-                onSuccess: () => {
-                  toast.success("Delivery Address updated successfully");
-                  close();
-                },
-                onError: (res) => {
-                  toast.error(res.message);
-                },
-                onSettled: () => setSettingId(null),
-              },
-            );
-          }
 
-          if (res.message.includes("no vendors available")) {
-            toast.warning(res.message);
-          }
+            setInputValue("");
+            if (res.message.includes("no vendors available"))
+              toast.warning(res.message);
+          },
+        });
+      } else {
+        const guestPayload = {
+          latitude: lat.toLocaleString(),
+          longitude: lng.toLocaleString(),
+        };
+        setGuestaddress(guestPayload, {
+          onSuccess: (res) => {
+            setInputValue("");
+            setGuestLocation({
+              zoneId: res.zoneId,
+              addressLine1: place.formattedAddress || "",
+            });
+            if (res.message.includes("no vendors available"))
+              toast.warning(res.message);
 
-          setInputValue("");
-        },
-      });
-    } else {
-      const guestPayload = {
-        latitude: lat.toLocaleString(),
-        longitude: lng.toLocaleString(),
-      };
-      setGuestaddress(guestPayload, {
-        onSuccess: (data) => {
-          toast.success("Guest location set");
-          setGuestLocation({
-            zoneId: data.zoneId,
-            addressLine1: placeDetails.formattedAddress || "",
-          });
-
-          setInputValue("");
-          close();
-        },
-      });
+            close();
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error getting geocode:", error);
+      toast.error("Failed to add address. Please try again.");
     }
   };
 
@@ -214,28 +219,21 @@ const AddressModal = () => {
         <div className="mt-6 h-full flex-1 flex flex-col">
           {/* Google Places Autocomplete */}
           <div className="mt-6">
-            <div className="relative w-full flex items-center rounded-button border border-neutral-300 focus-within:bg-neutral-100">
-              <RiMapPin2Line className="size-5 text-neutral-500 shrink-0 ml-3 mr-2 self-start my-2.5" />
-              <LocationAutocomplete
-                apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+            <div className="relative w-full h-10  rounded-button border border-neutral-300 focus-within:bg-neutral-100">
+              <RiMapPin2Line className="absolute top-1/2 -translate-y-1/2 size-5 text-neutral-500 shrink-0 ml-3 mr-2" />
+              <AddressAutocomplete
                 value={inputValue}
                 onChange={setInputValue}
-                onSelect={handleCreate} // Your new handler
-                countries={["NG"]}
-                debounceMs={400}
-                minLength={2}
-                placeholder="Add new address"
-                error={false}
-                suggestionsClassName="absolute left-0 w-full border border-neutral-400 rounded-xl mt-1 bg-white m-0!"
-                className="w-full"
-                inputClassName="relative flex-1 w-full h-full px-3 pr-9 py-2.5 text-sm font-medium rounded-button placeholder:text-[#8A8F98] border-none focus-visible:outline-none"
-                // dropdownClassName="border border-neutral-400 rounded-xl p-1 mt-1 max-h-60 overflow-auto"
-                renderSuggestion={(suggestion) => (
-                  <div className="hover:cursor-pointer hover:bg-gray-100 p-1 rounded-md">
-                    <p className="text-sm">{suggestion.description}</p>
-                  </div>
-                )}
+                onSelect={handleCreateAddress}
+                countryCode="NG"
+                placeholder={apiStatusMsg}
+                readOnly={!isMapsLoaded}
+                className="flex-1"
+                inputClassName="h-full px-3 px-9 py-2.5 text-sm font-medium rounded-button placeholder:text-[#8A8F98] border-none ring-0 focus-visible:ring-0 w-full"
               />
+              {(isPending || isGuestPending) && (
+                <Loader2 className="absolute right-2 transform text-primary top-1/2 -translate-y-1/2 size-4 animate-spin duration-300" />
+              )}
             </div>
           </div>
 
@@ -277,7 +275,9 @@ const AddressModal = () => {
                   >
                     <p
                       className={`${
-                        settingId === address.id && "animate-pulse duration-300"
+                        settingId === address.id
+                          ? "animate-pulse duration-300"
+                          : ""
                       } text-sm text-neutral-600 max-w-[260px] line-clamp-1`}
                     >
                       {address.addressLine1}
