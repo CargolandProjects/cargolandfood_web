@@ -12,7 +12,7 @@ export interface Vendor {
   workingHours?: [
     {
       preparationTime: string;
-    }
+    },
   ];
   isPreorder: boolean | null;
   isFavourite: boolean;
@@ -150,12 +150,12 @@ export const vendors = {
     page: number = 1,
     limit: number,
     lat?: string,
-    lng?: string
+    lng?: string,
   ) {
     const res = await apiClient.get<Vendors>(
       `${API_ROUTES.vendor.allVendors(
-        zoneId
-      )}?page=${page}&limit=${limit}&userLat=${lat}&userLng=${lng}`
+        zoneId,
+      )}?page=${page}&limit=${limit}&userLat=${lat}&userLng=${lng}`,
     );
     return res.data;
   },
@@ -166,21 +166,32 @@ export const vendors = {
     lat: string,
     lng: string,
     page: number = 1,
-    limit: number
+    limit: number,
   ) {
     const res = await apiClient.get(
-      `${API_ROUTES.vendor.getVendorsByCategory(
-        zoneId
-      )}?query=${query}&page=${page}&limit=${limit}&userLat=${lat}&userLng=${lng}`
+      API_ROUTES.vendor.getVendorsByCategory(zoneId),
+      {
+        params: {
+          query,
+          page,
+          limit,
+          ...(lat && { userLat: lat }),
+          ...(lng && { userLng: lng }),
+        },
+      },
     );
     return res.data;
   },
 
   async getDiscountVendors(zoneId: string, lat: string, lng: string) {
     const res = await apiClient.get<DiscountVendorsRes>(
-      `${API_ROUTES.vendor.getDiscountVendors(
-        zoneId
-      )}?userLat=${lat}&userLng=${lng}`
+      API_ROUTES.vendor.getDiscountVendors(zoneId),
+      {
+        params: {
+          ...(lat && { userLat: lat }),
+          ...(lng && { userLng: lng }),
+        },
+      },
     );
     return res.data;
   },
@@ -190,12 +201,12 @@ export const vendors = {
     page: number = 1,
     limit: number,
     lat?: string,
-    lng?: string
+    lng?: string,
   ) {
     const res = await apiClient.get<vendorById>(
       `${API_ROUTES.vendor.vendorMenuById(
-        id
-      )}?page=${page}&limit=${limit}&userLat=${lat}&userLng=${lng}`
+        id,
+      )}?page=${page}&limit=${limit}&userLat=${lat}&userLng=${lng}`,
     );
     return res.data;
   },

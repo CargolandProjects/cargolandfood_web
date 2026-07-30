@@ -60,7 +60,7 @@ export const useSetGuestAddress = () => {
   return useMutation({
     mutationFn: address.setGuestAddress,
     onSuccess: (data) => {
-      toast.success("Guest address set successfully");
+      toast.success("Guest location set");
       setGuestLocation(data);
     },
 
