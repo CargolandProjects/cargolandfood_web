@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useSession } from "@/lib/hooks/useSession";
 
-const SOCKET_URL = "http://dev.cargolandfood.com:4002/notifications/users";
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKETS_URL;
 
 // Create context
 const SocketContext = createContext<Socket | null>(null);

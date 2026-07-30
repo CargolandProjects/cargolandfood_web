@@ -307,7 +307,7 @@ const GlobalCheckoutCOntent = ({
     ]
   );
 
-  console.log("Order SUmmary: ", orderSummary);
+  // console.log("Order SUmmary: ", orderSummary);
   const modalProps = getmodalProps(
     orderSummary,
     isChargingWallet,

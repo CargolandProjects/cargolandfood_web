@@ -40,9 +40,9 @@ export function Header({ setSideBar }: HeaderProps) {
   const OpenAuth = useAuthFlow((s) => s.openAuth);
   const { guestLocation } = useGuestLocation();
   const { user: session, isAuthenticated, signOut } = useSession();
-  console.log("Session Data:", session);
   const defaultAddress = session?.address?.find((a) => a.setAddressDefault);
-
+  // console.log("Session Data:", session);
+  
   const [firstName, lastName] = session?.fullName?.split(" ") || [];
   const initials =
     (firstName &&

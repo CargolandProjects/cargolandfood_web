@@ -75,7 +75,7 @@ const AddressModal = () => {
 
   const [inputValue, setInputValue] = useState("");
 
-  console.log("Suggestions:", apiStatusMsg);
+  // console.log("Suggestions:", apiStatusMsg);
 
   const handleCreateAddress = async (place: google.maps.places.Place) => {
     try {

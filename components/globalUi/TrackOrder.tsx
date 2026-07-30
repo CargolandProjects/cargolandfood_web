@@ -75,7 +75,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
   const orderId = useUIStore((s) => s.trackOrder.payload?.orderId);
   const [showDetails, setShowDetails] = useState(true);
   const { data, isLoading, isError, isSuccess, refetch } = useTrackOrder(
-    orderId || ""
+    orderId || "",
   );
   const [statusMsg, setStatusMsg] = useState<StatusMsg>({
     open: false,
@@ -96,7 +96,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
       assignedAt: data.assignedAt,
       completedAt: data.completedAt,
     });
-    console.log("Result: ", status);
+    // console.log("Result: ", status);
     return status;
   }, [data]);
 
@@ -136,7 +136,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
               [timestampField]: notification.createdAt,
             },
           };
-        }
+        },
       );
 
       // update the orders list cache as well to keep it in sync
@@ -157,13 +157,13 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                   status: newOrderStatus,
                   [timestampField]: notification.createdAt,
                 }
-              : order
+              : order,
           ),
         };
       });
 
       // Refetch in background to ensure data consistency (optional)
-      if (notification.type === "ASSIGN_TO_RIDER") refetch();
+      if (notification.type === "RIDER_ACCEPTED") refetch();
     }
   });
 
@@ -200,7 +200,12 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
           </div>
 
           <div className="mt-8 ">
-            <Button className="submit-btn flex-1">Okay</Button>
+            <Button
+              onClick={() => setStatusMsg((prev) => ({ ...prev, open: false }))}
+              className="submit-btn flex-1"
+            >
+              Okay
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -269,11 +274,11 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                 <div className="flex gap-3 items-center">
                   <div className="relative size-12 rounded-full overflow-hidden">
                     <Image
-                      src={cld(data.profileImg, "thumb") ?? userIcon2.src}
+                      src={cld(data.profileImg, "thumb") || userIcon2}
                       alt="map"
                       className="size-full object-cover"
                       fill
-                      onError={(e) => fallbackImg(e, userIcon2.src)}
+                      // onError={(e) => fallbackImg(e, userIcon2.src)}
                     />
                   </div>
                   {data.fullName ? (

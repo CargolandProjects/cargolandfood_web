@@ -47,7 +47,7 @@ const PaymentMethodModal = ({ amount }: PaymentMethodModalProps) => {
 
   const { mutate, isPending } = useFundWallet();
 
-  console.log(`Payment Method "${paymentMethod}" Selected`);
+  // console.log(`Payment Method "${paymentMethod}" Selected`);
 
   const handleFunding = () => {
     if (!amount) return;

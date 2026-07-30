@@ -83,7 +83,7 @@ export const useToggleFavourite = (
               });
               return;
             }
-            console.log("Old Data: ", oldData);
+            // console.log("Old Data: ", oldData);
 
             const newData = {
               ...oldData,

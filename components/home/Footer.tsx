@@ -205,7 +205,7 @@ const Footer = () => {
             <p className="text-neutral-500 text-xs sm:text-base">Security</p>
           </div>
           <p className=" text-neutral-500 text-xs sm:text-base">
-            &copy; {new Date().getFullYear()} Rayna. All rights reserved
+            &copy; {new Date().getFullYear()} Cargoland Food. All rights reserved
           </p>
         </div>
       </div>
