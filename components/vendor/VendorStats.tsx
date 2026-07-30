@@ -2,7 +2,7 @@ import { RiEBike2Line, RiStarLine, RiTimeLine } from "react-icons/ri";
 
 interface VendorStatsProps {
   rating: number;
-  deliveryFee: number | string;
+  deliveryFee: string;
   deliveryTime: string;
 }
 
@@ -23,7 +23,7 @@ const VendorStats = ({
       <div className="flex items-center gap-1">
         <RiEBike2Line className="size-5 text-primary" />
         <span className="font-normal text-sm text-neutral-600 ">
-          ₦{deliveryFee}
+          {deliveryFee}
         </span>
       </div>
 

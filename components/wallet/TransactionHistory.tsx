@@ -60,7 +60,7 @@ const TransactionHistory = () => {
       {isSuccess && txHistory && (
         <div className="mt-6">
           {txHistory.map((group, groupIdx) => {
-            console.log("Group ID: ", group.month);
+            // console.log("Group ID: ", group.month);
             return (
               <div key={group.month} className="space-y-">
                 <h3 className="text-base font-normal text-neutral-600 leading-5">

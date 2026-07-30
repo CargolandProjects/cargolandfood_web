@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { CategoryProvider } from "./CategoryContext";
 
 const ContextProviders = ({ children }: { children: ReactNode }) => {

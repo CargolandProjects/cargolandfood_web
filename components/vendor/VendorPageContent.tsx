@@ -317,7 +317,7 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
               {/* Stats Line (Rating, Delivery Fee, Time) */}
               <VendorStats
                 rating={rating?.bayesianRating || 0}
-                deliveryFee={deliveryFee ?? 0}
+                deliveryFee={deliveryFee}
                 deliveryTime={eta ?? "soon"}
               />
             </div>

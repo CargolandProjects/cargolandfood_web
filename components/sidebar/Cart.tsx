@@ -43,7 +43,7 @@ const Cart = ({ setActiveTab, isAuthenticated }: SettingsProps) => {
 
   const carts = data || [];
 
-  console.log("cart data", carts);
+  // console.log("cart data", carts);
   // const cartWithItems = carts?.filter((cart) => cart.items.length > 0) || [];
 
   const handleDeleteCart = (
