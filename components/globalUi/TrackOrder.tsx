@@ -174,42 +174,6 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
 
   return (
     <>
-      <Dialog
-        open={statusMsg?.open}
-        onOpenChange={() => setStatusMsg((prev) => ({ ...prev, open: false }))}
-      >
-        <DialogContent className="dialog min-h-[307px]! gap-0! flex flex-col px-9! pt-8! pb-8.5! ">
-          <div className="self-center justify-self-center flex items-center justify-center size-[72px] rounded-full bg-primary/10">
-            <div className="relative size-[40px] ">
-              <Image
-                src={ridingFill.src}
-                alt="rider icon svg"
-                className="size-full"
-                fill
-              />
-            </div>
-          </div>
-
-          <div className="mt-1 flex flex-col justify-center items-center gap-3">
-            <DialogTitle className="dialog-title font-bold! max-w-[200px]">
-              {statusMsg.title}
-            </DialogTitle>
-            <p className="max-w-[287px] text-base leading-5 text-center">
-              {statusMsg.message}
-            </p>
-          </div>
-
-          <div className="mt-8 ">
-            <Button
-              onClick={() => setStatusMsg((prev) => ({ ...prev, open: false }))}
-              className="submit-btn flex-1"
-            >
-              Okay
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       <div className="h-dvh pb-4 sm:px-6 sm:pb-6 overflow-y-auto hide-scrollbar">
         {isDesktop ? (
           // Desktop Header
@@ -259,14 +223,14 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
         {isSuccess && (
           <div>
             {/* Delivery Tracking Map */}
-            <div className="relative h-[432px] sm:h-[416px] w-full overflow-hidden rounded-xl max-sm:mt-2">
+            {/* <div className="relative h-[432px] sm:h-[416px] w-full overflow-hidden rounded-xl max-sm:mt-2">
               <Image
                 src={map.src}
                 alt="map"
                 className="size-full object-cover"
                 fill
               />
-            </div>
+            </div> */}
 
             <div className="mt-6 sm:mt-3 max-sm:px-5">
               {/* Delivery Rider details */}
@@ -469,6 +433,43 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
           </div>
         )}
       </div>
+
+      {/* Status update modal */}
+      <Dialog
+        open={statusMsg?.open}
+        onOpenChange={() => setStatusMsg((prev) => ({ ...prev, open: false }))}
+      >
+        <DialogContent className="dialog min-h-[307px]! gap-0! flex flex-col px-9! pt-8! pb-8.5! ">
+          <div className="self-center justify-self-center flex items-center justify-center size-[72px] rounded-full bg-primary/10">
+            <div className="relative size-[40px] ">
+              <Image
+                src={ridingFill.src}
+                alt="rider icon svg"
+                className="size-full"
+                fill
+              />
+            </div>
+          </div>
+
+          <div className="mt-1 flex flex-col justify-center items-center gap-3">
+            <DialogTitle className="dialog-title font-bold! max-w-[200px]">
+              {statusMsg.title}
+            </DialogTitle>
+            <p className="max-w-[287px] text-base leading-5 text-center">
+              {statusMsg.message}
+            </p>
+          </div>
+
+          <div className="mt-8 ">
+            <Button
+              onClick={() => setStatusMsg((prev) => ({ ...prev, open: false }))}
+              className="submit-btn flex-1"
+            >
+              Okay
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

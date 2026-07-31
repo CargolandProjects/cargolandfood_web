@@ -55,7 +55,7 @@ const getSidebarItems = (
   setActiveTab: (tab: ActiveTab) => void,
   isAuthenticated: boolean,
   setOpen: (v: boolean) => void,
-  count: { cartCount: number; OrdersCount: number }
+  count: { cartCount: number; OrdersCount: number },
 ): SidebarItem[] => [
   { id: "Home", icon: RiHome3Fill, label: "Home" },
   {
@@ -196,7 +196,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                           // variant="ghost"
                           onClick={() => handleTabChange(item.id)}
                           className={`relative size-6 rounded-sm transition-colors flex justify-center items-center 
-                            ${isActive && "bg-gray-100"}`}
+                            ${isActive ? "bg-gray-100" : ""}`}
                         >
                           <IconComponent
                             className={`w-5 h-5 transition-colors ${
@@ -217,7 +217,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                         <PopoverContent
                           side="right"
                           sideOffset={8}
-                          className="w-[374px] mt-10 rounded-xl h-[713px] overflow-auto hide-scrollbar py-6 px-4 shadow"
+                          className="w-[374px] mt-10 rounded-xl h-[calc(100vh-56px)] min-h-[285px] overflow-auto hide-scrollbar py-6 px-4 shadow"
                         >
                           {item.content && <item.content {...item.props} />}
                         </PopoverContent>

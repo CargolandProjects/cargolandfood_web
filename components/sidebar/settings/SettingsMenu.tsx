@@ -36,7 +36,7 @@ const SETTINGS_SECTIONS = [
     title: "Promotional Activity",
     items: [
       { label: "Coupon", icon: RiCoupon2Fill, color: "text-primary" },
-      { label: "My Wallet", icon: RiWallet3Fill, color: "text-cargo-cyan" },
+      // { label: "My Wallet", icon: RiWallet3Fill, color: "text-cargo-cyan" },
     ],
   },
   {
