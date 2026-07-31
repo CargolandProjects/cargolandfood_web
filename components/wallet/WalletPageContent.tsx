@@ -9,6 +9,7 @@ import { RiArrowGoBackLine, RiArrowLeftLine } from "react-icons/ri";
 const WalletPageContent = () => {
   const { isChecking } = useProtectedRoute("/");
   const router = useRouter();
+  router.push("/");
 
   // Block render until initial check completes
   if (isChecking) {
