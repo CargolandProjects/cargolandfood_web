@@ -96,7 +96,7 @@ export function Header({ setSideBar }: HeaderProps) {
             />
 
             {/* Wallet Dropdown */}
-            <Wallet />
+            {/* <Wallet /> */}
           </div>
 
           {/* Right Section */}

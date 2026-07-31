@@ -1,4 +1,12 @@
-const ErrorStateUi = ({ message }: { message: string }) => {
+const ErrorStateUi = ({
+  message,
+  action,
+  actionMessage,
+}: {
+  message: string;
+  actionMessage?: string;
+  action?: () => void;
+}) => {
   return (
     <div className="flex flex-col gap-6 justify-center items-center">
       <svg
@@ -25,7 +33,17 @@ const ErrorStateUi = ({ message }: { message: string }) => {
         />
       </svg>
 
-      <h3 className="text-lg leading-6 text-neutral-500 text-center max-w-sm ">{message}</h3>
+      <h3 className="text-lg leading-6 text-neutral-500 text-center max-w-sm ">
+        {message}{" "}
+        {actionMessage && (
+          <span
+            onClick={() => action && action()}
+            className="text-primary text-base leading-6 underline cursor-pointer"
+          >
+            {actionMessage}
+          </span>
+        )}
+      </h3>
     </div>
   );
 };

@@ -104,8 +104,8 @@ const OrderDetailsContent = ({
 
             <div className="flex items-center justify-between gap-1">
               <div className="flex items-center gap-2 text-sm">
-                <span>Order ID:</span>
-                <span className="font-bold line-clamp-1">{data.id}</span>
+                <span>Order No:</span>
+                <span className="font-bold line-clamp-1">{data.orderNumber}</span>
               </div>
               <div className="flex items-center gap-0.5 text-sm font-normal shrink-0">
                 <RiTimeLine className="size-4.5 text-neutral-600" />

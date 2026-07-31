@@ -51,8 +51,8 @@ import { useWalletBalance } from "@/lib/hooks/queries/useWallet";
 import { useChargeWallet } from "@/lib/hooks/mutations/useChargeWallet";
 import { DeliveryType } from "@/lib/services/cart.service";
 import RestaurantNoteModal from "../orders/RestaurantNoteModal";
-
-type PaymentMethod = "wallet" | "digitalTransfer";
+import { Field, FieldLabel } from "../ui/field";
+import { PaymentMethod } from "../orders/PageCheckOut";
 
 interface GlobalCheckoutProps {
   isDesktop: boolean;
@@ -74,7 +74,7 @@ const GlobalCheckoutCOntent = ({
   const [showConfirmPickup, setShowConfirmPickup] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
-    "wallet"
+    "DIGITAL_TRANSFER",
   );
   const [isRemovingItemId, setIsRemovingItemId] = useState<string | null>(null);
   const [quantityChangeId, setQuantityChangeId] = useState<string | null>(null);
@@ -86,6 +86,7 @@ const GlobalCheckoutCOntent = ({
     isError,
     isSuccess,
     error,
+    refetch,
   } = useCheckoutPreview(vendorId, deliveryType, isAuthenticated);
   const { mutate: clearCart, isPending: isClearingCart } = useClearCart();
   const { mutate } = useAddToCart();
@@ -113,7 +114,7 @@ const GlobalCheckoutCOntent = ({
         return;
       }
 
-      if (paymentMethod === "digitalTransfer")
+      if (paymentMethod === "DIGITAL_TRANSFER")
         makePayment(cartId, {
           onSuccess: (res) => {
             const authUrl = res.data.authorization_url;
@@ -127,7 +128,7 @@ const GlobalCheckoutCOntent = ({
           },
         });
 
-      if (paymentMethod === "wallet")
+      if (paymentMethod === "WALLET")
         chargeWallet(
           { cartId, description },
           {
@@ -137,10 +138,10 @@ const GlobalCheckoutCOntent = ({
               setShowConfirmPickup(false);
               closeCheckout();
             },
-          }
+          },
         );
     },
-    [paymentMethod, makePayment, chargeWallet, openOrderSuccess, closeCheckout]
+    [paymentMethod, makePayment, chargeWallet, openOrderSuccess, closeCheckout],
   );
 
   // Handle place order
@@ -164,7 +165,7 @@ const GlobalCheckoutCOntent = ({
           setShowAlert(false);
           closeCheckout();
         },
-      }
+      },
     );
   };
 
@@ -175,14 +176,14 @@ const GlobalCheckoutCOntent = ({
       { cartId: cartId, cartItemId: cartItemId },
       {
         onSettled: () => setIsRemovingItemId(null),
-      }
+      },
     );
   };
 
   // Handle quantity change (increase or decrease)
   const handleQuantityChange = (
     item: (typeof cartItems)[0],
-    action: "increase" | "decrease"
+    action: "increase" | "decrease",
   ) => {
     if (item.quantity < 1) return; // Don't allow quantity less than 1
     setQuantityChangeId(item.menuId);
@@ -209,7 +210,7 @@ const GlobalCheckoutCOntent = ({
       },
       {
         onSettled: () => setQuantityChangeId(null),
-      }
+      },
     );
   };
 
@@ -253,7 +254,7 @@ const GlobalCheckoutCOntent = ({
     (
       orderSummary: string,
       isChargingWallet: boolean,
-      isMakingPayment: boolean
+      isMakingPayment: boolean,
     ) => ({
       riderNote: {
         open: showRiderNote,
@@ -304,16 +305,15 @@ const GlobalCheckoutCOntent = ({
       showSuccess,
       showAlert,
       handleOrder,
-    ]
+    ],
   );
 
   // console.log("Order SUmmary: ", orderSummary);
   const modalProps = getmodalProps(
     orderSummary,
     isChargingWallet,
-    isMakingPayment
+    isMakingPayment,
   );
-
 
   return (
     <>
@@ -355,9 +355,13 @@ const GlobalCheckoutCOntent = ({
           </div>
         )}
 
-        {isError && (
+        {isError && !isFetching && (
           <div className="h-full flex justify-center items-center px-4 sm:px-6">
-            <ErrorStateUi message={error?.message || "Error Getting Orders"} />
+            <ErrorStateUi
+              message={error?.message || "Error Getting Orders"}
+              actionMessage="retry"
+              action={refetch}
+            />
           </div>
         )}
 
@@ -562,40 +566,55 @@ const GlobalCheckoutCOntent = ({
                 Payment Method
               </h3>
               <div className="mt-4 space-y-2">
-                <div className="w-full flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-base">
-                    <RiWallet3Fill className="size-5 text-primary" /> Wallet
-                    Balance -
-                    {isBalanceLoading ? (
-                      <Loader styles="size-4! text-neutral-400!" />
-                    ) : (
-                      <span className="text-base font-medium ml-1">
-                        {currency(Number(balance))}
-                      </span>
-                    )}
-                  </span>
-                  <RadioGroup
-                    value={paymentMethod}
-                    onValueChange={(v: PaymentMethod) => setPaymentMethod(v)}
-                    className="contents"
+                <RadioGroup
+                  orientation="horizontal"
+                  value={paymentMethod}
+                  onValueChange={(v: PaymentMethod) => setPaymentMethod(v)}
+                  className="gap-2"
+                >
+                  {/*  Wallet */}
+                  {/* <FieldLabel
+                    htmlFor="wallet"
+                    className="bg-transparent! border-none!"
                   >
-                    <RadioGroupItem value="wallet" />
-                  </RadioGroup>
-                </div>
-
-                <div className="w-full flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-base">
-                    <RiBankFill className="size-5 text-primary" /> Digital
-                    Transfer
-                  </span>
-                  <RadioGroup
-                    value={paymentMethod}
-                    onValueChange={(v: PaymentMethod) => setPaymentMethod(v)}
-                    className="contents"
+                    <Field
+                      orientation="horizontal"
+                      className="p-0! gap-2 justify-between hover:cursor-pointer"
+                    >
+                      <p className="flex items-center gap-2 text-base ">
+                        <RiWallet3Fill className="size-5 text-primary" /> Wallet
+                        Balance -
+                        {isBalanceLoading ? (
+                          <Loader styles="size-4! text-neutral-400!" />
+                        ) : (
+                          <span className="text-base font-medium ml-1">
+                            {currency(Number(balance))}
+                          </span>
+                        )}
+                      </p>
+                      <RadioGroupItem id="wallet" value="WALLET" />
+                    </Field>
+                  </FieldLabel> */}
+                  {/* Digital transfer */}
+                  <FieldLabel
+                    htmlFor="digitalTransfer"
+                    className="bg-transparent! border-none!"
                   >
-                    <RadioGroupItem value="digitalTransfer" />
-                  </RadioGroup>
-                </div>
+                    <Field
+                      orientation="horizontal"
+                      className="p-0! gap-2 justify-between hover:cursor-pointer"
+                    >
+                      <p className="flex items-center gap-2 text-base ">
+                        <RiBankFill className="size-5 text-primary" /> Digital
+                        Transfer
+                      </p>
+                      <RadioGroupItem
+                        id="digitalTransfer"
+                        value="DIGITAL_TRANSFER"
+                      />
+                    </Field>
+                  </FieldLabel>
+                </RadioGroup>
               </div>
             </div>
 
