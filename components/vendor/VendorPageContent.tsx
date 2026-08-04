@@ -297,7 +297,7 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
                 </button>
               </div>
 
-              {!firstPage.isOpenNow && (
+              {!firstPage?.isOpenNow && (
                 <div className="absolute inset-0 flex justify-center items-center">
                   <div className="absolute inset-0 bg-black/40" />
                   <div className="relative flex flex-col justify-center items-center">

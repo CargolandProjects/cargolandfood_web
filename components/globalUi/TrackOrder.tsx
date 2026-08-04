@@ -10,17 +10,22 @@ import {
   RiArrowGoBackLine,
   RiArrowLeftLine,
   RiBankCardFill,
+  RiCheckboxCircleFill,
   RiCloseFill,
+  RiGiftFill,
   RiMapPin2Fill,
   RiMessage2Fill,
   RiPhoneFill,
+  RiRestaurant2Fill,
+  RiRidingFill,
   RiStarSFill,
+  RiStore2Fill,
   RiTimeFill,
 } from "react-icons/ri";
 import { Separator } from "../ui/separator";
 import ErrorStateUi from "../ErrorStateUi";
 import Loader from "../Loader";
-import { map, ridingFill, userIcon2 } from "@/assets/svgs";
+import {  userIcon2 } from "@/assets/svgs";
 import { Button } from "../ui/button";
 import { useUIStore } from "@/lib/stores/uiStore";
 import { AnimatePresence, motion } from "framer-motion";
@@ -69,6 +74,14 @@ const getTimestampFieldForStatus = (status: OrderStatus): string => {
   return statusToFieldMap[status as UIOrderStatus];
 };
 
+const statusIcons: Record<UIOrderStatus, React.ElementType> = {
+  ACCEPTED: RiStore2Fill,
+  PREPARING: RiRestaurant2Fill,
+  READY: RiGiftFill,
+  ASSIGN_TO_RIDER: RiRidingFill,
+  DELIVERED: RiCheckboxCircleFill,
+};
+
 const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
   const queryClient = useQueryClient();
   const openRateOrder = useUIStore((s) => s.openReviewOrder);
@@ -84,6 +97,9 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
     title: "",
     time: "",
   });
+
+  const StatusIcon =
+    statusIcons[statusMsg.status as UIOrderStatus] || RiRidingFill;
 
   // Map backend orderStatus to UI timeline
   const orderTimeline = useMemo(() => {
@@ -441,13 +457,8 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
       >
         <DialogContent className="dialog min-h-[307px]! gap-0! flex flex-col px-9! pt-8! pb-8.5! ">
           <div className="self-center justify-self-center flex items-center justify-center size-[72px] rounded-full bg-primary/10">
-            <div className="relative size-[40px] ">
-              <Image
-                src={ridingFill.src}
-                alt="rider icon svg"
-                className="size-full"
-                fill
-              />
+            <div className="relative size-[72px] flex justify-center items-center">
+              <StatusIcon className="size-10 text-primary" />
             </div>
           </div>
 
