@@ -387,7 +387,7 @@ const Orders = ({ setActiveTab, isAuthenticated }: OrdersProps) => {
                       Reorder
                     </Button>
                     <DropdownMenu>
-                      <DropdownMenuTrigger>
+                      <DropdownMenuTrigger asChild>
                         <Button
                           variant="outline"
                           className="h-10 rounded-button!"

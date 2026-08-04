@@ -36,7 +36,6 @@ import {
   RiLoader2Line,
   RiMapPinFill,
   RiRestaurant2Fill,
-  RiWallet3Fill,
 } from "react-icons/ri";
 import { useCheckoutPreview } from "@/lib/hooks/queries/useCheckoutFlow";
 import { Loader2, Minus, Plus } from "lucide-react";
