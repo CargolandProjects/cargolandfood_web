@@ -19,6 +19,7 @@ export const API_ROUTES = {
   user: {
     user: (id: string) => `/users/${id}`,
     updatePersonalInfo: "/users/personal-info",
+     visitor: "/users/visitor",
   },
 
   vendor: {
