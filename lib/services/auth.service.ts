@@ -143,7 +143,9 @@ export const auth = {
   },
 
   async markVisitor() {
-    const res = await apiClient.get(API_ROUTES.user.visitor);
+    const res = await apiClient.get(API_ROUTES.user.visitor, {
+      withCredentials: true,
+    });
     return res.data;
   },
 };
