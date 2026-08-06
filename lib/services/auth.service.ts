@@ -46,7 +46,7 @@ interface UserData extends Omit<Message, "success"> {
   user: User;
 }
 
-interface SignInResponse extends  Omit<Message, "status"> {
+interface SignInResponse extends Omit<Message, "status"> {
   user: User;
   token: Token;
 }
@@ -89,7 +89,7 @@ export const auth = {
   async createUser(data: Omit<Signup, "confirmPassword">) {
     const res = await apiClient.post<AuthResponse>(
       API_ROUTES.auth.signUp,
-      data
+      data,
     );
     return res.data;
   },
@@ -97,7 +97,7 @@ export const auth = {
   async signIn(data: Signin) {
     const res = await apiClient.post<SignInResponse>(
       API_ROUTES.auth.login,
-      data
+      data,
     );
     return res;
   },
@@ -105,7 +105,7 @@ export const auth = {
   async VerifyOtp(data: VerifyOtp) {
     const res = await apiClient.post<VerifyOtpResponse>(
       API_ROUTES.auth.verifyOtp,
-      data
+      data,
     );
 
     return res.data;
@@ -124,7 +124,7 @@ export const auth = {
   async updateUserById({ id, payload }: UpdateUserPayload) {
     const res = await apiClient.patch<UserData>(
       API_ROUTES.user.user(id),
-      payload
+      payload,
     );
     return res.data;
   },
@@ -132,13 +132,18 @@ export const auth = {
   async updatePersonalInfo(payload: UpdatePersonalInfo) {
     const res = await apiClient.post<UpdatePersonalInfoResponse>(
       API_ROUTES.user.updatePersonalInfo,
-      payload
+      payload,
     );
     return res.data;
   },
 
   async deleteUser(id: string) {
     const res = await apiClient.delete(API_ROUTES.user.user(id));
+    return res.data;
+  },
+
+  async markVisitor() {
+    const res = await apiClient.get(API_ROUTES.user.visitor);
     return res.data;
   },
 };
