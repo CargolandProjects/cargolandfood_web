@@ -8,18 +8,20 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { food, groceries, restaurant } from "@/assets/svgs";
+import Parcel from "../parcel/Parcel";
+import { Button } from "../ui/button";
 
 const styles: { [key: string]: { styles: string; activeStyle: string } } = {
   Restaurants: {
-    styles: "bg-[#FEF3EB] ",
+    styles: "bg-[#FEF3EB] hover:bg-[#FEF3EB]/80 ",
     activeStyle: "border border-primary",
   },
   "Groceries & More": {
-    styles: "bg-[#EFFAF6]",
+    styles: "bg-[#EFFAF6] hover:bg-[#EFFAF6]/80",
     activeStyle: "border border-secondary",
   },
   Markets: {
-    styles: "bg-[#FEF7EC]",
+    styles: "bg-[#FEF7EC] hover:bg-[#FEF7EC]/80",
     activeStyle: "border border-cargo-accent",
   },
 };
@@ -85,14 +87,14 @@ const CategoryContent = () => {
       {categories?.length > 0 && (
         <>
           <h3>Categories</h3>
-          <div className="flex gap-3 md:gap-6 mt-2">
+          <div className="flex gap-3 md:gap-6 mt-2 overflow-x-auto hide-scrollbar"> 
             {categories.map((category) => {
               const active = category.id === activeCategory;
               return (
-                <div
+                <Button
                   className={`${styles[category.name].styles} ${
                     active ? styles[category.name].activeStyle : ""
-                  } w-[103px] h-[72px] sm:w-31 sm:h-29 flex flex-col justify-center items-center rounded-md sm:rounded-xl cursor-pointer`}
+                  } w-[103px] h-[72px] sm:w-31 sm:h-29 flex-col gap-0 text-black rounded-md sm:rounded-xl cursor-pointer`}
                   key={category.id}
                   onClick={() => {
                     setActiveCategory(category.id);
@@ -109,9 +111,11 @@ const CategoryContent = () => {
                   <p className="font-medium text-xs sm:text-sm mt-1.5 text-center">
                     {category.name}
                   </p>
-                </div>
+                </Button>
               );
             })}
+
+            <Parcel />
           </div>
         </>
       )}

@@ -20,6 +20,9 @@ import camera from "./camera.svg";
 import alert from "./alert.svg";
 import clipboard from "./clipboard.svg";
 import ridingFill from "./riding-fill.svg";
+import boxLocation from "./box_location.svg";
+import sendPacakage from "./send_package.svg";
+import receivePackage from "./receive_package.svg";
 
 export {
   logo,
@@ -44,4 +47,7 @@ export {
   alert,
   clipboard,
   ridingFill,
+  boxLocation,
+  sendPacakage,
+  receivePackage
 };

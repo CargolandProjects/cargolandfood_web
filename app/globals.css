@@ -411,4 +411,25 @@
   .active\:scale-98:active {
     transform: scale(0.98);
   }
+  
+  /* This is for custom horizontal scrollbar styling, pair it with this tauwind "overflow-x-auto sm:overflow-x-hidden sm:hover:overflow-x-auto sm:no-scrollbar-x" */
+  .no-scrollbar-x::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .no-scrollbar-x::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .no-scrollbar-x::-webkit-scrollbar-thumb {
+    background-color: rgba(120, 120, 120, 0.4);
+    border-radius: 9999px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  
+  /* 👇 THIS works reliably */
+  .no-scrollbar-x:hover::-webkit-scrollbar-thumb {
+    opacity: 1;
+  }
 }
