@@ -58,7 +58,7 @@ const OrderDetailsContent = ({
     openTrackOrder({ orderId });
   };
   return (
-    <div className="h-dvh px-4 sm:px-6 overflow-auto hide-scrollbar">
+    <div className="h-screen px-4 sm:px-6 overflow-auto hide-scrollbar">
       {isDesktop ? (
         // Desktop Header
         <SheetHeader className="p-0 sm:pt-6 pb-1 sticky top-0 z-20 px- bg-white flex flex-row items-center justify-between gap-2">
