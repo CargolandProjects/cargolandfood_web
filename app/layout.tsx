@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "./Providers";
 import AuthModalContainer from "@/components/auth/AuthModalContainer";
+import PixelScripts from "./PixelScripts";
 
 const satoshi = localFont({
   src: [
@@ -43,7 +44,8 @@ export const viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "CargolandFood - Food Delivery, Grocery & Restaurant Orders Online",
+    default:
+      "CargolandFood - Food Delivery, Grocery & Restaurant Orders Online",
     template: "%s | CargolandFood",
   },
   description:
@@ -131,6 +133,7 @@ export default function RootLayout({
         {/* Preconnect to external domains for better performance */}
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <PixelScripts />
       </head>
       <body className={`${satoshi.variable} antialiased`}>
         <Providers>

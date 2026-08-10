@@ -190,7 +190,7 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
 
   return (
     <>
-      <div className="h-dvh pb-4 sm:px-6 sm:pb-6 overflow-y-auto hide-scrollbar">
+      <div className="h-vh pb-4 sm:px-6 sm:pb-6 overflow-y-auto hide-scrollbar">
         {isDesktop ? (
           // Desktop Header
           <SheetHeader className="p-0 pb-1 pt-4 sm:pt-6 sticky top-0 z-20 bg-white flex flex-row items-center justify-between">

@@ -348,7 +348,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                           }}
                           className="md:hidden fixed inset-0 pt-10 px-6 bg-white z-35 "
                         >
-                          <div className="fixed inset-0 h-dvh p-4 z-40 bg-white">
+                          <div className="fixed inset-0 h-screen p-4 z-40 bg-white">
                             <item.content {...item.props} />
                           </div>
                         </motion.div>

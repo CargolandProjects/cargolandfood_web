@@ -149,3 +149,12 @@ export function groupTransactionsByMonth(
     transactions,
   }));
 }
+
+export function getAddressComponent(
+  components: google.maps.places.AddressComponent[] | undefined,
+  type: string,
+) {
+  if (!components) return "";
+  const comp = components.find((c) => c.types.includes(type));
+  return comp?.longText || comp?.shortText || "";
+}
