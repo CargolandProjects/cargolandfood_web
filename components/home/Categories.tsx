@@ -115,7 +115,7 @@ const CategoryContent = () => {
               );
             })}
 
-            {/* <Parcel /> */}
+            <Parcel />
           </div>
         </>
       )}

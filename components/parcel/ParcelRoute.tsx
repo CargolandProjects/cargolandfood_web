@@ -1,8 +1,10 @@
-import React from "react";
 import { ParcelType } from "./Parcel";
 import { Label } from "../ui/label";
 import { RiMapPin2Fill, RiSearchLine } from "react-icons/ri";
-import { useApiLoadingStatus } from "@vis.gl/react-google-maps";
+import {
+  APILoadingStatus,
+  useApiLoadingStatus,
+} from "@vis.gl/react-google-maps";
 import { AddressAutocomplete } from "../googlePlaces/AddressAutocomplete";
 import { Button } from "../ui/button";
 import { ParcelSteps } from "./ParcelDetails";
@@ -19,12 +21,22 @@ const ParcelRoute = ({
     destination: string;
   };
   setRoute: (value: string, type: "ORIGIN" | "DESTINATION") => void;
-  setStep: (value: ParcelSteps) => void;
+  setStep: (v: ParcelSteps) => void;
 }) => {
   const apiLoadingStatus = useApiLoadingStatus();
   const isMapsLoaded = apiLoadingStatus === "LOADED";
 
   const placeholder = type === "SEND" ? "Where to?" : "Where from?";
+  const statusMessages: Record<APILoadingStatus, string> = {
+    NOT_LOADED: placeholder,
+    LOADING: "Loading maps...",
+    LOADED: placeholder,
+    FAILED: "Initialization failed",
+    AUTH_FAILURE: "API key error – please contact support",
+  };
+
+  const apiStatusMsg = statusMessages[apiLoadingStatus];
+
   const disabled = !route.origin || !route.destination;
 
   const handleSetRoute = (
@@ -63,7 +75,7 @@ const ParcelRoute = ({
               <AddressAutocomplete
                 value={route.origin}
                 onChange={(e) => setRoute(e, "ORIGIN")}
-                placeholder={placeholder}
+                placeholder={apiStatusMsg}
                 onSelect={(place) => handleSetRoute(place, "ORIGIN")}
                 countryCode="NG"
                 readOnly={!isMapsLoaded}
@@ -100,7 +112,7 @@ const ParcelRoute = ({
               <AddressAutocomplete
                 value={route.destination}
                 onChange={(e) => setRoute(e, "DESTINATION")}
-                placeholder={placeholder}
+                placeholder={apiStatusMsg}
                 onSelect={(place) => handleSetRoute(place, "DESTINATION")}
                 countryCode="NG"
                 readOnly={!isMapsLoaded}

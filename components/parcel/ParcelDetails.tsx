@@ -17,6 +17,7 @@ import {
 } from "react-icons/ri";
 import { Separator } from "../ui/separator";
 import { useSession } from "@/lib/hooks/useSession";
+import ParcelDetailsForm from "./ParcelDetailsForm";
 
 export type ParcelSteps = "ROUTE" | "PARCEL_INFO" | "CHECKOUT";
 
@@ -74,7 +75,7 @@ const ParcelDetailsContent = ({
           />
         );
       case "PARCEL_INFO":
-        return 2;
+        return <ParcelDetailsForm type={type} setStep={setStep} />;
     }
   };
 
