@@ -31,7 +31,9 @@ import Image from "next/image";
 
 const formSchema = z.object({
   otp: z.string().min(4, "OTP must be at least 4 digits"),
-  phoneNumber: z.string(),
+  email: z
+    .email("enter a valid email")
+    .max(500, "Email is more than 500 characters "),
 });
 
 export type VerifyOtp = z.infer<typeof formSchema>;
@@ -52,7 +54,7 @@ const OTPModal = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       otp: "",
-      phoneNumber: formData.phone,
+      email: formData.email,
     },
   });
 
@@ -95,12 +97,12 @@ const OTPModal = () => {
           if (access)
             localStorage.setItem(
               `${process.env.NEXT_PUBLIC_ACCESS_KEY}`,
-              access
+              access,
             );
           if (refresh)
             localStorage.setItem(
               `${process.env.NEXT_PUBLIC_REFRESH_KEY}`,
-              refresh
+              refresh,
             );
         }
         toast.success(res.message);
@@ -108,7 +110,7 @@ const OTPModal = () => {
         if (guestLocation) clearGuestLocation();
 
         const pendingUser = localStorage.getItem(
-          `${process.env.NEXT_PUBLIC_USER_PENDING_KEY}`
+          `${process.env.NEXT_PUBLIC_USER_PENDING_KEY}`,
         );
         const parsedPendingUser = pendingUser ? JSON.parse(pendingUser) : null;
 
@@ -130,10 +132,10 @@ const OTPModal = () => {
       });
       return;
     }
-    if (!formData.phone) return;
+    if (!formData.email) return;
 
     resendOtp(
-      { phoneNumber: formData.phone },
+      { email: formData.email },
       {
         onSuccess: () => {
           setOtpMessage({
@@ -142,7 +144,7 @@ const OTPModal = () => {
           });
           setTimer(59);
         },
-      }
+      },
     );
   };
 
@@ -161,8 +163,8 @@ const OTPModal = () => {
           Verify your number
         </DialogTitle>
         <DialogDescription className="form-description text-center mt-0.5 sm:mt-2">
-          We’ve sent a 4-digit code to {formData.phone} <br /> via{" "}
-          <span className="text-primary">SMS</span>
+          We’ve sent a 4-digit code to {formData.email} <br /> via{" "}
+          <span className="text-primary">email</span>
         </DialogDescription>
       </DialogHeader>
 

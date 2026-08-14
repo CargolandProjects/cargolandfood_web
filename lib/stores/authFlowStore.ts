@@ -97,7 +97,7 @@ const useAuthFlow = create<AuthFlowStore>()(
         set({ showExitConfirmation: false });
       },
 
-      goToStep: (step, data = {}) => {
+      goToStep: (step, data) => {
         set((state) => ({
           currentStep: step,
           formData: { ...state.formData, ...data },

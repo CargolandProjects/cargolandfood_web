@@ -111,8 +111,8 @@ export const auth = {
     return res.data;
   },
 
-  async resendOtp(phoneNo: { phoneNumber: string }) {
-    const res = await apiClient.post(API_ROUTES.auth.resendOtp, phoneNo);
+  async resendOtp(email: { email: string }) {
+    const res = await apiClient.post(API_ROUTES.auth.resendOtp, email);
     return res.data;
   },
 
