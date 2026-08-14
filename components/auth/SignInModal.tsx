@@ -28,21 +28,24 @@ import { toast } from "sonner";
 import Image from "next/image";
 
 const formSchema = z.object({
-  phoneNumber: z
-    .string()
-    .min(11, "Phone number must be at least 11 digits")
-    .transform((val) => {
-      //Normalize to +234 format
-      const phone = val.replace(/[^\d+]/g, "");
-      if (phone.startsWith("+234")) return phone;
-      if (phone.startsWith("0")) return `+234${phone.slice(1)}`;
-      if (phone.startsWith("234")) return `+${phone}`;
-      return phone;
-    })
-    .refine(
-      (val) => /^\+234[789]\d{9}$/.test(val),
-      "Enter a valid phone number"
-    ),
+  email: z
+    .email("Must be a vaild email")
+    .max(500, "Email is more than 500 characters"),
+  // phoneNumber: z
+  //   .string()
+  //   .min(11, "Phone number must be at least 11 digits")
+  //   .transform((val) => {
+  //     //Normalize to +234 format
+  //     const phone = val.replace(/[^\d+]/g, "");
+  //     if (phone.startsWith("+234")) return phone;
+  //     if (phone.startsWith("0")) return `+234${phone.slice(1)}`;
+  //     if (phone.startsWith("234")) return `+${phone}`;
+  //     return phone;
+  //   })
+  //   .refine(
+  //     (val) => /^\+234[789]\d{9}$/.test(val),
+  //     "Enter a valid phone number"
+  //   ),
 
   // password: z.string().min(8, "Password must be at least 8 characters"),
 });
@@ -57,7 +60,7 @@ const SignInModal = () => {
   const { handleSubmit, control } = useForm<Signin>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      phoneNumber: "",
+      email: "",
       // password: "",
     },
   });
@@ -73,7 +76,7 @@ const SignInModal = () => {
         } catch {}
         // console.log("Submitted Successfully:", data);
         goToStep("otp-verification", {
-          phone: data.phoneNumber,
+          email: data.email,
           otpType: "signin",
         });
       },
@@ -104,17 +107,17 @@ const SignInModal = () => {
         <FieldSet>
           <FieldGroup className="gap-5">
             <Controller
-              name="phoneNumber"
+              name="email"
               control={control}
               render={({ field, fieldState }) => (
                 <Field className="field">
-                  <FieldLabel className="form-label">Phone Number</FieldLabel>
+                  <FieldLabel className="form-label">Email</FieldLabel>
                   <Input
                     {...field}
                     id={field.name}
-                    inputMode="tel"
+                    type="email"
                     aria-invalid={fieldState.invalid}
-                    placeholder="+234 08000000000"
+                    placeholder="enter your email"
                     className="form-input"
                   />
                   {fieldState.invalid && (
