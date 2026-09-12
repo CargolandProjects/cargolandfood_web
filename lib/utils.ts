@@ -23,7 +23,7 @@ export function formatPrettyDate(date: Date | string) {
 
   return `${format(date, "EEEE")}, ${format(date, "do")} ${format(
     date,
-    "MMMM, h:mm a"
+    "MMMM, h:mm a",
   )}`;
 }
 
@@ -39,7 +39,7 @@ export function formatTime(date: Date | string) {
 
 export function fallbackImg(
   e: React.SyntheticEvent<HTMLImageElement>,
-  fallbackSrc: string
+  fallbackSrc: string,
 ) {
   const img = e.currentTarget;
 
@@ -81,7 +81,7 @@ export function groupTransactionsByMonth(
     description: string | null;
     status: TransactionStatus;
     createdAt: string;
-  }>
+  }>,
 ): Array<{
   month: string;
   transactions: Array<{
@@ -102,7 +102,7 @@ export function groupTransactionsByMonth(
 
   // 1. Sort by date (newest first)
   const sorted = [...records].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
   // 2. Group by "Month Year"
@@ -140,7 +140,7 @@ export function groupTransactionsByMonth(
         status: TransactionStatus;
         createdAt: string;
       }>
-    >
+    >,
   );
 
   // 3. Convert to array format UI expects
@@ -158,3 +158,9 @@ export function getAddressComponent(
   const comp = components.find((c) => c.types.includes(type));
   return comp?.longText || comp?.shortText || "";
 }
+
+export const formatNumber = (value: string) => {
+  if (!value) return "";
+  const number = value.replace(/\D/g, ""); // remove non-digits
+  return new Intl.NumberFormat("en-US").format(Number(number));
+};

@@ -18,70 +18,195 @@ import {
 import { Separator } from "../ui/separator";
 import { useSession } from "@/lib/hooks/useSession";
 import ParcelDetailsForm from "./ParcelDetailsForm";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  FormProvider,
+  useForm,
+  UseFormReturn,
+  useWatch,
+} from "react-hook-form";
+import z from "zod";
+import { Button } from "../ui/button";
+import { toast } from "sonner";
 
 export type ParcelSteps = "ROUTE" | "PARCEL_INFO" | "CHECKOUT";
+
+const parcelDetailsSchema = z
+  .object({
+    pickUpAddrName: z
+      .string()
+      .min(5, "Address is too short")
+      .max(200, "Address is too long"),
+    pickUpAddrLat: z.number("Latitude must be a number"),
+    pickUpAddrLng: z.number("Longitude must be a number"),
+    dropOffAddrName: z
+      .string()
+      .min(5, "Address is too short")
+      .max(200, "Address is too long"),
+    dropOffAddrLat: z.number("Latitude must be a number"),
+    dropOffAddrLng: z.number("Longitude must be a number"),
+    senderName: z
+      .string("Sender name is required")
+      .min(3, "Sender name is too short")
+      .max(500, "name is too long")
+      .optional(),
+    senderNumber: z
+      .string()
+      .min(7, "Phone number is too short")
+      .max(15, "Phone number is too long")
+      .regex(/^\+?\d+$/, "Phone number must contain only digits"),
+    receiverName: z
+      .string("Receiver name is required")
+      .min(3, "Receiver name is too short")
+      .max(500, "name is too long")
+      .optional(),
+    receiverNumber: z
+      .string()
+      .min(7, "Phone number is too short")
+      .max(15, "Phone number is too long")
+      .regex(/^\+?\d+$/, "Phone number must contain only digits"),
+    packageWorth: z.string("Enter package").or(z.literal("")),
+    packageIsurance: z.boolean(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.packageIsurance && !data.packageWorth.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Package worth is required",
+        path: ["packageWorth"],
+      });
+    }
+  });
+
+export type ParcelDetailsData = z.infer<typeof parcelDetailsSchema>;
 
 const ParcelDetailsContent = ({
   // open,
   isDesktop,
-  setOpen,
+  step,
   type,
+  setOpen,
+  setStep,
+  form,
 }: {
   // open: boolean;
   isDesktop: boolean;
-  setOpen: (v: boolean) => void;
+  step: ParcelSteps;
   type: ParcelType | null;
+  setOpen: (v: boolean) => void;
+  setStep: React.Dispatch<React.SetStateAction<ParcelSteps>>;
+  form: UseFormReturn<ParcelDetailsData>;
 }) => {
-  const [step, setStep] = useState<ParcelSteps>("ROUTE");
-  const [route, setRoute] = useState({
-    origin: "",
-    destination: "",
-  });
   const { user: session } = useSession();
   const defaultAddress = session?.address?.find((a) => a.setAddressDefault);
 
+  const pickUpAddrLat = useWatch({
+    control: form.control,
+    name: "pickUpAddrLat",
+  });
+  const pickUpAddrLng = useWatch({
+    control: form.control,
+    name: "pickUpAddrLng",
+  });
+  const dropOffAddrLat = useWatch({
+    control: form.control,
+    name: "dropOffAddrLat",
+  });
+  const dropOffAddrLng = useWatch({
+    control: form.control,
+    name: "dropOffAddrLng",
+  });
+  const pickUpAddrName = useWatch({
+    control: form.control,
+    name: "pickUpAddrName",
+  });
+  const dropOffAddrName = useWatch({
+    control: form.control,
+    name: "dropOffAddrName",
+  });
+
+  const disabled = !pickUpAddrName.trim() || !dropOffAddrName.trim();
+
   // update the default address based on type
   useEffect(() => {
+    if (!defaultAddress?.latitude || !defaultAddress?.longitude) {
+      toast.error("Latitude or longitude is missing for the default address");
+      return;
+    }
+
     if (type === "SEND")
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setRoute((prev) => ({
-        ...prev,
-        origin: defaultAddress?.addressLine1 || "",
-      }));
+      form.setValues({
+        pickUpAddrLat: Number(defaultAddress?.latitude),
+        pickUpAddrLng: Number(defaultAddress?.longitude),
+        pickUpAddrName: defaultAddress?.addressLine1,
+        senderName: session?.fullName || "",
+        senderNumber: session?.phoneNumber || "",
+      });
     else
-      setRoute((prev) => ({
-        ...prev,
-        destination: defaultAddress?.addressLine1 || "",
-      }));
-  }, [defaultAddress?.addressLine1, type]);
-
-  console.log("Route Locations:", route);
-
-  const handleRoute = (value: string, type: "ORIGIN" | "DESTINATION") => {
-    if (type === "ORIGIN") setRoute((prev) => ({ ...prev, origin: value }));
-    if (type === "DESTINATION")
-      setRoute((prev) => ({ ...prev, destination: value }));
-  };
+      form.setValues({
+        dropOffAddrLat: Number(defaultAddress?.latitude),
+        dropOffAddrLng: Number(defaultAddress?.longitude),
+        dropOffAddrName: defaultAddress?.addressLine1,
+        receiverName: session?.fullName || "",
+        receiverNumber: session?.phoneNumber || "",
+      });
+  }, [
+    defaultAddress?.addressLine1,
+    defaultAddress?.latitude,
+    defaultAddress?.longitude,
+    form,
+    session?.fullName,
+    session?.phoneNumber,
+    type,
+  ]);
 
   const currentStep = () => {
     switch (step) {
       case "ROUTE":
-        return (
-          <ParcelRoute
-            type={type}
-            route={route}
-            setRoute={handleRoute}
-            setStep={setStep}
-          />
-        );
+        return <ParcelRoute type={type} />;
       case "PARCEL_INFO":
-        return <ParcelDetailsForm type={type} setStep={setStep} />;
+        return <ParcelDetailsForm type={type} />;
     }
+  };
+
+  const onSubmit = (data: ParcelDetailsData) => {
+    console.log(data);
   };
 
   const handleBack = () => {
     if (step === "PARCEL_INFO") setStep("ROUTE");
     if (step === "CHECKOUT") setStep("PARCEL_INFO");
+  };
+
+  const routeFields = [
+    "pickUpAddrName",
+    "pickUpAddrLat",
+    "pickUpAddrLng",
+    "dropOffAddrName",
+    "dropOffAddrLat",
+    "dropOffAddrLng",
+  ] as const;
+
+  const handleNext = async () => {
+    const isValid = await form.trigger(routeFields);
+
+    if (!isValid) {
+      console.error("form errors", form.formState.errors);
+      return;
+    }
+
+    // validate for lat & lng depending on the type and address
+    if (type === "SEND" && (!dropOffAddrLat || !dropOffAddrLng)) {
+      toast.error("Latitude or longitude is missing for the drop off address");
+      return;
+    }
+
+    if (type === "RECEIVE" && (!pickUpAddrLat || !pickUpAddrLng)) {
+      toast.error("Latitude or longitude is missing for the pickup address");
+      return;
+    }
+
+    setStep("PARCEL_INFO");
   };
 
   return (
@@ -124,7 +249,26 @@ const ParcelDetailsContent = ({
 
       {isDesktop && <Separator className="mt-2 mb-6" />}
 
-      {currentStep()}
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          {currentStep()}
+
+          {step === "ROUTE" && (
+            <Button
+              onClick={handleNext}
+              type="button"
+              disabled={disabled}
+              className="mt-25 submit-btn"
+            >
+              Next
+            </Button>
+          )}
+
+          {step === "PARCEL_INFO" && (
+            <Button className="mt-25 submit-btn">Create Parcel</Button>
+          )}
+        </form>
+      </FormProvider>
     </div>
   );
 };
@@ -140,16 +284,36 @@ const ParcelDetails = ({
 }) => {
   // Detect if we're on desktop (only runs once on mount, then on resize)
   const isDesktop = useMediaQuery("(min-width: 640px)"); // Adjust the breakpoint as needed
+  const [step, setStep] = useState<ParcelSteps>("ROUTE");
+  const form = useForm<ParcelDetailsData>({
+    resolver: zodResolver(parcelDetailsSchema),
+    defaultValues: {
+      receiverName: "",
+      receiverNumber: "",
+      senderName: "",
+      senderNumber: "",
+      pickUpAddrName: "",
+      pickUpAddrLat: 0,
+      pickUpAddrLng: 0,
+      dropOffAddrLat: 0,
+      dropOffAddrLng: 0,
+      dropOffAddrName: "",
+      packageIsurance: false,
+      packageWorth: "",
+    },
+  });
 
   return (
-    <>
+    <FormProvider {...form}>
       {isDesktop && (
         <Sheet open={open} onOpenChange={setOpen}>
-          <SheetContent className="p-0 gap-0 min-w-[464px] [&>button]:hidden">
+          <SheetContent className="p-0 gap-0 min-w-116 [&>button]:hidden">
             <ParcelDetailsContent
               setOpen={setOpen}
               isDesktop={isDesktop}
-              // close={close}
+              setStep={setStep}
+              step={step}
+              form={form}
               type={type}
             />
           </SheetContent>
@@ -168,12 +332,15 @@ const ParcelDetails = ({
             <ParcelDetailsContent
               setOpen={setOpen}
               isDesktop={isDesktop}
+              setStep={setStep}
+              step={step}
+              form={form}
               type={type}
             />
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </FormProvider>
   );
 };
 

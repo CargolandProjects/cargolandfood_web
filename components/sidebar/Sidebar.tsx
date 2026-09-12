@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { logo } from "@/assets/svgs";
 import { Button } from "../ui/button";
 import { AnimatePresence, motion } from "framer-motion";
@@ -130,11 +130,15 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
     router.push("/");
   };
 
-  const sidebarItems = getSidebarItems(setActiveTab, isAuthenticated, setOpen, {
-    cartCount: cartItems,
-    OrdersCount: currentOrders,
-  });
-
+  const sidebarItems = useMemo(
+    () =>
+      getSidebarItems(setActiveTab, isAuthenticated, setOpen, {
+        cartCount: cartItems,
+        OrdersCount: currentOrders,
+      }),
+    [setActiveTab, isAuthenticated, setOpen, cartItems, currentOrders],
+  );
+  
   return (
     <>
       {/* Large Screens */}
