@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Sheet,
   SheetClose,
@@ -14,6 +14,7 @@ import {
   RiArrowGoBackLine,
   RiArrowLeftLine,
   RiCloseFill,
+  RiLoader2Line,
 } from "react-icons/ri";
 import { Separator } from "../ui/separator";
 import { useSession } from "@/lib/hooks/useSession";
@@ -28,6 +29,7 @@ import {
 import z from "zod";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
+import { useCreateParcel } from "@/lib/hooks/mutations/useParcel";
 
 export type ParcelSteps = "ROUTE" | "PARCEL_INFO" | "CHECKOUT";
 
@@ -37,14 +39,14 @@ const parcelDetailsSchema = z
       .string()
       .min(5, "Address is too short")
       .max(200, "Address is too long"),
-    pickUpAddrLat: z.number("Latitude must be a number"),
-    pickUpAddrLng: z.number("Longitude must be a number"),
+    pickUpAddrLat: z.string().min(1, "Pickup Latitude is required"),
+    pickUpAddrLng: z.string().min(1, "Pickup Longitude is required"),
     dropOffAddrName: z
       .string()
       .min(5, "Address is too short")
       .max(200, "Address is too long"),
-    dropOffAddrLat: z.number("Latitude must be a number"),
-    dropOffAddrLng: z.number("Longitude must be a number"),
+    dropOffAddrLat: z.string().min(1, "Drop-off Latitude is required"),
+    dropOffAddrLng: z.string().min(1, "Drop-off Longitude is required"),
     senderName: z
       .string("Sender name is required")
       .min(3, "Sender name is too short")
@@ -97,8 +99,7 @@ const ParcelDetailsContent = ({
   setStep: React.Dispatch<React.SetStateAction<ParcelSteps>>;
   form: UseFormReturn<ParcelDetailsData>;
 }) => {
-  const { user: session } = useSession();
-  const defaultAddress = session?.address?.find((a) => a.setAddressDefault);
+  const { mutate: createParcel, isPending } = useCreateParcel();
 
   const pickUpAddrLat = useWatch({
     control: form.control,
@@ -125,40 +126,9 @@ const ParcelDetailsContent = ({
     name: "dropOffAddrName",
   });
 
-  const disabled = !pickUpAddrName.trim() || !dropOffAddrName.trim();
-
-  // update the default address based on type
-  useEffect(() => {
-    if (!defaultAddress?.latitude || !defaultAddress?.longitude) {
-      toast.error("Latitude or longitude is missing for the default address");
-      return;
-    }
-
-    if (type === "SEND")
-      form.setValues({
-        pickUpAddrLat: Number(defaultAddress?.latitude),
-        pickUpAddrLng: Number(defaultAddress?.longitude),
-        pickUpAddrName: defaultAddress?.addressLine1,
-        senderName: session?.fullName || "",
-        senderNumber: session?.phoneNumber || "",
-      });
-    else
-      form.setValues({
-        dropOffAddrLat: Number(defaultAddress?.latitude),
-        dropOffAddrLng: Number(defaultAddress?.longitude),
-        dropOffAddrName: defaultAddress?.addressLine1,
-        receiverName: session?.fullName || "",
-        receiverNumber: session?.phoneNumber || "",
-      });
-  }, [
-    defaultAddress?.addressLine1,
-    defaultAddress?.latitude,
-    defaultAddress?.longitude,
-    form,
-    session?.fullName,
-    session?.phoneNumber,
-    type,
-  ]);
+  const disabled =
+    (type === "SEND" && dropOffAddrName.trim().length < 2) ||
+    (type === "RECEIVE" && pickUpAddrName.trim().length < 2);
 
   const currentStep = () => {
     switch (step) {
@@ -170,7 +140,8 @@ const ParcelDetailsContent = ({
   };
 
   const onSubmit = (data: ParcelDetailsData) => {
-    console.log(data);
+    console.log("Parcel Data: ", data);
+    createParcel(data);
   };
 
   const handleBack = () => {
@@ -265,7 +236,13 @@ const ParcelDetailsContent = ({
           )}
 
           {step === "PARCEL_INFO" && (
-            <Button className="mt-25 submit-btn">Create Parcel</Button>
+            <Button disabled={isPending} className="mt-25 submit-btn">
+              {isPending ? (
+                <RiLoader2Line className="size-5 animate-spin" />
+              ) : (
+                "Create Parcel"
+              )}
+            </Button>
           )}
         </form>
       </FormProvider>
@@ -293,15 +270,65 @@ const ParcelDetails = ({
       senderName: "",
       senderNumber: "",
       pickUpAddrName: "",
-      pickUpAddrLat: 0,
-      pickUpAddrLng: 0,
-      dropOffAddrLat: 0,
-      dropOffAddrLng: 0,
+      pickUpAddrLat: "",
+      pickUpAddrLng: "",
+      dropOffAddrLat: "",
+      dropOffAddrLng: "",
       dropOffAddrName: "",
       packageIsurance: false,
       packageWorth: "",
     },
   });
+
+  const { user: session } = useSession();
+  const defaultAddress = session?.address?.find((a) => a.setAddressDefault);
+
+  // Track the last type we initialised for, so session/address re-fetches
+  // don't clobber in-progress form data.
+  const prevTypeRef = useRef<ParcelType | null>(null);
+
+  useEffect(() => {
+    if (!type) return;
+
+    const typeChanged = prevTypeRef.current !== type;
+    prevTypeRef.current = type;
+
+    // Full reset + step reset ONLY on a genuine type change
+    if (typeChanged) {
+      form.reset();
+      setStep("ROUTE");
+    }
+
+    if (!defaultAddress?.latitude || !defaultAddress?.longitude) {
+      if (typeChanged) {
+        toast.error("Latitude or longitude is missing for the default address");
+      }
+      return;
+    }
+
+    // Seed default address / sender / receiver for the current type
+    if (type === "SEND") {
+      form.setValue("pickUpAddrLat", defaultAddress.latitude);
+      form.setValue("pickUpAddrLng", defaultAddress.longitude);
+      form.setValue("pickUpAddrName", defaultAddress.addressLine1);
+      form.setValue("senderName", session?.fullName || "");
+      form.setValue("senderNumber", session?.phoneNumber || "");
+    } else {
+      form.setValue("dropOffAddrLat", defaultAddress.latitude);
+      form.setValue("dropOffAddrLng", defaultAddress.longitude);
+      form.setValue("dropOffAddrName", defaultAddress.addressLine1);
+      form.setValue("receiverName", session?.fullName || "");
+      form.setValue("receiverNumber", session?.phoneNumber || "");
+    }
+  }, [
+    type,
+    defaultAddress?.addressLine1,
+    defaultAddress?.latitude,
+    defaultAddress?.longitude,
+    session?.fullName,
+    session?.phoneNumber,
+    form,
+  ]);
 
   return (
     <FormProvider {...form}>

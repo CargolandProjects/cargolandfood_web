@@ -82,4 +82,14 @@ export const API_ROUTES = {
     walletBalance: "/users/user-wallet/balance",
     transactionRecords: "/users/user-wallet-transaction/records",
   },
+
+  parcel: {
+    createParcel: "/orders/create-parcel",
+    getDeliveryFees: "/orders/get-parcel/delivery-fees",
+    getActiveParcel: "/orders/get-user-active-parcel",
+    makeParcelPayment: (parcelId: string) =>
+      `/orders/make-parcel-payment/${parcelId}`,
+    deleteParcel: (parcelId: string) =>
+      `/orders/make-parcel-payment/${parcelId}`,
+  },
 };

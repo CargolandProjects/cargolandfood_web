@@ -44,14 +44,14 @@ const ParcelRoute = ({ type }: { type: ParcelType | null }) => {
     }
 
     if (type === "PICKUP") {
-      setValue("pickUpAddrLat", lat);
-      setValue("pickUpAddrLng", lng);
+      setValue("pickUpAddrLat", lat.toString());
+      setValue("pickUpAddrLng", lng.toString());
       setValue("pickUpAddrName", addr);
     }
 
     if (type === "DROPOFF") {
-      setValue("dropOffAddrLat", lat);
-      setValue("dropOffAddrLng", lng);
+      setValue("dropOffAddrLat", lat.toString());
+      setValue("dropOffAddrLng", lng.toString());
       setValue("dropOffAddrName", addr);
     }
   };
