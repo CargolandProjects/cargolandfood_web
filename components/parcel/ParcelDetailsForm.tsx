@@ -264,7 +264,7 @@ const ParcelDetailsForm = ({ type }: { type: ParcelType | null }) => {
               )}
             />
 
-            <div className="mt-1 px-4 py-3 flex gap-3 rounded-xs bg-primary-50">
+            <div className="mt-2 px-4 py-3 flex gap-3 rounded-xs bg-primary-50">
               <div className="size-10 flex shrink-0 justify-center items-center rounded-full bg-primary/10">
                 <RiDiscussLine className="size-5.5 text-primary" />
               </div>

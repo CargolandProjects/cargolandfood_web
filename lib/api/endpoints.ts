@@ -90,6 +90,6 @@ export const API_ROUTES = {
     makeParcelPayment: (parcelId: string) =>
       `/orders/make-parcel-payment/${parcelId}`,
     deleteParcel: (parcelId: string) =>
-      `/orders/make-parcel-payment/${parcelId}`,
+      `/orders/delete-user/parcel/${parcelId}`,
   },
 };

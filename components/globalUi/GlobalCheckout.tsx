@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Sheet,
   SheetClose,
@@ -52,6 +52,8 @@ import { DeliveryType } from "@/lib/services/cart.service";
 import RestaurantNoteModal from "../orders/RestaurantNoteModal";
 import { Field, FieldLabel } from "../ui/field";
 import { PaymentMethod } from "../orders/PageCheckOut";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { currency, safePrice } from "@/lib/utils";
 
 interface GlobalCheckoutProps {
   isDesktop: boolean;
@@ -95,16 +97,6 @@ const GlobalCheckoutCOntent = ({
     useChargeWallet();
   const { data: balance, isLoading: isBalanceLoading } =
     useWalletBalance(isAuthenticated);
-
-  // Format currency
-  const currency = (n: number) => `₦ ${n.toLocaleString()}`;
-
-  // Safe number parsing for API string values
-  const safePrice = (value: string | undefined | null) => {
-    if (!value) return 0;
-    const num = Number(value);
-    return isNaN(num) ? 0 : num;
-  };
 
   const handleOrder = useCallback(
     (cartId: string, description: string) => {
@@ -726,19 +718,7 @@ const GlobalCheckout = () => {
   const closeCheckout = useUIStore((s) => s.closeCheckout);
 
   // Detect if we're on desktop (only runs once on mount, then on resize)
-  const [isDesktop, setIsDesktop] = useState(() => {
-    if (typeof window === "undefined") return true; // SSR fallback to desktop
-    return window.matchMedia("(min-width: 640px)").matches;
-  });
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 640px)");
-
-    const handleChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
+  const isDesktop = useMediaQuery("(min-width: 640px)"); // Adjust the breakpoint as needed
 
   return (
     <>

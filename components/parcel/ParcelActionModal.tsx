@@ -10,24 +10,24 @@ import {
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { ParcelType } from "./Parcel";
+import { ActiveParcel } from "@/lib/services/parcel.service";
 
 const ParcelActionModal = ({
-  setParcelType,
   open,
+  isLoading,
   setOpen,
-  openDetails,
+  activeParcel,
+  onSelectType,
+  onResumeCheckout,
 }: {
-  setParcelType: (type: ParcelType) => void;
   open: boolean;
+  isLoading: boolean;
   setOpen: (v: boolean) => void;
-  openDetails: (v: boolean) => void;
+  activeParcel: ActiveParcel | undefined;
+  onSelectType: (type: ParcelType) => void;
+  onResumeCheckout: () => void;
 }) => {
-  const handleSelect = (a: ParcelType) => {
-    setParcelType(a);
-    openDetails(true);
-    setOpen(false);
-  };
-
+  console.log("PARCEL ACTION: ", activeParcel);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -48,46 +48,85 @@ const ParcelActionModal = ({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-[400px]! max-sm:w-[95vw]! px-5 pt-14.5 pb-5.75 gap-0 ">
-        <DialogHeader className="items-center gap-3">
-          <DialogTitle className="text-2xl font-bold leading-8">
-            Parcel
-          </DialogTitle>
-          <DialogDescription className="text-base leading-5">
-            Do you want to send or receive items?
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent
+        className={`max-w-[400px]! max-sm:w-[95vw]! px-5 pb-5.75 gap-0 ${isLoading ? "h-[270px]" : "pt-14.5"} `}
+      >
+        {isLoading && (
+          <div className="flex items-center justify-center">
+            {/* <Loader2 className="size-10 text-primary animate-spin" /> */}
+            <p className="text-base animate-pulse text-gray-500">
+              Fetching Parcel Details!
+            </p>
+          </div>
+        )}
 
-        <div className="mt-6 flex gap-3">
-          <Button
-            onClick={() => handleSelect("SEND")}
-            variant="ghost"
-            className="flex-col flex-1 h-[100px] sm:h-[145px] p-0 gap-2 bg-neutral-100 ring-0!"
-          >
-            <div className="size-10 sm:size-20 overflow-hidden">
-              <Image
-                src={sendPacakage}
-                alt="box location icon"
-                className="object-cover size-full"
-              />
+        {!isLoading && activeParcel && (
+          <>
+            <DialogHeader className="items-center gap-3">
+              <DialogTitle className="text-2xl font-bold leading-8">
+                Pending Parcel
+              </DialogTitle>
+              <DialogDescription className="text-base leading-5">
+                You have an unpaid parcel. Continue to checkout to finish, or
+                cancel it to start a new one.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="mt-6">
+              <Button onClick={onResumeCheckout} className="submit-btn">
+                Continue to Checkout
+              </Button>
             </div>
-            <p className="sm:text-sm leading-4 text-center">Send a package</p>
-          </Button>
-          <Button
-            onClick={() => handleSelect("RECEIVE")}
-            variant="ghost"
-            className="flex-col flex-1 h-[100px] sm:h-[145px] p-0 gap-2 bg-neutral-100 ring-0!"
-          >
-            <div className="size-10 sm:size-20 overflow-hidden">
-              <Image
-                src={receivePackage}
-                alt="box location icon"
-                className="object-cover size-full"
-              />
+          </>
+        )}
+
+        {!isLoading && !activeParcel && (
+          <>
+            <DialogHeader className="items-center gap-3">
+              <DialogTitle className="text-2xl font-bold leading-8">
+                Parcel
+              </DialogTitle>
+              <DialogDescription className="text-base leading-5">
+                Do you want to send or receive items?
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="mt-6 flex gap-3">
+              <Button
+                onClick={() => onSelectType("SEND")}
+                variant="ghost"
+                className="flex-col flex-1 h-[100px] sm:h-[145px] p-0 gap-2 bg-neutral-100 ring-0!"
+              >
+                <div className="size-10 sm:size-20 overflow-hidden">
+                  <Image
+                    src={sendPacakage}
+                    alt="send package"
+                    className="object-cover size-full"
+                  />
+                </div>
+                <p className="sm:text-sm leading-4 text-center">
+                  Send a package
+                </p>
+              </Button>
+              <Button
+                onClick={() => onSelectType("RECEIVE")}
+                variant="ghost"
+                className="flex-col flex-1 h-[100px] sm:h-[145px] p-0 gap-2 bg-neutral-100 ring-0!"
+              >
+                <div className="size-10 sm:size-20 overflow-hidden">
+                  <Image
+                    src={receivePackage}
+                    alt="receive package"
+                    className="object-cover size-full"
+                  />
+                </div>
+                <p className="sm:text-sm leading-4 text-center">
+                  Receive a package
+                </p>
+              </Button>
             </div>
-            <p className="sm:text-sm leading-4 text-center">Receive a package</p>
-          </Button>
-        </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

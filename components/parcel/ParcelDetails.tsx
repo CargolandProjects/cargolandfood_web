@@ -30,8 +30,17 @@ import z from "zod";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { useCreateParcel } from "@/lib/hooks/mutations/useParcel";
+import ParcelCheckout from "./ParcelCheckout";
+import { useActiveParcel } from "@/lib/hooks/queries/useGetParcel";
+import { ActiveParcel } from "@/lib/services/parcel.service";
 
 export type ParcelSteps = "ROUTE" | "PARCEL_INFO" | "CHECKOUT";
+
+const headerTitle: Record<ParcelSteps, string> = {
+  ROUTE: "Route",
+  PARCEL_INFO: "Details",
+  CHECKOUT: "Checkout",
+};
 
 const parcelDetailsSchema = z
   .object({
@@ -82,12 +91,29 @@ const parcelDetailsSchema = z
 
 export type ParcelDetailsData = z.infer<typeof parcelDetailsSchema>;
 
+export const DEFAULT_VALUES: ParcelDetailsData = {
+  receiverName: "",
+  receiverNumber: "",
+  senderName: "",
+  senderNumber: "",
+  pickUpAddrName: "",
+  pickUpAddrLat: "",
+  pickUpAddrLng: "",
+  dropOffAddrLat: "",
+  dropOffAddrLng: "",
+  dropOffAddrName: "",
+  packageIsurance: false,
+  packageWorth: "",
+};
+
 const ParcelDetailsContent = ({
   // open,
   isDesktop,
   step,
   type,
+  activeParcel,
   setOpen,
+  setAction,
   setStep,
   form,
 }: {
@@ -95,7 +121,9 @@ const ParcelDetailsContent = ({
   isDesktop: boolean;
   step: ParcelSteps;
   type: ParcelType | null;
+  activeParcel: ActiveParcel | undefined;
   setOpen: (v: boolean) => void;
+  setAction: (v: boolean) => void;
   setStep: React.Dispatch<React.SetStateAction<ParcelSteps>>;
   form: UseFormReturn<ParcelDetailsData>;
 }) => {
@@ -136,15 +164,29 @@ const ParcelDetailsContent = ({
         return <ParcelRoute type={type} />;
       case "PARCEL_INFO":
         return <ParcelDetailsForm type={type} />;
+      case "CHECKOUT":
+        return (
+          <ParcelCheckout
+            id={activeParcel?.id}
+            form={form}
+            setOpen={setOpen}
+            setAction={setAction}
+          />
+        );
     }
   };
 
   const onSubmit = (data: ParcelDetailsData) => {
     console.log("Parcel Data: ", data);
-    createParcel(data);
+    createParcel(data, {
+      onSuccess: () => {
+        setStep("CHECKOUT");
+      },
+    });
   };
 
   const handleBack = () => {
+    if (step === "ROUTE") setOpen(false);
     if (step === "PARCEL_INFO") setStep("ROUTE");
     if (step === "CHECKOUT") setStep("PARCEL_INFO");
   };
@@ -191,8 +233,7 @@ const ParcelDetailsContent = ({
             </button>
 
             <SheetTitle className="text-xl font-medium max-sm:text-center leading-7">
-              {step === "ROUTE" && "Route"}
-              {step === "PARCEL_INFO" && "Details"}
+              {headerTitle[step]}
             </SheetTitle>
           </div>
 
@@ -205,15 +246,11 @@ const ParcelDetailsContent = ({
       ) : (
         // Mobile Header
         <div className="pb-3 pt-4 sticky top-0 z-20 flex items-center justify-center bg-white">
-          <button
-            onClick={() => setOpen(false)}
-            className="absolute left-0 ml-1"
-          >
+          <button onClick={handleBack} className="absolute left-0 ml-1">
             <RiArrowLeftLine className="size-5" />
           </button>
           <h2 className="text-lg sm:text-xl font-medium leading-6 sm:leading-7">
-            {step === "ROUTE" && "Route"}
-            {step === "PARCEL_INFO" && "Details"}
+            {headerTitle[step]}
           </h2>
         </div>
       )}
@@ -252,33 +289,25 @@ const ParcelDetailsContent = ({
 
 const ParcelDetails = ({
   open,
-  setOpen,
   type,
+  setOpen,
+  setAction,
+  initialStep = "ROUTE",
 }: {
   open: boolean;
-  setOpen: (v: boolean) => void;
   type: ParcelType | null;
+  initialStep?: ParcelSteps;
+  setOpen: (v: boolean) => void;
+  setAction: (v: boolean) => void;
 }) => {
   // Detect if we're on desktop (only runs once on mount, then on resize)
   const isDesktop = useMediaQuery("(min-width: 640px)"); // Adjust the breakpoint as needed
   const [step, setStep] = useState<ParcelSteps>("ROUTE");
   const form = useForm<ParcelDetailsData>({
     resolver: zodResolver(parcelDetailsSchema),
-    defaultValues: {
-      receiverName: "",
-      receiverNumber: "",
-      senderName: "",
-      senderNumber: "",
-      pickUpAddrName: "",
-      pickUpAddrLat: "",
-      pickUpAddrLng: "",
-      dropOffAddrLat: "",
-      dropOffAddrLng: "",
-      dropOffAddrName: "",
-      packageIsurance: false,
-      packageWorth: "",
-    },
+    defaultValues: DEFAULT_VALUES,
   });
+  const { data: activeParcel } = useActiveParcel();
 
   const { user: session } = useSession();
   const defaultAddress = session?.address?.find((a) => a.setAddressDefault);
@@ -287,8 +316,36 @@ const ParcelDetails = ({
   // don't clobber in-progress form data.
   const prevTypeRef = useRef<ParcelType | null>(null);
 
+  // Sync step to the caller's intent each time the sheet opens.
   useEffect(() => {
-    if (!type) return;
+    if (!open) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStep(initialStep);
+  }, [open, initialStep]);
+
+  useEffect(() => {
+    if (activeParcel) {
+      form.reset({
+        dropOffAddrLat: activeParcel.dropOffAddrLat,
+        dropOffAddrLng: activeParcel.dropOffAddrLng,
+        dropOffAddrName: activeParcel.dropOffAddrName,
+        pickUpAddrLat: activeParcel.pickUpAddrLat,
+        pickUpAddrLng: activeParcel.pickUpaddrLng,
+        pickUpAddrName: activeParcel.pickUpAddrName,
+        senderName: activeParcel.senderName,
+        senderNumber: activeParcel.senderNumber,
+        receiverName: activeParcel.receiverName,
+        receiverNumber: activeParcel.receiverNumber,
+        packageWorth: activeParcel.packageWorth,
+        packageIsurance: activeParcel.packageIsurance,
+      });
+    }
+  }, [activeParcel, form]);
+
+  console.log("Active Parcel", activeParcel);
+
+  useEffect(() => {
+    if (!type || activeParcel) return;
 
     const typeChanged = prevTypeRef.current !== type;
     prevTypeRef.current = type;
@@ -328,6 +385,7 @@ const ParcelDetails = ({
     session?.fullName,
     session?.phoneNumber,
     form,
+    activeParcel,
   ]);
 
   return (
@@ -342,6 +400,8 @@ const ParcelDetails = ({
               step={step}
               form={form}
               type={type}
+              setAction={setAction}
+              activeParcel={activeParcel}
             />
           </SheetContent>
         </Sheet>
@@ -360,9 +420,11 @@ const ParcelDetails = ({
               setOpen={setOpen}
               isDesktop={isDesktop}
               setStep={setStep}
+              setAction={setAction}
               step={step}
               form={form}
               type={type}
+              activeParcel={activeParcel}
             />
           </motion.div>
         )}
