@@ -5,8 +5,8 @@ export const API_ROUTES = {
   categories: "/categories",
   hotPicks: "/hotPicks",
   restaurant: (id: string) => `/restaurants/${id}`,
-  searchVendorMenu: (zoneId: string, query: string) =>
-    `/users/search-vendor-menus/${zoneId}?query=${query}`,
+  searchVendorMenu: (zoneId: string) =>
+    `/users/search-vendor-menus/${zoneId}`,
 
   auth: {
     signUp: "/users",
@@ -81,5 +81,15 @@ export const API_ROUTES = {
     fundWallet: "/users/fund-user-wallet",
     walletBalance: "/users/user-wallet/balance",
     transactionRecords: "/users/user-wallet-transaction/records",
+  },
+
+  parcel: {
+    createParcel: "/orders/create-parcel",
+    getDeliveryFees: "/orders/get-parcel/delivery-fees",
+    getActiveParcel: "/orders/get-user-active-parcel",
+    makeParcelPayment: (parcelId: string) =>
+      `/orders/make-parcel-payment/${parcelId}`,
+    deleteParcel: (parcelId: string) =>
+      `/orders/delete-user/parcel/${parcelId}`,
   },
 };

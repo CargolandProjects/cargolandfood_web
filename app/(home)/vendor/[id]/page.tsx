@@ -42,7 +42,7 @@ export async function generateMetadata({
     const rating = vendorData.averageRating?.simpleRating || 0;
 
     return {
-      title: `${vendor.businessName} - Order Online | Cargoland Food`,
+      title: `${vendor.businessName} - Order Online`,
       description: `Order from ${
         vendor.businessName
       } on Cargoland. ${menuCount} items available for delivery. ${

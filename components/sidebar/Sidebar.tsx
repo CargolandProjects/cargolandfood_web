@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { logo } from "@/assets/svgs";
 import { Button } from "../ui/button";
 import { AnimatePresence, motion } from "framer-motion";
@@ -130,10 +130,14 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
     router.push("/");
   };
 
-  const sidebarItems = getSidebarItems(setActiveTab, isAuthenticated, setOpen, {
-    cartCount: cartItems,
-    OrdersCount: currentOrders,
-  });
+  const sidebarItems = useMemo(
+    () =>
+      getSidebarItems(setActiveTab, isAuthenticated, setOpen, {
+        cartCount: cartItems,
+        OrdersCount: currentOrders,
+      }),
+    [setActiveTab, isAuthenticated, setOpen, cartItems, currentOrders],
+  );
 
   return (
     <>
@@ -308,7 +312,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
               {sidebarItems.map((item, idx) => {
                 const isActive = activeTab === item.id;
                 return (
-                  <>
+                  <React.Fragment key={idx}>
                     <div
                       onClick={() => {
                         if (idx === 0) {
@@ -318,7 +322,6 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                         }
                       }}
                       className="flex items-center justify-between gap-2 hover:cursor-pointer"
-                      key={idx}
                     >
                       <div className="flex items-center gap-2">
                         <div className="size-10 flex items-center justify-center bg-primary-50 rounded-full">
@@ -354,7 +357,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </>
+                  </React.Fragment>
                 );
               })}
             </div>

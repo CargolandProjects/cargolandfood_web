@@ -40,7 +40,12 @@ interface MenuResponse {
 export const menu = {
   async getSearchItems(zoneId: string, query: string) {
     const res = await apiClient.get<MenuResponse>(
-      API_ROUTES.searchVendorMenu(zoneId, query)
+      API_ROUTES.searchVendorMenu(zoneId),
+      {
+        params: {
+          ...(query && { query }),
+        },
+      },
     );
     return res.data;
   },

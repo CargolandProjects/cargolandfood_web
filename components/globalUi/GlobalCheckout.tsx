@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Sheet,
   SheetClose,
@@ -46,12 +46,15 @@ import EmptyStateUi from "../EmptyStateUi";
 import { useSession } from "@/lib/hooks/useSession";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
-import { useWalletBalance } from "@/lib/hooks/queries/useWallet";
+// import { useWalletBalance } from "@/lib/hooks/queries/useWallet";
 import { useChargeWallet } from "@/lib/hooks/mutations/useChargeWallet";
 import { DeliveryType } from "@/lib/services/cart.service";
 import RestaurantNoteModal from "../orders/RestaurantNoteModal";
 import { Field, FieldLabel } from "../ui/field";
 import { PaymentMethod } from "../orders/PageCheckOut";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { currency } from "@/lib/utils";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 
 interface GlobalCheckoutProps {
   isDesktop: boolean;
@@ -87,24 +90,107 @@ const GlobalCheckoutCOntent = ({
     error,
     refetch,
   } = useCheckoutPreview(vendorId, deliveryType, isAuthenticated);
+  // API mutations
   const { mutate: clearCart, isPending: isClearingCart } = useClearCart();
-  const { mutate } = useAddToCart();
-  const { mutate: removeItem } = useRemoveCartItem(vendorId);
+  const { mutate: updateCart, isPending: isUpdatingCart } = useAddToCart();
+  const { mutate: removeItem, isPending: isRemovingItem } =
+    useRemoveCartItem(vendorId);
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
   const { mutate: chargeWallet, isPending: isChargingWallet } =
     useChargeWallet();
-  const { data: balance, isLoading: isBalanceLoading } =
-    useWalletBalance(isAuthenticated);
+  // const { data: balance, isLoading: isBalanceLoading } =
+  //   useWalletBalance(isAuthenticated);
 
-  // Format currency
-  const currency = (n: number) => `₦ ${n.toLocaleString()}`;
+  const [pendingQuantities, setPendingQuantities] = useState<
+    Record<string, number>
+  >({});
+  const debouncedQuantities = useDebounce(pendingQuantities, 500);
+  const lastFiredQuantities = useRef<Record<string, number>>({});
 
-  // Safe number parsing for API string values
-  const safePrice = (value: string | undefined | null) => {
-    if (!value) return 0;
-    const num = Number(value);
-    return isNaN(num) ? 0 : num;
-  };
+  
+  const isPendingActions =
+    isUpdatingCart ||
+    isClearingCart ||
+    isRemovingItem ||
+    isMakingPayment ||
+    isChargingWallet || isFetching;
+
+  // Extract data from API response
+  const {
+    subtotal = "0",
+    deliveryFee = "0",
+    serviceFee = "0",
+    discountTotal = "0",
+    total = "0",
+  } = checkoutData || {};
+  const cartItems = checkoutData?.cart.items || [];
+  const cartAddress = checkoutData?.cart.addressSnapshot;
+
+  // This effect listens to the debounced cart item quantity value
+  useEffect(() => {
+    const keys = Object.keys(debouncedQuantities);
+    if (keys.length === 0) return;
+
+    keys.forEach((menuId) => {
+      const targetQty = debouncedQuantities[menuId];
+
+      // Find the item to get its current server quantity
+      const item = cartItems.find((i) => i.menuId === menuId);
+      if (!item) return;
+
+      const delta = targetQty - item.quantity;
+      console.log("DELTA QTY: ", delta);
+
+      // 1. If the server catches up to our local target, clear the local override
+      if (delta === 0) {
+        setPendingQuantities((prev) => {
+          if (prev[menuId] !== targetQty) return prev; // Guard against newer clicks
+          delete lastFiredQuantities.current[menuId];
+
+          const next = { ...prev };
+          delete next[menuId];
+          return next;
+        });
+        return;
+      }
+
+      // 2. If we already fired an API request for this exact quantity, skip
+      if (lastFiredQuantities.current[menuId] === targetQty) return;
+
+      lastFiredQuantities.current[menuId] = targetQty;
+
+      // 3. Fire single API request
+      updateCart(
+        {
+          item: {
+            menuId: item.menuId,
+            menuName: item.menuName,
+            unitPrice: item.unitPrice,
+            description: item.description,
+            menuImg: item.menuImg,
+            quantity: Math.abs(delta),
+            action: delta > 0 ? "INCREMENT" : "DECREMENT",
+            currency: "NGN",
+          },
+          vendorId,
+        },
+        {
+          // 4. ONLY clear on error (rollback).
+          // On success, the background refetch will trigger `delta === 0` above.
+          onError: () => {
+            setPendingQuantities((prev) => {
+              if (prev[menuId] !== targetQty) return prev;
+              delete lastFiredQuantities.current[menuId];
+              const next = { ...prev };
+              delete next[menuId];
+              return next;
+            });
+          },
+        },
+      );
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedQuantities]);
 
   const handleOrder = useCallback(
     (cartId: string, description: string) => {
@@ -184,33 +270,14 @@ const GlobalCheckoutCOntent = ({
     item: (typeof cartItems)[0],
     action: "increase" | "decrease",
   ) => {
-    if (item.quantity < 1) return; // Don't allow quantity less than 1
-    setQuantityChangeId(item.menuId);
+    const baseQuantity = item.quantity;
+    const currentQty = pendingQuantities[item.menuId] ?? baseQuantity;
+    const newQty = action === "increase" ? currentQty + 1 : currentQty - 1;
 
-    mutate(
-      {
-        item: {
-          menuId: item.menuId,
-          menuName: item.menuName,
-          unitPrice: item.unitPrice,
-          description: item.description,
-          menuImg: item.menuImg,
-          quantity: 1,
-          action: action === "increase" ? "INCREMENT" : "DECREMENT",
-          currency: "NGN",
-          // addons: item.addons.map((addon) => ({
-          //   menuAddonId: addon.menuAddonId,
-          //   name: addon.name,
-          //   price: safePrice(addon.price),
-          //   quantity: addon.quantity,
-          // })),
-        },
-        vendorId,
-      },
-      {
-        onSettled: () => setQuantityChangeId(null),
-      },
-    );
+    if (newQty < 1) return; // Don't allow quantity less than 1
+
+    // Update local state instantly
+    setPendingQuantities((prev) => ({ ...prev, [item.menuId]: newQty }));
   };
 
   const handleOpenAddress = () =>
@@ -219,17 +286,6 @@ const GlobalCheckoutCOntent = ({
       source: "checkout",
       vendorId,
     });
-
-  // Extract data from API response
-  const {
-    subtotal = "0",
-    deliveryFee = "0",
-    serviceFee = "0",
-    discountTotal = "0",
-    total = "0",
-  } = checkoutData || {};
-  const cartItems = checkoutData?.cart.items || [];
-  const cartAddress = checkoutData?.cart.addressSnapshot;
 
   const orderSummary = cartItems
     .map((item) => {
@@ -348,7 +404,7 @@ const GlobalCheckoutCOntent = ({
           </div>
         )}
 
-        {isFetching && (
+        {isFetching && !isSuccess && (
           <div className="h-full flex justify-center items-center px-4 sm:px-6">
             <Loader size={12} />
           </div>
@@ -364,7 +420,7 @@ const GlobalCheckoutCOntent = ({
           </div>
         )}
 
-        {!isFetching && isSuccess && cartItems.length === 0 && (
+        {isSuccess && cartItems.length === 0 && (
           <div className="h-full flex justify-center items-center px-4 sm:px-6">
             <EmptyStateUi
               message="No pending Orders"
@@ -373,7 +429,7 @@ const GlobalCheckoutCOntent = ({
           </div>
         )}
 
-        {!isFetching && isSuccess && cartItems.length > 0 && (
+        {isSuccess && cartItems.length > 0 && (
           <div className="px-4 sm:px-6">
             {isDesktop && <Separator className="mt-2 mb-6" />}
 
@@ -383,6 +439,11 @@ const GlobalCheckoutCOntent = ({
                 const addonsSummary = item.addons
                   .map((addon) => addon.name)
                   .join(", ");
+
+                // Get the visual quantity (local override or server truth)
+                const displayQuantity =
+                  pendingQuantities[item.menuId] ?? item.quantity;
+
                 return (
                   <div
                     key={item.menuId}
@@ -413,7 +474,7 @@ const GlobalCheckoutCOntent = ({
                     <div className="flex items-end justify-between mb-2">
                       <div className="flex items-center gap-3">
                         <span className="text-xl font-medium">
-                          {item.quantity}x
+                          {displayQuantity}x
                         </span>
                         <div>
                           <h3 className="text-base font-normal leading-5">
@@ -437,22 +498,17 @@ const GlobalCheckoutCOntent = ({
                       <div className="flex items-center gap-2.5">
                         <button
                           onClick={() => handleQuantityChange(item, "decrease")}
-                          disabled={item.menuId === quantityChangeId}
+                          disabled={displayQuantity <= 1}
                           className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 transition-colors"
                           aria-label="Decrease packs"
                         >
                           <Minus className="size-4" />
                         </button>
                         <span className="text-sm font-normal text-center">
-                          {item.menuId === quantityChangeId ? (
-                            <Loader2 className="size-4 animate-spin duration-300 text-neutral-400" />
-                          ) : (
-                            item.quantity
-                          )}
+                          {displayQuantity}
                         </span>
                         <button
                           onClick={() => handleQuantityChange(item, "increase")}
-                          disabled={item.menuId === quantityChangeId}
                           className="size-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center disabled:opacity-50 transition-colors"
                           aria-label="Increase packs"
                         >
@@ -464,7 +520,7 @@ const GlobalCheckoutCOntent = ({
                     {/* Packs Counter */}
                     <div className="flex items-center justify-between">
                       <span className="text-base font-medium">
-                        {currency(safePrice(item.unitPrice))}
+                        {currency(item.totalPrice)}
                       </span>
                     </div>
                   </div>
@@ -548,7 +604,7 @@ const GlobalCheckoutCOntent = ({
                     className="w-full flex items-center justify-between"
                   >
                     <p className="flex items-center gap-2 ">
-                      <RiMapPinFill className="size-5 text-primary" />
+                      <RiMapPinFill className="size-5 text-primary shrink-0" />
                       <span className="text-base leading-5 line-clamp-1">
                         {cartAddress?.addressLine1}
                       </span>
@@ -643,25 +699,25 @@ const GlobalCheckoutCOntent = ({
               <div className="mt-4 space-y-1.5">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-sm leading-4.5">Orders</span>
-                  <span>{currency(safePrice(subtotal))}</span>
+                  <span>{currency(subtotal)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-sm leading-4.5">Delivery Fee</span>
-                  <span>{currency(safePrice(deliveryFee))}</span>
+                  <span>{currency(deliveryFee)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-sm leading-4.5">Service Fee</span>
-                  <span>{currency(safePrice(serviceFee))}</span>
+                  <span>{currency(serviceFee)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-sm leading-4.5">Discounts</span>
-                  <span>{currency(safePrice(discountTotal))}</span>
+                  <span>{currency(discountTotal)}</span>
                 </div>
 
                 <div className="flex items-center justify-between text-sm font-medium mt-4">
                   <span className="text-base font-medium ">Total</span>
                   <span className="text-base font-medium ">
-                    {currency(safePrice(total) || safePrice(subtotal))}
+                    {currency(total || subtotal)}
                   </span>
                 </div>
               </div>
@@ -673,7 +729,7 @@ const GlobalCheckoutCOntent = ({
                 onClick={() =>
                   handlePlaceOrder(cartItems[0].cartId, orderSummary)
                 }
-                disabled={isMakingPayment || isChargingWallet}
+                disabled={isPendingActions}
                 className="submit-btn flex-1"
               >
                 {isMakingPayment || isChargingWallet ? (
@@ -685,6 +741,7 @@ const GlobalCheckoutCOntent = ({
               <Button
                 onClick={() => setShowAlert(true)}
                 variant="outline"
+                disabled={isPendingActions}
                 className="submit-btn flex-1 hover:bg-gray-50 text-neutral-500 border-neutral-300"
               >
                 {isClearingCart ? (
@@ -726,19 +783,7 @@ const GlobalCheckout = () => {
   const closeCheckout = useUIStore((s) => s.closeCheckout);
 
   // Detect if we're on desktop (only runs once on mount, then on resize)
-  const [isDesktop, setIsDesktop] = useState(() => {
-    if (typeof window === "undefined") return true; // SSR fallback to desktop
-    return window.matchMedia("(min-width: 640px)").matches;
-  });
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 640px)");
-
-    const handleChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
+  const isDesktop = useMediaQuery("(min-width: 640px)"); // Adjust the breakpoint as needed
 
   return (
     <>

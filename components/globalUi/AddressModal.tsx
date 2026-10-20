@@ -25,8 +25,6 @@ import {
 import { AddressAutocomplete } from "../googlePlaces/AddressAutocomplete";
 import { getAddressComponent } from "@/lib/utils";
 
-
-
 const statusMessages: Record<APILoadingStatus, string> = {
   NOT_LOADED: "Add new address",
   LOADING: "Loading maps...",

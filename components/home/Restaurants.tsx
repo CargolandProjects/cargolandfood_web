@@ -40,7 +40,7 @@ const Restaurants = () => {
   if (isLoading) {
     return (
       <section className="my-6 sm:my-10 ">
-        <Loading count={4} title />
+        <Loading count={6} title />
       </section>
     );
   }
@@ -103,7 +103,7 @@ const Restaurants = () => {
           {/* Intersection observer trigger */}
           <div ref={ref} className=" flex items-center justify-center">
             {isFetchingNextPage && (
-              <div className="text-neutral-500 py-7">
+              <div className="text-neutral-500 py-7 animate-pulse">
                 Loading more restaurants...
               </div>
             )}
