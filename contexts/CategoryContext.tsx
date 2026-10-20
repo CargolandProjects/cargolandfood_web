@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState } from "react";
 
-export type CategoryType = "Restaurants" | "Groceries" | "Markets" | null;
+export type CategoryType = "Restaurant" | "Grocery" | "Market" | null;
 
 interface CategoryContextType {
   activeCategory: CategoryType;

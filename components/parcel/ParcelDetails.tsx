@@ -188,7 +188,13 @@ const ParcelDetailsContent = ({
   const handleBack = () => {
     if (step === "ROUTE") setOpen(false);
     if (step === "PARCEL_INFO") setStep("ROUTE");
-    if (step === "CHECKOUT") setStep("PARCEL_INFO");
+    if (step === "CHECKOUT") {
+      if (activeParcel) {
+        setOpen(false);
+        return;
+      }
+      setStep("PARCEL_INFO");
+    }
   };
 
   const routeFields = [

@@ -165,11 +165,4 @@ export const formatNumber = (value: string) => {
   return new Intl.NumberFormat("en-US").format(Number(number));
 };
 
-export const currency = (n: number) => `₦ ${n.toLocaleString()}`;
-
-// Safe number parsing for API string values
-export const safePrice = (value: string | undefined | null) => {
-  if (!value) return 0;
-  const num = Number(value);
-  return isNaN(num) ? 0 : num;
-};
+export const currency = (n: string) => `₦ ${Number(n).toLocaleString()}`;

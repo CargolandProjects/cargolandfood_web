@@ -138,7 +138,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
       }),
     [setActiveTab, isAuthenticated, setOpen, cartItems, currentOrders],
   );
-  
+
   return (
     <>
       {/* Large Screens */}
@@ -312,7 +312,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
               {sidebarItems.map((item, idx) => {
                 const isActive = activeTab === item.id;
                 return (
-                  <>
+                  <React.Fragment key={idx}>
                     <div
                       onClick={() => {
                         if (idx === 0) {
@@ -322,7 +322,6 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                         }
                       }}
                       className="flex items-center justify-between gap-2 hover:cursor-pointer"
-                      key={idx}
                     >
                       <div className="flex items-center gap-2">
                         <div className="size-10 flex items-center justify-center bg-primary-50 rounded-full">
@@ -358,7 +357,7 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </>
+                  </React.Fragment>
                 );
               })}
             </div>

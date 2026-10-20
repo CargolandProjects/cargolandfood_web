@@ -41,8 +41,10 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
   const [showReviews, setShowReviews] = useState(false);
   const [openCheckout, setOpenCheckout] = useState(false);
   const [deliveryType, setDeliveryType] = useState<"DELIVERY" | "PICKUP">(
-    "DELIVERY"
+    "DELIVERY",
   );
+  // Detect large screen (lg breakpoint = 1024px)
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
   const { lat, lng } = useActiveZone();
 
   const {
@@ -59,8 +61,13 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
   // console.log("Vendor Page Data:", data);
   const router = useRouter();
 
-  // Detect large screen (lg breakpoint = 1024px)
-  const [isLargeScreen, setIsLargeScreen] = useState(false);
+  // Fetch checkout preview to check if cart has items
+  const {
+    data: checkoutData,
+    isFetching: isCheckoutFetching,
+    error: checkoutError,
+    isSuccess: checkoutSuccess,
+  } = useCheckoutPreview(id, deliveryType, isAuthenticated);
 
   //  Useffect to detect large screen for synchronizing left contennt width
   useEffect(() => {
@@ -91,20 +98,11 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Fetch checkout preview to check if cart has items
-  // Enable fetching on component mount to check cart status
-  const {
-    data: checkoutData,
-    isFetching: isCheckoutFetching,
-    error: checkoutError,
-    isSuccess: checkoutSuccess,
-  } = useCheckoutPreview(id, deliveryType, isAuthenticated);
-
   useEffect(() => {
     if (checkoutError?.message.includes("Vendor cannot deliver")) {
       toast.warning(
         checkoutError?.message ||
-          "Vendor cannot deliver to the selected address"
+          "Vendor cannot deliver to the selected address",
       );
     }
   }, [checkoutError]);
@@ -154,7 +152,7 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
     isFavourite: boolean,
     vendorId: string,
 
-    e: React.MouseEvent
+    e: React.MouseEvent,
   ) => {
     e.stopPropagation();
     // console.log(user, vendorId, isFavourite);
@@ -290,7 +288,7 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
                 >
                   <Image
                     src={info.src}
-                    alt="Shawarma Plus banner"
+                    alt="info Icon image"
                     className="size-6 rounded-full object-cover"
                     fill
                   />
@@ -374,7 +372,7 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
                       handleSelect={handleSelect}
                       selectedId={selectedId}
                     />
-                  )
+                  ),
                 )}
             </div>
 
@@ -382,7 +380,7 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
             {isSuccess && filteredMenu.length > 0 && (
               <div ref={ref} className="py-8 flex items-center justify-center">
                 {isFetchingNextPage && (
-                  <div className="text-neutral-500 text-sm">
+                  <div className="text-neutral-500 text-sm animate-pulse">
                     Loading more items...
                   </div>
                 )}

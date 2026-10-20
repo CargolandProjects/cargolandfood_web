@@ -1,4 +1,4 @@
-import { currency, safePrice } from "@/lib/utils";
+import { currency } from "@/lib/utils";
 import {
   RiArrowRightSLine,
   RiBankFill,
@@ -103,12 +103,12 @@ const ParcelCheckout = ({
         <div className="mt-4 space-y-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-sm leading-4.5">Delivery Fee</span>
-            <span className="leading-5">{currency(safePrice("0"))}</span>
+            <span className="leading-5">{currency("0")}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-base font-medium leading-6">Total</span>
             <span className="text-base font-medium leading-6">
-              {currency(safePrice("0"))}
+              {currency("0")}
             </span>
           </div>
         </div>
@@ -142,7 +142,7 @@ const ParcelCheckout = ({
                     <Loader styles="size-4! text-neutral-400!" />
                   ) : (
                     <span className="text-base font-medium ml-1">
-                      {currency(Number("0"))}
+                      {currency("0")}
                     </span>
                   )}
                 </p>

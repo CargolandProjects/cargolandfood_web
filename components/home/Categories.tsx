@@ -34,17 +34,17 @@ interface Category {
 
 const categories: Category[] = [
   {
-    id: "Restaurants",
+    id: "Restaurant",
     name: "Restaurants",
     icon: restaurant,
   },
   {
-    id: "Groceries",
+    id: "Grocery",
     name: "Groceries & More",
     icon: groceries,
   },
   {
-    id: "Markets",
+    id: "Market",
     name: "Markets",
     icon: food,
   },
@@ -115,7 +115,7 @@ const CategoryContent = () => {
               );
             })}
 
-            <Parcel />
+            {/* <Parcel /> */}
           </div>
         </>
       )}
