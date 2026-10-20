@@ -107,13 +107,13 @@ const GlobalCheckoutCOntent = ({
   const debouncedQuantities = useDebounce(pendingQuantities, 500);
   const lastFiredQuantities = useRef<Record<string, number>>({});
 
-  
   const isPendingActions =
     isUpdatingCart ||
     isClearingCart ||
     isRemovingItem ||
     isMakingPayment ||
-    isChargingWallet || isFetching;
+    isChargingWallet ||
+    isFetching;
 
   // Extract data from API response
   const {
@@ -314,12 +314,14 @@ const GlobalCheckoutCOntent = ({
       riderNote: {
         open: showRiderNote,
         onOpenChange: setShowRiderNote,
+        initialMessage: checkoutData?.cart.noteToRider || "",
         vendorId,
         deliveryType,
       },
       restaurantNote: {
         open: showRestaurantNote,
         onOpenChange: setShowRestaurantNote,
+        initialMessage: checkoutData?.cart.noteToRestaurant || "",
         vendorId,
         deliveryType,
       },
@@ -351,9 +353,11 @@ const GlobalCheckoutCOntent = ({
     }),
     [
       showRiderNote,
-      showRestaurantNote,
+      checkoutData?.cart.noteToRider,
+      checkoutData?.cart.noteToRestaurant,
       vendorId,
       deliveryType,
+      showRestaurantNote,
       showCoupon,
       showGift,
       showConfirmPickup,
@@ -534,23 +538,37 @@ const GlobalCheckoutCOntent = ({
             <div className="space-y-4 mb-6">
               <button
                 onClick={() => setShowRiderNote(true)}
-                className="w-full flex items-center justify-between hover:underline cursor-pointer"
+                className="w-full flex items-center justify-between group cursor-pointer text-start"
               >
-                <span className="flex items-center gap-2 text-base leading-5">
-                  <RiRestaurant2Fill className="size-5 text-neutral-600" /> Have
-                  a message for the rider ?
-                </span>
+                <div className="flex items-center gap-2 ">
+                  <RiRestaurant2Fill className="size-5 text-neutral-600 shrink-0" />
+                  <div>
+                    <p className="text-base leading-5 block group-hover:underline ">
+                      Have a message for the rider ?
+                    </p>
+                    <p className="mt-0.5 text-gray-500 text-xs">
+                      {checkoutData.cart.noteToRider}
+                    </p>
+                  </div>
+                </div>
                 <RiArrowRightSLine className="size-5 text-neutral-500" />
               </button>
 
               <button
                 onClick={() => setShowRestaurantNote(true)}
-                className="w-full flex items-center justify-between hover:underline cursor-pointer"
+                className="w-full flex items-center justify-between group cursor-pointer text-start"
               >
-                <span className="flex items-center gap-2 text-base leading-5">
-                  <RiEBike2Line className="size-5 icon-r-left text-neutral-600" />{" "}
-                  Have a message for the restaurant ?
-                </span>
+                <div className="flex items-center gap-2 ">
+                  <RiEBike2Line className="size-5 text-neutral-600 shrink-0" />
+                  <div>
+                    <p className="text-base leading-5 block group-hover:underline ">
+                      Have a message for the rider ?
+                    </p>
+                    <p className="mt-0.5 text-gray-500 text-xs">
+                      {checkoutData.cart.noteToRestaurant}
+                    </p>
+                  </div>
+                </div>
                 <RiArrowRightSLine className="size-5 text-neutral-500" />
               </button>
 
@@ -756,16 +774,19 @@ const GlobalCheckoutCOntent = ({
       </div>
 
       {/* Activity Modals */}
-      <RiderNoteModal {...modalProps.riderNote} />
-      <RestaurantNoteModal {...modalProps.restaurantNote} />
-      <CouponSuccessModal {...modalProps.couponSuccess} />
-      <CouponModal {...modalProps.coupon} />
-      <GiftModal {...modalProps.gift} />
-      <PickupConfirmModal
-        {...modalProps.pickupConfirm}
-        cartId={cartItems[0]?.cartId}
-      />
-
+      {showRiderNote && <RiderNoteModal {...modalProps.riderNote} />}
+      {showRestaurantNote && (
+        <RestaurantNoteModal {...modalProps.restaurantNote} />
+      )}
+      {showSuccess && <CouponSuccessModal {...modalProps.couponSuccess} />}
+      {showCoupon && <CouponModal {...modalProps.coupon} />}
+      {showGift && <GiftModal {...modalProps.gift} />}
+      {showConfirmPickup && (
+        <PickupConfirmModal
+          {...modalProps.pickupConfirm}
+          cartId={cartItems[0]?.cartId}
+        />
+      )}
       <ConfirmationModal
         confirmText="Clear"
         description="Are you sure you want to clear your cart?"
