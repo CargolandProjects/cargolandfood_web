@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Button } from "../ui/button";
 import { X } from "lucide-react";
 import { Menu } from "@/lib/services/vendors.service";
-import { useAddToCart } from "@/lib/hooks/mutations/useMutateCart";
+import { useUpdateCart } from "@/lib/hooks/mutations/useMutateCart";
 import { fallbackImg } from "@/lib/utils";
 import { useSession } from "@/lib/hooks/useSession";
 import { toast } from "sonner";
@@ -33,7 +33,7 @@ const ProductModal = ({
   const { isAuthenticated } = useSession();
   const openAuth = useAuthFlow((s) => s.openAuth);
 
-  const addToCart = useAddToCart();
+  const { mutate, isPending } = useUpdateCart();
 
   // State for main item quantity
   const [quantity, setQuantity] = useState(1);
@@ -44,7 +44,7 @@ const ProductModal = ({
   // State for addons: { addonId: quantity }
   // If quantity is 0 or undefined, addon is not selected
   const [selectedAddons, setSelectedAddons] = useState<Record<string, number>>(
-    {}
+    {},
   );
 
   // Handle addon quantity changes
@@ -144,7 +144,7 @@ const ProductModal = ({
       })
       .filter((addon) => addon !== null); // Remove nulls and fix type
 
-    addToCart.mutate(
+    mutate(
       {
         item: {
           menuId: id!,
@@ -170,7 +170,7 @@ const ProductModal = ({
           setSelectedSize(null);
           handleSelect?.(id!); // Close modal
         },
-      }
+      },
     );
   };
 
@@ -180,9 +180,9 @@ const ProductModal = ({
         showCloseButton={false}
         className="dialog hide-scrollbar max-h-[90vh]! p-0! border-none! outline-none! gap-0 overflow-y-auto!"
       >
-        <div className="w-full h-[177px] overflow-hidden rounded-t-lg relative">
+        <div className="w-full h-[177px] overflow-hidden rounded-t-lg relative bg-gray-100">
           <Image
-            src={cld(uploadImageUrl, "productModal") || "/fallback_vendor.webp"}
+            src={uploadImageUrl || "/fallback_vendor.webp"}
             alt={name}
             className="size-full object-cover"
             fill
@@ -308,10 +308,10 @@ const ProductModal = ({
           </div>
           <Button
             onClick={handleAddToCart}
-            disabled={addToCart.isPending}
+            disabled={isPending}
             className="uppercase flex-1 py-3.5 px-5.5 h-10.5 sm:h-12 text-sm font-bold max-w-[184px] whitespace-normal disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {addToCart.isPending ? (
+            {isPending ? (
               <RiLoader2Line className="size-5 animate-spin" />
             ) : (
               `Order Item - ₦${calculateTotal().toLocaleString()}`

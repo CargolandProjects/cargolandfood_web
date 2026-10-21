@@ -7,13 +7,13 @@ interface ClearCartVars {
   vendorId: string;
 }
 
-export function useAddToCart() {
+export function useUpdateCart() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: cart.addOrUpdateItem,
 
-    onSuccess: (response, { vendorId, }) => {
+    onSuccess: (_, { vendorId }) => {
       // Invalidate checkout preview to refetch with updated cart
       queryClient.invalidateQueries({
         queryKey: ["checkoutPreview", vendorId],
@@ -21,12 +21,10 @@ export function useAddToCart() {
       queryClient.invalidateQueries({
         queryKey: ["cart"],
       });
-
-      toast.success(response.message || "Item added to cart");
     },
 
     onError: (error) => {
-      const message = error.message || "Failed to add item to cart";
+      const message = error.message || "Failed to update cart";
       toast.error(message);
     },
   });

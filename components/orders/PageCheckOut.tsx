@@ -21,8 +21,8 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import type { CheckoutPreview } from "@/lib/types/cart.types";
 import {
   useClearCart,
-  useAddToCart,
   useRemoveCartItem,
+  useUpdateCart,
 } from "@/lib/hooks/mutations/useMutateCart";
 import { useMakePayment } from "@/lib/hooks/mutations/usePlaceOrder";
 import ConfirmationModal from "../ConfirmationModal";
@@ -88,7 +88,6 @@ const PageCheckOut = ({
     "DIGITAL_TRANSFER",
   );
   const [isRemovingItemId, setIsRemovingItemId] = useState<string | null>(null);
-  const [quantityChangeId, setQuantityChangeId] = useState<string | null>(null);
   const [pendingQuantities, setPendingQuantities] = useState<
     Record<string, number>
   >({});
@@ -101,7 +100,7 @@ const PageCheckOut = ({
 
   // API mutations
   const { mutate: clearCart, isPending: isClearingCart } = useClearCart();
-  const { mutate: updateCart, isPending: isUpdatingCart } = useAddToCart();
+  const { mutate: updateCart, isPending: isUpdatingCart } = useUpdateCart();
   const { mutate: removeItem, isPending: isRemovingItem } =
     useRemoveCartItem(vendorId);
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
@@ -182,6 +181,8 @@ const PageCheckOut = ({
           vendorId,
         },
         {
+          onSuccess: () => toast.success(" cart updated successfully"),
+
           // 4. ONLY clear on error (rollback).
           // On success, the background refetch will trigger `delta === 0` above.
           onError: () => {

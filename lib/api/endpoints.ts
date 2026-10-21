@@ -5,8 +5,7 @@ export const API_ROUTES = {
   categories: "/categories",
   hotPicks: "/hotPicks",
   restaurant: (id: string) => `/restaurants/${id}`,
-  searchVendorMenu: (zoneId: string) =>
-    `/users/search-vendor-menus/${zoneId}`,
+  searchVendorMenu: (zoneId: string) => `/users/search-vendor-menus/${zoneId}`,
 
   auth: {
     signUp: "/users",
@@ -91,5 +90,10 @@ export const API_ROUTES = {
       `/orders/make-parcel-payment/${parcelId}`,
     deleteParcel: (parcelId: string) =>
       `/orders/delete-user/parcel/${parcelId}`,
+  },
+
+  specials: {
+    bannersPromos: (zoneId: string) =>
+      `/users/get-all/banner-promotions/${zoneId}`,
   },
 };

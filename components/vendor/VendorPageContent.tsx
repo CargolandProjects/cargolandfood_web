@@ -246,7 +246,7 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
           {/* Back button */}
           <button
             onClick={handleBack}
-            className="hidden sm:flex items-center gap-4 text-sm w-full pl-2 hover:cursor-pointer"
+            className="hidden sm:flex items-center gap-4 text-sm w-fit pl-2 hover:cursor-pointer"
           >
             <RiArrowGoBackLine className="size-3.5 text-gray-500" />
             <span className="text-xl font-medium">Restaurants</span>
@@ -262,7 +262,7 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
               }  w-full overflow-hidden rounded-xl mt-2`}
             >
               <Image
-                src={cld(vendor?.profileImg, "hero") || "/fallback_vendor.webp"}
+                src={vendor?.profileImg || "/fallback_vendor.webp"}
                 alt={vendor?.businessName}
                 className="w-full h-full object-cover rounded-xl bg-neutral-100"
                 fill
@@ -476,7 +476,6 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
           onOpenChange={setShowFavourites}
         />
         <ReviewsModal open={showReviews} onClose={setShowReviews} />
-        <OrderDetails />
       </motion.div>
     </>
   );

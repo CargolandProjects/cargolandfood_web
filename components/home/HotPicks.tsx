@@ -23,7 +23,7 @@ const HotPicks = () => {
   }
 
   return (
-    <section className="sm:my-10">
+    <section className="my-4 sm:my-10">
       <h3>Hot Picks</h3>
       <div className="flex gap-6 mt-2 max-sm:justify-between overflow-x-auto hide-scrollbar">
         {data.map((item, index) => (
