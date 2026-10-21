@@ -16,9 +16,9 @@ import GiftModal from "../orders/GiftModal";
 import PickupConfirmModal from "../orders/PickupConfirmModal";
 import { Button } from "../ui/button";
 import {
-  useAddToCart,
   useClearCart,
   useRemoveCartItem,
+  useUpdateCart,
 } from "@/lib/hooks/mutations/useMutateCart";
 import { useMakePayment } from "@/lib/hooks/mutations/usePlaceOrder";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
@@ -79,7 +79,6 @@ const GlobalCheckoutCOntent = ({
     "DIGITAL_TRANSFER",
   );
   const [isRemovingItemId, setIsRemovingItemId] = useState<string | null>(null);
-  const [quantityChangeId, setQuantityChangeId] = useState<string | null>(null);
   const { isAuthenticated } = useSession();
 
   const {
@@ -92,7 +91,7 @@ const GlobalCheckoutCOntent = ({
   } = useCheckoutPreview(vendorId, deliveryType, isAuthenticated);
   // API mutations
   const { mutate: clearCart, isPending: isClearingCart } = useClearCart();
-  const { mutate: updateCart, isPending: isUpdatingCart } = useAddToCart();
+  const { mutate: updateCart, isPending: isUpdatingCart } = useUpdateCart();
   const { mutate: removeItem, isPending: isRemovingItem } =
     useRemoveCartItem(vendorId);
   const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
@@ -175,6 +174,8 @@ const GlobalCheckoutCOntent = ({
           vendorId,
         },
         {
+          onSuccess: () => toast.success(" cart updated successfully"),
+
           // 4. ONLY clear on error (rollback).
           // On success, the background refetch will trigger `delta === 0` above.
           onError: () => {

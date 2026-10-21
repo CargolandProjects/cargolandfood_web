@@ -1,78 +1,70 @@
 "use client";
 
-import { hamburgers } from "@/assets/images";
-import { Button } from "@/components/ui/button";
+import { useBannerPromos } from "@/lib/hooks/queries/useSpecials";
+import { useActiveZone } from "@/lib/hooks/useActiveZone";
+import Image from "next/image";
 import { SwiperSlide, Swiper } from "swiper/react";
-import { Autoplay } from "swiper/modules";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/pagination";
+import Link from "next/link";
+import { Skeleton } from "../ui/skeleton";
 
-interface Banner {
-  title: string;
-  description: string;
-  image: string;
-  cta: string;
-}
+const Loading = () => (
+  <div className="grid md:grid-cols-2 gap-6">
+    <Skeleton className="h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl" />
+    <Skeleton className="max-md:hidden h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl" />
+  </div>
+);
 
-const banners: Banner[] = [
-  {
-    title: "Special offer for August",
-    description: "We are here with the best burgers in town",
-    image: hamburgers.src,
-    cta: "Buy Now",
-  },
-  {
-    title: "Special offer for August",
-    description: "We are here with the best burgers in town",
-    image: hamburgers.src,
-    cta: "Buy Now",
-  },
-];
 const Banners = () => {
+  const { zoneId } = useActiveZone();
+  const { data: banners, isLoading, isSuccess } = useBannerPromos(zoneId || "");
   return (
-    <section className="my-4 sm:my-10">
-      <Swiper
-        modules={[Autoplay]}
-        spaceBetween={24}
-        slidesPerView={1}
-        autoplay={{
-          delay: 3000,
-          pauseOnMouseEnter: true,
-        }}
-        speed={600}
-        loop={true}
-        breakpoints={{
-          768: {
-            slidesPerView: 2,
-            loop: false,
-          },
-        }}
-        // className="flex gap-6"
-      >
-        {banners.map((Banner, index) => (
-          <SwiperSlide key={index}>
-            <div className="relative flex-1 px-7 py-3 rounded-sm sm:rounded-xl bg-linear-to-br from-primary to-[#FEEFE6] overflow-hidden">
-              <div className="max-w-[370.36px] -top-6 overflow-hidden absolute -right-20">
-                <img
-                  src={Banner.image}
-                  alt={Banner.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="max-w-[171px] relative">
-                <h3 className="font-bold text-base sm:text-xl leading-5 sm:leading-6 text-white">
-                  {Banner.title}
-                </h3>
-                <p className="text-xxs font-normal text-white mt-1">
-                  {Banner.description}
-                </p>
-                <Button className="bg-white max-sm:text-xxs text-brand-black max-sm:h-5 max-sm:w-20 px-5 mt-1 sm:mt-4 rounded-[3px] sm:rounded-sm  hover:text-white">
-                  {Banner.cta}
-                </Button>
-              </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+    <section className="mb-2 sm:mb-8">
+      {isLoading && <Loading />}
+      {isSuccess && (
+        <Swiper
+          modules={[Autoplay, Pagination, Navigation]}
+          spaceBetween={24}
+          slidesPerView={1}
+          speed={600}
+          loop={true}
+          autoplay={{
+            delay: 3000,
+            pauseOnMouseEnter: true,
+          }}
+          pagination={{
+            clickable: true, // makes dots clickable
+            dynamicBullets: true, // optional: set true for smaller dots that expand
+          }}
+          breakpoints={{
+            768: {
+              slidesPerView: 2,
+              loop: false,
+            },
+          }}
+          className="pb-7! md:pb-10! "
+        >
+          {banners
+            .filter((b) => !!b.campaignImgUrl.trim())
+            .map((banner, index) => (
+              <SwiperSlide key={index}>
+                <Link
+                  href={`/vendor/${banner.vendorId}`}
+                  className=" relative h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl overflow-hidden block"
+                >
+                  <Image
+                    src={banner.campaignImgUrl}
+                    alt="banner image"
+                    className="size-full object-cover"
+                    fill
+                  />
+                </Link>
+              </SwiperSlide>
+            ))}
+        </Swiper>
+      )}
     </section>
   );
 };

@@ -42,7 +42,7 @@ export function Header({ setSideBar }: HeaderProps) {
   const { user: session, isAuthenticated, signOut } = useSession();
   const defaultAddress = session?.address?.find((a) => a.setAddressDefault);
   // console.log("Session Data:", session);
-  
+
   const [firstName, lastName] = session?.fullName?.split(" ") || [];
   const initials =
     (firstName &&
@@ -50,7 +50,7 @@ export function Header({ setSideBar }: HeaderProps) {
       `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()) ||
     "";
 
-  const SEARCH_ROUTES = ["/", "/vendor"];
+  const SEARCH_ROUTES = ["/vendor"];
   const BACK_ROUTES = ["/vendor"];
 
   const matchRoutes = (routes: string[], path: string) =>
@@ -110,7 +110,7 @@ export function Header({ setSideBar }: HeaderProps) {
               <input
                 type="text"
                 placeholder="Search for food, restaurants...."
-                className="w-full pl-10 pr-4 py-2 border-2 border-gray-200 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition"
+                className="w-full pl-10 pr-4 py-2 border-2 border-gray-200 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-0 focus:border-primary duration-100 transition"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />

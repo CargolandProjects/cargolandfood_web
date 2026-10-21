@@ -2,7 +2,6 @@
 
 import { Menu } from "@/lib/services/vendors.service";
 import ProductModal from "./ProductModal";
-import { useAddToCart } from "@/lib/hooks/mutations/useMutateCart";
 import { RiAddFill, RiGiftLine } from "react-icons/ri";
 import { fallbackImg } from "@/lib/utils";
 import useAuthFlow from "@/lib/stores/authFlowStore";
@@ -12,6 +11,7 @@ import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { cld } from "@/lib/utils/cloudinary";
 import { clipboard } from "@/assets/svgs";
+import { useUpdateCart } from "@/lib/hooks/mutations/useMutateCart";
 
 interface VendorItemCard {
   menu: Menu;
@@ -33,7 +33,7 @@ const VendorItemCardB = ({
   const { isAuthenticated } = useSession();
   const openAuth = useAuthFlow((s) => s.openAuth);
 
-  const { mutate, isPending } = useAddToCart();
+  const { mutate, isPending } = useUpdateCart();
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();

@@ -72,8 +72,8 @@ const SelectionsContent = () => {
 
       {showDefaultView && (
         <div>
-          <HotPicks />
           <Promotions />
+          <HotPicks />
           <Reastaurants />
         </div>
       )}

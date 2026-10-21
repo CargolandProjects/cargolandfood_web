@@ -55,9 +55,9 @@ const Promotions = () => {
   const hasLocation = isAuthenticated ? isDefaultAddress : !!zoneId;
 
   return (
-    <div>
+    <div className="">
       {/* Discounts Section */}
-      <section className="mt-6 sm:my-10">
+      <section>
         <div className="flex justify-between">
           <h3>Discounts</h3>
           <div className="flex gap-4 max-sm:hidden">

@@ -70,10 +70,10 @@ export async function uploadImageToCloudinary(file: File): Promise<string> {
 
 export const IMAGE_SIZES = {
   VCard: { width: 550, height: 220 },
-  menu: { width: 380 },
-  productModal: { width: 650 },
+  menu: { width: 600 },
+  productModal: { width: 1200 },
   thumb: { width: 250, height: 250 },
-  hero: { width: 1400 },
+  hero: { width: 2400 },
 } as const;
 
 type ImageSizeKey = keyof typeof IMAGE_SIZES;

@@ -51,7 +51,7 @@ const Restaurants = () => {
   const hasLocation = isAuthenticated ? isDefaultAddress : !!zoneId;
 
   return (
-    <section className="my-6 sm:my-10">
+    <section className="my-4 sm:my-10">
       {/* {isError && (
         <div className="h-full flex justify-center items-center">
           <ErrorStateUi message="Error Getting Vendors " />

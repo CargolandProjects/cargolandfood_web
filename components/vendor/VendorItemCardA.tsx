@@ -2,7 +2,7 @@
 
 import { Menu } from "@/lib/services/vendors.service";
 import ProductModal from "./ProductModal";
-import { useAddToCart } from "@/lib/hooks/mutations/useMutateCart";
+import { useUpdateCart } from "@/lib/hooks/mutations/useMutateCart";
 import { RiAddFill, RiGiftLine } from "react-icons/ri";
 import { fallbackImg } from "@/lib/utils";
 import useAuthFlow from "@/lib/stores/authFlowStore";
@@ -45,7 +45,7 @@ const VendorItemCardA = ({
 
   // const params = useParams();
   // const vendorId = params.id as string;
-  const { mutate, isPending } = useAddToCart();
+  const { mutate, isPending } = useUpdateCart();
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -56,20 +56,25 @@ const VendorItemCardA = ({
       return;
     }
 
-    mutate({
-      item: {
-        menuId: id!,
-        menuName: name!,
-        unitPrice: price!,
-        description,
-        action: "SET",
-        quantity: 1,
-        menuImg: uploadImageUrl,
-        currency: "NGN",
-        // No addons for quick add
+    mutate(
+      {
+        item: {
+          menuId: id!,
+          menuName: name!,
+          unitPrice: price!,
+          description,
+          action: "SET",
+          quantity: 1,
+          menuImg: uploadImageUrl,
+          currency: "NGN",
+          // No addons for quick add
+        },
+        vendorId,
       },
-      vendorId,
-    });
+      {
+        onSuccess: (res) => toast.success(res.message || "Item added to cart"),
+      },
+    );
   };
 
   const handleClick = () => {

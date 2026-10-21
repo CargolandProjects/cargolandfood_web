@@ -432,4 +432,17 @@
   .no-scrollbar-x:hover::-webkit-scrollbar-thumb {
     opacity: 1;
   }
+
+  
+  .swiper-pagination-bullet {
+    background-color: var(--muted-foreground) !important;
+    /* inactive dot color (Tailwind gray-400) */
+
+  }
+
+  .swiper-pagination-bullet-active {
+    background-color: var(--primary) !important;
+    /* e.g., #f97316 for orange */
+    opacity: 1;
+  }
 }
