@@ -19,7 +19,7 @@ interface RemoveItemParams {
 
 type CartItems = Cart & { addressSnapshot: GetAddress };
 
-interface CartResponse {
+interface   CartResponse {
   status: string;
   message: string;
   data: {

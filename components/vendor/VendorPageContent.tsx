@@ -11,7 +11,6 @@ import { useRouter } from "next/navigation";
 import { info } from "@/assets/svgs";
 import PageCheckOut from "../orders/PageCheckOut";
 import { AnimatePresence, motion } from "framer-motion";
-import OrderDetails from "../globalUi/OrderDetails";
 import FavouritesModal from "../FavouritesModal";
 import ReviewsModal from "./ReviewModal";
 import { useVendorMenuById } from "@/lib/hooks/queries/useVendors";
@@ -26,8 +25,8 @@ import { vendorById } from "@/lib/services/vendors.service";
 import VendorJsonLd from "./VendorJsonLd";
 import { toast } from "sonner";
 import Image from "next/image";
-import { cld } from "@/lib/utils/cloudinary";
 import { useActiveZone } from "@/lib/hooks/useActiveZone";
+import { APIError, Cart } from "@/lib/types/cart.types";
 
 interface VendorPageContentProps {
   id: string;
@@ -120,11 +119,22 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
 
   // Check if cart has items from checkout preview
   // If error (e.g., 400 "No active cart"), treat as empty cart
-  const hasItemsInCart =
+
+  const errorData = checkoutError as APIError<Cart>;
+  console.log("Is checkout error", errorData?.data);
+
+  const hasErrorCart = !!errorData?.data?.items;
+
+  const hasCheckoutCart =
     !checkoutError &&
     checkoutData &&
-    checkoutData.cart.items &&
-    checkoutData.cart.items.length > 0;
+    checkoutData?.cart.items &&
+    checkoutData?.cart.items.length > 0;
+
+  const hasItemsInCart = hasCheckoutCart || hasErrorCart;
+
+  console.log("HasItemsInCart: ", hasItemsInCart);
+
   const isRestaurant = vendor?.businessCategory === "Restaurant";
 
   // Calculate local total for mobile button (sum of all item totalPrice)
@@ -435,7 +445,7 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
                 vendorId={id}
                 checkoutData={checkoutData}
                 isFetching={isCheckoutFetching}
-                isError={checkoutError}
+                checkoutError={checkoutError}
                 isSuccess={checkoutSuccess}
                 deliveryType={deliveryType}
                 onDeliveryTypeChange={setDeliveryType}
@@ -459,7 +469,7 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
                 vendorId={id}
                 checkoutData={checkoutData}
                 isFetching={isCheckoutFetching}
-                isError={checkoutError}
+                checkoutError={checkoutError}
                 isSuccess={checkoutSuccess}
                 deliveryType={deliveryType}
                 onDeliveryTypeChange={setDeliveryType}

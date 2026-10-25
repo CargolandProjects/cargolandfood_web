@@ -117,7 +117,7 @@ const AddressModal = () => {
                   onError: (res) => {
                     toast.error(res.message);
                   },
-                  onSettled: () => [setSettingId(null)],
+                  onSettled: () => setSettingId(null),
                 },
               );
             }
@@ -188,7 +188,7 @@ const AddressModal = () => {
           onError: (res) => {
             toast.error(res.message);
           },
-          onSettled: () => [setSettingId(null)],
+          onSettled: () => setSettingId(null),
         },
       );
       return;
