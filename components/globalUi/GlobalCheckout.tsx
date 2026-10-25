@@ -55,6 +55,7 @@ import { PaymentMethod } from "../orders/PageCheckOut";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { currency } from "@/lib/utils";
 import { useDebounce } from "@/lib/hooks/useDebounce";
+import { APIError, Cart, CartItem } from "@/lib/types/cart.types";
 
 interface GlobalCheckoutProps {
   isDesktop: boolean;
@@ -84,7 +85,7 @@ const GlobalCheckoutCOntent = ({
   const {
     data: checkoutData,
     isFetching,
-    isError,
+
     isSuccess,
     error,
     refetch,
@@ -106,6 +107,10 @@ const GlobalCheckoutCOntent = ({
   const debouncedQuantities = useDebounce(pendingQuantities, 500);
   const lastFiredQuantities = useRef<Record<string, number>>({});
 
+  const checkoutError = error as APIError<Cart>;
+  const hasErrorCart = !!error?.data?.items;
+  const isError = checkoutError && !hasErrorCart;
+
   const isPendingActions =
     isUpdatingCart ||
     isClearingCart ||
@@ -122,8 +127,14 @@ const GlobalCheckoutCOntent = ({
     discountTotal = "0",
     total = "0",
   } = checkoutData || {};
-  const cartItems = checkoutData?.cart.items || [];
-  const cartAddress = checkoutData?.cart.addressSnapshot;
+  const cartItems =
+    checkoutData?.cart.items || checkoutError?.data?.items || [];
+  const cartAddress =
+    checkoutData?.cart.addressSnapshot || checkoutError?.data?.addressSnapshot;
+  const cartId = checkoutData?.cart.id || checkoutError?.data?.id;
+  const errorMessage =
+    checkoutError?.message.includes("Vendor cannot deliver") &&
+    checkoutError.message;
 
   // This effect listens to the debounced cart item quantity value
   useEffect(() => {
@@ -242,10 +253,10 @@ const GlobalCheckoutCOntent = ({
 
   // Handle clear cart
   const handleClearCart = () => {
-    if (!checkoutData?.cart.id) return;
+    if (!cartId) return;
 
     clearCart(
-      { cartId: checkoutData.cart.id, vendorId },
+      { cartId, vendorId },
       {
         onSuccess: () => {
           setShowAlert(false);
@@ -268,7 +279,7 @@ const GlobalCheckoutCOntent = ({
 
   // Handle quantity change (increase or decrease)
   const handleQuantityChange = (
-    item: (typeof cartItems)[0],
+    item: CartItem,
     action: "increase" | "decrease",
   ) => {
     const baseQuantity = item.quantity;
@@ -434,7 +445,7 @@ const GlobalCheckoutCOntent = ({
           </div>
         )}
 
-        {isSuccess && cartItems.length > 0 && (
+        {(isSuccess || checkoutError?.data) && cartItems.length > 0 && (
           <div className="px-4 sm:px-6">
             {isDesktop && <Separator className="mt-2 mb-6" />}
 
@@ -548,7 +559,7 @@ const GlobalCheckoutCOntent = ({
                       Have a message for the rider ?
                     </p>
                     <p className="mt-0.5 text-gray-500 text-xs">
-                      {checkoutData.cart.noteToRider}
+                      {checkoutData?.cart.noteToRider}
                     </p>
                   </div>
                 </div>
@@ -566,7 +577,7 @@ const GlobalCheckoutCOntent = ({
                       Have a message for the rider ?
                     </p>
                     <p className="mt-0.5 text-gray-500 text-xs">
-                      {checkoutData.cart.noteToRestaurant}
+                      {checkoutData?.cart.noteToRestaurant}
                     </p>
                   </div>
                 </div>
@@ -620,13 +631,18 @@ const GlobalCheckoutCOntent = ({
                 <div className="space-y-2 mt-4">
                   <button
                     onClick={handleOpenAddress}
-                    className="w-full flex items-center justify-between"
+                    className="w-full flex items-center justify-between group"
                   >
                     <p className="flex items-center gap-2 ">
                       <RiMapPinFill className="size-5 text-primary shrink-0" />
-                      <span className="text-base leading-5 line-clamp-1">
-                        {cartAddress?.addressLine1}
-                      </span>
+                      <p className="text-start">
+                        <span className="text-base leading-5 line-clamp-1">
+                          {cartAddress?.addressLine1}
+                        </span>
+                        <span className="text-xs text-red-500 text-start group-hover:underline underline-offset-2">
+                          {errorMessage}
+                        </span>
+                      </p>
                     </p>
                     <RiArrowRightSLine className="size-5 text-neutral-500" />
                   </button>

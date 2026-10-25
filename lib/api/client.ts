@@ -21,7 +21,9 @@ const apiClient: AxiosInstance = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     const token =
-      typeof window !== "undefined" ? localStorage.getItem(`${process.env.NEXT_PUBLIC_ACCESS_KEY}`) : null;
+      typeof window !== "undefined"
+        ? localStorage.getItem(`${process.env.NEXT_PUBLIC_ACCESS_KEY}`)
+        : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -29,7 +31,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Minimal refresh-on-401 with single-flight and retry
@@ -43,15 +45,16 @@ apiClient.interceptors.response.use(
     const originalRequest: AxiosRequestConfig & { _retry?: boolean } =
       error.config || {};
 
-    const data = error?.response?.data as
-      | { statusCode?: number; code?: string; message?: string }
+    const res = error?.response?.data as
+      | { statusCode?: number; code?: string; message?: string; data?: unknown }
       | undefined;
     // Normalize Error Shape to Match Backend Standard
     const normalized = {
-      message: data?.message || error.message || "Something went wrong",
-      statusCode: data?.statusCode ?? error.response?.status,
-      code: data?.code,
+      message: res?.message || error.message || "Something went wrong",
+      statusCode: res?.statusCode ?? error.response?.status,
+      code: res?.code,
       cause: error, // keep original error for debugging
+      data: res?.data,
     };
 
     if (status === 401 && !originalRequest._retry) {
@@ -76,8 +79,16 @@ apiClient.interceptors.response.use(
               const tokens = res?.data;
               const newAccess = tokens?.accessToken;
               const newRefresh = tokens?.refreshToken;
-              if (newAccess) localStorage.setItem(`${process.env.NEXT_PUBLIC_ACCESS_KEY}`, newAccess);
-              if (newRefresh) localStorage.setItem(`${process.env.NEXT_PUBLIC_REFRESH_KEY}`, newRefresh);
+              if (newAccess)
+                localStorage.setItem(
+                  `${process.env.NEXT_PUBLIC_ACCESS_KEY}`,
+                  newAccess,
+                );
+              if (newRefresh)
+                localStorage.setItem(
+                  `${process.env.NEXT_PUBLIC_REFRESH_KEY}`,
+                  newRefresh,
+                );
               return newAccess as string;
             })
             .finally(() => {
@@ -89,27 +100,26 @@ apiClient.interceptors.response.use(
         if (newAccessToken) {
           // Retry original request with new token
           originalRequest.headers = originalRequest.headers || {};
-          (
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            originalRequest.headers as any
-          ).Authorization = `Bearer ${newAccessToken}`;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (originalRequest.headers as any).Authorization =
+            `Bearer ${newAccessToken}`;
           return apiClient(originalRequest);
         }
       } catch {
-         window.dispatchEvent(new Event("auth:logout"));
-         
+        window.dispatchEvent(new Event("auth:logout"));
+
         // Refresh failed; clear tokens
         if (typeof window !== "undefined") {
           localStorage.removeItem(`${process.env.NEXT_PUBLIC_ACCESS_KEY}`);
-          localStorage.removeItem(`${process.env.NEXT_PUBLIC_REFRESH_KEY }`);
+          localStorage.removeItem(`${process.env.NEXT_PUBLIC_REFRESH_KEY}`);
         }
-        
+
         return Promise.reject(normalized);
       }
     }
 
     return Promise.reject(normalized);
-  }
+  },
 );
 
 export default apiClient;

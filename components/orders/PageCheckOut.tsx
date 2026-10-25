@@ -18,7 +18,12 @@ import {
   // RiWallet3Fill,
 } from "react-icons/ri";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import type { CheckoutPreview } from "@/lib/types/cart.types";
+import type {
+  APIError,
+  Cart,
+  CartItem,
+  CheckoutPreview,
+} from "@/lib/types/cart.types";
 import {
   useClearCart,
   useRemoveCartItem,
@@ -55,9 +60,10 @@ export type PaymentMethod = "WALLET" | "DIGITAL_TRANSFER";
 interface CheckoutProps {
   vendorId: string;
   estTime: string;
-  checkoutData: CheckoutPreview;
+  checkoutData: CheckoutPreview | undefined;
+
   isFetching: boolean;
-  isError: boolean;
+  checkoutError: APIError<Cart>;
   isSuccess: boolean;
   deliveryType: DeliveryType;
   onDeliveryTypeChange: (type: Delivery) => void;
@@ -68,7 +74,7 @@ const PageCheckOut = ({
   vendorId,
   estTime,
   checkoutData,
-  isError,
+  checkoutError,
   isFetching,
   isSuccess,
   deliveryType,
@@ -113,6 +119,8 @@ const PageCheckOut = ({
       queryKey: ["checkoutPreview", vendorId, deliveryType],
     }) > 0;
 
+  const hasErrorCart = !!checkoutError?.data?.items;
+  const isError = checkoutError && !hasErrorCart;
   const isPendingActions =
     isUpdatingCart ||
     isClearingCart ||
@@ -129,8 +137,13 @@ const PageCheckOut = ({
     discountTotal = "0",
     total = "0",
   } = checkoutData || {};
-  const cartItems = checkoutData.cart.items;
-  const CartAddress = checkoutData.cart.addressSnapshot;
+
+  const errorCartData = checkoutError?.data;
+  const cartItems = checkoutData?.cart.items || errorCartData?.items || [];
+  const cartAddress =
+    checkoutData?.cart.addressSnapshot || errorCartData?.addressSnapshot;
+  const cartId = checkoutData?.cart.id || errorCartData?.id;
+  const errorMessage = checkoutError?.message.includes("Vendor cannot deliver") && checkoutError.message;
 
   // This effect listens to the debounced cart item quantity value
   useEffect(() => {
@@ -255,10 +268,10 @@ const PageCheckOut = ({
   };
 
   const handleClearCart = () => {
-    if (!checkoutData?.cart.id) return;
+    if (!cartId) return;
 
     clearCart(
-      { cartId: checkoutData.cart.id, vendorId },
+      { cartId, vendorId },
       {
         onSuccess: () => {
           setShowAlert(false);
@@ -282,7 +295,7 @@ const PageCheckOut = ({
 
   // Handle quantity change (increase or decrease)
   const handleQuantityChange = (
-    item: (typeof cartItems)[0],
+    item: CartItem,
     action: "increase" | "decrease",
   ) => {
     const baseQuantity = item.quantity;
@@ -329,14 +342,14 @@ const PageCheckOut = ({
       riderNote: {
         open: showRiderNote,
         onOpenChange: setShowRiderNote,
-        initialMessage: checkoutData.cart.noteToRider || "",
+        initialMessage: checkoutData?.cart.noteToRider || "",
         vendorId,
         deliveryType,
       },
       restaurantNote: {
         open: showRestaurantNote,
         onOpenChange: setShowRestaurantNote,
-        initialMessage: checkoutData.cart.noteToRestaurant || "",
+        initialMessage: checkoutData?.cart.noteToRestaurant || "",
         vendorId,
         deliveryType,
       },
@@ -368,8 +381,8 @@ const PageCheckOut = ({
     }),
     [
       showRiderNote,
-      checkoutData.cart.noteToRider,
-      checkoutData.cart.noteToRestaurant,
+      checkoutData?.cart.noteToRider,
+      checkoutData?.cart.noteToRestaurant,
       vendorId,
       deliveryType,
       showRestaurantNote,
@@ -429,7 +442,7 @@ const PageCheckOut = ({
           </div>
         )}
 
-        {isSuccess && cartItems.length > 0 && (
+        {(isSuccess || errorCartData) && cartItems.length > 0 && (
           <div>
             {/* Pack Items */}
             <div className="space-y-4 sm:space-y-6 max-sm:mt-1">
@@ -538,17 +551,17 @@ const PageCheckOut = ({
             {/* Message rows */}
             <div className="space-y-4 mb-6">
               <button
-                onClick={() => setShowRiderNote(true)}
+                onClick={() => setShowRestaurantNote(true)}
                 className="w-full flex items-center justify-between group cursor-pointer text-start"
               >
                 <div className="flex items-center gap-2 ">
                   <RiRestaurant2Fill className="size-5 text-neutral-600 shrink-0" />
                   <div>
                     <p className="text-base leading-5 block group-hover:underline ">
-                      Have a message for the rider ?
+                      Have a message for the restaurant ?
                     </p>
                     <p className="mt-0.5 text-gray-500 text-xs">
-                      {checkoutData.cart.noteToRider}
+                      {checkoutData?.cart.noteToRestaurant}
                     </p>
                   </div>
                 </div>
@@ -556,7 +569,7 @@ const PageCheckOut = ({
               </button>
 
               <button
-                onClick={() => setShowRestaurantNote(true)}
+                onClick={() => setShowRiderNote(true)}
                 className="w-full flex items-center justify-between group cursor-pointer text-start"
               >
                 <div className="flex items-center gap-2 ">
@@ -566,7 +579,7 @@ const PageCheckOut = ({
                       Have a message for the rider ?
                     </p>
                     <p className="mt-0.5 text-gray-500 text-xs">
-                      {checkoutData.cart.noteToRestaurant}
+                      {checkoutData?.cart.noteToRider}
                     </p>
                   </div>
                 </div>
@@ -620,13 +633,16 @@ const PageCheckOut = ({
                 <div className="space-y-2 mt-4">
                   <button
                     onClick={handleOpenAddress}
-                    className="w-full flex items-center justify-between"
+                    className="w-full flex items-center justify-between group"
                   >
                     <p className="flex items-center gap-2 ">
                       <RiMapPinFill className="size-5 text-primary shrink-0" />
-                      <span className="text-base leading-5 line-clamp-1">
-                        {CartAddress.addressLine1}
-                      </span>
+                      <p className="text-start">
+                        <span className="text-base leading-5 line-clamp-1">
+                          {cartAddress?.addressLine1}
+                        </span>
+                        <span className="text-xs text-red-500 text-start group-hover:underline underline-offset-2">{errorMessage}</span>
+                      </p>
                     </p>
                     <RiArrowRightSLine className="size-5 text-neutral-500" />
                   </button>

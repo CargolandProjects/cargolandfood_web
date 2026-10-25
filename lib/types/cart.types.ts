@@ -1,8 +1,16 @@
-// Response wrapper from API
+// Response wrappers from API
 export interface APIResponse<T> {
   status: string;
   message: string;
   data: T;
+}
+
+export interface APIError<T = unknown> {
+  message: string;
+  statusCode?: number;
+  code?: string;
+  data?: T;
+  cause?: unknown;
 }
 
 // Cart and Order Type Definitions based on actual API responses
@@ -49,7 +57,7 @@ export interface Cart {
   status: "ACTIVE" | "LOCKED";
   currency: "NGN";
   deliveryType: "DELIVERY" | "PICKUP";
-  addressSnapshot: AddressSnapshot; 
+  addressSnapshot: AddressSnapshot;
   createdAt: string;
   updatedAt: string;
   items: CartItem[];

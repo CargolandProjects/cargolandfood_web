@@ -60,7 +60,7 @@ export function useClearCart() {
 
     onSuccess: (_, vars) => {
       // Invalidate checkout preview to reflect empty cart
-      queryClient.invalidateQueries({
+      queryClient.resetQueries({
         queryKey: ["checkoutPreview", vars.vendorId],
       });
       queryClient.invalidateQueries({

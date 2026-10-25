@@ -18,6 +18,7 @@ export function formatDateWCommaB(date: Date | string) {
 
   return `${format(date, "MMM do, yyyy")}`;
 }
+
 export function formatPrettyDate(date: Date | string) {
   if (!date) return null;
 
