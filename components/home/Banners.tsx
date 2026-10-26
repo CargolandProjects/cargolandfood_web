@@ -11,15 +11,17 @@ import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
 import LoadingSkeleton from "../vendor/LoadingSkeleton";
-import { PercentCircle } from "lucide-react";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import AllPromoBanners from "./AllPromoBanners";
 import { useState } from "react";
 
 const Loading = () => (
-  <div className="grid md:grid-cols-2 gap-6">
-    <Skeleton className="h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl" />
-    <Skeleton className="max-md:hidden h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl" />
+  <div className="flex items-center gap-6 w-full">
+    <div className="grid md:grid-cols-2 gap-6 w-full">
+      <Skeleton className="h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl" />
+      <Skeleton className="max-md:hidden h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl" />
+    </div>
+    <Skeleton className="max-md:hidden h-9.5 w-[81px] rounded-full shrink-0"/>
   </div>
 );
 
