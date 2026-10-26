@@ -62,7 +62,7 @@ const CategoriesSelection = () => {
   }
 
   return (
-    <section className="my-6 sm:my-10 h-full">
+    <section className="mb-6 sm:mb-10 h-full">
       {/* <FilterBar
         filters={filters}
         activeFilter={activeFilter}

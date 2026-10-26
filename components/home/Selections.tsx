@@ -11,6 +11,7 @@ import { useActiveZone } from "@/lib/hooks/useActiveZone";
 import RestaurantItemCardSkeleton from "../vendor/VendorItemCardSkeleton";
 import VendorItemCardA from "../vendor/VendorItemCardA";
 import CategoriesSelection from "./CategoriesSelection";
+import Banners from "./Banners";
 
 const SelectionsContent = () => {
   const { activeCategory } = useCategory();
@@ -71,15 +72,16 @@ const SelectionsContent = () => {
       )}
 
       {showDefaultView && (
-        <div>
-          <Promotions />
+        <>
           <HotPicks />
+          <Promotions />
+          <Banners showScreen="MOBILE" />
           <Reastaurants />
-        </div>
+        </>
       )}
 
       {showCategoryView && (
-        <section className="mt-1 h-full">
+        <section className="h-full">
           {activeCategory && <CategoriesSelection />}
         </section>
       )}
