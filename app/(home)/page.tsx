@@ -3,16 +3,16 @@ import Categories from "@/components/home/Categories";
 import Selections from "@/components/home/Selections";
 import Banners from "@/components/home/Banners";
 import OrganizationJsonLd from "@/components/OrganizationJsonLd";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRef } from "react";
 import { auth } from "@/lib/services/auth.service";
-import { RiSearchLine } from "react-icons/ri";
-import { useRouter } from "next/navigation";
+// import { RiSearchLine } from "react-icons/ri";
+// import { useRouter } from "next/navigation";
 
 export default function Homepage() {
-  const [search, setSearch] = useState("");
+  // const [search, setSearch] = useState("");
   const hasTracked = useRef(false);
-  const router = useRouter();
+  // const router = useRouter();
 
   useEffect(() => {
     // Guard to prevent double-firing in React Strict Mode (development only)
@@ -22,21 +22,20 @@ export default function Homepage() {
     auth.markVisitor().catch(() => {});
   }, []);
 
-  const handleSearch = (e: ChangeEvent) => {
-    e.preventDefault();
-    if (!search.trim()) return;
+  // const handleSearch = (e: ChangeEvent) => {
+  //   e.preventDefault();
+  //   if (!search.trim()) return;
 
-    router.push(`/?search=${search}`);
-    setSearch("");
-  };
+  //   router.push(`/?search=${search}`);
+  //   setSearch("");
+  // };
 
   return (
     <>
       <OrganizationJsonLd />
       <div className="h-full flex flex-col ">
-        <Banners />
         {/* Search Bar */}
-        <form
+        {/* <form
           onSubmit={handleSearch}
           className="sm:hidden relative w-full"
         >
@@ -48,9 +47,10 @@ export default function Homepage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-        </form>
+        </form> */}
 
         <Categories />
+        <Banners />
         <Selections />
       </div>
     </>

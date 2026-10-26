@@ -61,7 +61,7 @@ interface GlobalCheckoutProps {
   isDesktop: boolean;
   closeCheckout: () => void;
 }
-const GlobalCheckoutCOntent = ({
+const GlobalCheckoutContent = ({
   isDesktop,
   closeCheckout,
 }: GlobalCheckoutProps) => {
@@ -828,7 +828,7 @@ const GlobalCheckout = () => {
       {isDesktop && (
         <Sheet open={open} onOpenChange={closeCheckout}>
           <SheetContent className="min-w-116! [&>button]:hidden">
-            <GlobalCheckoutCOntent
+            <GlobalCheckoutContent
               isDesktop={isDesktop}
               closeCheckout={closeCheckout}
             />
@@ -845,7 +845,7 @@ const GlobalCheckout = () => {
             transition={{ type: "tween", ease: "easeOut", duration: 0.15 }}
             className="fixed z-37 inset-0 bg-white"
           >
-            <GlobalCheckoutCOntent
+            <GlobalCheckoutContent
               isDesktop={isDesktop}
               closeCheckout={closeCheckout}
             />

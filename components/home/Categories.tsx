@@ -83,7 +83,7 @@ const CategoryContent = () => {
   // }
 
   return (
-    <section className="max-sm:my-4 sm:mb-10">
+    <section className="mt-1 sm:mt-2">
       {categories?.length > 0 && (
         <>
           <h3>Categories</h3>

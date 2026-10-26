@@ -50,7 +50,7 @@ export function Header({ setSideBar }: HeaderProps) {
       `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()) ||
     "";
 
-  const SEARCH_ROUTES = ["/vendor"];
+  const SEARCH_ROUTES = ["", "/vendor"];
   const BACK_ROUTES = ["/vendor"];
 
   const matchRoutes = (routes: string[], path: string) =>

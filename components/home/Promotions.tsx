@@ -55,7 +55,7 @@ const Promotions = () => {
   const hasLocation = isAuthenticated ? isDefaultAddress : !!zoneId;
 
   return (
-    <div className="">
+    <div className="mt-6 sm:mt-10">
       {/* Discounts Section */}
       <section>
         <div className="flex justify-between">
@@ -74,6 +74,7 @@ const Promotions = () => {
               <RiArrowRightLine className="text-black" />
             </Button>
           </div>
+          
           <p className="sm:hidden text-primary hover:underline active:underline underline-offset-2 hover:cursor-pointer">
             See all
           </p>
@@ -107,7 +108,7 @@ const Promotions = () => {
         )}
 
         {isSuccess && discounts.length > 0 && (
-          <div className="w-full section-y ">
+          <div className="md:pl-3 w-full section-y">
             <Swiper
               onBeforeInit={(swiper) => {
                 discountsSwiperRef.current = swiper;
