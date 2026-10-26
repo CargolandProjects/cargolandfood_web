@@ -36,7 +36,7 @@ const Banners = ({
       {showScreen === "LARGE" && (
         <section className="my-4 sm:my-10 md:flex items-center gap-4 sm:gap-6">
           {isLoading && <Loading />}
-          
+
           {isSuccess && banners.length > 0 && (
             <Swiper
               modules={[Autoplay]}
@@ -80,13 +80,15 @@ const Banners = ({
             </Swiper>
           )}
 
-          <Button
-            onClick={() => setOpen(true)}
-            variant="outline"
-            className="max-md:hidden shrink-0 py-2 px-4 h-auto text-base font-normal leading-5 border-primary text-primary hover:text-primary rounded-full"
-          >
-            See All
-          </Button>
+          {isSuccess && (
+            <Button
+              onClick={() => setOpen(true)}
+              variant="outline"
+              className="max-md:hidden shrink-0 py-2 px-4 h-auto text-base font-normal leading-5 border-primary text-primary hover:text-primary rounded-full"
+            >
+              See All
+            </Button>
+          )}
         </section>
       )}
 
