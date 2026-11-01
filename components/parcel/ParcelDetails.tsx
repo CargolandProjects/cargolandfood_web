@@ -29,10 +29,18 @@ import {
 import z from "zod";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { useCreateParcel } from "@/lib/hooks/mutations/useParcel";
+import {
+  useCreateParcel,
+  useDeleteParcel,
+  useMakeParcelPayment,
+} from "@/lib/hooks/mutations/useMutateParcel";
 import ParcelCheckout from "./ParcelCheckout";
 import { useActiveParcel } from "@/lib/hooks/queries/useGetParcel";
 import { ActiveParcel } from "@/lib/services/parcel.service";
+import { useMakePayment } from "@/lib/hooks/mutations/usePlaceOrder";
+import ConfirmationModal from "../ConfirmationModal";
+import { useChargeWallet } from "@/lib/hooks/mutations/useChargeWallet";
+import { PaymentMethod } from "../orders/PageCheckOut";
 
 export type ParcelSteps = "ROUTE" | "PARCEL_INFO" | "CHECKOUT";
 
@@ -128,6 +136,16 @@ const ParcelDetailsContent = ({
   form: UseFormReturn<ParcelDetailsData>;
 }) => {
   const { mutate: createParcel, isPending } = useCreateParcel();
+  const { mutate: deleteParcel, isPending: isDeleting } = useDeleteParcel();
+  const { mutate: makePayment, isPending: isMakingPayment } =
+    useMakeParcelPayment();
+  const { mutate: chargeWallet, isPending: isChargingWallet } =
+    useChargeWallet();
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
+    "DIGITAL_TRANSFER",
+  );
 
   const pickUpAddrLat = useWatch({
     control: form.control,
@@ -167,10 +185,9 @@ const ParcelDetailsContent = ({
       case "CHECKOUT":
         return (
           <ParcelCheckout
-            id={activeParcel?.id}
-            form={form}
-            setOpen={setOpen}
-            setAction={setAction}
+            paymentMethod={paymentMethod}
+            setPaymentMethod={setPaymentMethod}
+            activeParcel={activeParcel}
           />
         );
     }
@@ -178,9 +195,55 @@ const ParcelDetailsContent = ({
 
   const onSubmit = (data: ParcelDetailsData) => {
     console.log("Parcel Data: ", data);
+
+    if (activeParcel?.id) {
+      makePayment(activeParcel.id, {
+        onSuccess: (res) => {
+          const authUrl = res.data.authorization_url;
+
+          if (!authUrl) {
+            toast.error("Payment initiation failed");
+            return;
+          }
+          //Navigate to payment gateway url
+          window.location.href = authUrl;
+        },
+      });
+      return;
+    }
+
     createParcel(data, {
+      onSuccess: (res) => {
+        makePayment(res.data.id, {
+          onSuccess: (res) => {
+            const authUrl = res.data.authorization_url;
+
+            if (!authUrl) {
+              toast.error("Payment initiation failed");
+              return;
+            }
+            //Navigate to payment gateway url
+            window.location.href = authUrl;
+          },
+        });
+      },
+    });
+  };
+
+  const handleDelete = () => {
+    // this will handle cancel when the parcel hasn't been created at all
+    if (!activeParcel?.id) {
+      form.reset(DEFAULT_VALUES);
+      setOpen(false);
+      // setAction(false);
+      return;
+    }
+    // this will handle cancel when there is an actie parcel id and the user probably resumed at checkout
+    deleteParcel(activeParcel.id, {
       onSuccess: () => {
-        setStep("CHECKOUT");
+        form.reset(DEFAULT_VALUES);
+        setOpen(false);
+        setAction(true);
       },
     });
   };
@@ -224,8 +287,8 @@ const ParcelDetailsContent = ({
       toast.error("Latitude or longitude is missing for the pickup address");
       return;
     }
-
-    setStep("PARCEL_INFO");
+    if (step === "ROUTE") setStep("PARCEL_INFO");
+    if (step === "PARCEL_INFO") setStep("CHECKOUT");
   };
 
   return (
@@ -279,15 +342,63 @@ const ParcelDetailsContent = ({
           )}
 
           {step === "PARCEL_INFO" && (
-            <Button disabled={isPending} className="mt-25 submit-btn">
-              {isPending ? (
-                <RiLoader2Line className="size-5 animate-spin" />
-              ) : (
-                "Create Parcel"
-              )}
+            <Button
+              onClick={handleNext}
+              type="button"
+              disabled={disabled}
+              className="mt-25 submit-btn"
+            >
+              Create Parcel
             </Button>
           )}
+
+          {step === "CHECKOUT" && (
+            <div className="flex flex-col  gap-4 mt-6 md:mt-10">
+              <Button
+                // type="button"
+                //   onClick={() => handlePlaceOrder(cartItems[0].cartId, orderSummary)}
+                //   disabled={isMakingPayment || isChargingWallet}
+                className="submit-btn "
+              >
+                {isMakingPayment || isChargingWallet ? (
+                  <RiLoader2Line className="size-5 animate-spin" />
+                ) : (
+                  "Make Payment"
+                )}
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setShowAlert(true)}
+                disabled={isDeleting}
+                variant="outline"
+                className="submit-btn hover:bg-gray-50 text-neutral-500 border-neutral-300"
+              >
+                {isDeleting ? (
+                  <RiLoader2Line className="size-5 animate-spin" />
+                ) : (
+                  "CANCEL ORDER"
+                )}
+              </Button>
+            </div>
+
+            // <Button disabled={isPending} className="mt-25 submit-btn">
+            //   {isPending ? (
+            //     <RiLoader2Line className="size-5 animate-spin" />
+            //   ) : (
+            //     "Create Parcel"
+            //   )}
+            // </Button>
+          )}
         </form>
+
+        <ConfirmationModal
+          title="Delete Parcel"
+          description="Are you sure you want to delete your parcel Order?"
+          confirmText="Proceed "
+          open={showAlert}
+          onOpenChange={setShowAlert}
+          onConfirm={handleDelete}
+        />
       </FormProvider>
     </div>
   );
@@ -391,6 +502,7 @@ const ParcelDetails = ({
     session?.fullName,
     session?.phoneNumber,
     form,
+    open,
     activeParcel,
   ]);
 

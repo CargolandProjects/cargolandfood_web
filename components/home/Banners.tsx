@@ -21,7 +21,7 @@ const Loading = () => (
       <Skeleton className="h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl" />
       <Skeleton className="max-md:hidden h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl" />
     </div>
-    <Skeleton className="max-md:hidden h-9.5 w-[81px] rounded-full shrink-0"/>
+    <Skeleton className="max-md:hidden h-9.5 w-[81px] rounded-full shrink-0" />
   </div>
 );
 
@@ -57,7 +57,7 @@ const Banners = ({
               breakpoints={{
                 768: {
                   slidesPerView: 2,
-                  loop: false,
+                  // loop: false,
                 },
               }}
               // className="pb-7! md:pb-10! "
@@ -131,12 +131,12 @@ const Banners = ({
               //   clickable: true, // makes dots clickable
               //   dynamicBullets: true, // optional: set true for smaller dots that expand
               // }}
-              breakpoints={{
-                768: {
-                  slidesPerView: 2,
-                  loop: false,
-                },
-              }}
+              // breakpoints={{
+              //   768: {
+              //     slidesPerView: 2,
+              //     loop: false,
+              //   },
+              // }}
               className="mt-2.5"
             >
               {banners

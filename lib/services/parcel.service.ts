@@ -1,7 +1,7 @@
 import { ParcelDetailsData } from "@/components/parcel/ParcelDetails";
 import apiClient from "../api/client";
 import { API_ROUTES } from "../api/endpoints";
-import { APIResponse } from "../types/cart.types";
+import { APIResponse, MakePaymentResponse } from "../types/cart.types";
 
 export interface ParcelDlFeesData {
   pickUpAddrLat: string;
@@ -48,7 +48,10 @@ type ActiveParcelRes = APIResponse<ActiveParcel>;
 
 export const parcel = {
   async createParcel(data: ParcelDetailsData) {
-    const res = await apiClient.post(API_ROUTES.parcel.createParcel, data);
+    const res = await apiClient.post<ActiveParcelRes>(
+      API_ROUTES.parcel.createParcel,
+      data,
+    );
     return res.data;
   },
 
@@ -65,6 +68,12 @@ export const parcel = {
   async deleteParcel(parcelId: string) {
     const res = await apiClient.delete(
       API_ROUTES.parcel.deleteParcel(parcelId),
+    );
+    return res.data;
+  },
+  async makeParcelPayment(parcelId: string) {
+    const res = await apiClient.post<MakePaymentResponse>(
+      API_ROUTES.parcel.makeParcelPayment(parcelId),
     );
     return res.data;
   },

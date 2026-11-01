@@ -170,6 +170,8 @@ export type OrderStatus =
   | "ASSIGN_TO_RIDER"
   | "RIDER_ACCEPTED"
   | "PICKUP_ORDER"
+  | "RIDER_OUTSIDE"
+  | "PICKUP"
   | "DELIVERED";
 
 export type PaymentStatus =

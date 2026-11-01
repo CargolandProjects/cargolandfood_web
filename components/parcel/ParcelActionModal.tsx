@@ -60,7 +60,7 @@ const ParcelActionModal = ({
           </div>
         )}
 
-        {!isLoading && activeParcel && (
+        {!isLoading && activeParcel?.paymentStatus === "PENDING_PAYMENT" && (
           <>
             <DialogHeader className="items-center gap-3">
               <DialogTitle className="text-2xl font-bold leading-8">

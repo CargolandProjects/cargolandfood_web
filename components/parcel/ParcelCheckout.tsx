@@ -4,13 +4,14 @@ import {
   RiBankFill,
   RiCoupon2Fill,
   RiEBike2Line,
+  RiEdit2Fill,
   RiGlobalFill,
   RiLoader2Line,
   RiRestaurant2Fill,
   RiWallet3Fill,
 } from "react-icons/ri";
 import { Separator } from "../ui/separator";
-import { Field, FieldLabel } from "../ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { useEffect, useState } from "react";
 import { PaymentMethod } from "../orders/PageCheckOut";
@@ -18,59 +19,310 @@ import { Button } from "../ui/button";
 import Loader from "../Loader";
 import { useChargeWallet } from "@/lib/hooks/mutations/useChargeWallet";
 import { useMakePayment } from "@/lib/hooks/mutations/usePlaceOrder";
-import {
-  useDeleteParcel,
-  useGetParcelDlFees,
-} from "@/lib/hooks/mutations/useParcel";
+import { useDeleteParcel } from "@/lib/hooks/mutations/useMutateParcel";
 import { useActiveParcel } from "@/lib/hooks/queries/useGetParcel";
-import { UseFormReturn } from "react-hook-form";
-import {
-  DEFAULT_VALUES,
-  ParcelDetailsData,
-} from "./ParcelDetails";
+import { Controller, useFormContext, UseFormReturn } from "react-hook-form";
+import { DEFAULT_VALUES, ParcelDetailsData } from "./ParcelDetails";
 import ConfirmationModal from "../ConfirmationModal";
+import { PhoneInput } from "../ui/phone-input";
+import { Input } from "../ui/input";
+import { useGetParcelDlFees } from "@/lib/hooks/queries/useParcel";
+import { ActiveParcel } from "@/lib/services/parcel.service";
 
 const ParcelCheckout = ({
-  id,
-  setOpen,
-  setAction,
-  form,
+  paymentMethod,
+  setPaymentMethod,
+  activeParcel,
 }: {
-  id: string | undefined;
-  setOpen: (v: boolean) => void;
-  setAction: (v: boolean) => void;
-  form: UseFormReturn<ParcelDetailsData>;
+  // form: UseFormReturn<ParcelDetailsData>;
+  activeParcel: ActiveParcel | undefined;
+
+  paymentMethod: PaymentMethod | null;
+  setPaymentMethod: (v: PaymentMethod) => void;
 }) => {
   const [showCoupon, setShowCoupon] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
+  const [edit, setEdit] = useState(false);
 
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
-    "DIGITAL_TRANSFER",
-  );
+  const { control, getValues, watch } = useFormContext<ParcelDetailsData>();
+  const formData = getValues();
 
-  const { data } = useActiveParcel();
-  const { mutate: deleteParcel, isPending: isDeleting } = useDeleteParcel();
-  const { mutate: getDlFees, isPending: isGettingFees } = useGetParcelDlFees();
-  const { mutate: makePayment, isPending: isMakingPayment } = useMakePayment();
-  const { mutate: chargeWallet, isPending: isChargingWallet } =
-    useChargeWallet();
+  const pickUpAddrLat = watch("pickUpAddrLat");
+  const pickUpAddrLng = watch("pickUpAddrLng");
+  const dropOffAddrLat = watch("dropOffAddrLat");
+  const dropOffAddrLng = watch("dropOffAddrLng");
+  const packageWorth = watch("packageWorth");
+  const packageIsurance = watch("packageIsurance");
 
-  const handleDelete = () => {
-    if (!id) return;
-    deleteParcel(id, {
-      onSuccess: () => {
-        form.reset(DEFAULT_VALUES);
-        setOpen(false);
-        setAction(true);
-      },
-    });
-  };
+  const {
+    data: deliveryFees,
+    isLoading: isGettingFees,
+    isSuccess,
+    isError,
+    refetch,
+  } = useGetParcelDlFees({
+    pickUpAddrLat,
+    pickUpAddrLng,
+    dropOffAddrLat,
+    dropOffAddrLng,
+    packageWorth,
+    packageIsurance,
+  });
 
   return (
     <div>
+      <div className="">
+        <h3 className="text-base font-medium leading-5">
+          Confirm your details
+        </h3>
+
+        <div className="my-6 px-2 py-3 bg-primary/8 rounded-sm">
+          <div className="flex justify-between">
+            <h3 className="text-base font-medium leading-5">Parcel Details</h3>
+            <Button
+              onClick={() => setEdit((prev) => !prev)}
+              type="button"
+              variant="ghost"
+              className="p-0! h-auto hover:bg-transparent"
+            >
+              <RiEdit2Fill className="size-6 text-primary" />
+            </Button>
+          </div>
+
+          {(!edit || activeParcel) && (
+            <div className="mt-3 rounded-sm bg-white space-y-4 px-3 py-4">
+              <div className="flex justify-between gap-4">
+                <span className="shrink-0">Sender name:-</span>
+                <span className="font-medium">{formData.senderName}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="shrink-0">Sender number:-</span>
+                <span className="font-medium">{formData.senderNumber}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="shrink-0">Receiver name:-</span>
+                <span className="font-medium">{formData.receiverName}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="shrink-0">Receiver number:-</span>
+                <span className="font-medium">{formData.receiverNumber}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="shrink-0">Pick Up:-</span>
+                <span className="font-medium line-clamp-1">
+                  {formData.pickUpAddrName}
+                </span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="shrink-0">Drop Off:-</span>
+                <span className="font-medium line-clamp-1">
+                  {formData.dropOffAddrName}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {edit && !activeParcel && (
+            <FieldGroup className="mt-3 rounded-sm bg-white gap-4 px-3 py-4">
+              <Controller
+                name="senderName"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} className="gap-1">
+                    {/* Wrap the label and input in a flex row */}
+                    <div className="flex items-end justify-between gap-4">
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="form-label font-normal! shrink-0"
+                      >
+                        Sender name:-
+                      </FieldLabel>
+                      <Input
+                        {...field}
+                        id={field.name}
+                        aria-invalid={fieldState.invalid}
+                        placeholder="Name"
+                        className="border-0 border-b border-gray-300 rounded-none bg-transparent px-0 text-right shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-black h-5 transition-colors font-medium text-sm"
+                      />
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="senderNumber"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} className="gap-1">
+                    <div className="flex flex-row items-end justify-between gap-4">
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="form-label font-normal! shrink-0"
+                      >
+                        Sender number:-
+                      </FieldLabel>
+                      <div className="flex-1 flex justify-end">
+                        <PhoneInput
+                          {...field}
+                          value={field.value}
+                          onChange={field.onChange}
+                          defaultCountry={"NG"}
+                          inline
+                          aria-invalid={fieldState.invalid}
+                          placeholder="+234 08000000000"
+                          // We use arbitrary variants [&>input] to style the actual input inside the PhoneInput wrapper
+                          className="border-0 border-b border-gray-300 rounded-none bg-transparent px-0 shadow-none [&>input]:text-right [&>input]:border-0 [&>input]:bg-transparent [&>input]:shadow-none [&>input]:focus-visible:ring-0 h-5 transition-colors font-medium text-sm"
+                        />
+                      </div>
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="receiverName"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} className="gap-1">
+                    {/* Wrap the label and input in a flex row */}
+                    <div className="flex flex-row items-end justify-between gap-4">
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="form-label font-normal! shrink-0"
+                      >
+                        Receiver name:-
+                      </FieldLabel>
+                      <Input
+                        {...field}
+                        id={field.name}
+                        aria-invalid={fieldState.invalid}
+                        placeholder="Name"
+                        className="border-0 border-b border-gray-300 rounded-none bg-transparent px-0 text-right shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-black h-5 transition-colors font-medium text-sm"
+                      />
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="receiverNumber"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} className="gap-1">
+                    <div className="flex flex-row items-end justify-between gap-4">
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="form-label font-normal! shrink-0"
+                      >
+                        Receiver number:-
+                      </FieldLabel>
+                      <div className="flex-1 flex justify-end">
+                        <PhoneInput
+                          {...field}
+                          value={field.value}
+                          onChange={field.onChange}
+                          defaultCountry={"NG"}
+                          inline
+                          aria-invalid={fieldState.invalid}
+                          placeholder="+234 08000000000"
+                          // We use arbitrary variants [&>input] to style the actual input inside the PhoneInput wrapper
+                          className="border-0 border-b border-gray-300 rounded-none bg-transparent px-0 shadow-none [&>input]:text-right [&>input]:border-0 [&>input]:bg-transparent [&>input]:shadow-none [&>input]:focus-visible:ring-0 h-5 transition-colors font-medium text-sm"
+                        />
+                      </div>
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="pickUpAddrName"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} className="gap-1">
+                    {/* Wrap the label and input in a flex row */}
+                    <div className="flex flex-row items-end justify-between gap-4">
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="form-label font-normal! shrink-0"
+                      >
+                        Pick Up:-
+                      </FieldLabel>
+                      <Input
+                        {...field}
+                        id={field.name}
+                        aria-invalid={fieldState.invalid}
+                        placeholder="Pickup Address"
+                        disabled
+                        className="border-0 border-b border-gray-300 rounded-none bg-transparent px-0 text-right shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-black h-5 transition-colors font-medium text-sm"
+                      />
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="dropOffAddrName"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} className="gap-1">
+                    {/* Wrap the label and input in a flex row */}
+                    <div className="flex flex-row items-end justify-between gap-4">
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="form-label font-normal! shrink-0"
+                      >
+                        Drop Off:-
+                      </FieldLabel>
+                      <Input
+                        {...field}
+                        id={field.name}
+                        aria-invalid={fieldState.invalid}
+                        placeholder="Pickup Address"
+                        disabled
+                        className="border-0 border-b border-gray-300 rounded-none bg-transparent px-0 text-right shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-black h-5 transition-colors font-medium text-sm"
+                      />
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              {/* <Button
+              // className="w-fit self-end"
+              >
+                Save
+              </Button> */}
+            </FieldGroup>
+          )}
+
+          {edit && activeParcel && (
+            <p className="mt-1 text-xs text-center text-red-500">
+              Parcel created already, can&apos;t edit!
+            </p>
+          )}
+        </div>
+      </div>
+
       {/* Message rows */}
       <div className="space-y-4 md:space-y-6 mb-6">
         <Button
+          type="button"
           variant="ghost" //   onClick={() => setShowRiderNote(true)}
           className="p-4! h-auto w-full flex items-center justify-between border rounded-md hover:underline cursor-pointer"
         >
@@ -100,18 +352,43 @@ const ParcelCheckout = ({
       {/* Payment Summary */}
       <div className="">
         <h3 className="text-base font-medium leading-6">Payment Summary</h3>
-        <div className="mt-4 space-y-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-sm leading-4.5">Delivery Fee</span>
-            <span className="leading-5">{currency("0")}</span>
+        {isGettingFees && (
+          <div className="mt-2 flex gap-2 items-center">
+            <Loader size={5} />
+            <p className="text-xs font-normal">Calculating delivery fee...</p>
           </div>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-base font-medium leading-6">Total</span>
-            <span className="text-base font-medium leading-6">
-              {currency("0")}
+        )}
+
+        {isError && (
+          <p className="mt-2 text-xs font-normal">
+            We could not calculate the fee.{" "}
+            <span
+              onClick={() => refetch()}
+              className="text-primary hover:cursor-pointer hover:underline hover:underline-offset-2"
+            >
+              retry
             </span>
+          </p>
+        )}
+
+        {isSuccess && (
+          <div className="mt-4 space-y-4">
+            {/* <div className="flex items-center justify-between text-sm">
+              <span className="text-sm leading-4.5">Package Value</span>
+              <span className="leading-5">{currency("0")}</span>
+            </div> */}
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-sm leading-4.5">Delivery Fee</span>
+              <span className="leading-5">{currency(deliveryFees?.data)}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-base font-medium leading-6">Total</span>
+              <span className="text-base font-medium leading-6">
+                {currency(deliveryFees?.data)}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <Separator className="my-6" />
@@ -127,7 +404,7 @@ const ParcelCheckout = ({
             className="gap-2"
           >
             {/*  Wallet */}
-            <FieldLabel
+            {/* <FieldLabel
               htmlFor="wallet"
               className="bg-transparent! border-none!"
             >
@@ -148,7 +425,7 @@ const ParcelCheckout = ({
                 </p>
                 <RadioGroupItem id="wallet" value="WALLET" />
               </Field>
-            </FieldLabel>
+            </FieldLabel> */}
             {/* Digital transfer */}
             <FieldLabel
               htmlFor="digitalTransfer"
@@ -167,44 +444,6 @@ const ParcelCheckout = ({
           </RadioGroup>
         </div>
       </div>
-
-      {/* Action Buttons */}
-      <div className="flex flex-col  gap-4 mt-6 md:mt-10">
-        <Button
-          type="button"
-          //   onClick={() => handlePlaceOrder(cartItems[0].cartId, orderSummary)}
-          //   disabled={isMakingPayment || isChargingWallet}
-          className="submit-btn "
-        >
-          {isMakingPayment || isChargingWallet ? (
-            <RiLoader2Line className="size-5 animate-spin" />
-          ) : (
-            "Make Payment"
-          )}
-        </Button>
-        <Button
-          type="button"
-          onClick={() => setShowAlert(true)}
-          disabled={isDeleting}
-          variant="outline"
-          className="submit-btn hover:bg-gray-50 text-neutral-500 border-neutral-300"
-        >
-          {isDeleting ? (
-            <RiLoader2Line className="size-5 animate-spin" />
-          ) : (
-            "CANCEL ORDER"
-          )}
-        </Button>
-      </div>
-
-      <ConfirmationModal
-        title="Delete Parcel"
-        description="Are you sure you want to delete your parcel Order?"
-        confirmText="Proceed "
-        open={showAlert}
-        onOpenChange={setShowAlert}
-        onConfirm={handleDelete}
-      />
     </div>
   );
 };
