@@ -25,7 +25,7 @@ import {
 import { Separator } from "../ui/separator";
 import ErrorStateUi from "../ErrorStateUi";
 import Loader from "../Loader";
-import {  userIcon2 } from "@/assets/svgs";
+import { userIcon2 } from "@/assets/svgs";
 import { Button } from "../ui/button";
 import { useUIStore } from "@/lib/stores/uiStore";
 import { AnimatePresence, motion } from "framer-motion";
@@ -69,6 +69,8 @@ const getTimestampFieldForStatus = (status: OrderStatus): string => {
     PREPARING: "preparedAt",
     READY: "readyAt",
     ASSIGN_TO_RIDER: "assignedAt",
+    RIDER_OUTSIDE: "riderOutsideAt",
+    PICKUP: "completedAt",
     DELIVERED: "completedAt",
   };
   return statusToFieldMap[status as UIOrderStatus];
@@ -79,6 +81,8 @@ const statusIcons: Record<UIOrderStatus, React.ElementType> = {
   PREPARING: RiRestaurant2Fill,
   READY: RiGiftFill,
   ASSIGN_TO_RIDER: RiRidingFill,
+  PICKUP: RiRidingFill,
+  RIDER_OUTSIDE: RiCheckboxCircleFill,
   DELIVERED: RiCheckboxCircleFill,
 };
 
@@ -222,6 +226,8 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
           </div>
         )}
 
+        {isDesktop && <Separator className="mt-2 mb-6" />}
+
         {isLoading && (
           <div className="h-full flex justify-center items-center">
             <Loader size={12} />
@@ -233,8 +239,6 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
             <ErrorStateUi message="Error Fetching Orders " />
           </div>
         )}
-
-        {isDesktop && <Separator className="mt-2 mb-6" />}
 
         {isSuccess && (
           <div>

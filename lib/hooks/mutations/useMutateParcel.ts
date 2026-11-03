@@ -17,18 +17,6 @@ export const useCreateParcel = () => {
   });
 };
 
-export const useGetParcelDlFees = () => {
-  return useMutation({
-    mutationFn: parcel.getDeliveryFees,
-    onSuccess: (res) => {
-      toast.success(res.message || "Parcel created successfully");
-    },
-    onError: (res) => {
-      toast.error(res.message || "Failed to create parcel");
-    },
-  });
-};
-
 export const useDeleteParcel = () => {
   const queryClient = useQueryClient();
 
@@ -40,6 +28,23 @@ export const useDeleteParcel = () => {
     },
     onError: (res) => {
       toast.error(res.message || "Failed to create parcel");
+    },
+  });
+};
+
+export const useMakeParcelPayment = () => {
+  // const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: parcel.makeParcelPayment,
+    onSuccess: (res) => {
+      toast.success("Paymet initiated successfully", {
+        description: "You'll be redirected shortly",
+      });
+      // queryClient.removeQueries({ queryKey: ["activeParcel"] });
+    },
+    onError: (res) => {
+      toast.error(res.message || "Failed to initiate payment");
     },
   });
 };

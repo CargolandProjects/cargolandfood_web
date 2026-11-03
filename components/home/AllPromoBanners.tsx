@@ -9,11 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import {
-  RiArrowGoBackLine,
-  RiArrowLeftLine,
-  RiCloseFill,
-} from "react-icons/ri";
+import { RiArrowLeftLine, RiCloseFill } from "react-icons/ri";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -25,7 +21,13 @@ const AllPromoBannersContent = ({
   setOpen?: (v: boolean) => void;
 }) => {
   const { zoneId } = useActiveZone();
-  const { data: banners, isLoading, isSuccess } = useBannerPromos(zoneId || "");
+  const {
+    data: allBanners,
+    isLoading,
+    isSuccess,
+  } = useBannerPromos(zoneId || "");
+  const banners = (allBanners || []).filter((b) => !!b.campaignImgUrl.trim());
+
   return (
     <div className="h-full overflow-y-auto hide-scrollbar bg-white">
       {/* Header */}
@@ -64,7 +66,11 @@ const AllPromoBannersContent = ({
 
       {isSuccess && (
         <div className="mt-3 max-sm:mb-4 sm:mt-8 max-sm:px-4">
-          {banners.length === 0 && <p className="">No promo banners for now</p>}
+          {banners.length === 0 && (
+            <p className="text-neutral-500 text-center mt-3 sm:mt-4">
+              No promo banners for now
+            </p>
+          )}
 
           {banners.length > 0 && (
             <div className="grid sm:grid-cols-2 gap-x-6 gap-y-4 md:gap-y-8">

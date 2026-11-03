@@ -21,7 +21,7 @@ const Loading = () => (
       <Skeleton className="h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl" />
       <Skeleton className="max-md:hidden h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl" />
     </div>
-    <Skeleton className="max-md:hidden h-9.5 w-[81px] rounded-full shrink-0"/>
+    <Skeleton className="max-md:hidden h-9.5 w-[81px] rounded-full shrink-0" />
   </div>
 );
 
@@ -32,14 +32,23 @@ const Banners = ({
 }) => {
   const [open, setOpen] = useState(false);
   const { zoneId } = useActiveZone();
-  const { data: banners, isLoading, isSuccess } = useBannerPromos(zoneId || "");
+  const {
+    data: allBanners,
+    isLoading,
+    isSuccess,
+  } = useBannerPromos(zoneId || "");
+  const banners = (allBanners || []).filter((b) => !!b.campaignImgUrl);
+  const isBannerLength = banners.length > 0;
+
   return (
     <>
       {showScreen === "LARGE" && (
-        <section className="my-4 sm:my-10 md:flex items-center gap-4 sm:gap-6">
+        <section
+          className={`${isBannerLength ? "my-4 sm:my-10" : "my-2 sm:my-5"}  md:flex items-center gap-4 sm:gap-6`}
+        >
           {isLoading && <Loading />}
 
-          {isSuccess && banners.length > 0 && (
+          {isSuccess && isBannerLength && (
             <Swiper
               modules={[Autoplay]}
               spaceBetween={24}
@@ -56,33 +65,31 @@ const Banners = ({
               // }}
               breakpoints={{
                 768: {
-                  slidesPerView: 2,
-                  loop: false,
+                  slidesPerView: banners.length > 1 ? 2 : 1,
+                  // loop: false,
                 },
               }}
               // className="pb-7! md:pb-10! "
             >
-              {banners
-                .filter((b) => !!b.campaignImgUrl.trim())
-                .map((banner, index) => (
-                  <SwiperSlide key={index}>
-                    <Link
-                      href={`/vendor/${banner.vendorId}`}
-                      className="relative h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl overflow-hidden block"
-                    >
-                      <Image
-                        src={banner.campaignImgUrl}
-                        alt="banner image"
-                        className="size-full object-cover"
-                        fill
-                      />
-                    </Link>
-                  </SwiperSlide>
-                ))}
+              {banners.map((banner, index) => (
+                <SwiperSlide key={index}>
+                  <Link
+                    href={`/vendor/${banner.vendorId}`}
+                    className="relative h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl overflow-hidden block"
+                  >
+                    <Image
+                      src={banner.campaignImgUrl}
+                      alt="banner image"
+                      className="size-full object-cover"
+                      fill
+                    />
+                  </Link>
+                </SwiperSlide>
+              ))}
             </Swiper>
           )}
 
-          {isSuccess && (
+          {isSuccess && isBannerLength && (
             <Button
               onClick={() => setOpen(true)}
               variant="outline"
@@ -116,7 +123,13 @@ const Banners = ({
             </div>
           )}
 
-          {isSuccess && (
+          {isSuccess && banners.length === 0 && (
+            <p className="text-neutral-500 text-center mt-2 sm:mt-4">
+              No promotion banners found at the moment
+            </p>
+          )}
+
+          {isSuccess && isBannerLength && (
             <Swiper
               modules={[Autoplay]}
               spaceBetween={24}
@@ -131,31 +144,29 @@ const Banners = ({
               //   clickable: true, // makes dots clickable
               //   dynamicBullets: true, // optional: set true for smaller dots that expand
               // }}
-              breakpoints={{
-                768: {
-                  slidesPerView: 2,
-                  loop: false,
-                },
-              }}
+              // breakpoints={{
+              //   768: {
+              //     slidesPerView: 2,
+              //     loop: false,
+              //   },
+              // }}
               className="mt-2.5"
             >
-              {banners
-                .filter((b) => !!b.campaignImgUrl.trim())
-                .map((banner, index) => (
-                  <SwiperSlide key={index}>
-                    <Link
-                      href={`/vendor/${banner.vendorId}`}
-                      className="relative h-[106px] sm:h-[95px] rounded-sm sm:rounded-xl overflow-hidden block"
-                    >
-                      <Image
-                        src={banner.campaignImgUrl}
-                        alt="banner image"
-                        className="size-full object-cover"
-                        fill
-                      />
-                    </Link>
-                  </SwiperSlide>
-                ))}
+              {banners.map((banner, index) => (
+                <SwiperSlide key={index}>
+                  <Link
+                    href={`/vendor/${banner.vendorId}`}
+                    className="relative h-[106px] sm:h-[95px] rounded-sm sm:rounded-xl overflow-hidden block"
+                  >
+                    <Image
+                      src={banner.campaignImgUrl}
+                      alt="banner image"
+                      className="size-full object-cover"
+                      fill
+                    />
+                  </Link>
+                </SwiperSlide>
+              ))}
             </Swiper>
           )}
         </section>

@@ -90,6 +90,8 @@ export const API_ROUTES = {
       `/orders/make-parcel-payment/${parcelId}`,
     deleteParcel: (parcelId: string) =>
       `/orders/delete-user/parcel/${parcelId}`,
+    getAllParcels: "/orders/get-all-parcels",
+    getParcelById: (parcelId: string) => `/orders/get-parcel/${parcelId}`,
   },
 
   specials: {

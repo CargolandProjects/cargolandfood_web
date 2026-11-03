@@ -102,7 +102,7 @@ const Promotions = () => {
         )}
 
         {isSuccess && discounts.length === 0 && (
-          <p className="text-neutral-500 text-center mt-3 sm:mt-4">
+          <p className="text-neutral-500 text-center mt-2 sm:mt-4">
             No discount vendors found for your current location
           </p>
         )}

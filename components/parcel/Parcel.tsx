@@ -1,14 +1,14 @@
 import { useState } from "react";
 import ParcelActionModal from "./ParcelActionModal";
 import ParcelDetails, { ParcelSteps } from "./ParcelDetails";
-import { useActiveParcel } from "@/lib/hooks/queries/useGetParcel";
+import { useActiveParcel } from "@/lib/hooks/queries/useParcel";
 
 export type ParcelType = "SEND" | "RECEIVE";
 
 const Parcel = () => {
   const [parcelType, setParcelType] = useState<ParcelType | null>(null);
   const [openDetails, setOpenDetails] = useState(false);
-  const [openActions, setAction] = useState(false);
+  const [openAction, setAction] = useState(false);
   const [initialStep, setInitialStep] = useState<ParcelSteps>("ROUTE");
 
   const { data: activeParcel, isLoading } = useActiveParcel();
@@ -30,7 +30,7 @@ const Parcel = () => {
   return (
     <div>
       <ParcelActionModal
-        open={openActions}
+        open={openAction}
         isLoading={isLoading}
         setOpen={setAction}
         activeParcel={activeParcel}
