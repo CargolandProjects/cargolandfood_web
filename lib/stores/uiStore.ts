@@ -35,6 +35,10 @@ export type TrackOrderPayload = {
   orderId: string;
 } | null;
 
+export type TrackParcelPayload = {
+  parcelId: string;
+} | null;
+
 export type OrderSuccessPayload = {
   preparationTime: string;
   orderId: string;
@@ -56,6 +60,7 @@ export type UIStoreState = {
   orderDetails: PanelState<OrderDetailsPayload>;
   checkout: PanelState<CheckoutPayload>;
   trackOrder: PanelState<TrackOrderPayload>;
+  trackParcel: PanelState<TrackParcelPayload>;
   addresses: PanelState<AddressesPayload>;
   orderSuccess: PanelState<OrderSuccessPayload>;
   reviewOrder: PanelState<ReviewOrderPayload>;
@@ -75,6 +80,8 @@ export type UIStoreState = {
   // Actions: Track Order
   openTrackOrder: (payload: TrackOrderPayload) => void;
   closeTrackOrder: () => void;
+  openTrackParcel: (payload: TrackParcelPayload) => void;
+  closeTrackParcel: () => void;
 
   // Actions: Checkout
   openCheckout: (payload: CheckoutPayload) => void;
@@ -91,6 +98,7 @@ export const useUIStore = create<UIStoreState>((set) => ({
   orderDetails: { open: false, payload: null },
   checkout: { open: false, payload: null },
   trackOrder: { open: false },
+  trackParcel: { open: false },
   addresses: { open: false },
   orderSuccess: { open: false, payload: null },
   reviewOrder: { open: false, payload: null },
@@ -107,11 +115,17 @@ export const useUIStore = create<UIStoreState>((set) => ({
   openTrackOrder: (payload) => {
     set({ trackOrder: { open: true, payload } });
   },
-
   closeTrackOrder: () => {
     set({
-      trackOrder: { open: false },
+      trackOrder: { open: false, payload: null },
     });
+  },
+
+  openTrackParcel: (payload) => {
+    set({ trackParcel: { open: true, payload } });
+  },
+  closeTrackParcel: () => {
+    set({ trackParcel: { open: false, payload: null } });
   },
 
   openAddresses: (payload = null) => {
