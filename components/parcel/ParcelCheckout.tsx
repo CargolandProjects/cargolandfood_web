@@ -62,9 +62,7 @@ const ParcelCheckout = ({
 
         <div className="my-6 px-2 py-3 bg-primary/8 rounded-sm">
           <div className="flex justify-between">
-            <h3 className="text-base font-medium leading-5">
-              Sender Information
-            </h3>
+            <h3 className="text-base font-medium leading-5">Parcel Details</h3>
             <Button
               onClick={() => setEdit((prev) => !prev)}
               type="button"
@@ -85,14 +83,14 @@ const ParcelCheckout = ({
                 <span className="shrink-0">Sender number:-</span>
                 <span className="font-medium">{formData.senderNumber}</span>
               </div>
-              {/* <div className="flex justify-between gap-4">
+              <div className="flex justify-between gap-4">
                 <span className="shrink-0">Receiver name:-</span>
                 <span className="font-medium">{formData.receiverName}</span>
               </div>
               <div className="flex justify-between gap-4">
                 <span className="shrink-0">Receiver number:-</span>
                 <span className="font-medium">{formData.receiverNumber}</span>
-              </div> */}
+              </div>
               <div className="flex justify-between gap-4">
                 <span className="shrink-0">Pick Up:-</span>
                 <span className="font-medium line-clamp-1 break-all">
@@ -171,7 +169,7 @@ const ParcelCheckout = ({
                 )}
               />
 
-              {/* <Controller
+              <Controller
                 name="receiverName"
                 control={control}
                 render={({ field, fieldState }) => (
@@ -229,7 +227,7 @@ const ParcelCheckout = ({
                     )}
                   </Field>
                 )}
-              /> */}
+              />
 
               <Controller
                 name="pickUpAddrName"

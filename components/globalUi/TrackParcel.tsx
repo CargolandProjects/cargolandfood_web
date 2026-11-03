@@ -188,7 +188,7 @@ const TrackParcelContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
               </button>
 
               <SheetTitle className="text-xl font-medium max-sm:text-center leading-7">
-                Track Orders
+                Track Parcel
               </SheetTitle>
             </div>
 
@@ -209,6 +209,8 @@ const TrackParcelContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
             </h2>
           </div>
         )}
+        
+        {isDesktop && <Separator className="mt-2 mb-6" />}
 
         {isLoading && (
           <div className="h-full flex justify-center items-center">
@@ -221,8 +223,6 @@ const TrackParcelContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
             <ErrorStateUi message="Error Fetching Orders " />
           </div>
         )}
-
-        {isDesktop && <Separator className="mt-2 mb-6" />}
 
         {isSuccess && (
           <div>
@@ -323,7 +323,7 @@ const TrackParcelContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                           <p className="text-xs text-neutral-600">
                             {item.description}
                           </p>
-                          {item.title !== "Completed" ? (
+                          {/* {item.title !== "Completed" ? (
                             <p className="text-xs text-neutral-500 font-medium mt-1">
                               {formatTime(item.time || "") || "pending"}
                             </p>
@@ -337,7 +337,7 @@ const TrackParcelContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                               <RiStarSFill className="size-5 text-neutral-400 " />
                               Rate The Food
                             </Button>
-                          )}
+                          )} */}
                         </div>
                       </div>
                     ))}
