@@ -1,33 +1,19 @@
 import { currency } from "@/lib/utils";
-import {
-  RiArrowRightSLine,
-  RiBankFill,
-  RiCoupon2Fill,
-  RiEBike2Line,
-  RiEdit2Fill,
-  RiGlobalFill,
-  RiLoader2Line,
-  RiRestaurant2Fill,
-  RiWallet3Fill,
-} from "react-icons/ri";
+import { RiEdit2Fill, RiGlobalFill } from "react-icons/ri";
 import { Separator } from "../ui/separator";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PaymentMethod } from "../orders/PageCheckOut";
 import { Button } from "../ui/button";
 import Loader from "../Loader";
-import { useChargeWallet } from "@/lib/hooks/mutations/useChargeWallet";
-import { useMakePayment } from "@/lib/hooks/mutations/usePlaceOrder";
-import { useDeleteParcel } from "@/lib/hooks/mutations/useMutateParcel";
-import { useActiveParcel } from "@/lib/hooks/queries/useGetParcel";
-import { Controller, useFormContext, UseFormReturn } from "react-hook-form";
-import { DEFAULT_VALUES, ParcelDetailsData } from "./ParcelDetails";
-import ConfirmationModal from "../ConfirmationModal";
+
+import { Controller, useFormContext } from "react-hook-form";
+import { ParcelDetailsData } from "./ParcelDetails";
 import { PhoneInput } from "../ui/phone-input";
 import { Input } from "../ui/input";
+import { Parcel } from "@/lib/services/parcel.service";
 import { useGetParcelDlFees } from "@/lib/hooks/queries/useParcel";
-import { ActiveParcel } from "@/lib/services/parcel.service";
 
 const ParcelCheckout = ({
   paymentMethod,
@@ -35,12 +21,11 @@ const ParcelCheckout = ({
   activeParcel,
 }: {
   // form: UseFormReturn<ParcelDetailsData>;
-  activeParcel: ActiveParcel | undefined;
+  activeParcel: Parcel | undefined;
 
   paymentMethod: PaymentMethod | null;
   setPaymentMethod: (v: PaymentMethod) => void;
 }) => {
-  const [showCoupon, setShowCoupon] = useState(false);
   const [edit, setEdit] = useState(false);
 
   const { control, getValues, watch } = useFormContext<ParcelDetailsData>();
@@ -77,7 +62,9 @@ const ParcelCheckout = ({
 
         <div className="my-6 px-2 py-3 bg-primary/8 rounded-sm">
           <div className="flex justify-between">
-            <h3 className="text-base font-medium leading-5">Parcel Details</h3>
+            <h3 className="text-base font-medium leading-5">
+              Sender Information
+            </h3>
             <Button
               onClick={() => setEdit((prev) => !prev)}
               type="button"
@@ -98,23 +85,23 @@ const ParcelCheckout = ({
                 <span className="shrink-0">Sender number:-</span>
                 <span className="font-medium">{formData.senderNumber}</span>
               </div>
-              <div className="flex justify-between gap-4">
+              {/* <div className="flex justify-between gap-4">
                 <span className="shrink-0">Receiver name:-</span>
                 <span className="font-medium">{formData.receiverName}</span>
               </div>
               <div className="flex justify-between gap-4">
                 <span className="shrink-0">Receiver number:-</span>
                 <span className="font-medium">{formData.receiverNumber}</span>
-              </div>
+              </div> */}
               <div className="flex justify-between gap-4">
                 <span className="shrink-0">Pick Up:-</span>
-                <span className="font-medium line-clamp-1">
+                <span className="font-medium line-clamp-1 break-all">
                   {formData.pickUpAddrName}
                 </span>
               </div>
               <div className="flex justify-between gap-4">
                 <span className="shrink-0">Drop Off:-</span>
-                <span className="font-medium line-clamp-1">
+                <span className="font-medium line-clamp-1 break-all">
                   {formData.dropOffAddrName}
                 </span>
               </div>
@@ -184,12 +171,11 @@ const ParcelCheckout = ({
                 )}
               />
 
-              <Controller
+              {/* <Controller
                 name="receiverName"
                 control={control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid} className="gap-1">
-                    {/* Wrap the label and input in a flex row */}
                     <div className="flex flex-row items-end justify-between gap-4">
                       <FieldLabel
                         htmlFor={field.name}
@@ -243,7 +229,7 @@ const ParcelCheckout = ({
                     )}
                   </Field>
                 )}
-              />
+              /> */}
 
               <Controller
                 name="pickUpAddrName"
@@ -320,7 +306,7 @@ const ParcelCheckout = ({
       </div>
 
       {/* Message rows */}
-      <div className="space-y-4 md:space-y-6 mb-6">
+      {/* <div className="space-y-4 md:space-y-6 mb-6">
         <Button
           type="button"
           variant="ghost" //   onClick={() => setShowRiderNote(true)}
@@ -333,8 +319,7 @@ const ParcelCheckout = ({
           <RiArrowRightSLine className="size-5 text-neutral-500" />
         </Button>
 
-        {/* Coupon code */}
-
+     
         <Button
           variant="ghost"
           onClick={() => setShowCoupon(true)}
@@ -345,7 +330,7 @@ const ParcelCheckout = ({
           </span>
           <RiArrowRightSLine className="size-5 text-neutral-500" />
         </Button>
-      </div>
+      </div> */}
 
       <Separator className="my-6" />
 
@@ -372,19 +357,40 @@ const ParcelCheckout = ({
         )}
 
         {isSuccess && (
-          <div className="mt-4 space-y-4">
-            {/* <div className="flex items-center justify-between text-sm">
-              <span className="text-sm leading-4.5">Package Value</span>
-              <span className="leading-5">{currency("0")}</span>
-            </div> */}
+          <div className="mt-4 space-y-2">
+            <div className="flex items-start justify-between text-sm">
+              <div className="flex flex-col">
+                <span className="text-sm leading-4.5">Package Value</span>
+                <span className="leading-5 text-xs text-neutral-500">
+                  Declared for insurance not chared
+                </span>
+              </div>
+              <span className="leading-5">{currency(packageWorth)}</span>
+            </div>
+
             <div className="flex items-center justify-between text-sm">
               <span className="text-sm leading-4.5">Delivery Fee</span>
-              <span className="leading-5">{currency(deliveryFees?.data)}</span>
+              <span className="leading-5">
+                {currency(deliveryFees?.deliveryFee.toString())}
+              </span>
             </div>
+
+            <div className="flex items-start justify-between text-sm">
+              <div className="flex flex-col">
+                <span className="text-sm leading-4.5">Insurance</span>
+                <span className="leading-5 text-xs text-neutral-500">
+                  2% of {currency(packageWorth)} declared value
+                </span>
+              </div>
+              <span className="leading-5">
+                {currency(deliveryFees.insuranceFee.toString())}
+              </span>
+            </div>
+
             <div className="flex items-center justify-between text-sm">
               <span className="text-base font-medium leading-6">Total</span>
               <span className="text-base font-medium leading-6">
-                {currency(deliveryFees?.data)}
+                {currency(deliveryFees?.total.toString())}
               </span>
             </div>
           </div>

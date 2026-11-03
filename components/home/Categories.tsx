@@ -87,7 +87,7 @@ const CategoryContent = () => {
       {categories?.length > 0 && (
         <>
           <h3>Categories</h3>
-          <div className="flex gap-3 md:gap-6 mt-2 overflow-x-auto hide-scrollbar"> 
+          <div className="flex gap-3 md:gap-6 mt-2 overflow-x-auto hide-scrollbar">
             {categories.map((category) => {
               const active = category.id === activeCategory;
               return (

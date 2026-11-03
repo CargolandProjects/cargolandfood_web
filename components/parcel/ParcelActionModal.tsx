@@ -10,7 +10,7 @@ import {
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { ParcelType } from "./Parcel";
-import { ActiveParcel } from "@/lib/services/parcel.service";
+import { Parcel } from "@/lib/services/parcel.service";
 
 const ParcelActionModal = ({
   open,
@@ -23,7 +23,7 @@ const ParcelActionModal = ({
   open: boolean;
   isLoading: boolean;
   setOpen: (v: boolean) => void;
-  activeParcel: ActiveParcel | undefined;
+  activeParcel: Parcel | undefined;
   onSelectType: (type: ParcelType) => void;
   onResumeCheckout: () => void;
 }) => {
@@ -31,7 +31,7 @@ const ParcelActionModal = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="relative w-[103px] h-[72px] sm:w-31 sm:h-29 flex-col gap-0 rounded-md sm:rounded-xl cursor-pointer bg-[#EFFAF6] text-black hover:bg-[#EFFAF6]/80 ring-0!">
+        <Button className="relative w-25.75 h-18 sm:w-31 sm:h-29 flex-col gap-0 rounded-md sm:rounded-xl cursor-pointer bg-[#EFFAF6] text-black hover:bg-[#EFFAF6]/80 ring-0!">
           <span className="absolute top-0.5 left-0.5 px-3 py-1 text-[8px] leading-3 font-medium rounded-full text-white bg-primary">
             New
           </span>
@@ -49,7 +49,7 @@ const ParcelActionModal = ({
       </DialogTrigger>
 
       <DialogContent
-        className={`max-w-[400px]! max-sm:w-[95vw]! px-5 pb-5.75 gap-0 ${isLoading ? "h-[270px]" : "pt-14.5"} `}
+        className={`max-w-100! max-sm:w-[95vw]! px-5 pb-5.75 gap-0 ${isLoading ? "h-67.5" : "pt-14.5"} `}
       >
         {isLoading && (
           <div className="flex items-center justify-center">
@@ -95,7 +95,7 @@ const ParcelActionModal = ({
               <Button
                 onClick={() => onSelectType("SEND")}
                 variant="ghost"
-                className="flex-col flex-1 h-[100px] sm:h-[145px] p-0 gap-2 bg-neutral-100 ring-0!"
+                className="flex-col flex-1 h-25 sm:h-36.25 p-0 gap-2 bg-neutral-100 ring-0!"
               >
                 <div className="size-10 sm:size-20 overflow-hidden">
                   <Image
@@ -111,7 +111,7 @@ const ParcelActionModal = ({
               <Button
                 onClick={() => onSelectType("RECEIVE")}
                 variant="ghost"
-                className="flex-col flex-1 h-[100px] sm:h-[145px] p-0 gap-2 bg-neutral-100 ring-0!"
+                className="flex-col flex-1 h-25 sm:h-36.25 p-0 gap-2 bg-neutral-100 ring-0!"
               >
                 <div className="size-10 sm:size-20 overflow-hidden">
                   <Image

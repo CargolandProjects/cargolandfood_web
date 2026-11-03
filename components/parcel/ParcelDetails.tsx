@@ -35,8 +35,8 @@ import {
   useMakeParcelPayment,
 } from "@/lib/hooks/mutations/useMutateParcel";
 import ParcelCheckout from "./ParcelCheckout";
-import { useActiveParcel } from "@/lib/hooks/queries/useGetParcel";
-import { ActiveParcel } from "@/lib/services/parcel.service";
+import { useActiveParcel } from "@/lib/hooks/queries/useParcel";
+import { Parcel } from "@/lib/services/parcel.service";
 import { useMakePayment } from "@/lib/hooks/mutations/usePlaceOrder";
 import ConfirmationModal from "../ConfirmationModal";
 import { useChargeWallet } from "@/lib/hooks/mutations/useChargeWallet";
@@ -110,7 +110,7 @@ export const DEFAULT_VALUES: ParcelDetailsData = {
   dropOffAddrLat: "",
   dropOffAddrLng: "",
   dropOffAddrName: "",
-  packageIsurance: false,
+  packageIsurance: true,
   packageWorth: "",
 };
 
@@ -129,7 +129,7 @@ const ParcelDetailsContent = ({
   isDesktop: boolean;
   step: ParcelSteps;
   type: ParcelType | null;
-  activeParcel: ActiveParcel | undefined;
+  activeParcel: Parcel | undefined;
   setOpen: (v: boolean) => void;
   setAction: (v: boolean) => void;
   setStep: React.Dispatch<React.SetStateAction<ParcelSteps>>;

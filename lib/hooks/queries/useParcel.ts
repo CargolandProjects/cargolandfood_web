@@ -1,6 +1,32 @@
 import { parcel } from "@/lib/services/parcel.service";
 import { useQuery } from "@tanstack/react-query";
 
+export const useActiveParcel = () => {
+  return useQuery({
+    queryKey: ["activeParcel"],
+    queryFn: parcel.getActiveParcel,
+    select: (res) => res.data,
+  });
+};
+
+export const useGetParcels = (isAuthenticated: boolean) => {
+  return useQuery({
+    queryKey: ["allParcels"],
+    queryFn: parcel.getAllParcels,
+    select: (res) => res.data,
+    enabled: isAuthenticated,
+  });
+};
+
+export const useTrackParcel = (parcelId: string) => {
+  return useQuery({
+    queryKey: ["trackParcel", parcelId],
+    queryFn: () => parcel.getParcelById(parcelId),
+    select: (res) => res.data,
+    enabled: !!parcelId,
+  });
+};
+
 export const useGetParcelDlFees = ({
   pickUpAddrLat,
   dropOffAddrLng,
@@ -42,6 +68,7 @@ export const useGetParcelDlFees = ({
         packageWorth,
         packageIsurance,
       }),
+    select: (res) => res.data,
     enabled: hasRequiredParams,
   });
 };

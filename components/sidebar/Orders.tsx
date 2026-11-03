@@ -32,14 +32,6 @@ interface OrdersProps {
 
 type Tabs = "current" | "previous";
 
-// const statusMessage = {
-//   ACCEPTED: "Accepted",
-//   PREPARING: "Preparing",
-//   READY: "Ready",
-//   ASSIGN_TO_RIDER: "Assign to Rider",
-//   DELIVERED: "Delivered",
-// };
-
 function normalizeOrderStatus(backendStatus: OrderStatus, order: GetOrders) {
   // Handle unwanted statuses by mapping to appropriate UI status
   switch (backendStatus) {

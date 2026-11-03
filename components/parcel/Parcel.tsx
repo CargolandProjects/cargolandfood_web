@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ParcelActionModal from "./ParcelActionModal";
 import ParcelDetails, { ParcelSteps } from "./ParcelDetails";
-import { useActiveParcel } from "@/lib/hooks/queries/useGetParcel";
+import { useActiveParcel } from "@/lib/hooks/queries/useParcel";
 
 export type ParcelType = "SEND" | "RECEIVE";
 

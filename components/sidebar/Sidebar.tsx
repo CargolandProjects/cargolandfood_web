@@ -5,6 +5,7 @@ import { logo } from "@/assets/svgs";
 import { Button } from "../ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  RiBox3Fill,
   RiHeartFill,
   RiHome3Fill,
   RiSettings3Fill,
@@ -26,6 +27,9 @@ import { useCart } from "@/lib/hooks/queries/useCart";
 import { useGetOrders } from "@/lib/hooks/queries/useOrders";
 import { useSession } from "@/lib/hooks/useSession";
 import Image from "next/image";
+import Parcel from "./Parcel";
+import { useGetParcels } from "@/lib/hooks/queries/useParcel";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 interface SideBar {
   open: boolean;
@@ -36,6 +40,7 @@ export type ActiveTab =
   | "Home"
   | "Cart"
   | "Orders"
+  | "Parcel"
   | "Favourite"
   | "Settings"
   | null;
@@ -55,7 +60,7 @@ const getSidebarItems = (
   setActiveTab: (tab: ActiveTab) => void,
   isAuthenticated: boolean,
   setOpen: (v: boolean) => void,
-  count: { cartCount: number; OrdersCount: number },
+  count: { cartCount: number; OrdersCount: number; parcelCount: number },
 ): SidebarItem[] => [
   { id: "Home", icon: RiHome3Fill, label: "Home" },
   {
@@ -72,6 +77,14 @@ const getSidebarItems = (
     label: "Orders",
     content: Orders,
     count: count.OrdersCount,
+    props: { setActiveTab, isAuthenticated },
+  },
+  {
+    id: "Parcel",
+    icon: RiBox3Fill,
+    label: "Parcel",
+    content: Parcel,
+    count: count.parcelCount,
     props: { setActiveTab, isAuthenticated },
   },
   {
@@ -99,24 +112,17 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
 
   const { data: cart } = useCart(isAuthenticated);
   const { data: orders } = useGetOrders(isAuthenticated);
+  const { data: parcels } = useGetParcels(isAuthenticated);
+
   const cartItems = cart?.length || 0;
   const currentOrders =
     orders?.filter((o) => o.status !== "DELIVERED").length || 0;
 
+  const parcelCount =
+    parcels?.filter((p) => p.status !== "DELIVERED").length || 0;
+
   // Detect if we're on desktop (only runs once on mount, then on resize)
-  const [isDesktop, setIsDesktop] = useState(() => {
-    if (typeof window === "undefined") return true; // SSR fallback to desktop
-    return window.matchMedia("(min-width: 640px)").matches;
-  });
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 640px)");
-
-    const handleChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
+  const isDesktop = useMediaQuery("(min-width: 640px)");
 
   const handleTabChange = (tabId: ActiveTab) => {
     const active = tabId === activeTab ? null : tabId;
@@ -135,8 +141,16 @@ const Sidebar = ({ open, setOpen }: SideBar) => {
       getSidebarItems(setActiveTab, isAuthenticated, setOpen, {
         cartCount: cartItems,
         OrdersCount: currentOrders,
+        parcelCount: parcelCount,
       }),
-    [setActiveTab, isAuthenticated, setOpen, cartItems, currentOrders],
+    [
+      setActiveTab,
+      isAuthenticated,
+      setOpen,
+      cartItems,
+      currentOrders,
+      parcelCount,
+    ],
   );
 
   return (

@@ -2,6 +2,8 @@ import { clsx, type ClassValue } from "clsx";
 import { format } from "date-fns";
 import { twMerge } from "tailwind-merge";
 import { TransactionStatus } from "./services/wallet.service";
+import { OrderStatus } from "./types/cart.types";
+import { ParcelStatus } from "./services/parcel.service";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -167,3 +169,49 @@ export const formatNumber = (value: string) => {
 };
 
 export const currency = (n: string) => `₦ ${Number(n).toLocaleString()}`;
+
+export const statusStyles: Partial<
+  Record<ParcelStatus, { bgcolor: string; containerStyles: string }>
+> = {
+  NEW: {
+    bgcolor: "bg-cargo-warning",
+    containerStyles:
+      "border-cargo-warning bg-cargo-warning/5 text-cargo-warning",
+  },
+
+  RIDER_ACCEPTED: {
+    bgcolor: "bg-teal-500",
+    containerStyles: "border-teal-500 bg-teal-500/5 text-teal-500",
+  },
+
+  PICKUP_ORDER: {
+    bgcolor: "bg-blue-500",
+    containerStyles: "border-blue-500 bg-blue-500/5 text-blue-500",
+  },
+
+  RIDER_OUTSIDE: {
+    bgcolor: "bg-secondary",
+    containerStyles: "border-secondary bg-secondary/5 text-secondary",
+  },
+
+  // ASSIGN_TO_RIDER: {
+  //   bgcolor: "bg-cyan-500",
+  //   containerStyles: "border-cyan-500 bg-cyan-500/5 text-cyan-500",
+  // },
+
+  // PICKUP: {
+  //   bgcolor: "bg-slate-500",
+  //   containerStyles: "border-slate-500 bg-slate-500/5 text-slate-500",
+  // },
+
+  // READY: {
+  //   bgcolor: "bg-cargo-success",
+  //   containerStyles:
+  //     "border-cargo-success bg-cargo-success/5 text-cargo-success",
+  // },
+
+  DELIVERED: {
+    bgcolor: "bg-red-500",
+    containerStyles: "border-primary bg-red-500/5 text-red-500",
+  },
+};
