@@ -10,12 +10,21 @@ interface OrderState {
 /**
  * UI-only order statuses (subset of backend OrderStatus)
  */
-export type UIOrderStatus = "NEW" | "ACCEPTED" | "PREPARING" | "READY" | "ASSIGN_TO_RIDER" | "DELIVERED";
+export type UIOrderStatus =
+  | "NEW"
+  | "ACCEPTED"
+  | "PREPARING"
+  | "READY"
+  | "ASSIGN_TO_RIDER"
+  | "PICKUP_ORDER" // Rider picked up order
+  | "RIDER_OUTSIDE"
+  | "PICKUP" // completed for pickup
+  | "DELIVERED";
 
 /**
  * Normalizes backend OrderStatus to UI-compatible status
  * Handles statuses that backend sends but UI doesn't need
- * 
+ *
  * @param backendStatus - The status received from backend
  * @param timestamps - Available timestamp fields to determine the most recent valid status
  * @returns Normalized status that UI can display
@@ -27,12 +36,21 @@ export function normalizeOrderStatus(
     preparedAt?: string | null;
     readyAt?: string | null;
     assignedAt?: string | null;
-    completedAt?: string | null;
-  }
+    pickedupAt?: string | null;
+    riderOutsideAt?: string | null;
+    pickupAt?: string | null;
+    deliveredAt?: string | null;
+  },
 ): UIOrderStatus {
   // Direct mapping for statuses UI understands
-  const uiStatuses: UIOrderStatus[] = ["ACCEPTED", "PREPARING", "READY", "ASSIGN_TO_RIDER", "DELIVERED"];
-  
+  const uiStatuses: UIOrderStatus[] = [
+    "ACCEPTED",
+    "PREPARING",
+    "READY",
+    "ASSIGN_TO_RIDER",
+    "DELIVERED",
+  ];
+
   if (uiStatuses.includes(backendStatus as UIOrderStatus)) {
     return backendStatus as UIOrderStatus;
   }
@@ -42,9 +60,9 @@ export function normalizeOrderStatus(
     case "NEW":
       // NEW orders should show as ACCEPTED once accepted
       return "NEW";
-      
+
     case "RIDER_ACCEPTED":
-    case "PICKUP_ORDER":
+      // case "PICKUP_ORDER":
       // These intermediate statuses map to ASSIGN_TO_RIDER
       // But we should check timestamps to avoid going backwards
       // If the order hasn't been assigned yet, use the most recent valid status
@@ -52,10 +70,13 @@ export function normalizeOrderStatus(
       if (timestamps.readyAt) return "READY";
       if (timestamps.preparedAt) return "PREPARING";
       return "ACCEPTED";
-      
+
     default:
       // Fallback: use most recent timestamp to determine current status
-      if (timestamps.completedAt) return "DELIVERED";
+      if (timestamps.pickupAt) return "DELIVERED";
+      if (timestamps.deliveredAt) return "DELIVERED";
+      if (timestamps.riderOutsideAt) return "RIDER_OUTSIDE";
+      if (timestamps.pickedupAt) return "PICKUP_ORDER";
       if (timestamps.assignedAt) return "ASSIGN_TO_RIDER";
       if (timestamps.readyAt) return "READY";
       if (timestamps.preparedAt) return "PREPARING";
@@ -73,19 +94,24 @@ export function mapOrderStatusToTimeline(orderStatusData: {
   preparedAt?: string | null;
   readyAt?: string | null;
   assignedAt?: string | null;
-  completedAt?: string | null;
+  pickedupAt?: string | null;
+  riderOutsideAt?: string | null;
+  pickupAt?: string | null;
+  deliveredAt?: string | null;
 }): OrderState[] {
   // Normalize the backend status to UI status
-  const currentStatus = normalizeOrderStatus(
-    orderStatusData.OrderStatus,
-    {
-      acceptedAt: orderStatusData.acceptedAt,
-      preparedAt: orderStatusData.preparedAt,
-      readyAt: orderStatusData.readyAt,
-      assignedAt: orderStatusData.assignedAt,
-      completedAt: orderStatusData.completedAt,
-    }
-  );
+  const currentStatus = normalizeOrderStatus(orderStatusData.OrderStatus, {
+    acceptedAt: orderStatusData.acceptedAt,
+    preparedAt: orderStatusData.preparedAt,
+    readyAt: orderStatusData.readyAt,
+    assignedAt: orderStatusData.assignedAt,
+    pickedupAt: orderStatusData.pickedupAt,
+    riderOutsideAt: orderStatusData.riderOutsideAt,
+    pickupAt: orderStatusData.pickupAt,
+    deliveredAt: orderStatusData.deliveredAt,
+  });
+
+  console.log("Current Status:", currentStatus);
 
   // const timestamp =
   //   typeof orderStatusData === "object" && "createdAt" in orderStatusData
@@ -94,10 +120,13 @@ export function mapOrderStatusToTimeline(orderStatusData: {
 
   // Define the order of statuses (UI only)
   const statusOrder: UIOrderStatus[] = [
+    "NEW",
     "ACCEPTED",
     "PREPARING",
     "READY",
     "ASSIGN_TO_RIDER",
+    "PICKUP_ORDER",
+    "RIDER_OUTSIDE",
     "DELIVERED",
   ];
 
@@ -106,6 +135,12 @@ export function mapOrderStatusToTimeline(orderStatusData: {
 
   // Base timeline with hardcoded descriptions
   const timeline: OrderState[] = [
+    {
+      title: "Order Created",
+      description: "Your order has been placed successfully",
+      time: orderStatusData.acceptedAt || undefined,
+      status: "idle",
+    },
     {
       title: "Order Accepted",
       description: "Your order has been confirmed by the vendor",
@@ -131,9 +166,22 @@ export function mapOrderStatusToTimeline(orderStatusData: {
       status: "idle",
     },
     {
+      title: "Rider picked up",
+      description: "Your order is on the way to you",
+      time: orderStatusData.pickedupAt || undefined,
+      status: "idle",
+    },
+    {
+      title: "Rider is outside ",
+      description: "Your rider has arrived at your location",
+      time: orderStatusData.riderOutsideAt || undefined,
+      status: "idle",
+    },
+    {
       title: "Completed",
       description: "Your order has been delivered",
-      time: orderStatusData.completedAt || undefined,
+      time:
+        orderStatusData.pickupAt || orderStatusData.deliveredAt || undefined,
       status: "idle",
     },
   ];

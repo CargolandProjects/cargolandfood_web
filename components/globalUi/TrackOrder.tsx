@@ -114,7 +114,10 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
       preparedAt: data.preparedAt,
       readyAt: data.readyAt,
       assignedAt: data.assignedAt,
-      completedAt: data.completedAt,
+      pickedupAt: data.pickedupAt,
+      riderOutsideAt: data.riderOutsideAt,
+      pickupAt: data.pickupAt,
+      deliveredAt: data.deliveredAt,
     });
     // console.log("Result: ", status);
     return status;
@@ -352,9 +355,11 @@ const TrackOrderContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                             {item.description}
                           </p>
                           {item.title !== "Completed" ? (
-                            <p className="text-xs text-neutral-500 font-medium mt-1">
-                              {formatTime(item.time || "") || "pending"}
-                            </p>
+                            item.title !== "Order Created" && (
+                              <p className="text-xs text-neutral-500 font-medium mt-1">
+                                {formatTime(item.time || "") || "pending"}
+                              </p>
+                            )
                           ) : (
                             <Button
                               onClick={handleOpenReview}
