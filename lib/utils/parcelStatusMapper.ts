@@ -101,21 +101,21 @@ export function mapParcelStatusToTimeline(parcelStatusData: {
   // Base timeline with hardcoded descriptions
   const timeline: OrderState[] = [
     {
-      title: "Parcel Picked Up",
-      description: "The parcel has been collected from the sender.",
+      title: "Rider Accepted",
+      description: "Your rider has accepted the delivery request",
       time: parcelStatusData?.acceptedAt || undefined,
       status: "idle",
     },
     {
-      title: "In Transit",
-      description: "Vendor is preparing your order",
+      title: "Pickup Order",
+      description: "Place your order for pickup",
       time: parcelStatusData?.pickedupAt || undefined,
       status: "idle",
     },
     {
-      title: "Out for Delivery",
+      title: "Rider Outside",
       description:
-        "The parcel is with the delivery agent and will arrive soon.",
+        "Your rider is waiting outside",
       time: parcelStatusData?.riderOutsideAt || undefined,
       status: "idle",
     },
