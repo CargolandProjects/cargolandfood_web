@@ -89,7 +89,10 @@ export interface TrackOrder {
   preparedAt: string | null;
   readyAt: string | null;
   assignedAt: string | null;
-  completedAt: string | null;
+  pickedupAt: string | null; // Rider picked up order
+  riderOutsideAt: string | null;
+  pickupAt: string | null; // pickup completed for pickup orders
+  deliveredAt: string | null;
   cancelledAt: string | null;
 }
 
@@ -99,35 +102,35 @@ export type GetOrdersResponse = APIResponse<GetOrders[]>;
 export const orderService = {
   async makePayment(cartId: string) {
     const response = await apiClient.post<MakePaymentResponse>(
-      API_ROUTES.order.makePayment(cartId)
+      API_ROUTES.order.makePayment(cartId),
     );
     return response.data;
   },
 
   async getOrders() {
     const res = await apiClient.get<GetOrdersResponse>(
-      API_ROUTES.order.getOrders
+      API_ROUTES.order.getOrders,
     );
     return res.data;
   },
 
   async orderDetails(orderId: string) {
     const res = await apiClient.get<APIResponse<GetOrders>>(
-      API_ROUTES.order.orderDetails(orderId)
+      API_ROUTES.order.orderDetails(orderId),
     );
     return res.data;
   },
 
   async getOrderByReference(reference: string) {
     const res = await apiClient.get<APIResponse<GetOrders>>(
-      API_ROUTES.order.getOrderByReference(reference)
+      API_ROUTES.order.getOrderByReference(reference),
     );
     return res.data;
   },
 
   async trackOrder(orderId: string) {
     const res = await apiClient.post<TrackOrderResponse>(
-      API_ROUTES.order.trackOrder(orderId)
+      API_ROUTES.order.trackOrder(orderId),
     );
     return res.data;
   },

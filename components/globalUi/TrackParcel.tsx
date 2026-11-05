@@ -304,7 +304,7 @@ const TrackParcelContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                                 item.status === "idle"
                                   ? "bg-neutral-100 left-[calc(50%-2px)] "
                                   : "bg-primary left-1/2"
-                              } w-1 h-[260%] absolute -top-17 -z-1 transform -translate-x-1/2 `}
+                              } w-1 h-[260%] absolute -top-13 -z-1 transform -translate-x-1/2 `}
                             />
                           )}
                         </div>

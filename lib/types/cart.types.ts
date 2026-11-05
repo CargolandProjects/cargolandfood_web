@@ -169,9 +169,9 @@ export type OrderStatus =
   | "READY"
   | "ASSIGN_TO_RIDER"
   | "RIDER_ACCEPTED"
-  | "PICKUP_ORDER"
+  | "PICKUP_ORDER" // Rider picked up order
   | "RIDER_OUTSIDE"
-  | "PICKUP"
+  | "PICKUP" // completed for pickup
   | "DELIVERED";
 
 export type PaymentStatus =
@@ -202,7 +202,7 @@ export interface Order {
   acceptedAt: string | null;
   preparedAt: string | null;
   readyAt: string | null;
-  completedAt: string | null;
+  deliveredAt: string | null;
   cancelledAt: string | null;
   createdAt: string;
   items: OrderItem[];
