@@ -19,7 +19,7 @@ export interface Vendor {
   golive: boolean | null;
   totalOrders: number | null;
   profileImg: string;
-  freeDelivery: boolean | null;
+  freeDelivery?: boolean | null;
   createdAt: string;
   ratings: number;
   isOpenNow?: boolean;
