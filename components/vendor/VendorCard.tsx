@@ -11,6 +11,8 @@ import { cld } from "@/lib/utils/cloudinary";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
+  RiDiscountPercentFill,
+  RiDiscountPercentLine,
   RiEBike2Line,
   RiGiftLine,
   RiHeartFill,
@@ -38,6 +40,7 @@ const VendorCard = ({
     deliveryFee,
     estimationTimeArrival,
     isOpenNow,
+    freeDelivery,
   },
   vendorId,
   aggregateDiscount,
@@ -49,7 +52,7 @@ const VendorCard = ({
   const { zoneId } = useActiveZone();
   const { mutate: toggleFavourite, isPending } = useToggleFavourite(
     source,
-    zoneId ?? ""
+    zoneId ?? "",
   );
   const router = useRouter();
 
@@ -66,7 +69,7 @@ const VendorCard = ({
   const handleToggleFavourite = (
     isFavourite: boolean,
     vendorId: string,
-    e: React.MouseEvent
+    e: React.MouseEvent,
   ) => {
     e.stopPropagation();
     if (!isAuthenticated) {
@@ -98,10 +101,19 @@ const VendorCard = ({
           fill
           onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
         />
+        {/* Discount overlay indicator */}
         {!asFavouriteCard && aggregateDiscount && (
           <div className="absolute top-3 left-3 rounded-full flex justify-center items-center gap-1 py-1 px-2 bg-primary-50 border-[0.5px] border-primary-900">
             <RiGiftLine className="size-3 text-primary" />
             <p className="font-medium text-xs">{aggregateDiscount}% Off</p>
+          </div>
+        )}
+
+        {/* Discount overlay indicator */}
+        {!asFavouriteCard && freeDelivery && (
+          <div className="absolute bottom-2 left-2 rounded-xs flex justify-center items-center gap-1 p-1 bg-white text-blue-600">
+            <RiDiscountPercentLine className="size-3.5" />
+            <p className="font-medium text-xs">Free delivery on first order</p>
           </div>
         )}
 
