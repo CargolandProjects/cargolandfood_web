@@ -31,7 +31,10 @@ import { useUIStore } from "@/lib/stores/uiStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTrackOrder } from "@/lib/hooks/queries/useOrders";
 import { fallbackImg } from "@/lib/utils";
-import { mapOrderStatusToTimeline } from "@/lib/utils/orderStatusMapper";
+import {
+  mapOrderStatusToTimeline,
+  UIOrderStatus as OrderStatusForUI,
+} from "@/lib/utils/orderStatusMapper";
 import { useNotificationEvent } from "@/lib/hooks/useSocket";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -49,10 +52,7 @@ interface TrackOrderDetailsProps {
   close?: () => void;
 }
 
-type UIOrderStatus = Exclude<
-  OrderStatus,
-  "NEW" | "RIDER_ACCEPTED" | "PICKUP_ORDER"
->;
+type UIOrderStatus = Exclude<OrderStatusForUI, "NEW">;
 
 interface StatusMsg {
   open: boolean;
@@ -69,8 +69,9 @@ const getTimestampFieldForStatus = (status: OrderStatus): string => {
     PREPARING: "preparedAt",
     READY: "readyAt",
     ASSIGN_TO_RIDER: "assignedAt",
+    PICKUP_ORDER: "pickedupAt",
     RIDER_OUTSIDE: "riderOutsideAt",
-    PICKUP: "completedAt",
+    PICKUP: "pickupAt",
     DELIVERED: "completedAt",
   };
   return statusToFieldMap[status as UIOrderStatus];
@@ -81,8 +82,9 @@ const statusIcons: Record<UIOrderStatus, React.ElementType> = {
   PREPARING: RiRestaurant2Fill,
   READY: RiGiftFill,
   ASSIGN_TO_RIDER: RiRidingFill,
-  PICKUP: RiRidingFill,
-  RIDER_OUTSIDE: RiCheckboxCircleFill,
+  PICKUP_ORDER: RiRidingFill,
+  RIDER_OUTSIDE: RiRidingFill,
+  PICKUP: RiCheckboxCircleFill,
   DELIVERED: RiCheckboxCircleFill,
 };
 
