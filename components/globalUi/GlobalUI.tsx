@@ -6,6 +6,7 @@ import GlobalCheckout from "./GlobalCheckout";
 import OrderDetails from "./OrderDetails";
 import TrackOrder from "./TrackOrder";
 import TrackParcel from "./TrackParcel";
+import LocationConfirmationModal from "./LocationConfirmationModal";
 
 const GlobalUI = () => {
   return (
@@ -18,6 +19,7 @@ const GlobalUI = () => {
       {/* <CancelOrderModal /> */}
       <ReviewOrderModal />
       <OrderSuccessModal />
+      <LocationConfirmationModal />
     </>
   );
 };
