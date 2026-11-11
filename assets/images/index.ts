@@ -19,6 +19,8 @@ import wallet from "./wallet.png";
 import pizza2 from "./pizza2.webp";
 import riceDish from "./rice_dish.jpg";
 import sadFace from "./sad_face.png";
+import inAppCoverBanner1 from "./in-app-cover-banner-1.webp";
+import inAppCoverBanner2 from "./in-app-cover-banner-2.webp";
 
 export {
   hamburgers,
@@ -42,4 +44,6 @@ export {
   pizza2,
   riceDish,
   sadFace,
+  inAppCoverBanner1,
+  inAppCoverBanner2,
 };
