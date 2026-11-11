@@ -14,6 +14,7 @@ import LoadingSkeleton from "../vendor/LoadingSkeleton";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import AllPromoBanners from "./AllPromoBanners";
 import { useState } from "react";
+import { inAppCoverBanner1, inAppCoverBanner2 } from "@/assets/images";
 
 const Loading = () => (
   <div className="flex items-center gap-6 w-full">
@@ -24,6 +25,8 @@ const Loading = () => (
     <Skeleton className="max-md:hidden h-9.5 w-[81px] rounded-full shrink-0" />
   </div>
 );
+
+const bannerAlt = [inAppCoverBanner1, inAppCoverBanner2];
 
 const Banners = ({
   showScreen = "LARGE",
@@ -43,9 +46,7 @@ const Banners = ({
   return (
     <>
       {showScreen === "LARGE" && (
-        <section
-          className={`${isBannerLength ? "my-4 sm:my-10" : "my-2 sm:my-5"}  md:flex items-center gap-4 sm:gap-6`}
-        >
+        <section className="my-4 sm:my-10 md:flex items-center gap-4 sm:gap-6">
           {isLoading && <Loading />}
 
           {isSuccess && isBannerLength && (
@@ -89,6 +90,44 @@ const Banners = ({
             </Swiper>
           )}
 
+          {isSuccess && banners.length === 0 && (
+            <Swiper
+              modules={[Autoplay]}
+              spaceBetween={24}
+              slidesPerView={1}
+              speed={600}
+              loop={true}
+              autoplay={{
+                delay: 3000,
+                pauseOnMouseEnter: true,
+              }}
+              // pagination={{
+              //   clickable: true, // makes dots clickable
+              //   dynamicBullets: true, // optional: set true for smaller dots that expand
+              // }}
+              breakpoints={{
+                768: {
+                  slidesPerView: 2,
+                  // loop: false,
+                },
+              }}
+              // className="pb-7! md:pb-10! "
+            >
+              {bannerAlt.map((banner, index) => (
+                <SwiperSlide key={index}>
+                  <div className="relative h-[106px] sm:h-[154px] rounded-sm sm:rounded-xl overflow-hidden block">
+                    <Image
+                      src={banner}
+                      alt="banner image"
+                      className="size-full object-cover"
+                      fill
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          )}
+
           {isSuccess && isBannerLength && (
             <Button
               onClick={() => setOpen(true)}
@@ -124,10 +163,48 @@ const Banners = ({
           )}
 
           {isSuccess && banners.length === 0 && (
+            <Swiper
+              modules={[Autoplay]}
+              spaceBetween={24}
+              slidesPerView={1}
+              speed={600}
+              loop={true}
+              autoplay={{
+                delay: 3000,
+                pauseOnMouseEnter: true,
+              }}
+              // pagination={{
+              //   clickable: true, // makes dots clickable
+              //   dynamicBullets: true, // optional: set true for smaller dots that expand
+              // }}
+              // breakpoints={{
+              //   768: {
+              //     slidesPerView: 2,
+              //     loop: false,
+              //   },
+              // }}
+              className="mt-2.5"
+            >
+              {bannerAlt.map((banner, index) => (
+                <SwiperSlide key={index}>
+                  <div className="relative h-[106px] sm:h-[95px] rounded-sm sm:rounded-xl overflow-hidden block">
+                    <Image
+                      src={banner}
+                      alt="banner image"
+                      className="size-full object-cover"
+                      fill
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          )}
+
+          {/* {isSuccess && banners.length === 0 && (
             <p className="text-neutral-500 text-center mt-2 sm:mt-4">
               No promotion banners found at the moment
             </p>
-          )}
+          )} */}
 
           {isSuccess && isBannerLength && (
             <Swiper

@@ -113,7 +113,7 @@ const VendorCard = ({
         {!asFavouriteCard && freeDelivery && (
           <div className="absolute bottom-2 left-2 rounded-xs flex justify-center items-center gap-1 p-1 bg-white text-blue-600">
             <RiDiscountPercentLine className="size-3.5" />
-            <p className="font-medium text-xs">Free delivery on first order</p>
+            <p className="font-medium text-xs">Free delivery on all orders</p>
           </div>
         )}
 
