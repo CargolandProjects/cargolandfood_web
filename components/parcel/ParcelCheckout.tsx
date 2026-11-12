@@ -1,4 +1,4 @@
-import { currency } from "@/lib/utils";
+import { fmtCurrency } from "@/lib/utils";
 import { RiEdit2Fill, RiGlobalFill } from "react-icons/ri";
 import { Separator } from "../ui/separator";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
@@ -363,13 +363,13 @@ const ParcelCheckout = ({
                   Declared for insurance not chared
                 </span>
               </div>
-              <span className="leading-5">{currency(packageWorth)}</span>
+              <span className="leading-5">{fmtCurrency(packageWorth)}</span>
             </div>
 
             <div className="flex items-center justify-between text-sm">
               <span className="text-sm leading-4.5">Delivery Fee</span>
               <span className="leading-5">
-                {currency(deliveryFees?.deliveryFee.toString())}
+                {fmtCurrency(deliveryFees?.deliveryFee.toString())}
               </span>
             </div>
 
@@ -377,18 +377,18 @@ const ParcelCheckout = ({
               <div className="flex flex-col">
                 <span className="text-sm leading-4.5">Insurance</span>
                 <span className="leading-5 text-xs text-neutral-500">
-                  2% of {currency(packageWorth)} declared value
+                  2% of {fmtCurrency(packageWorth)} declared value
                 </span>
               </div>
               <span className="leading-5">
-                {currency(deliveryFees.insuranceFee.toString())}
+                {fmtCurrency(deliveryFees.insuranceFee.toString())}
               </span>
             </div>
 
             <div className="flex items-center justify-between text-sm">
               <span className="text-base font-medium leading-6">Total</span>
               <span className="text-base font-medium leading-6">
-                {currency(deliveryFees?.total.toString())}
+                {fmtCurrency(deliveryFees?.total.toString())}
               </span>
             </div>
           </div>
@@ -423,7 +423,7 @@ const ParcelCheckout = ({
                     <Loader styles="size-4! text-neutral-400!" />
                   ) : (
                     <span className="text-base font-medium ml-1">
-                      {currency("0")}
+                      {fmtCurrency("0")}
                     </span>
                   )}
                 </p>

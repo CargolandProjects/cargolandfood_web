@@ -3,7 +3,7 @@
 import { Menu } from "@/lib/services/vendors.service";
 import ProductModal from "./ProductModal";
 import { RiAddFill, RiGiftLine } from "react-icons/ri";
-import { fallbackImg } from "@/lib/utils";
+import { fallbackImg, fmtCurrency } from "@/lib/utils";
 import useAuthFlow from "@/lib/stores/authFlowStore";
 import { useSession } from "@/lib/hooks/useSession";
 import { toast } from "sonner";
@@ -28,12 +28,25 @@ const VendorItemCardB = ({
   vendorId,
   selectedId,
 }: VendorItemCard) => {
-  const { id, uploadImageUrl, name, price, PromotionItem, description, outOfStock } = menu;
+  const {
+    id,
+    uploadImageUrl,
+    name,
+    price,
+    PromotionItem,
+    description,
+    outOfStock,
+  } = menu;
   const isSelected = id === selectedId;
   const { isAuthenticated } = useSession();
   const openAuth = useAuthFlow((s) => s.openAuth);
-
   const { mutate, isPending } = useUpdateCart();
+
+  const isPromoted = PromotionItem && PromotionItem?.length > 0;
+  const percentageValue = (PromotionItem || [])[0]?.promotion.percentageValue;
+  const discountedPrice = percentageValue
+    ? Number(price) - (percentageValue / 100) * Number(price)
+    : 0;
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -113,9 +126,21 @@ const VendorItemCardB = ({
             <p className="line-clamp-1">{name}</p>
 
             <div className="flex justify-between items-end">
-              <p className="text-base font-medium">
-                ₦{Number(price).toLocaleString()}
-              </p>
+              <div>
+                {isPromoted && percentageValue ? (
+                  <p className="text-base font-medium flex gap-2 items-center">
+                    {fmtCurrency(discountedPrice.toString())}
+
+                    <span className="text-sm font-medium text-neutral-500 line-through">
+                      {fmtCurrency(price)}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-base sm:text-xl font-medium ">
+                    {fmtCurrency(price)}
+                  </p>
+                )}
+              </div>
               <button
                 onClick={handleQuickAdd}
                 disabled={isPending}

@@ -27,6 +27,7 @@ import ErrorStateUi from "../ErrorStateUi";
 import { fallbackImg, formatDateWComma, formatTime } from "@/lib/utils";
 import Image from "next/image";
 import { cld } from "@/lib/utils/cloudinary";
+import { fmtCurrency } from "@/lib/utils";
 
 interface OrderDetailsContentProps {
   isDesktop: boolean;
@@ -51,7 +52,6 @@ const OrderDetailsContent = ({
   const { data, isLoading, isError, isSuccess } =
     payload?.source === "general" ? generalQuery : paymentQuery;
 
-  const currency = (n: string) => `₦ ${Number(n).toLocaleString()}`;
 
   const handlOpenTrackOrder = (orderId: string) => {
     if (!orderId) return;
@@ -156,7 +156,7 @@ const OrderDetailsContent = ({
                     {item.description ?? "-"}
                   </p>
                   <p className="text-sm font-medium leading-3 mt-1">
-                    {currency(item.unitPrice)}
+                    {fmtCurrency(item.unitPrice)}
                   </p>
                 </div>
               </div>
@@ -209,25 +209,25 @@ const OrderDetailsContent = ({
             <div className=" space-y-1.5">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-sm leading-4.5">Orders</span>
-                <span>{currency(data.subtotal)}</span>
+                <span>{fmtCurrency(data.subtotal)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-sm leading-4.5">Delivery Fee</span>
-                <span>{currency(data.deliveryFee)}</span>
+                <span>{fmtCurrency(data.deliveryFee)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-sm leading-4.5">Service Fee</span>
-                <span>{currency(data.serviceFee)}</span>
+                <span>{fmtCurrency(data.serviceFee)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-sm leading-4.5">Discounts</span>
-                <span>{currency(data.discountTotal)}</span>
+                <span>{fmtCurrency(data.discountTotal)}</span>
               </div>
 
               <div className="flex items-center justify-between text-sm font-medium mt-4">
                 <span className="text-base font-medium ">Total</span>
                 <span className="text-base font-medium ">
-                  {currency(data.total)}
+                  {fmtCurrency(data.total)}
                 </span>
               </div>
             </div>

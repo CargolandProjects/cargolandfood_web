@@ -168,7 +168,7 @@ export const formatNumber = (value: string) => {
   return new Intl.NumberFormat("en-US").format(Number(number));
 };
 
-export const currency = (n: string) => `₦${Number(n).toLocaleString()}`;
+export const fmtCurrency = (n: string) => `₦${Number(n).toLocaleString()}`;
 
 export const statusStyles: Partial<
   Record<ParcelStatus, { bgcolor: string; containerStyles: string }>
