@@ -17,7 +17,7 @@ import {
   RiPhoneFill,
   RiRestaurant2Fill,
   RiRidingFill,
-  RiStarSFill,
+  
   RiStore2Fill,
 } from "react-icons/ri";
 import { Separator } from "../ui/separator";
@@ -27,11 +27,10 @@ import { userIcon2 } from "@/assets/svgs";
 import { Button } from "../ui/button";
 import { useUIStore } from "@/lib/stores/uiStore";
 import { AnimatePresence, motion } from "framer-motion";
-import { currency } from "@/lib/utils";
+import { fmtCurrency } from "@/lib/utils";
 import { useNotificationEvent } from "@/lib/hooks/useSocket";
 import { useQueryClient } from "@tanstack/react-query";
 import { TrackOrderResponse } from "@/lib/services/order.service";
-import { formatTime } from "@/lib/utils";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
@@ -352,7 +351,7 @@ const TrackParcelContent = ({ isDesktop, close }: TrackOrderDetailsProps) => {
                     </span>
 
                     <span className="leading-5 line-clamp-1">
-                      {currency(data?.amount)}
+                      {fmtCurrency(data?.amount)}
                     </span>
                   </div>
 

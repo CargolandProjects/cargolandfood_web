@@ -53,7 +53,7 @@ import RestaurantNoteModal from "../orders/RestaurantNoteModal";
 import { Field, FieldLabel } from "../ui/field";
 import { PaymentMethod } from "../orders/PageCheckOut";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
-import { currency } from "@/lib/utils";
+import { fmtCurrency } from "@/lib/utils";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 import { APIError, Cart, CartItem } from "@/lib/types/cart.types";
 
@@ -536,7 +536,7 @@ const GlobalCheckoutContent = ({
                     {/* Packs Counter */}
                     <div className="flex items-center justify-between">
                       <span className="text-base font-medium">
-                        {currency(item.totalPrice)}
+                        {fmtCurrency(item.totalPrice)}
                       </span>
                     </div>
                   </div>
@@ -734,25 +734,25 @@ const GlobalCheckoutContent = ({
               <div className="mt-4 space-y-1.5">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-sm leading-4.5">Orders</span>
-                  <span>{currency(subtotal)}</span>
+                  <span>{fmtCurrency(subtotal)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-sm leading-4.5">Delivery Fee</span>
-                  <span>{currency(deliveryFee)}</span>
+                  <span>{fmtCurrency(deliveryFee)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-sm leading-4.5">Service Fee</span>
-                  <span>{currency(serviceFee)}</span>
+                  <span>{fmtCurrency(serviceFee)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-sm leading-4.5">Discounts</span>
-                  <span>{currency(discountTotal)}</span>
+                  <span>{fmtCurrency(discountTotal)}</span>
                 </div>
 
                 <div className="flex items-center justify-between text-sm font-medium mt-4">
                   <span className="text-base font-medium ">Total</span>
                   <span className="text-base font-medium ">
-                    {currency(total || subtotal)}
+                    {fmtCurrency(total || subtotal)}
                   </span>
                 </div>
               </div>

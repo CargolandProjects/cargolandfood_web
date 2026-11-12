@@ -4,7 +4,7 @@ import { Menu } from "@/lib/services/vendors.service";
 import ProductModal from "./ProductModal";
 import { useUpdateCart } from "@/lib/hooks/mutations/useMutateCart";
 import { RiAddFill, RiGiftLine } from "react-icons/ri";
-import { fallbackImg } from "@/lib/utils";
+import { fallbackImg, fmtCurrency } from "@/lib/utils";
 import useAuthFlow from "@/lib/stores/authFlowStore";
 import { useSession } from "@/lib/hooks/useSession";
 import { toast } from "sonner";
@@ -42,10 +42,15 @@ const VendorItemCardA = ({
   const isSelected = id === selectedId;
   const { isAuthenticated } = useSession();
   const openAuth = useAuthFlow((s) => s.openAuth);
-
   // const params = useParams();
   // const vendorId = params.id as string;
   const { mutate, isPending } = useUpdateCart();
+
+  const isPromoted = PromotionItem && PromotionItem?.length > 0;
+  const percentageValue = (PromotionItem || [])[0]?.promotion.percentageValue;
+  const discountedPrice = percentageValue
+    ? Number(price) - (percentageValue / 100) * Number(price)
+    : 0;
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -98,11 +103,11 @@ const VendorItemCardA = ({
             fill
             onError={(e) => fallbackImg(e, "/fallback_vendor.webp")}
           />
-          {PromotionItem && PromotionItem?.length > 0 && (
+          {isPromoted && (
             <div className="absolute top-2 left-2 rounded-full flex justify-center items-center gap-1 py-0.5 px-1 bg-white">
               <RiGiftLine className="size-3 text-primary" />
               <p className="font-medium text-xs text-primary">
-                {PromotionItem?.[0]?.promotion.percentageValue}% Off
+                {percentageValue}% Off
               </p>
             </div>
           )}
@@ -133,9 +138,21 @@ const VendorItemCardA = ({
             <p className="text-xs leading-4 text-neutral-600 line-clamp-2">
               {description}
             </p>
-            <span className="text-base sm:text-xl font-medium mt-[13px] sm:mt-6">
-              ₦{Number(price).toLocaleString()}
-            </span>
+            <div className="mt-[13px] sm:mt-6">
+              {isPromoted && percentageValue ? (
+                <p className="text-base sm:text-xl font-medium flex gap-2 items-center">
+                  {fmtCurrency(discountedPrice.toString())}
+
+                  <span className="text-sm sm:text-lg font-medium text-neutral-500 line-through">
+                    {fmtCurrency(price)}
+                  </span>
+                </p>
+              ) : (
+                <p className="text-base sm:text-xl font-medium ">
+                  {fmtCurrency(price)}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* ADDED: Plus Icon Button */}
