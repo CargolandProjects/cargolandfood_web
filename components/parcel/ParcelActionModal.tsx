@@ -11,6 +11,9 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { ParcelType } from "./Parcel";
 import { Parcel } from "@/lib/services/parcel.service";
+import { useSession } from "@/lib/hooks/useSession";
+import { toast } from "sonner";
+import useAuthFlow from "@/lib/stores/authFlowStore";
 
 const ParcelActionModal = ({
   open,
@@ -27,11 +30,23 @@ const ParcelActionModal = ({
   onSelectType: (type: ParcelType) => void;
   onResumeCheckout: () => void;
 }) => {
+  const { isAuthenticated } = useSession();
+  const openAuth = useAuthFlow((s) => s.openAuth);
+
   // console.log("PARCEL ACTION: ", activeParcel);
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open && isAuthenticated} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="relative w-25.75 h-18 sm:w-31 sm:h-29 flex-col gap-0 rounded-md sm:rounded-xl cursor-pointer bg-[#EFFAF6] text-black hover:bg-[#EFFAF6]/80 ring-0!">
+        <Button
+          onClick={() => {
+            if (!isAuthenticated) {
+              toast.error("Please signin to access parcel");
+              openAuth();
+              return;
+            }
+          }}
+          className="relative w-25.75 h-18 sm:w-31 sm:h-29 flex-col gap-0 rounded-md sm:rounded-xl cursor-pointer bg-[#EFFAF6] text-black hover:bg-[#EFFAF6]/80 ring-0!"
+        >
           <span className="absolute top-0.5 left-0.5 px-3 py-1 text-[8px] leading-3 font-medium rounded-full text-white bg-primary">
             New
           </span>

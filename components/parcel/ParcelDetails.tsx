@@ -37,10 +37,10 @@ import {
 import ParcelCheckout from "./ParcelCheckout";
 import { useActiveParcel } from "@/lib/hooks/queries/useParcel";
 import { Parcel } from "@/lib/services/parcel.service";
-import { useMakePayment } from "@/lib/hooks/mutations/usePlaceOrder";
 import ConfirmationModal from "../ConfirmationModal";
-import { useChargeWallet } from "@/lib/hooks/mutations/useChargeWallet";
+// import { useChargeWallet } from "@/lib/hooks/mutations/useChargeWallet";
 import { PaymentMethod } from "../orders/PageCheckOut";
+import useAuthFlow from "@/lib/stores/authFlowStore";
 
 export type ParcelSteps = "ROUTE" | "PARCEL_INFO" | "CHECKOUT";
 
@@ -135,17 +135,21 @@ const ParcelDetailsContent = ({
   setStep: React.Dispatch<React.SetStateAction<ParcelSteps>>;
   form: UseFormReturn<ParcelDetailsData>;
 }) => {
-  const { mutate: createParcel, isPending } = useCreateParcel();
+  const { mutate: createParcel, isPending: isCreating } = useCreateParcel();
   const { mutate: deleteParcel, isPending: isDeleting } = useDeleteParcel();
   const { mutate: makePayment, isPending: isMakingPayment } =
     useMakeParcelPayment();
-  const { mutate: chargeWallet, isPending: isChargingWallet } =
-    useChargeWallet();
+  // const { mutate: chargeWallet, isPending: isChargingWallet } =
+  //   useChargeWallet();
 
   const [showAlert, setShowAlert] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
     "DIGITAL_TRANSFER",
   );
+
+  const { isAuthenticated } = useSession();
+  const openAuth = useAuthFlow((s) => s.openAuth);
+  const isPending = isCreating || isMakingPayment;
 
   const pickUpAddrLat = useWatch({
     control: form.control,
@@ -195,6 +199,12 @@ const ParcelDetailsContent = ({
 
   const onSubmit = (data: ParcelDetailsData) => {
     // console.log("Parcel Data: ", data);
+
+    if (!isAuthenticated) {
+      toast.error("Please signin to add item to cart");
+      openAuth();
+      return;
+    }
 
     if (activeParcel?.id) {
       makePayment(activeParcel.id, {
@@ -360,7 +370,7 @@ const ParcelDetailsContent = ({
                 //   disabled={isMakingPayment || isChargingWallet}
                 className="submit-btn "
               >
-                {isMakingPayment || isChargingWallet ? (
+                {isPending ? (
                   <RiLoader2Line className="size-5 animate-spin" />
                 ) : (
                   "Make Payment"
