@@ -27,7 +27,7 @@ const ParcelActionModal = ({
   onSelectType: (type: ParcelType) => void;
   onResumeCheckout: () => void;
 }) => {
-  console.log("PARCEL ACTION: ", activeParcel);
+  // console.log("PARCEL ACTION: ", activeParcel);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

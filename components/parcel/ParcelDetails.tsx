@@ -194,7 +194,7 @@ const ParcelDetailsContent = ({
   };
 
   const onSubmit = (data: ParcelDetailsData) => {
-    console.log("Parcel Data: ", data);
+    // console.log("Parcel Data: ", data);
 
     if (activeParcel?.id) {
       makePayment(activeParcel.id, {
@@ -459,7 +459,7 @@ const ParcelDetails = ({
     }
   }, [activeParcel, form]);
 
-  console.log("Active Parcel", activeParcel);
+  // console.log("Active Parcel", activeParcel);
 
   useEffect(() => {
     if (!type || activeParcel) return;
