@@ -12,7 +12,7 @@ const Parcel = () => {
   const [initialStep, setInitialStep] = useState<ParcelSteps>("ROUTE");
 
   const { data: activeParcel, isLoading } = useActiveParcel();
-  console.log("Parcel Type:", parcelType); // Log the current parcel type whenever it changes
+  // console.log("Parcel Type:", parcelType); // Log the current parcel type whenever it changes
 
   const handleSelectType = (type: ParcelType) => {
     setParcelType(type);

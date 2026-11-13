@@ -75,7 +75,7 @@ const Restaurants = () => {
       {isError && (
         <p className="text-red-400 text-center mt-3 sm:mt-4">
           <span className="font-semibold">
-            couldn’t find Restaurants for your location.
+            Couldn’t find restaurants for your location.
           </span>
           <br /> Check your internet connection or refresh to try again.
         </p>

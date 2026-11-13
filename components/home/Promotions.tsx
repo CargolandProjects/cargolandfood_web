@@ -95,7 +95,7 @@ const Promotions = () => {
         {isError && (
           <p className="text-red-400 text-center mt-3 sm:mt-4">
             <span className="font-semibold">
-              Couldn’t get Discounts for your location.
+              Couldn’t get discounts for your location.
             </span>
             <br /> Check your internet connection or refresh to try again.
           </p>
