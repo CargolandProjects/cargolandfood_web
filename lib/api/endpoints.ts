@@ -98,4 +98,9 @@ export const API_ROUTES = {
     bannersPromos: (zoneId: string) =>
       `/users/get-all/banner-promotions/${zoneId}`,
   },
+
+  notificatino: {
+    register: "/notification/register-user-device",
+    // test: "/notification/test-push-notification",
+  },
 };

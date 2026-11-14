@@ -121,8 +121,6 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
   // If error (e.g., 400 "No active cart"), treat as empty cart
 
   const errorData = checkoutError as APIError<Cart>;
-  console.log("Is checkout error", errorData?.data);
-
   const hasErrorCart = !!errorData?.data?.items;
 
   const hasCheckoutCart =
@@ -133,7 +131,7 @@ const VendorPageContent = ({ id }: VendorPageContentProps) => {
 
   const hasItemsInCart = hasCheckoutCart || hasErrorCart;
 
-  console.log("HasItemsInCart: ", hasItemsInCart);
+  // console.log("HasItemsInCart: ", hasItemsInCart);
 
   const isRestaurant = vendor?.businessCategory === "Restaurant";
 
