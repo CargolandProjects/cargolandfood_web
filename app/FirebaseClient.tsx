@@ -1,18 +1,17 @@
-// Import the functions you need from the SDKs you need
+"use client";
+
 import { initializeApp } from "firebase/app";
 import {
   getMessaging,
   getToken,
+  onMessage,
   // onRegistered,
   // register,
 } from "firebase/messaging";
-import { notification } from "../services/notification.service";
-// import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { notification } from "@/lib/services/notification.service";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "cargoland-new-applications.firebaseapp.com",
@@ -28,18 +27,6 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase Cloud Messaging and get a reference to the service
 export const messaging = getMessaging(app);
 
-// onRegistered(messaging,  (installationId) => {
-//   console.log("Registered installation ID:", installationId);
-
-//   // Send the Firebase Installation ID to your app server and update the UI if needed.
-//   notification.registerDevice(installationId);
-// });
-
-// register(messaging, { vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY });
-// const analytics = getAnalytics(app);
-
-// console.log("Firebase VAPID key: ", process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY);
-
 export const generateToken = async () => {
   // Notification.requestPermission();
   const token = await getToken(messaging, {
@@ -48,3 +35,21 @@ export const generateToken = async () => {
   notification.registerDevice(token);
   // console.log("Notification Token:", token);s
 };
+
+const FirebaseClient = () => {
+  useEffect(() => {
+    generateToken();
+    const unSubscribe = onMessage(messaging, (payload) => {
+      toast.info(payload.notification?.title, {
+        description: payload.notification?.body,
+      });
+      // console.log("Notification received. ", payload.notification?.body);
+    });
+
+    return () => unSubscribe();
+  }, []);
+
+  return null;
+};
+
+export default FirebaseClient;
